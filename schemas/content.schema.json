@@ -1,8 +1,184 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://prd.eonhive.dev/schemas/content.schema.json",
-  "title": "PRD Content Placeholder Schema",
-  "description": "Placeholder schema for future structured content descriptors. HTML entry files remain the current reference-viewer path.",
+  "title": "PRD Base General-Document Content Root",
+  "description": "Structured content schema for the first executable `general-document` foundation. This is intentionally content-first and not HTML-first.",
   "type": "object",
-  "additionalProperties": true
+  "required": ["schemaVersion", "profile", "type", "id", "title", "children"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile": {
+      "const": "general-document"
+    },
+    "type": {
+      "const": "document"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subtitle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lang": {
+      "type": "string",
+      "minLength": 1
+    },
+    "children": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/node"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sectionNode": {
+      "type": "object",
+      "required": ["type", "id", "title", "children"],
+      "properties": {
+        "type": {
+          "const": "section"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "children": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "headingNode": {
+      "type": "object",
+      "required": ["type", "level", "text"],
+      "properties": {
+        "type": {
+          "const": "heading"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "paragraphNode": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": {
+          "const": "paragraph"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "listNode": {
+      "type": "object",
+      "required": ["type", "style", "items"],
+      "properties": {
+        "type": {
+          "const": "list"
+        },
+        "style": {
+          "type": "string",
+          "enum": ["unordered", "ordered"]
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "imageNode": {
+      "type": "object",
+      "required": ["type", "asset", "alt"],
+      "properties": {
+        "type": {
+          "const": "image"
+        },
+        "asset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "caption": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "quoteNode": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": {
+          "const": "quote"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "node": {
+      "oneOf": [
+        { "$ref": "#/$defs/sectionNode" },
+        { "$ref": "#/$defs/headingNode" },
+        { "$ref": "#/$defs/paragraphNode" },
+        { "$ref": "#/$defs/listNode" },
+        { "$ref": "#/$defs/imageNode" },
+        { "$ref": "#/$defs/quoteNode" }
+      ]
+    }
+  }
 }

@@ -45,7 +45,8 @@ This draft does not define:
 - The spec is published in `docs/core/` within the current organized docs tree.
 - `.prd` is the transport/archive form for the minimal valid package.
 - An unpacked directory tree is informative for authoring and debugging, but not the normative transport contract.
-- The example entry file is viewer-readable and public. This draft does not yet freeze the full set of allowed entry media types.
+- The first executable `general-document` foundation uses a public structured content entry at `content/root.json`.
+- This draft does not yet freeze the full set of allowed entry media types for every future profile.
 - Required public metadata must stay public. Protected/private material cannot become the only way to identify or open a minimal PRD.
 
 ---
@@ -172,7 +173,7 @@ These fields are allowed in the minimal draft, but their full schema is not defi
   "id": "urn:uuid:11111111-1111-1111-1111-111111111111",
   "profile": "general-document",
   "title": "Hello PRD",
-  "entry": "content/index.html"
+  "entry": "content/root.json"
 }
 ```
 
@@ -225,7 +226,7 @@ The following sample is informative. It shows the same minimal package in unpack
 hello-prd/
   manifest.json
   content/
-    index.html
+    root.json
 ```
 
 Example `manifest.json`:
@@ -237,26 +238,26 @@ Example `manifest.json`:
   "id": "urn:uuid:11111111-1111-1111-1111-111111111111",
   "profile": "general-document",
   "title": "Hello PRD",
-  "entry": "content/index.html"
+  "entry": "content/root.json"
 }
 ```
 
-Example `content/index.html`:
+Example `content/root.json`:
 
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Hello PRD</title>
-  </head>
-  <body>
-    <article>
-      <h1>Hello PRD</h1>
-      <p>This is the smallest readable PRD example in this draft.</p>
-    </article>
-  </body>
-</html>
+```json
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "hello-prd",
+  "title": "Hello PRD",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "This is the smallest readable structured PRD example in this draft."
+    }
+  ]
+}
 ```
 
 When distributed, the package above is zipped as `hello-prd.prd`. The unpacked tree is shown only to make the structure inspectable by humans.

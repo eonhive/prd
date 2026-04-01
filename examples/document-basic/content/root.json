@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "document-basic",
+  "title": "PRD Document Example",
+  "summary": "A minimal structured `general-document` package used to validate the first executable PRD foundation.",
+  "lang": "en-US",
+  "children": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Portable Responsive Documents start with a manifest-first contract."
+    },
+    {
+      "type": "paragraph",
+      "text": "This example proves the first executable PRD foundation with a canonical manifest and a structured content root."
+    },
+    {
+      "type": "image",
+      "asset": "document-hero",
+      "alt": "Abstract PRD cover illustration",
+      "caption": "Declared assets remain referenced through the manifest."
+    },
+    {
+      "type": "section",
+      "id": "why-this-exists",
+      "title": "Why this example exists",
+      "children": [
+        {
+          "type": "paragraph",
+          "text": "The base document path uses `content/root.json` instead of an HTML-first website entry."
+        },
+        {
+          "type": "list",
+          "style": "unordered",
+          "items": [
+            "manifest.json is the canonical package control surface",
+            "general-document remains a profile, not the name for responsiveness",
+            "content is structured JSON rather than bundled page markup"
+          ]
+        },
+        {
+          "type": "quote",
+          "text": "PRD should remain portable, structured, and profile-based from the start.",
+          "attribution": "PRD foundation direction"
+        }
+      ]
+    }
+  ]
+}

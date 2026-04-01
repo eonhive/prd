@@ -156,7 +156,7 @@ Validators may warn when:
   "id": "urn:uuid:44444444-4444-4444-4444-444444444444",
   "profile": "general-document",
   "title": "Field Guide",
-  "entry": "content/index.html",
+  "entry": "content/root.json",
   "localization": {
     "defaultLocale": "en-US",
     "availableLocales": ["en-US", "fr-FR"],

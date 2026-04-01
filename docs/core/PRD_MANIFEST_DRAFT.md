@@ -185,7 +185,7 @@ Versioning surfaces across the manifest draft are therefore:
   "id": "urn:uuid:11111111-1111-1111-1111-111111111111",
   "profile": "general-document",
   "title": "Hello PRD",
-  "entry": "content/index.html"
+  "entry": "content/root.json"
 }
 ```
 
@@ -199,7 +199,7 @@ Versioning surfaces across the manifest draft are therefore:
   "profile": "general-document",
   "profileVersion": "1.0",
   "title": "Field Guide",
-  "entry": "content/index.html",
+  "entry": "content/root.json",
   "localization": {
     "defaultLocale": "en-US",
     "availableLocales": ["en-US", "fr-FR"],
@@ -236,7 +236,7 @@ Versioning surfaces across the manifest draft are therefore:
   "profile": "comic",
   "profileVersion": "1.0",
   "title": "Issue 01",
-  "entry": "content/issue.html",
+  "entry": "content/issue-root.json",
   "compatibility": {
     "minViewer": "1.0",
     "capabilities": ["panel-navigation"]

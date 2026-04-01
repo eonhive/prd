@@ -131,7 +131,7 @@ Exact viewer conformance detail remains follow-on work beyond `runtime/PRD_CAPAB
 hello-prd/
   manifest.json
   content/
-    index.html
+    root.json
 ```
 
 Example `manifest.json`:
@@ -143,19 +143,26 @@ Example `manifest.json`:
   "id": "urn:uuid:11111111-1111-1111-1111-111111111111",
   "profile": "general-document",
   "title": "Hello PRD",
-  "entry": "content/index.html"
+  "entry": "content/root.json"
 }
 ```
 
-Example `content/index.html`:
+Example `content/root.json`:
 
-```html
-<!doctype html>
-<html lang="en">
-  <body>
-    <p>Hello PRD.</p>
-  </body>
-</html>
+```json
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "hello-prd",
+  "title": "Hello PRD",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Hello PRD."
+    }
+  ]
+}
 ```
 
 Distributed form: `hello-prd.prd`

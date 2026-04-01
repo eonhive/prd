@@ -1,8 +1,7 @@
-import { stat } from "node:fs/promises";
 import { basename } from "node:path";
 import { packDirectoryToFile } from "@prd/packager";
 import { type PrdPackageValidationResult } from "@prd/validator";
-import { validatePackageDirectory, validatePrdArchive } from "@prd/validator/node";
+import { validatePackage } from "@prd/validator/node";
 
 type CommandHandler = (args: string[]) => Promise<number>;
 
@@ -17,15 +16,6 @@ function parseFlag(args: string[], flag: string): string | undefined {
 
 function hasFlag(args: string[], flag: string): boolean {
   return args.includes(flag);
-}
-
-async function validateTarget(target: string): Promise<PrdPackageValidationResult> {
-  const stats = await stat(target);
-  if (stats.isDirectory()) {
-    return validatePackageDirectory(target);
-  }
-
-  return validatePrdArchive(target);
 }
 
 function formatResult(
@@ -85,11 +75,11 @@ const handlers: Record<string, CommandHandler> = {
     const jsonOutput = hasFlag(args, "--json");
 
     if (!target) {
-      console.error("Usage: prd validate <sourceDir|file.prd> [--json]");
+      console.error("Usage: prd validate <path> [--json]");
       return 1;
     }
 
-    const result = await validateTarget(target);
+    const result = await validatePackage(target);
     console.log(formatResult(result, jsonOutput));
     return result.valid ? 0 : 1;
   },
@@ -99,11 +89,11 @@ const handlers: Record<string, CommandHandler> = {
     const jsonOutput = hasFlag(args, "--json");
 
     if (!target) {
-      console.error("Usage: prd inspect <sourceDir|file.prd> [--json]");
+      console.error("Usage: prd inspect <path> [--json]");
       return 1;
     }
 
-    const result = await validateTarget(target);
+    const result = await validatePackage(target);
     console.log(formatResult(result, jsonOutput));
     return result.valid ? 0 : 1;
   }
@@ -120,4 +110,3 @@ export async function runCli(argv: string[]): Promise<number> {
 
   return handler(args);
 }
-

@@ -112,7 +112,7 @@ Package naming and path rules:
 Canonical naming guidance:
 
 - root control file: `manifest.json`
-- primary content default: `content/index.html` or another clearly named entry file
+- primary content default: `content/root.json` or another clearly named structured entry file
 - snapshots: descriptive names such as `snapshots/default.html` or `snapshots/default.pdf`
 - protected area: `protected/` as the reserved top-level directory
 
@@ -146,7 +146,7 @@ This layout says where package materials live. It does not prescribe authoring t
 hello-prd/
 ├── manifest.json
 └── content/
-    └── index.html
+    └── root.json
 ```
 
 ### 7.2 Large package
@@ -155,12 +155,12 @@ hello-prd/
 field-manual/
 ├── manifest.json
 ├── content/
-│   ├── index.html
+│   ├── root.json
 │   ├── chapters/
-│   │   ├── chapter-01.html
-│   │   └── chapter-02.html
+│   │   ├── chapter-01.json
+│   │   └── chapter-02.json
 │   └── appendices/
-│       └── appendix-a.html
+│       └── appendix-a.json
 ├── assets/
 │   ├── cover.webp
 │   ├── figures/
