@@ -25,7 +25,7 @@ function createReader(files: Record<string, string>): PrdPackageReader {
 }
 
 describe("openPrdDocument", () => {
-  it("renders general-document entries", async () => {
+  it("opens structured general-document entries", async () => {
     const document = await openPrdDocument(
       createReader({
         "manifest.json": JSON.stringify({
@@ -34,14 +34,46 @@ describe("openPrdDocument", () => {
           id: "urn:test:viewer-doc",
           profile: "general-document",
           title: "Doc",
-          entry: "content/index.html"
+          entry: "content/root.json"
         }),
-        "content/index.html": "<!doctype html><html><body>Doc</body></html>"
+        "content/root.json": JSON.stringify({
+          schemaVersion: "1.0",
+          profile: "general-document",
+          type: "document",
+          id: "doc",
+          title: "Doc",
+          children: [
+            {
+              type: "paragraph",
+              text: "Structured document root"
+            }
+          ]
+        })
       })
     );
 
     expect(document.supportState).toBe("fully-supported");
-    expect(document.entryHtml).toContain("Doc");
+    expect(document.entryDocument?.title).toBe("Doc");
+    expect(document.entryDocument?.children).toHaveLength(1);
+  });
+
+  it("renders HTML entries for resume packages", async () => {
+    const document = await openPrdDocument(
+      createReader({
+        "manifest.json": JSON.stringify({
+          prdVersion: "1.0",
+          manifestVersion: "1.0",
+          id: "urn:test:viewer-resume",
+          profile: "resume",
+          title: "Resume",
+          entry: "content/index.html"
+        }),
+        "content/index.html": "<!doctype html><html><body>Resume</body></html>"
+      })
+    );
+
+    expect(document.supportState).toBe("fully-supported");
+    expect(document.entryHtml).toContain("Resume");
   });
 
   it("returns reserved-profile for comic and storyboard", async () => {

@@ -76,6 +76,8 @@ interface GeneralDocumentQuoteNode {
 }
 
 const GENERAL_DOCUMENT_ENTRY_PATTERN = /^content\/.+\.json$/;
+const GENERAL_DOCUMENT_STRUCTURED_CAPABILITY = "general-document-structured-root";
+const HTML_ENTRY_CAPABILITY = "base-entry-html";
 
 function makeIssue(
   severity: "error" | "warning",
@@ -332,6 +334,24 @@ function validateCompatibility(compatibility: unknown): PrdValidationIssue[] {
   }
 
   return issues;
+}
+
+function getDeclaredRequiredCapabilities(
+  compatibility: PrdCompatibility | undefined
+): string[] {
+  if (!compatibility?.capabilities) {
+    return [];
+  }
+
+  if (Array.isArray(compatibility.capabilities)) {
+    return compatibility.capabilities.filter(isNonEmptyString);
+  }
+
+  if (isObject(compatibility.capabilities) && Array.isArray(compatibility.capabilities.required)) {
+    return compatibility.capabilities.required.filter(isNonEmptyString);
+  }
+
+  return [];
 }
 
 function validateAssetsDeclaration(assets: unknown): PrdValidationIssue[] {
@@ -604,6 +624,23 @@ function validateManifestObjectInternal(manifest: unknown): PrdPackageValidation
     ...manifestObject,
     profile: profileInfo.normalized
   };
+
+  if (profileInfo.normalized === "general-document") {
+    const requiredCapabilities = getDeclaredRequiredCapabilities(
+      normalizedManifest.compatibility
+    );
+
+    if (requiredCapabilities.includes(HTML_ENTRY_CAPABILITY)) {
+      warnings.push(
+        makeIssue(
+          "warning",
+          "general-document-html-capability-legacy",
+          `\`general-document\` packages should not require \`${HTML_ENTRY_CAPABILITY}\`; use \`${GENERAL_DOCUMENT_STRUCTURED_CAPABILITY}\` for the structured entry path instead.`,
+          "compatibility.capabilities.required"
+        )
+      );
+    }
+  }
 
   return {
     valid: errors.length === 0,

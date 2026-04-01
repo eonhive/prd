@@ -1,11 +1,17 @@
 import {
+  type PrdGeneralDocumentRoot,
   type PrdOpenedDocument,
   type PrdPackageReader,
   type PrdManifest,
   getProfileDisplayLabel,
   isHtmlEntryPath,
+  isJsonEntryPath,
   normalizeProfileId
 } from "@prd/types";
+
+function parseGeneralDocumentEntry(entryText: string): PrdGeneralDocumentRoot {
+  return JSON.parse(entryText) as PrdGeneralDocumentRoot;
+}
 
 export async function openPrdDocument(
   packageReader: PrdPackageReader
@@ -28,6 +34,24 @@ export async function openPrdDocument(
       message: `${getProfileDisplayLabel(
         profileInfo.normalized
       )} is recognized by the architecture, but specialized rendering is not implemented in the reference viewer yet.`
+    };
+  }
+
+  if (
+    profileInfo.normalized === "general-document" &&
+    isJsonEntryPath(normalizedManifest.entry)
+  ) {
+    const entryDocument = parseGeneralDocumentEntry(
+      await packageReader.readText(normalizedManifest.entry)
+    );
+
+    return {
+      manifest: normalizedManifest,
+      profileInfo,
+      supportState: "fully-supported",
+      entryPath: normalizedManifest.entry,
+      entryDocument,
+      localization: normalizedManifest.localization
     };
   }
 
@@ -57,4 +81,3 @@ export async function openPrdDocument(
     localization: normalizedManifest.localization
   };
 }
-

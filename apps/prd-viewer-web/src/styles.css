@@ -77,12 +77,136 @@ body {
   padding: 1.25rem;
 }
 
-.viewer-panel iframe {
+.viewer-surface,
+.structured-document {
   width: 100%;
   min-height: 70vh;
   border: 1px solid rgba(19, 33, 43, 0.12);
   border-radius: 0.9rem;
   background: white;
+}
+
+.viewer-surface {
+  display: block;
+}
+
+.structured-document {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.structured-document-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(19, 33, 43, 0.1);
+}
+
+.structured-kicker {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  color: #7a5c00;
+}
+
+.structured-document-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+.structured-document-subtitle,
+.structured-document-summary {
+  max-width: 42rem;
+  color: #395160;
+}
+
+.structured-document-body,
+.structured-section-body {
+  display: grid;
+  gap: 1rem;
+}
+
+.structured-section {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(19, 33, 43, 0.08);
+  background: linear-gradient(180deg, rgba(238, 243, 246, 0.65), rgba(255, 255, 255, 0.95));
+}
+
+.structured-section-title,
+.structured-heading,
+.structured-paragraph,
+.structured-figure,
+.structured-quote {
+  margin: 0;
+}
+
+.structured-section-title {
+  margin-bottom: 0.9rem;
+}
+
+.structured-heading {
+  line-height: 1.2;
+}
+
+.structured-paragraph {
+  max-width: 44rem;
+  color: #213845;
+  line-height: 1.75;
+}
+
+.structured-list {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 0.45rem;
+  color: #213845;
+}
+
+.structured-figure {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.structured-figure img {
+  width: 100%;
+  max-width: 40rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(19, 33, 43, 0.1);
+  background: #fffef7;
+}
+
+.structured-figure figcaption {
+  color: #577184;
+  font-size: 0.95rem;
+}
+
+.structured-quote {
+  padding: 1rem 1.2rem;
+  border-left: 4px solid #d99e00;
+  border-radius: 0 0.9rem 0.9rem 0;
+  background: #fff8e7;
+  color: #213845;
+}
+
+.structured-quote p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+.structured-quote footer {
+  margin-top: 0.75rem;
+  color: #577184;
+  font-size: 0.95rem;
+}
+
+.structured-missing-asset,
+.viewer-message {
+  padding: 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(19, 33, 43, 0.12);
+  background: #eef3f6;
+  color: #213845;
 }
 
 .meta-grid {
@@ -138,4 +262,3 @@ body {
     grid-template-columns: 1fr;
   }
 }
-

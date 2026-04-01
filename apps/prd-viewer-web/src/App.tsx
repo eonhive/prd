@@ -1,13 +1,18 @@
 import { unzipSync, strFromU8 } from "fflate";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { PrdFileMap, PrdPackageValidationResult } from "@prd/validator";
 import { validatePackageFiles } from "@prd/validator";
 import { openPrdDocument } from "@prd/viewer-core";
 import {
+  type PrdAssetDeclaration,
+  type PrdGeneralDocumentNode,
+  type PrdGeneralDocumentRoot,
   type PrdOpenedDocument,
   type PrdPackageReader,
   getProfileDisplayLabel
 } from "@prd/types";
+
+type AssetUrlMap = Record<string, string>;
 
 function createPackageReader(files: PrdFileMap): PrdPackageReader {
   return {
@@ -70,6 +75,18 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return copy.buffer;
 }
 
+function createObjectUrl(
+  file: Uint8Array,
+  mimeType: string,
+  objectUrls: string[]
+): string {
+  const url = URL.createObjectURL(
+    new Blob([toArrayBuffer(file)], { type: mimeType })
+  );
+  objectUrls.push(url);
+  return url;
+}
+
 function rewriteHtmlDocument(
   html: string,
   entryPath: string,
@@ -99,10 +116,7 @@ function rewriteHtmlDocument(
         continue;
       }
 
-      const url = URL.createObjectURL(
-        new Blob([toArrayBuffer(file)], { type: guessMimeType(resolved) })
-      );
-      objectUrls.push(url);
+      const url = createObjectUrl(file, guessMimeType(resolved), objectUrls);
       element.setAttribute(attribute, url);
     }
   }
@@ -110,10 +124,181 @@ function rewriteHtmlDocument(
   return `<!doctype html>\n${document.documentElement.outerHTML}`;
 }
 
+function createAssetUrlMap(
+  assets: PrdAssetDeclaration[] | Record<string, unknown> | undefined,
+  files: PrdFileMap,
+  objectUrls: string[]
+): AssetUrlMap {
+  const assetUrls: AssetUrlMap = {};
+
+  if (!Array.isArray(assets)) {
+    return assetUrls;
+  }
+
+  for (const asset of assets) {
+    if (!asset.id) {
+      continue;
+    }
+
+    const file = files[asset.href];
+    if (!file) {
+      continue;
+    }
+
+    assetUrls[asset.id] = createObjectUrl(
+      file,
+      asset.type ?? guessMimeType(asset.href),
+      objectUrls
+    );
+  }
+
+  return assetUrls;
+}
+
+function renderHeading(level: number, text: string, key: string): ReactNode {
+  switch (Math.min(Math.max(level, 1), 6)) {
+    case 1:
+      return (
+        <h1 key={key} className="structured-heading structured-heading-1">
+          {text}
+        </h1>
+      );
+    case 2:
+      return (
+        <h2 key={key} className="structured-heading structured-heading-2">
+          {text}
+        </h2>
+      );
+    case 3:
+      return (
+        <h3 key={key} className="structured-heading structured-heading-3">
+          {text}
+        </h3>
+      );
+    case 4:
+      return (
+        <h4 key={key} className="structured-heading structured-heading-4">
+          {text}
+        </h4>
+      );
+    case 5:
+      return (
+        <h5 key={key} className="structured-heading structured-heading-5">
+          {text}
+        </h5>
+      );
+    default:
+      return (
+        <h6 key={key} className="structured-heading structured-heading-6">
+          {text}
+        </h6>
+      );
+  }
+}
+
+function renderGeneralDocumentNode(
+  node: PrdGeneralDocumentNode,
+  assetUrls: AssetUrlMap,
+  key: string
+): ReactNode {
+  switch (node.type) {
+    case "section":
+      return (
+        <section key={key} id={node.id} className="structured-section">
+          <h2 className="structured-section-title">{node.title}</h2>
+          <div className="structured-section-body">
+            {node.children.map((child, index) =>
+              renderGeneralDocumentNode(child, assetUrls, `${key}-${index}`)
+            )}
+          </div>
+        </section>
+      );
+
+    case "heading":
+      return renderHeading(node.level, node.text, key);
+
+    case "paragraph":
+      return (
+        <p key={key} className="structured-paragraph">
+          {node.text}
+        </p>
+      );
+
+    case "list":
+      return node.style === "ordered" ? (
+        <ol key={key} className="structured-list">
+          {node.items.map((item, index) => (
+            <li key={`${key}-${index}`}>{item}</li>
+          ))}
+        </ol>
+      ) : (
+        <ul key={key} className="structured-list">
+          {node.items.map((item, index) => (
+            <li key={`${key}-${index}`}>{item}</li>
+          ))}
+        </ul>
+      );
+
+    case "image": {
+      const src = assetUrls[node.asset];
+      return (
+        <figure key={key} className="structured-figure">
+          {src ? (
+            <img src={src} alt={node.alt} />
+          ) : (
+            <div className="structured-missing-asset">
+              Missing declared asset: <code>{node.asset}</code>
+            </div>
+          )}
+          {node.caption && <figcaption>{node.caption}</figcaption>}
+        </figure>
+      );
+    }
+
+    case "quote":
+      return (
+        <blockquote key={key} className="structured-quote">
+          <p>{node.text}</p>
+          {node.attribution && <footer>{node.attribution}</footer>}
+        </blockquote>
+      );
+  }
+}
+
+function StructuredDocumentView({
+  document,
+  assetUrls
+}: {
+  document: PrdGeneralDocumentRoot;
+  assetUrls: AssetUrlMap;
+}) {
+  return (
+    <article className="structured-document" lang={document.lang}>
+      <header className="structured-document-header">
+        <p className="structured-kicker">Structured {getProfileDisplayLabel(document.profile)}</p>
+        <h1 className="structured-document-title">{document.title}</h1>
+        {document.subtitle && (
+          <p className="structured-document-subtitle">{document.subtitle}</p>
+        )}
+        {document.summary && (
+          <p className="structured-document-summary">{document.summary}</p>
+        )}
+      </header>
+
+      <div className="structured-document-body">
+        {document.children.map((node, index) =>
+          renderGeneralDocumentNode(node, assetUrls, `root-${index}`)
+        )}
+      </div>
+    </article>
+  );
+}
+
 interface ViewerState {
   validation: PrdPackageValidationResult;
   opened?: PrdOpenedDocument;
   renderedHtml?: string;
+  assetUrls?: AssetUrlMap;
 }
 
 export function App() {
@@ -166,11 +351,20 @@ export function App() {
               objectUrlsRef.current
             )
           : undefined;
+      const assetUrls =
+        opened.entryDocument !== undefined
+          ? createAssetUrlMap(
+              opened.manifest.assets,
+              files,
+              objectUrlsRef.current
+            )
+          : undefined;
 
       setViewerState({
         validation,
         opened,
-        renderedHtml
+        renderedHtml,
+        assetUrls
       });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Failed to open PRD file.");
@@ -285,10 +479,27 @@ export function App() {
             {viewerState.opened?.supportState !== "reserved-profile" &&
               viewerState.renderedHtml && (
                 <iframe
+                  className="viewer-surface"
                   title="PRD content frame"
                   sandbox=""
                   srcDoc={viewerState.renderedHtml}
                 />
+              )}
+
+            {viewerState.opened?.entryDocument && (
+              <StructuredDocumentView
+                document={viewerState.opened.entryDocument}
+                assetUrls={viewerState.assetUrls ?? {}}
+              />
+            )}
+
+            {viewerState.opened?.message &&
+              !viewerState.renderedHtml &&
+              !viewerState.opened.entryDocument &&
+              viewerState.opened.supportState !== "reserved-profile" && (
+                <div className="viewer-message">
+                  <p>{viewerState.opened.message}</p>
+                </div>
               )}
           </section>
         </main>

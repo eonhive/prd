@@ -91,6 +91,64 @@ export interface PrdProtectedDeclaration {
   [key: string]: unknown;
 }
 
+export interface PrdGeneralDocumentRoot {
+  $schema?: string;
+  schemaVersion: string;
+  profile: "general-document";
+  type: "document";
+  id: string;
+  title: string;
+  subtitle?: string;
+  summary?: string;
+  lang?: string;
+  children: PrdGeneralDocumentNode[];
+}
+
+export interface PrdGeneralDocumentSectionNode {
+  type: "section";
+  id: string;
+  title: string;
+  children: PrdGeneralDocumentNode[];
+}
+
+export interface PrdGeneralDocumentHeadingNode {
+  type: "heading";
+  level: number;
+  text: string;
+}
+
+export interface PrdGeneralDocumentParagraphNode {
+  type: "paragraph";
+  text: string;
+}
+
+export interface PrdGeneralDocumentListNode {
+  type: "list";
+  style: "unordered" | "ordered";
+  items: string[];
+}
+
+export interface PrdGeneralDocumentImageNode {
+  type: "image";
+  asset: string;
+  alt: string;
+  caption?: string;
+}
+
+export interface PrdGeneralDocumentQuoteNode {
+  type: "quote";
+  text: string;
+  attribution?: string;
+}
+
+export type PrdGeneralDocumentNode =
+  | PrdGeneralDocumentSectionNode
+  | PrdGeneralDocumentHeadingNode
+  | PrdGeneralDocumentParagraphNode
+  | PrdGeneralDocumentListNode
+  | PrdGeneralDocumentImageNode
+  | PrdGeneralDocumentQuoteNode;
+
 export interface PrdManifest {
   prdVersion: string;
   manifestVersion: string;
@@ -143,6 +201,7 @@ export interface PrdOpenedDocument {
   supportState: PrdViewerSupportState;
   entryPath: string;
   entryHtml?: string;
+  entryDocument?: PrdGeneralDocumentRoot;
   localization?: PrdLocalization;
   message?: string;
 }
@@ -252,4 +311,8 @@ export function getProfileDisplayLabel(profile: string): string {
 
 export function isHtmlEntryPath(path: string): boolean {
   return path.endsWith(".html") || path.endsWith(".htm");
+}
+
+export function isJsonEntryPath(path: string): boolean {
+  return path.endsWith(".json");
 }

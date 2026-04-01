@@ -69,6 +69,22 @@ describe("validateManifestObject", () => {
       "general-document-entry-format"
     );
   });
+
+  it("warns when general-document still declares the legacy HTML capability", () => {
+    const result = validateManifestObject({
+      ...validManifest,
+      compatibility: {
+        capabilities: {
+          required: ["base-entry-html"]
+        }
+      }
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.warnings.map((issue) => issue.code)).toContain(
+      "general-document-html-capability-legacy"
+    );
+  });
 });
 
 describe("validatePackage", () => {
