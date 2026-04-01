@@ -1,1 +1,8 @@
+node_modules
+dist
+.turbo
+.vite
+coverage
+examples/dist
+*.tsbuildinfo
 .DS_Store

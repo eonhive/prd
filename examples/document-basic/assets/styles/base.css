@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  font-family: "Georgia", serif;
+  background: #f5f1ea;
+  color: #1b2228;
+}
+
+.page-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.content-card {
+  max-width: 48rem;
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 1rem 3rem rgba(27, 34, 40, 0.12);
+}
+
+.content-card img {
+  width: 100%;
+  max-width: 18rem;
+  margin: 1rem 0;
+}
+
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #6f4f0a;
+  font-size: 0.8rem;
+}
+
+code {
+  font-family: "IBM Plex Mono", monospace;
+}
+

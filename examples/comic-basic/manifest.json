@@ -1,0 +1,22 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:example:comic-basic",
+  "profile": "comic",
+  "title": "PRD Comic Fixture",
+  "entry": "content/index.html",
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": {
+      "required": ["base-entry-html"],
+      "optional": ["panel-navigation"]
+    }
+  },
+  "assets": [
+    {
+      "id": "comic-style",
+      "href": "assets/styles/base.css"
+    }
+  ]
+}
+

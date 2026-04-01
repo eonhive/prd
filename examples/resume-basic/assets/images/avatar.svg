@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+  <title>Resume avatar</title>
+  <rect width="120" height="120" rx="24" fill="#10222d"/>
+  <circle cx="60" cy="44" r="18" fill="#f4d9b4"/>
+  <path d="M24 98c10-18 27-27 36-27s26 9 36 27" fill="#d99e00"/>
+</svg>
+

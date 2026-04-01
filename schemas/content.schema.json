@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prd.eonhive.dev/schemas/content.schema.json",
+  "title": "PRD Content Placeholder Schema",
+  "description": "Placeholder schema for future structured content descriptors. HTML entry files remain the current reference-viewer path.",
+  "type": "object",
+  "additionalProperties": true
+}

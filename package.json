@@ -1,0 +1,29 @@
+{
+  "name": "prd",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest run",
+    "clean": "node ./scripts/clean.mjs",
+    "dev:web": "pnpm --filter @prd/web-viewer dev",
+    "preexamples:pack": "pnpm --filter @prd/cli build",
+    "examples:pack": "node packages/prd-cli/dist/cli.js pack examples/document-basic --out examples/dist/document-basic.prd && node packages/prd-cli/dist/cli.js pack examples/resume-basic --out examples/dist/resume-basic.prd && node packages/prd-cli/dist/cli.js pack examples/comic-basic --out examples/dist/comic-basic.prd && node packages/prd-cli/dist/cli.js pack examples/storyboard-basic --out examples/dist/storyboard-basic.prd",
+    "preexamples:validate": "pnpm --filter @prd/cli build",
+    "examples:validate": "node packages/prd-cli/dist/cli.js validate examples/document-basic && node packages/prd-cli/dist/cli.js validate examples/resume-basic && node packages/prd-cli/dist/cli.js validate examples/comic-basic && node packages/prd-cli/dist/cli.js validate examples/storyboard-basic"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vite": "^5.4.19",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.9"
+  }
+}

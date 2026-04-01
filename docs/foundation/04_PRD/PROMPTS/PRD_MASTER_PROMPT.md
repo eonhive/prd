@@ -88,11 +88,16 @@ The manifest should eventually support concepts like:
 
 * format version
 * metadata
-* profile type
+* canonical profile type
 * resources
 * content entry points
 * extension declarations
 * public header vs protected/private references where appropriate
+
+The manifest `profile` field should use a canonical machine-readable ID such as `general-document`, not a friendly UI label such as `Document`.
+Friendly labels belong to viewer, studio, registry, and SDK presentation layers.
+
+Localization should be treated as a cross-profile optional capability, not as something unique to one document family.
 
 This manifest is a core source-of-truth artifact.
 

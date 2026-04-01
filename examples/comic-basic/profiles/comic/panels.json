@@ -1,0 +1,7 @@
+{
+  "profile": "comic",
+  "panels": [
+    { "id": "panel-1", "caption": "Reserved fixture panel" }
+  ]
+}
+

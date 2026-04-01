@@ -1,0 +1,22 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:example:storyboard-basic",
+  "profile": "storyboard",
+  "title": "PRD Storyboard Fixture",
+  "entry": "content/index.html",
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": {
+      "required": ["base-entry-html"],
+      "optional": ["review-grid"]
+    }
+  },
+  "assets": [
+    {
+      "id": "storyboard-style",
+      "href": "assets/styles/base.css"
+    }
+  ]
+}
+

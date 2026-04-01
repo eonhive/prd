@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title">
+  <title>PRD document illustration</title>
+  <rect width="320" height="200" rx="24" fill="#13212b"/>
+  <rect x="24" y="24" width="272" height="152" rx="18" fill="#fffef7"/>
+  <rect x="48" y="52" width="164" height="16" rx="8" fill="#d99e00"/>
+  <rect x="48" y="84" width="224" height="12" rx="6" fill="#577184"/>
+  <rect x="48" y="110" width="184" height="12" rx="6" fill="#577184"/>
+  <circle cx="254" cy="112" r="28" fill="#13212b"/>
+</svg>
+

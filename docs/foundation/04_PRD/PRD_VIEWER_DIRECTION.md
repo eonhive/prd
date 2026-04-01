@@ -147,11 +147,11 @@ This helps PRD feel like a serious document ecosystem.
 
 # 8. Profile-Specific Viewer Expectations
 
-## Standard Document
+## General Document
 
 Focus on clean section flow, readability, and responsive adaptation.
 
-## Resume
+## Resume Variant
 
 Focus on structure clarity, fast scanning, and polished portability.
 

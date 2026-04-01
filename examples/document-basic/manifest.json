@@ -1,0 +1,34 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:example:document-basic",
+  "profile": "general-document",
+  "title": "PRD Document Example",
+  "entry": "content/index.html",
+  "public": {
+    "summary": "A minimal general-document PRD example for the reference workspace."
+  },
+  "localization": {
+    "defaultLocale": "en-US",
+    "availableLocales": ["en-US"],
+    "textDirection": "ltr"
+  },
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": {
+      "required": ["base-entry-html"],
+      "optional": ["static-snapshot"]
+    }
+  },
+  "assets": [
+    {
+      "id": "document-style",
+      "href": "assets/styles/base.css"
+    },
+    {
+      "id": "document-hero",
+      "href": "assets/images/cover.svg"
+    }
+  ]
+}
+

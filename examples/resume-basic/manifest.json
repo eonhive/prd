@@ -1,0 +1,34 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:example:resume-basic",
+  "profile": "resume",
+  "title": "PRD Resume Example",
+  "entry": "content/index.html",
+  "public": {
+    "summary": "A non-canonical but implementation-supported resume example."
+  },
+  "localization": {
+    "defaultLocale": "en-US",
+    "availableLocales": ["en-US"],
+    "textDirection": "ltr"
+  },
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": {
+      "required": ["base-entry-html"],
+      "optional": []
+    }
+  },
+  "assets": [
+    {
+      "id": "resume-style",
+      "href": "assets/styles/base.css"
+    },
+    {
+      "id": "avatar",
+      "href": "assets/images/avatar.svg"
+    }
+  ]
+}
+

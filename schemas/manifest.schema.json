@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prd.eonhive.dev/schemas/manifest.schema.json",
+  "title": "PRD Manifest",
+  "description": "Minimal manifest schema aligned with docs/core/PRD_MINIMAL_VALID_SPEC.md and docs/core/PRD_MANIFEST_DRAFT.md.",
+  "type": "object",
+  "required": [
+    "prdVersion",
+    "manifestVersion",
+    "id",
+    "profile",
+    "title",
+    "entry"
+  ],
+  "properties": {
+    "prdVersion": { "type": "string", "minLength": 1 },
+    "manifestVersion": { "type": "string", "minLength": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "profile": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "entry": { "type": "string", "minLength": 1 },
+    "profileVersion": { "type": "string" },
+    "public": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "assets": {
+      "oneOf": [
+        { "type": "array" },
+        { "type": "object", "additionalProperties": true }
+      ]
+    },
+    "attachments": {
+      "type": "array"
+    },
+    "localization": {
+      "type": "object",
+      "required": ["defaultLocale"],
+      "properties": {
+        "defaultLocale": { "type": "string", "minLength": 1 },
+        "availableLocales": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "textDirection": {
+          "type": "string",
+          "enum": ["ltr", "rtl", "auto"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "extensions": {
+      "oneOf": [
+        { "type": "array" },
+        { "type": "object", "additionalProperties": true }
+      ]
+    },
+    "protected": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
+

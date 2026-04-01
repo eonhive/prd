@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: linear-gradient(160deg, #eef4f8, #f9f8f4);
+  color: #10222d;
+}
+
+.resume {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+img {
+  width: 7rem;
+  height: 7rem;
+}
+
+section {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  box-shadow: 0 0.8rem 2rem rgba(16, 34, 45, 0.08);
+}
+

@@ -204,11 +204,11 @@ The content model should support:
 
 For profile examples:
 
-## Standard Document
+## General Document
 
 Section and block-based text/media flow.
 
-## Resume
+## Resume Variant
 
 Structured sections like profile, experience, skills, education, links.
 

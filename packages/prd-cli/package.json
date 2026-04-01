@@ -1,0 +1,26 @@
+{
+  "name": "@prd/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "prd": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@prd/packager": "workspace:*",
+    "@prd/types": "workspace:*",
+    "@prd/validator": "workspace:*"
+  }
+}
+
