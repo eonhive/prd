@@ -250,7 +250,8 @@ prd validate <path>
 
 Current example behavior:
 
-* `document-basic` and `resume-basic` are the clearest end-to-end examples for the current viewer
+* `document-basic` is the canonical structured `general-document` example using `content/root.json`
+* `resume-basic` remains a useful HTML-backed implementation example while the structured document family expands
 * `comic-basic` and `storyboard-basic` are important structural fixtures even where runtime support is still narrower
 
 ---

@@ -61,7 +61,7 @@ Current draft shape:
   "compatibility": {
     "minViewer": "1.0",
     "capabilities": {
-      "required": ["base-entry-html"],
+      "required": ["general-document-structured-root"],
       "optional": ["panel-navigation", "static-snapshot"]
     }
   }
@@ -74,6 +74,8 @@ Rules:
 - `optional` capabilities improve the experience but are not required for base opening
 - document capability declarations must stay declarative and small
 - a document must not list every implementation detail as a capability
+- `general-document-structured-root` is the base structured-entry capability for the first executable `general-document` foundation
+- `base-entry-html` remains relevant for current HTML-backed example paths such as `resume-basic` and the reserved comic/storyboard fixtures
 
 ### 3.2 Viewer/renderer-side declaration
 
@@ -85,7 +87,7 @@ Current draft shape:
 {
   "viewerId": "reference-viewer",
   "viewerVersion": "1.0",
-  "supported": ["base-entry-html", "static-snapshot"],
+  "supported": ["general-document-structured-root", "base-entry-html", "static-snapshot"],
   "safeMode": true
 }
 ```
@@ -176,7 +178,7 @@ Document:
 {
   "compatibility": {
     "capabilities": {
-      "required": ["base-entry-html"],
+      "required": ["general-document-structured-root"],
       "optional": []
     }
   }
@@ -187,7 +189,7 @@ Viewer:
 
 ```json
 {
-  "supported": ["base-entry-html"],
+  "supported": ["general-document-structured-root"],
   "safeMode": true
 }
 ```
@@ -228,7 +230,7 @@ Document:
 {
   "compatibility": {
     "capabilities": {
-      "required": ["base-entry-html"],
+      "required": ["general-document-structured-root"],
       "optional": ["protected-content", "static-snapshot"]
     }
   }
@@ -239,7 +241,7 @@ Viewer:
 
 ```json
 {
-  "supported": ["base-entry-html", "static-snapshot"],
+  "supported": ["general-document-structured-root", "static-snapshot"],
   "safeMode": true
 }
 ```
@@ -254,7 +256,7 @@ Document:
 {
   "compatibility": {
     "capabilities": {
-      "required": ["base-entry-html", "custom-renderer-x"],
+      "required": ["general-document-structured-root", "custom-renderer-x"],
       "optional": ["static-snapshot"]
     }
   }
@@ -265,7 +267,7 @@ Viewer:
 
 ```json
 {
-  "supported": ["base-entry-html", "static-snapshot"],
+  "supported": ["general-document-structured-root", "static-snapshot"],
   "safeMode": true
 }
 ```

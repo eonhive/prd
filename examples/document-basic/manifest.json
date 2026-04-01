@@ -13,6 +13,13 @@
     "availableLocales": ["en-US"],
     "textDirection": "ltr"
   },
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": {
+      "required": ["general-document-structured-root"],
+      "optional": []
+    }
+  },
   "assets": [
     {
       "id": "document-hero",
