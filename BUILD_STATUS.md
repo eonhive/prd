@@ -22,4 +22,8 @@
   - unsupported entry mode detection.
 - Clarified messaging that validator package validity and viewer rendering capability are separate concerns.
 - Expanded `packages/prd-viewer-core` tests to verify viewer unsupported/fallback states can still coexist with validator-valid packages.
-
+- Completed: Replaced assertion-only CLI output-contract checks with snapshot coverage for both `validate`/`inspect` text output and `--json` output shapes.
+- Completed: Added built-binary E2E CLI coverage that executes `packages/prd-cli/dist/cli.js` for `pack`, `validate`, and `inspect` against temporary fixtures.
+- Completed: Added smoke scripts for `examples/resume-basic`, `examples/comic-basic`, and `examples/storyboard-basic`.
+- Completed: Added `examples:smoke` root aggregator command that runs all example smoke gates.
+- Completed: Added optional machine-readable smoke summary emission via `--json-summary` in smoke scripts.

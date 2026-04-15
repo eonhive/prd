@@ -139,110 +139,110 @@ describe("runCli", () => {
     }
   });
 
-  it("emits stable JSON keys for validate --json", async () => {
+  it("matches snapshots for validate text output and validate --json shape", async () => {
     const root = await createMinimalValidPackageFixture();
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     try {
-      const exitCode = await runCli(["validate", root, "--json"]);
-      expect(exitCode).toBe(0);
+      expect(await runCli(["validate", root])).toBe(0);
+      expect(await runCli(["validate", root, "--json"])).toBe(0);
 
-      const payload = JSON.parse(String(logSpy.mock.calls[0]?.[0])) as {
-        valid: boolean;
-        manifest: { profile: string };
-        profileInfo: { supportClass: string };
-        entry: string;
-      };
+      const textOutput = String(logSpy.mock.calls[0]?.[0]);
+      const jsonOutput = JSON.parse(String(logSpy.mock.calls[1]?.[0])) as Record<string, unknown>;
 
-      expect(payload.valid).toBe(true);
-      expect(payload.manifest.profile).toBe("general-document");
-      expect(typeof payload.profileInfo.supportClass).toBe("string");
-      expect(payload.entry).toBe("content/root.json");
+      expect(textOutput).toMatchInlineSnapshot(`
+        "valid: yes
+        profile: general-document
+        profileStatus: canonical-core
+        entry: content/root.json
+        localization: en-US
+        errors:
+        - none
+        warnings:
+        - none"
+      `);
+      expect(jsonOutput).toMatchInlineSnapshot(`
+        {
+          "entry": "content/root.json",
+          "errors": [],
+          "manifest": {
+            "entry": "content/root.json",
+            "localizationDefaultLocale": "en-US",
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": true,
+          "warnings": [],
+        }
+      `);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
   });
 
-  it("emits stable JSON keys for inspect --json including inspection metrics", async () => {
+  it("matches snapshots for inspect text output and inspect --json shape", async () => {
     const root = await createMinimalValidPackageFixture();
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     try {
-      const exitCode = await runCli(["inspect", root, "--json"]);
-      expect(exitCode).toBe(0);
+      expect(await runCli(["inspect", root])).toBe(0);
+      expect(await runCli(["inspect", root, "--json"])).toBe(0);
 
-      const payload = JSON.parse(String(logSpy.mock.calls[0]?.[0])) as {
-        valid: boolean;
-        manifest: { profile: string };
-        profileInfo: { supportClass: string };
-        entry: string;
+      const textOutput = String(logSpy.mock.calls[0]?.[0]);
+      const jsonOutput = JSON.parse(String(logSpy.mock.calls[1]?.[0])) as {
         inspection: {
-          sourceKind: string;
-          fileCount: number;
           totalBytes: number;
-          assetCount: number;
-          attachmentCount: number;
-          localeCount: number;
-          collectionCount: number;
-          entryKind: string;
-          segmentation: string;
-          referenceLoadMode: string;
         };
       };
 
-      expect(payload.valid).toBe(true);
-      expect(payload.manifest.profile).toBe("general-document");
-      expect(typeof payload.profileInfo.supportClass).toBe("string");
-      expect(payload.entry).toBe("content/root.json");
-      expect(payload.inspection.sourceKind).toBe("directory");
-      expect(payload.inspection.fileCount).toBe(4);
-      expect(payload.inspection.totalBytes).toBeGreaterThan(0);
-      expect(payload.inspection.assetCount).toBe(1);
-      expect(payload.inspection.attachmentCount).toBe(1);
-      expect(payload.inspection.localeCount).toBe(1);
-      expect(payload.inspection.collectionCount).toBe(0);
-      expect(payload.inspection.entryKind).toBe("structured-json");
-      expect(typeof payload.inspection.segmentation).toBe("string");
-      expect(payload.inspection.referenceLoadMode).toBe("eager-whole-package");
-    } finally {
-      await rm(root, { recursive: true, force: true });
-    }
-  });
+      expect(textOutput).toContain("inspection:");
+      expect(textOutput).toContain("- source: directory");
+      expect(textOutput).toContain("- files: 4");
+      expect(textOutput).toContain("- assets: 1");
+      expect(textOutput).toContain("- attachments: 1");
+      expect(textOutput).toContain("- locales: 1");
+      expect(textOutput).toContain("- entry mode: structured-json");
+      expect(textOutput).toContain("- reference load mode: eager-whole-package");
 
-  it("keeps deterministic text order for validate and inspect blocks", async () => {
-    const root = await createMinimalValidPackageFixture();
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
-
-    try {
-      const validateExitCode = await runCli(["validate", root]);
-      const inspectExitCode = await runCli(["inspect", root]);
-      expect(validateExitCode).toBe(0);
-      expect(inspectExitCode).toBe(0);
-
-      const validateOutput = String(logSpy.mock.calls[0]?.[0]).split("\n");
-      const expectedPrefix = [
-        "valid:",
-        "profile:",
-        "profileStatus:",
-        "entry:",
-        "localization:",
-        "errors:",
-        "warnings:"
-      ];
-
-      let previousIndex = -1;
-      for (const prefix of expectedPrefix) {
-        const nextIndex = validateOutput.findIndex(
-          (line, index) => index > previousIndex && line.startsWith(prefix)
-        );
-        expect(nextIndex).toBeGreaterThan(previousIndex);
-        previousIndex = nextIndex;
-      }
-
-      const inspectOutput = String(logSpy.mock.calls[1]?.[0]);
-      expect(inspectOutput).toContain("inspection:");
-      expect(inspectOutput.indexOf("warnings:")).toBeLessThan(
-        inspectOutput.indexOf("inspection:")
+      expect(jsonOutput).toMatchInlineSnapshot(
+        {
+          inspection: {
+            totalBytes: expect.any(Number)
+          }
+        },
+        `
+        {
+          "entry": "content/root.json",
+          "errors": [],
+          "inspection": {
+            "assetCount": 1,
+            "attachmentCount": 1,
+            "collectionCount": 0,
+            "entryKind": "structured-json",
+            "fileCount": 4,
+            "hasSeriesMembership": false,
+            "localeCount": 1,
+            "localizedAlternateEntries": false,
+            "localizedResources": false,
+            "referenceLoadMode": "eager-whole-package",
+            "segmentation": "none",
+            "sourceKind": "directory",
+            "totalBytes": Any<Number>,
+          },
+          "manifest": {
+            "entry": "content/root.json",
+            "localizationDefaultLocale": "en-US",
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": true,
+          "warnings": [],
+        }
+      `
       );
     } finally {
       await rm(root, { recursive: true, force: true });
