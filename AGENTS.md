@@ -347,3 +347,12 @@ It does **not** win by becoming:
 * a prettier PDF clone
 * a random packaged website
 * a dumping ground for every future dream feature
+
+
+- follow canonical docs
+- do not invent new product scope
+- keep the MVP small and practical
+- prefer clear types, readable modules, and minimal abstraction
+- update BUILD_STATUS.md with what was completed
+- update NEXT_STEPS.md with the next concrete tasks
+- update docs if implementation decisions materially change architecture or scope
