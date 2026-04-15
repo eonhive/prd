@@ -189,6 +189,19 @@ const STRUCTURED_CONTENT_ENTRY_PATTERN = /^content\/.+\.json$/;
 const GENERAL_DOCUMENT_SECTION_ENTRY_PATTERN = /^content\/sections\/.+\.json$/;
 const GENERAL_DOCUMENT_STRUCTURED_CAPABILITY = "general-document-structured-root";
 const HTML_ENTRY_CAPABILITY = "base-entry-html";
+const MANIFEST_REQUIRED_FIELD_ISSUE_CODES = {
+  prdVersion: "prdVersion-required",
+  manifestVersion: "manifestVersion-required",
+  id: "id-required",
+  profile: "profile-required",
+  title: "title-required",
+  entry: "entry-required"
+} as const;
+const PROFILE_ENTRY_FORMAT_ISSUE_CODES = {
+  "general-document": "general-document-entry-format",
+  comic: "comic-entry-format",
+  storyboard: "storyboard-entry-format"
+} as const;
 
 function makeIssue(
   severity: "error" | "warning",
@@ -1267,7 +1280,7 @@ function validateManifestObjectInternal(manifest: unknown): PrdPackageValidation
       errors.push(
         makeIssue(
           "error",
-          `${field}-required`,
+          MANIFEST_REQUIRED_FIELD_ISSUE_CODES[field],
           `\`${field}\` must exist and be a non-empty string.`,
           field
         )
@@ -1337,7 +1350,7 @@ function validateManifestObjectInternal(manifest: unknown): PrdPackageValidation
     errors.push(
       makeIssue(
         "error",
-        "general-document-entry-format",
+        PROFILE_ENTRY_FORMAT_ISSUE_CODES["general-document"],
         "`general-document` packages must use a structured JSON entry under `content/`, such as `content/root.json`.",
         "entry"
       )
@@ -1358,7 +1371,7 @@ function validateManifestObjectInternal(manifest: unknown): PrdPackageValidation
       errors.push(
         makeIssue(
           "error",
-          `${profileLabel}-entry-format`,
+          PROFILE_ENTRY_FORMAT_ISSUE_CODES[profileLabel],
           `\`${profileLabel}\` packages must use a structured JSON entry under \`content/\`, such as \`content/root.json\`. HTML entries remain legacy fallback behavior.`,
           "entry"
         )

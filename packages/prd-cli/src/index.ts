@@ -8,6 +8,51 @@ import {
 } from "@eonhive/prd-validator/node";
 
 type CommandHandler = (args: string[]) => Promise<number>;
+type CliIssue = { code: string; message: string };
+
+/**
+ * Stable CLI validation output shape used for both text and JSON rendering.
+ *
+ * Notes:
+ * - `manifest` and `profileInfo` are nullable when validation cannot parse them.
+ * - `entry` is repeated at the top level to provide a consistent lookup key for scripts.
+ */
+type CliValidationOutput = {
+  valid: boolean;
+  manifest: {
+    profile: string;
+    entry: string;
+    localizationDefaultLocale: string | null;
+  } | null;
+  profileInfo: {
+    supportClass: string;
+  } | null;
+  entry: string | null;
+  errors: CliIssue[];
+  warnings: CliIssue[];
+};
+
+/**
+ * Stable CLI inspection output shape.
+ * This extends validation output with deterministic inspection metrics.
+ */
+type CliInspectionOutput = CliValidationOutput & {
+  inspection: {
+    sourceKind: string;
+    fileCount: number;
+    totalBytes: number;
+    assetCount: number;
+    attachmentCount: number;
+    localeCount: number;
+    hasSeriesMembership: boolean;
+    collectionCount: number;
+    entryKind: string;
+    segmentation: string;
+    localizedResources: boolean;
+    localizedAlternateEntries: boolean;
+    referenceLoadMode: string;
+  };
+};
 
 function parseFlag(args: string[], flag: string): string | undefined {
   const index = args.indexOf(flag);
@@ -22,72 +67,123 @@ function hasFlag(args: string[], flag: string): boolean {
   return args.includes(flag);
 }
 
-function formatValidationResult(
-  result: PrdPackageValidationResult,
-  jsonOutput: boolean
-): string {
+function toCliValidationOutput(
+  result: PrdPackageValidationResult
+): CliValidationOutput {
+  return {
+    valid: result.valid,
+    manifest: result.manifest
+      ? {
+          profile: result.manifest.profile,
+          entry: result.manifest.entry,
+          localizationDefaultLocale:
+            result.manifest.localization?.defaultLocale ?? null
+        }
+      : null,
+    profileInfo: result.profileInfo
+      ? {
+          supportClass: result.profileInfo.supportClass
+        }
+      : null,
+    entry: result.manifest?.entry ?? null,
+    errors: result.errors.map((issue) => ({
+      code: issue.code,
+      message: issue.message
+    })),
+    warnings: result.warnings.map((issue) => ({
+      code: issue.code,
+      message: issue.message
+    }))
+  };
+}
+
+function formatIssueSection(lines: string[], label: "errors" | "warnings", issues: CliIssue[]): void {
+  lines.push(`${label}:`);
+  if (issues.length === 0) {
+    lines.push("- none");
+    return;
+  }
+
+  for (const issue of issues) {
+    lines.push(`- [${issue.code}] ${issue.message}`);
+  }
+}
+
+function formatValidationResult(payload: CliValidationOutput, jsonOutput: boolean): string {
   if (jsonOutput) {
-    return JSON.stringify(result, null, 2);
+    return JSON.stringify(payload, null, 2);
   }
 
   const lines = [
-    `valid: ${result.valid ? "yes" : "no"}`,
-    result.manifest ? `profile: ${result.manifest.profile}` : "profile: n/a",
-    result.profileInfo
-      ? `profileStatus: ${result.profileInfo.supportClass}`
+    `valid: ${payload.valid ? "yes" : "no"}`,
+    payload.manifest ? `profile: ${payload.manifest.profile}` : "profile: n/a",
+    payload.profileInfo
+      ? `profileStatus: ${payload.profileInfo.supportClass}`
       : "profileStatus: n/a",
-    result.manifest ? `entry: ${result.manifest.entry}` : "entry: n/a",
-    result.manifest?.localization
-      ? `localization: ${result.manifest.localization.defaultLocale}`
+    payload.entry ? `entry: ${payload.entry}` : "entry: n/a",
+    payload.manifest?.localizationDefaultLocale
+      ? `localization: ${payload.manifest.localizationDefaultLocale}`
       : "localization: none"
   ];
 
-  if (result.errors.length > 0) {
-    lines.push("errors:");
-    for (const issue of result.errors) {
-      lines.push(`- [${issue.code}] ${issue.message}`);
-    }
-  }
-
-  if (result.warnings.length > 0) {
-    lines.push("warnings:");
-    for (const issue of result.warnings) {
-      lines.push(`- [${issue.code}] ${issue.message}`);
-    }
-  }
+  formatIssueSection(lines, "errors", payload.errors);
+  formatIssueSection(lines, "warnings", payload.warnings);
 
   return lines.join("\n");
 }
 
 function formatInspectionResult(
-  result: PrdPackageInspectionResult,
+  payload: CliInspectionOutput,
   jsonOutput: boolean
 ): string {
   if (jsonOutput) {
-    return JSON.stringify(result, null, 2);
+    return JSON.stringify(payload, null, 2);
   }
 
-  const lines = [formatValidationResult(result, false), "inspection:"];
+  const lines = [formatValidationResult(payload, false), "inspection:"];
 
-  lines.push(`- source: ${result.sourceKind}`);
-  lines.push(`- files: ${result.fileCount}`);
-  lines.push(`- bytes: ${result.totalBytes}`);
-  lines.push(`- assets: ${result.assetCount}`);
-  lines.push(`- attachments: ${result.attachmentCount}`);
-  lines.push(`- locales: ${result.localeCount}`);
-  lines.push(`- series: ${result.hasSeriesMembership ? "yes" : "no"}`);
-  lines.push(`- collections: ${result.collectionCount}`);
-  lines.push(`- entry mode: ${result.entryKind}`);
-  lines.push(`- segmentation: ${result.segmentation}`);
+  lines.push(`- source: ${payload.inspection.sourceKind}`);
+  lines.push(`- files: ${payload.inspection.fileCount}`);
+  lines.push(`- bytes: ${payload.inspection.totalBytes}`);
+  lines.push(`- assets: ${payload.inspection.assetCount}`);
+  lines.push(`- attachments: ${payload.inspection.attachmentCount}`);
+  lines.push(`- locales: ${payload.inspection.localeCount}`);
+  lines.push(`- series: ${payload.inspection.hasSeriesMembership ? "yes" : "no"}`);
+  lines.push(`- collections: ${payload.inspection.collectionCount}`);
+  lines.push(`- entry mode: ${payload.inspection.entryKind}`);
+  lines.push(`- segmentation: ${payload.inspection.segmentation}`);
   lines.push(
-    `- localized resources: ${result.localizedResources ? "yes" : "no"}`
+    `- localized resources: ${payload.inspection.localizedResources ? "yes" : "no"}`
   );
   lines.push(
-    `- localized alternate entries: ${result.localizedAlternateEntries ? "yes" : "no"}`
+    `- localized alternate entries: ${payload.inspection.localizedAlternateEntries ? "yes" : "no"}`
   );
-  lines.push(`- reference load mode: ${result.referenceLoadMode}`);
+  lines.push(`- reference load mode: ${payload.inspection.referenceLoadMode}`);
 
   return lines.join("\n");
+}
+
+function toCliInspectionOutput(
+  result: PrdPackageInspectionResult
+): CliInspectionOutput {
+  return {
+    ...toCliValidationOutput(result),
+    inspection: {
+      sourceKind: result.sourceKind,
+      fileCount: result.fileCount,
+      totalBytes: result.totalBytes,
+      assetCount: result.assetCount,
+      attachmentCount: result.attachmentCount,
+      localeCount: result.localeCount,
+      hasSeriesMembership: result.hasSeriesMembership,
+      collectionCount: result.collectionCount,
+      entryKind: result.entryKind,
+      segmentation: result.segmentation,
+      localizedResources: result.localizedResources,
+      localizedAlternateEntries: result.localizedAlternateEntries,
+      referenceLoadMode: result.referenceLoadMode
+    }
+  };
 }
 
 const handlers: Record<string, CommandHandler> = {
@@ -115,8 +211,9 @@ const handlers: Record<string, CommandHandler> = {
     }
 
     const result = await validatePackage(target);
-    console.log(formatValidationResult(result, jsonOutput));
-    return result.valid ? 0 : 1;
+    const payload = toCliValidationOutput(result);
+    console.log(formatValidationResult(payload, jsonOutput));
+    return payload.valid ? 0 : 1;
   },
 
   async inspect(args) {
@@ -129,8 +226,9 @@ const handlers: Record<string, CommandHandler> = {
     }
 
     const result = await inspectPackage(target);
-    console.log(formatInspectionResult(result, jsonOutput));
-    return result.valid ? 0 : 1;
+    const payload = toCliInspectionOutput(result);
+    console.log(formatInspectionResult(payload, jsonOutput));
+    return payload.valid ? 0 : 1;
   }
 };
 
