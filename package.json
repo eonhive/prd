@@ -27,7 +27,14 @@
     "release:status": "changeset status --verbose",
     "release:version": "changeset version && pnpm install --lockfile-only",
     "preexamples:smoke:document-basic": "pnpm --filter @eonhive/prd-cli build",
-    "examples:smoke:document-basic": "node ./scripts/examples-smoke-document-basic.mjs"
+    "examples:smoke:document-basic": "node ./scripts/examples-smoke-document-basic.mjs",
+    "preexamples:smoke:resume-basic": "pnpm --filter @eonhive/prd-cli build",
+    "examples:smoke:resume-basic": "node ./scripts/examples-smoke-resume-basic.mjs",
+    "preexamples:smoke:comic-basic": "pnpm --filter @eonhive/prd-cli build",
+    "examples:smoke:comic-basic": "node ./scripts/examples-smoke-comic-basic.mjs",
+    "preexamples:smoke:storyboard-basic": "pnpm --filter @eonhive/prd-cli build",
+    "examples:smoke:storyboard-basic": "node ./scripts/examples-smoke-storyboard-basic.mjs",
+    "examples:smoke": "pnpm examples:smoke:document-basic && pnpm examples:smoke:resume-basic && pnpm examples:smoke:comic-basic && pnpm examples:smoke:storyboard-basic"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
