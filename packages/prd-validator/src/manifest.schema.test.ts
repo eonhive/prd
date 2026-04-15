@@ -90,6 +90,35 @@ describe("manifest.schema.json", () => {
     }
   });
 
+  it("requires canonical top-level manifest fields", () => {
+    const requiredFields = [
+      "prdVersion",
+      "manifestVersion",
+      "id",
+      "profile",
+      "title",
+      "entry"
+    ] as const;
+
+    for (const field of requiredFields) {
+      const manifest = structuredClone(documentManifest) as Record<string, unknown>;
+      delete manifest[field];
+
+      expect(
+        validateManifestSchema(manifest),
+        formatSchemaErrors(validateManifestSchema.errors)
+      ).toBe(false);
+      expect(
+        validateManifestSchema.errors?.some(
+          (error) =>
+            error.instancePath === "" &&
+            error.keyword === "required" &&
+            error.params.missingProperty === field
+        )
+      ).toBe(true);
+    }
+  });
+
   it("rejects non-string public.cover values", () => {
     const manifest = structuredClone(resumeManifest);
     manifest.public = {
