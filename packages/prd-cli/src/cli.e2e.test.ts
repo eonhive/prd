@@ -17,6 +17,22 @@ type CliExecutionResult = {
   stderr: string;
 };
 
+function normalizeInspectTextSnapshot(output: string): string {
+  return output.replace(/- bytes: \d+/u, "- bytes: <number>");
+}
+
+function normalizeInspectJsonSnapshot(output: string): Record<string, unknown> {
+  const parsed = JSON.parse(output) as {
+    inspection?: { totalBytes?: number };
+  };
+
+  if (parsed.inspection && typeof parsed.inspection.totalBytes === "number") {
+    parsed.inspection.totalBytes = -1;
+  }
+
+  return parsed as Record<string, unknown>;
+}
+
 async function runBuiltCli(args: string[]): Promise<CliExecutionResult> {
   try {
     const { stdout, stderr } = await execFileAsync(process.execPath, [cliDistPath, ...args], {
@@ -127,6 +143,115 @@ describe("built CLI binary end-to-end", () => {
 
       const packedBuffer = await readFile(packedFile);
       expect(packedBuffer.length).toBeGreaterThan(0);
+    } finally {
+      await rm(sourceDir, { recursive: true, force: true });
+      await rm(outDir, { recursive: true, force: true });
+    }
+  });
+
+  it("captures stable snapshots for validate and inspect (text + --json)", async () => {
+    const sourceDir = await createFixture("prd-cli-e2e-snapshot-");
+    const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-snapshot-dist-"));
+    const packedFile = join(outDir, "fixture.prd");
+
+    try {
+      const packResult = await runBuiltCli(["pack", sourceDir, "--out", packedFile]);
+      expect(packResult.code).toBe(0);
+
+      const validateText = await runBuiltCli(["validate", sourceDir]);
+      expect(validateText.code).toBe(0);
+      expect(validateText.stdout.trimEnd()).toMatchInlineSnapshot(`
+        "valid: yes
+        profile: general-document
+        profileStatus: canonical-core
+        entry: content/root.json
+        localization: none
+        errors:
+        - none
+        warnings:
+        - none"
+      `);
+
+      const validateJson = await runBuiltCli(["validate", packedFile, "--json"]);
+      expect(validateJson.code).toBe(0);
+      expect(JSON.parse(validateJson.stdout) as Record<string, unknown>).toMatchInlineSnapshot(`
+        {
+          "entry": "content/root.json",
+          "errors": [],
+          "manifest": {
+            "entry": "content/root.json",
+            "localizationDefaultLocale": null,
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": true,
+          "warnings": [],
+        }
+      `);
+
+      const inspectText = await runBuiltCli(["inspect", sourceDir]);
+      expect(inspectText.code).toBe(0);
+      expect(normalizeInspectTextSnapshot(inspectText.stdout.trimEnd())).toMatchInlineSnapshot(`
+        "valid: yes
+        profile: general-document
+        profileStatus: canonical-core
+        entry: content/root.json
+        localization: none
+        errors:
+        - none
+        warnings:
+        - none
+        inspection:
+        - source: directory
+        - files: 3
+        - bytes: <number>
+        - assets: 1
+        - attachments: 0
+        - locales: 0
+        - series: no
+        - collections: 0
+        - entry mode: structured-json
+        - segmentation: none
+        - localized resources: no
+        - localized alternate entries: no
+        - reference load mode: eager-whole-package"
+      `);
+
+      const inspectJson = await runBuiltCli(["inspect", packedFile, "--json"]);
+      expect(inspectJson.code).toBe(0);
+      expect(normalizeInspectJsonSnapshot(inspectJson.stdout)).toMatchInlineSnapshot(`
+        {
+          "entry": "content/root.json",
+          "errors": [],
+          "inspection": {
+            "assetCount": 1,
+            "attachmentCount": 0,
+            "collectionCount": 0,
+            "entryKind": "structured-json",
+            "fileCount": 3,
+            "hasSeriesMembership": false,
+            "localeCount": 0,
+            "localizedAlternateEntries": false,
+            "localizedResources": false,
+            "referenceLoadMode": "eager-whole-package",
+            "segmentation": "none",
+            "sourceKind": "archive",
+            "totalBytes": -1,
+          },
+          "manifest": {
+            "entry": "content/root.json",
+            "localizationDefaultLocale": null,
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": true,
+          "warnings": [],
+        }
+      `);
     } finally {
       await rm(sourceDir, { recursive: true, force: true });
       await rm(outDir, { recursive: true, force: true });

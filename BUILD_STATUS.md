@@ -2,6 +2,7 @@
 
 ## 2026-04-15
 
+- Completed a CLI test-hardening task by adding built-CLI snapshot coverage for `validate` and `inspect` text/`--json` output using the existing E2E fixture flow, including byte-field normalization to keep snapshots deterministic while still catching contract drift.
 - Completed NEXT_STEPS item 1 by aligning the README contributor MVP gate to current root script names (`typecheck`, `test`, `build`, `examples:smoke`) and clarifying script-name sync expectations.
 - Completed NEXT_STEPS item 2 by updating README changeset guidance to match current CI-driven `main` release workflow policy and non-publishing change expectations.
 - Completed NEXT_STEPS item 6 by adding dedicated `apps/prd-viewer-web` tests that assert rendering-mode message behavior for structured JSON, HTML fallback, and unsupported modes.
