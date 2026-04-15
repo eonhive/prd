@@ -15,9 +15,9 @@
 9. [ ] Consider exposing a typed `renderMode` helper from `@eonhive/prd-viewer-core` so viewer clients can consume a canonical capability classification.
 10. [ ] Add a lightweight docs consistency check that fails CI when stale `foundation/PRD_*.md` references appear in control docs/README instead of `docs/foundation/04_PRD/*` paths.
 11. [ ] Add a CI workflow step that runs `pnpm examples:smoke -- --json-summary` and uploads summaries as artifacts for annotation/reporting.
-12. [x] Update stale canonical reference paths in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to point to `docs/decisions/PRD_DECISIONS.md`.
+12. [x] Update stale canonical reference paths in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` so they consistently use the finalized decisions path: `docs/decisions/PRD_DECISIONS.md`.
 13. [ ] Audit `docs/foundation/04_PRD/PRD_ROADMAP.md` references (e.g., `prompts/*`, `core/*`) and either align paths to current repo locations or label them explicitly as planned docs.
 14. [x] Add built-CLI snapshot coverage for `validate` and `inspect` output (text and `--json`) using the existing E2E fixture setup.
 15. [ ] Add invalid-package snapshot coverage for built CLI `validate`/`inspect` output (text and `--json`) so issue-list formatting drift is caught before release.
 16. [x] Add a single aggregate examples smoke script entrypoint (`examples:smoke`) backed by a dedicated orchestrator script.
-17. [ ] Add a lightweight docs guard check that fails when source-of-truth lists reference `docs/foundation/04_PRD/PRD_DECISIONS.md` instead of `docs/decisions/PRD_DECISIONS.md`.
+17. [ ] Add a lightweight docs guard check that enforces `docs/decisions/PRD_DECISIONS.md` as the only canonical decisions path and fails on duplicate legacy references (for example `docs/foundation/04_PRD/PRD_DECISIONS.md`).

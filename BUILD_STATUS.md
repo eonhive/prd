@@ -41,3 +41,4 @@
 - Added aggregate smoke orchestrator script `scripts/examples-smoke-all.mjs` and wired root `examples:smoke` to that single command entrypoint.
 - Completed housekeeping request to keep NEXT_STEPS as canonical backlog with a single numbered checklist style; confirmed NEXT_STEPS copy file is absent and consolidated note retained.
 - Updated stale canonical-doc references in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to point at `docs/decisions/PRD_DECISIONS.md`.
+- Updated `NEXT_STEPS.md` checked and pending decisions-path items to consistently reference the finalized canonical path `docs/decisions/PRD_DECISIONS.md`, while explicitly treating foundation-path mentions as duplicate legacy references.
