@@ -1,5 +1,8 @@
 # NEXT STEPS
 
+- Keep the contributor MVP gate section aligned with any future script-name changes in the root `package.json`.
+- If release workflow policy changes, update the changeset vs. non-publishing guidance in README before the next milestone tag.
+- Consider adding a dedicated `docs/contributing.md` and link it from README once contributor guidance grows beyond the current MVP gate section.
 1. Add CLI snapshot tests for text and JSON outputs to guard against accidental output-contract drift.
 2. Add command-level integration tests that execute the built `prd` binary end-to-end (not just `runCli`) for `pack`, `validate`, and `inspect`.
 3. Document the stable CLI output contract in package-level CLI docs so downstream tooling can rely on it explicitly.

@@ -250,6 +250,59 @@ prd validate <path>
 prd inspect <path>
 ```
 
+
+## Contributor MVP gate (no npm credentials required)
+
+Use this flow when contributing in the monorepo before opening a PR.
+
+### 1) Install and keep local package links via `workspace:*`
+
+PRD packages are linked locally through pnpm workspaces (`workspace:*` ranges in package manifests).
+This keeps changes in `packages/*` immediately available to `apps/*` and other packages without publishing to npm.
+
+Run:
+
+```bash
+pnpm install
+```
+
+Expected outcome:
+
+* install completes successfully
+* internal dependencies resolve to local workspace packages (not downloaded published versions)
+* you can edit one package and use it from another package immediately
+
+### 2) Run the required local MVP checks
+
+Run the full gate from repo root:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm examples:validate
+```
+
+Expected outcome:
+
+* `pnpm typecheck`: exits 0 with no TypeScript type errors
+* `pnpm test`: exits 0 with all tests passing
+* `pnpm build`: exits 0 and builds all workspace targets
+* `pnpm examples:validate`: exits 0 and validates all example PRD packages
+
+If all four pass, the local MVP contributor gate is considered green.
+
+### 3) Changesets vs. non-publishing changes
+
+Use a changeset when your work is intended to change versioned package outputs (for example: public API changes, behavior changes that should ship in a package release, or package dependency/version updates).
+
+Do **not** add a changeset for repository-only work that is not intended for package publication (for example: internal docs, planning notes, or other non-releasable maintenance).
+
+### 4) npm publication policy during MVP
+
+npm publication is optional and intentionally deferred until milestone stability.
+Contributors should focus on local workspace validation and MVP gate health; npm credentials are **not** required to contribute or verify work.
+
 ## Current loading baseline
 
 The current PRD reference stack is:
