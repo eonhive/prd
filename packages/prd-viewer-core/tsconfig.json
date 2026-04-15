@@ -1,1 +1,18 @@
-{"compilerOptions": {"composite": true,"module": "esnext","target": "esnext","lib": ["esnext","dom"],"strict": true,"esModuleInterop": true,"skipLibCheck": true},"references": [{"path": "../prd-validator"}]}
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
+  },
+  "references": [
+    { "path": "../prd-types" },
+    { "path": "../prd-validator" }
+  ],
+  "include": ["src/**/*.ts"]
+}
