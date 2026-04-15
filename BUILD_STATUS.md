@@ -33,3 +33,5 @@
 - Completed: Added smoke scripts for `examples/resume-basic`, `examples/comic-basic`, and `examples/storyboard-basic`.
 - Completed: Added `examples:smoke` root aggregator command that runs all example smoke gates.
 - Completed: Added optional machine-readable smoke summary emission via `--json-summary` in smoke scripts.
+
+- Completed housekeeping request to keep NEXT_STEPS as canonical backlog with a single numbered checklist style; confirmed NEXT_STEPS copy file is absent and consolidated note retained.
