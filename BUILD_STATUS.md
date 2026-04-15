@@ -2,6 +2,10 @@
 
 ## 2026-04-15
 
+- Completed NEXT_STEPS item 1 by aligning the README contributor MVP gate to current root script names (`typecheck`, `test`, `build`, `examples:smoke`) and clarifying script-name sync expectations.
+- Completed NEXT_STEPS item 2 by updating README changeset guidance to match current CI-driven `main` release workflow policy and non-publishing change expectations.
+- Completed NEXT_STEPS item 6 by adding dedicated `apps/prd-viewer-web` tests that assert rendering-mode message behavior for structured JSON, HTML fallback, and unsupported modes.
+- Completed NEXT_STEPS item 7 by adding a cross-package integration test that validates support-state/render-mode alignment across validator results, viewer-core document opening, and web render-mode mapping.
 - Consolidated and formatting-standardized `NEXT_STEPS.md` as the single checklist-style canonical backlog, confirmed `NEXT_STEPS copy.md` items were already merged, and verified the duplicate file remains removed.
 - Updated control docs and docs index references from legacy `foundation/PRD_*.md` paths to canonical `docs/foundation/04_PRD/PRD_*.md` paths (`docs/README.md`, `docs/architecture/PRD_SYSTEM_BLUEPRINT.md`, `docs/decisions/PRD_DECISIONS.md`) and verified with repo-wide search.
 - Updated canonical reference lists in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to use real `docs/foundation/04_PRD/*` file paths; verified no stale legacy foundation-path references remain.

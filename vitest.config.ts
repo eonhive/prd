@@ -4,11 +4,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    include: ["packages/**/*.test.ts"],
+    include: ["packages/**/*.test.ts", "apps/**/*.test.ts"],
     environment: "node",
     coverage: {
       reporter: ["text", "html"]
     }
   }
 });
-
