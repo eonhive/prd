@@ -280,7 +280,7 @@ Run the full gate from repo root:
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm examples:validate
+pnpm examples:smoke
 ```
 
 Expected outcome:
@@ -288,15 +288,19 @@ Expected outcome:
 * `pnpm typecheck`: exits 0 with no TypeScript type errors
 * `pnpm test`: exits 0 with all tests passing
 * `pnpm build`: exits 0 and builds all workspace targets
-* `pnpm examples:validate`: exits 0 and validates all example PRD packages
+* `pnpm examples:smoke`: exits 0 after running smoke scripts for `document-basic`, `resume-basic`, `comic-basic`, and `storyboard-basic`
 
 If all four pass, the local MVP contributor gate is considered green.
 
+The contributor gate command names above should always match the root `package.json` scripts (`typecheck`, `test`, `build`, `examples:smoke`).
+
 ### 3) Changesets vs. non-publishing changes
 
-Use a changeset when your work is intended to change versioned package outputs (for example: public API changes, behavior changes that should ship in a package release, or package dependency/version updates).
+Use a changeset when your work is intended to change versioned package outputs (for example: public API changes, behavior changes that should ship in a package release, or package dependency/version updates) and is intended for the automated `main`-branch release flow.
 
 Do **not** add a changeset for repository-only work that is not intended for package publication (for example: internal docs, planning notes, or other non-releasable maintenance).
+
+Release publication remains CI-driven from `main`; do not manually publish from feature branches or local workstations except for explicit maintainer emergency recovery.
 
 ### 4) npm publication policy during MVP
 
