@@ -25,7 +25,9 @@
     "release:check": "pnpm typecheck && pnpm test && pnpm build && pnpm examples:validate && node ./scripts/release-smoke.mjs",
     "release:publish": "changeset publish",
     "release:status": "changeset status --verbose",
-    "release:version": "changeset version && pnpm install --lockfile-only"
+    "release:version": "changeset version && pnpm install --lockfile-only",
+    "preexamples:smoke:document-basic": "pnpm --filter @eonhive/prd-cli build",
+    "examples:smoke:document-basic": "node ./scripts/examples-smoke-document-basic.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",

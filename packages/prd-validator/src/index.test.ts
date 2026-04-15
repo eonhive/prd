@@ -427,6 +427,26 @@ const validLegacyStoryboardFramesRoot = {
   ]
 };
 
+type ValidatorFixtureValue = Uint8Array | string | number | boolean | null | object;
+
+function createValidatorFixtureFileMap(
+  fixtures: Record<string, ValidatorFixtureValue>
+): Record<string, Uint8Array> {
+  return Object.fromEntries(
+    Object.entries(fixtures).map(([path, value]) => {
+      if (value instanceof Uint8Array) {
+        return [path, value];
+      }
+
+      if (typeof value === "string") {
+        return [path, strToU8(value)];
+      }
+
+      return [path, strToU8(JSON.stringify(value))];
+    })
+  );
+}
+
 function validateStructuredChildren(
   children: unknown[],
   options?: {
@@ -607,6 +627,26 @@ function validateLegacyStoryboardPackage(frames?: unknown) {
 }
 
 describe("validateManifestObject", () => {
+  it("returns stable required-field issue codes for canonical top-level fields", () => {
+    const requiredFields = [
+      "prdVersion",
+      "manifestVersion",
+      "id",
+      "profile",
+      "title",
+      "entry"
+    ] as const;
+
+    for (const field of requiredFields) {
+      const manifest = { ...validManifest } as Record<string, unknown>;
+      delete manifest[field];
+
+      const result = validateManifestObject(manifest);
+      expect(result.valid).toBe(false);
+      expect(result.errors.map((issue) => issue.code)).toContain(`${field}-required`);
+    }
+  });
+
   it("normalizes the legacy responsive-document alias", () => {
     const result = validateManifestObject({
       ...validManifest,
@@ -627,6 +667,34 @@ describe("validateManifestObject", () => {
     expect(result.valid).toBe(false);
     expect(result.errors.map((issue) => issue.code)).toContain(
       "general-document-entry-format"
+    );
+  });
+
+  it("rejects package-external traversal entry paths with a stable issue code", () => {
+    const result = validateManifestObject({
+      ...validManifest,
+      entry: "../content/root.json"
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.map((issue) => issue.code)).toContain("entry-traversal");
+  });
+
+  it("rejects profile and entry mode mismatches for comic/storyboard structured paths", () => {
+    const comicResult = validateManifestObject({
+      ...validComicManifest,
+      entry: "profiles/comic/panels.json"
+    });
+    const storyboardResult = validateManifestObject({
+      ...validStoryboardManifest,
+      entry: "profiles/storyboard/frames.json"
+    });
+
+    expect(comicResult.valid).toBe(false);
+    expect(comicResult.errors.map((issue) => issue.code)).toContain("comic-entry-format");
+    expect(storyboardResult.valid).toBe(false);
+    expect(storyboardResult.errors.map((issue) => issue.code)).toContain(
+      "storyboard-entry-format"
     );
   });
 
@@ -966,13 +1034,46 @@ describe("validateManifestObject", () => {
 
 describe("validatePackage", () => {
   it("accepts a valid structured general-document package", () => {
-    const result = validatePackage({
-      "manifest.json": strToU8(JSON.stringify(validManifest)),
-      "content/root.json": strToU8(JSON.stringify(validContentRoot)),
-      "assets/images/cover.svg": strToU8("<svg xmlns=\"http://www.w3.org/2000/svg\" />")
-    });
+    const result = validatePackage(
+      createValidatorFixtureFileMap({
+        "manifest.json": validManifest,
+        "content/root.json": validContentRoot,
+        "assets/images/cover.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" />"
+      })
+    );
 
     expect(result.valid).toBe(true);
+  });
+
+  it("returns stable issue codes for entry compatibility failures", () => {
+    const generalDocumentNonJsonResult = validatePackage(
+      createValidatorFixtureFileMap({
+        "manifest.json": {
+          ...validManifest,
+          entry: "content/root.html"
+        },
+        "content/root.html": "<!doctype html><html><body>legacy entry</body></html>"
+      })
+    );
+    const comicUnsupportedModeResult = validatePackage(
+      createValidatorFixtureFileMap({
+        "manifest.json": {
+          ...validComicManifest,
+          entry: "profiles/comic/panels.json"
+        },
+        "profiles/comic/panels.json": validLegacyComicPanelsRoot
+      })
+    );
+
+    expect(generalDocumentNonJsonResult.valid).toBe(false);
+    expect(generalDocumentNonJsonResult.errors.map((issue) => issue.code)).toContain(
+      "general-document-entry-format"
+    );
+
+    expect(comicUnsupportedModeResult.valid).toBe(false);
+    expect(comicUnsupportedModeResult.errors.map((issue) => issue.code)).toContain(
+      "comic-entry-format"
+    );
   });
 
   it("rejects package manifests that use object-shaped asset groups", () => {
