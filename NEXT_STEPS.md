@@ -19,3 +19,4 @@
 13. [ ] Audit `docs/foundation/04_PRD/PRD_ROADMAP.md` references (e.g., `prompts/*`, `core/*`) and either align paths to current repo locations or label them explicitly as planned docs.
 14. [x] Add built-CLI snapshot coverage for `validate` and `inspect` output (text and `--json`) using the existing E2E fixture setup.
 15. [ ] Add invalid-package snapshot coverage for built CLI `validate`/`inspect` output (text and `--json`) so issue-list formatting drift is caught before release.
+16. [x] Add a single aggregate examples smoke script entrypoint (`examples:smoke`) backed by a dedicated orchestrator script.

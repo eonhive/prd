@@ -34,7 +34,8 @@
     "examples:smoke:comic-basic": "node ./scripts/examples-smoke-comic-basic.mjs",
     "preexamples:smoke:storyboard-basic": "pnpm --filter @eonhive/prd-cli build",
     "examples:smoke:storyboard-basic": "node ./scripts/examples-smoke-storyboard-basic.mjs",
-    "examples:smoke": "pnpm examples:smoke:document-basic && pnpm examples:smoke:resume-basic && pnpm examples:smoke:comic-basic && pnpm examples:smoke:storyboard-basic"
+    "examples:smoke": "node ./scripts/examples-smoke-all.mjs",
+    "preexamples:smoke": "pnpm --filter @eonhive/prd-cli build"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",

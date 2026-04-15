@@ -108,7 +108,7 @@ beforeAll(async () => {
 });
 
 describe("built CLI binary end-to-end", () => {
-  it("executes pack, validate, and inspect against dist/cli.js", async () => {
+  it("executes built binary commands pack, validate, and inspect", async () => {
     const sourceDir = await createFixture("prd-cli-e2e-");
     const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-dist-"));
     const packedFile = join(outDir, "fixture.prd");

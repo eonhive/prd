@@ -35,5 +35,7 @@
 - Completed: Added `examples:smoke` root aggregator command that runs all example smoke gates.
 - Completed: Added optional machine-readable smoke summary emission via `--json-summary` in smoke scripts.
 
+- Refined built-CLI E2E test naming to explicitly assert dist-binary command execution for `pack`, `validate`, and `inspect` as the command-surface gate.
+- Added aggregate smoke orchestrator script `scripts/examples-smoke-all.mjs` and wired root `examples:smoke` to that single command entrypoint.
 - Completed housekeeping request to keep NEXT_STEPS as canonical backlog with a single numbered checklist style; confirmed NEXT_STEPS copy file is absent and consolidated note retained.
 - Updated stale canonical-doc references in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to point at `docs/foundation/04_PRD/PRD_DECISIONS.md`.
