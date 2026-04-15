@@ -2,6 +2,7 @@
 
 ## 2026-04-15
 
+- Consolidated `NEXT_STEPS.md` into a single canonical numbered backlog format, added a top-line canonical note, and recorded that `NEXT_STEPS copy.md` was not present for merge/archival during this update.
 - Added a contributor-facing README section documenting the MVP local gate flow (workspace linking, required local checks, changeset guidance, and deferred npm publication policy).
 - Included exact commands and expected outcomes so contributors can validate fully without npm credentials.
 - Completed: Defined a stable PRD CLI output contract for `validate` and `inspect` with explicit, documented fields used by both text and `--json` output.
