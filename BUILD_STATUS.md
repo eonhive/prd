@@ -2,7 +2,8 @@
 
 ## 2026-04-16
 
-- Generated and normalized a dependency-sequenced execution program for all active backlog items, then rewrote `NEXT_STEPS.md` open items into explicit sequenced deliverables (`S1`-`S7`) with concrete closure ordering for foundation execution discipline.
+- Revised `docs/core/PRD_MINIMAL_VALID_SPEC.md` (draft v0.2) to align with accepted decisions and reviewer feedback by restoring `.prd` ZIP transport as a normative interchange requirement, restoring MUST-level portability/openability constraints, and making `general-document` structured JSON entry conformance explicit.
+- Started NEXT_STEPS item 23 by adding `docs/core/PRD_MINIMAL_VALID_SPEC.md` (draft v0.1) with MVP-scoped normative rules, explicit non-goals, manifest/entry constraints, and a starter conformance matrix to map requirements to validator checks and fixtures.
 - Added a new active next-phase backlog slice in `NEXT_STEPS.md` (items 23-28) covering minimal valid spec ratification, manifest conformance mapping, profile fixture hardening, foundation-gate automation, capability/conformance docs, and docs discoverability alignment.
 - Added a unified orchestration artifact to `docs/prompts/PRD_MASTER_PROMPTS.md` (`Prompt 00. Unified Next-Steps Execution Prompt`) so all active next-step tasks can be planned and executed together under canonical PRD constraints.
 - Completed contributor-guidance extraction by adding `docs/contributing.md` and linking it from the README contributor MVP gate section so onboarding details can evolve without overloading top-level docs.
