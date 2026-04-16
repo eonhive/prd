@@ -21,3 +21,4 @@
 15. [x] Add invalid-package snapshot coverage for built CLI `validate`/`inspect` output (text and `--json`) so issue-list formatting drift is caught before release.
 16. [x] Add a single aggregate examples smoke script entrypoint (`examples:smoke`) backed by a dedicated orchestrator script.
 17. [x] Add a lightweight docs guard check that enforces `docs/decisions/PRD_DECISIONS.md` as the only canonical decisions path and fails on duplicate legacy references (for example `docs/foundation/04_PRD/PRD_DECISIONS.md`).
+18. [x] Ensure `README.md`, release docs, and contributor-facing guidance explicitly treat `pnpm examples:smoke` as the canonical aggregate smoke command, document `--json-summary` for CI annotation, and keep smoke-gate release/check flow docs consistent.

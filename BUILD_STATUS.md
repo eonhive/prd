@@ -2,6 +2,7 @@
 
 ## 2026-04-15
 
+- Completed NEXT_STEPS item 18 by updating `README.md` plus release governance docs to explicitly define `pnpm examples:smoke` as the canonical aggregate smoke command, document `--json-summary` as CI annotation/reporting support, and align smoke-gate wording across release/check flow guidance.
 - Completed NEXT_STEPS item 5 by adding table-driven validator coverage for entry-path validation branches (`entry-empty`, `entry-absolute`, `entry-backslash`, `entry-url`, `entry-traversal`, `entry-directory`) and preserving stable issue-code assertions.
 - Completed NEXT_STEPS item 6 by adding a validator manifest-level profile/entry compatibility matrix test for `general-document`, `comic`, and `storyboard`, including structured JSON, HTML legacy fallback, and invalid non-canonical entry cases.
 - Completed NEXT_STEPS item 15 by adding built CLI E2E invalid-package snapshots for `validate` and `inspect` in both text and `--json` modes.

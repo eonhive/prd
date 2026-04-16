@@ -283,12 +283,16 @@ pnpm build
 pnpm examples:smoke
 ```
 
+`pnpm examples:smoke` is the canonical aggregate smoke command for this repo.
+Use `pnpm examples:smoke -- --json-summary` when you need machine-readable outputs for CI annotations and reporting.
+
 Expected outcome:
 
 * `pnpm typecheck`: exits 0 with no TypeScript type errors
 * `pnpm test`: exits 0 with all tests passing
 * `pnpm build`: exits 0 and builds all workspace targets
 * `pnpm examples:smoke`: exits 0 after running smoke scripts for `document-basic`, `resume-basic`, `comic-basic`, and `storyboard-basic`
+* `pnpm examples:smoke -- --json-summary`: exits 0 and writes JSON summaries for CI annotation under `examples/dist/smoke-summaries/`
 
 If all four pass, the local MVP contributor gate is considered green.
 
@@ -301,6 +305,11 @@ Use a changeset when your work is intended to change versioned package outputs (
 Do **not** add a changeset for repository-only work that is not intended for package publication (for example: internal docs, planning notes, or other non-releasable maintenance).
 
 Release publication remains CI-driven from `main`; do not manually publish from feature branches or local workstations except for explicit maintainer emergency recovery.
+
+When a change touches release/check flows, keep smoke gates documented and aligned:
+
+* `pnpm release:check` should include the smoke gate via canonical `pnpm examples:smoke`
+* CI/release automation that needs annotations should run `pnpm examples:smoke -- --json-summary`
 
 ### 4) npm publication policy during MVP
 
@@ -350,7 +359,7 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 
 * `pnpm changeset` to record package changes
 * `pnpm release:bootstrap` to inspect first-preview bootstrap state
-* `pnpm release:check` for the release gate
+* `pnpm release:check` for the release gate (including canonical `pnpm examples:smoke`)
 * `pnpm release:status` to inspect pending release state
 
 The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it first bootstraps any still-unpublished current preview packages and then falls back to normal Changesets behavior. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).

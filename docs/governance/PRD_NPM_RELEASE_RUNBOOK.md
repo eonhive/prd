@@ -20,6 +20,15 @@ Local verification command:
 pnpm release:check
 ```
 
+`pnpm examples:smoke` is the canonical aggregate smoke gate command.
+When CI/release checks need machine-readable annotation artifacts, run:
+
+```bash
+pnpm examples:smoke -- --json-summary
+```
+
+`--json-summary` is supported specifically for CI annotation/reporting flows.
+
 Optional shell setup:
 
 ```bash
@@ -77,5 +86,10 @@ pnpm release:check
 pnpm release:version
 pnpm release:publish
 ```
+
+Release/check flows should keep smoke gating consistent:
+
+- `release:check` must include canonical `pnpm examples:smoke`
+- CI jobs that annotate smoke outcomes should use `pnpm examples:smoke -- --json-summary`
 
 `release:publish` exists for workflow use and emergency maintainer recovery. It is not the default day-to-day path.

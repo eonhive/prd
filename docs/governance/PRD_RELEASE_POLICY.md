@@ -78,9 +78,16 @@ No public npm publish is allowed unless all of these are green in CI on Node 20+
 - `pnpm test`
 - `pnpm build`
 - `pnpm examples:validate`
+- `pnpm examples:smoke` (canonical aggregate smoke command)
 - tarball smoke tests for all four public packages
 - release workflow itself is healthy
 - install and release docs match the shipped package names and commands
+
+For CI annotation/reporting, smoke-capable release/check jobs should run:
+
+- `pnpm examples:smoke -- --json-summary`
+
+`--json-summary` is a supported smoke option intended for machine-readable CI summaries/artifacts.
 
 The first publish happens only after this release-hardening baseline is merged and the release workflow is ready to publish the current unpublished `0.1.0` packages.
 
