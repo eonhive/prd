@@ -11,6 +11,7 @@
     "build": "pnpm -r build",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
+    "docs:check": "node ./scripts/check-docs-consistency.mjs",
     "clean": "node ./scripts/clean.mjs",
     "changeset": "changeset",
     "codex:check": "node ./scripts/codex-run.mjs check",

@@ -7,7 +7,7 @@
  * Updated: 2026-04-15
  */
 
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { basename, resolve } from "node:path";
 
@@ -106,6 +106,12 @@ export async function runExampleSmoke(exampleName, options = {}) {
     process.exitCode = 1;
   } finally {
     if (jsonSummary) {
+      const summaryDir = resolve(repoRoot, "examples/dist/smoke-summaries");
+      const summaryPath = resolve(summaryDir, `${exampleName}.json`);
+      await mkdir(summaryDir, { recursive: true });
+      await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, "utf8");
+
+      console.log(`\nSMOKE_SUMMARY_FILE: ${summaryPath}`);
       console.log("\nSMOKE_SUMMARY_JSON:");
       console.log(JSON.stringify(summary, null, 2));
     }

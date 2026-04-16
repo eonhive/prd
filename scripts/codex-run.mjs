@@ -14,6 +14,7 @@ const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
 const pipelines = {
   check: [
+    ["docs:check"],
     ["typecheck"],
     ["test"],
     ["build"],

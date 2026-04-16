@@ -2,6 +2,12 @@
 
 ## 2026-04-15
 
+- Completed NEXT_STEPS item 5 by adding table-driven validator coverage for entry-path validation branches (`entry-empty`, `entry-absolute`, `entry-backslash`, `entry-url`, `entry-traversal`, `entry-directory`) and preserving stable issue-code assertions.
+- Completed NEXT_STEPS item 6 by adding a validator manifest-level profile/entry compatibility matrix test for `general-document`, `comic`, and `storyboard`, including structured JSON, HTML legacy fallback, and invalid non-canonical entry cases.
+- Completed NEXT_STEPS item 15 by adding built CLI E2E invalid-package snapshots for `validate` and `inspect` in both text and `--json` modes.
+- Completed NEXT_STEPS items 10 and 17 by adding a docs consistency guard script that fails on stale canonical path references in control docs and wiring it into the `codex:check` pipeline via `docs:check`.
+- Completed NEXT_STEPS item 11 by adding a CI step to run `pnpm examples:smoke -- --json-summary` and uploading generated summary JSON artifacts from `examples/dist/smoke-summaries/*.json`.
+- Extended smoke summary behavior to emit per-example JSON files under `examples/dist/smoke-summaries/` when `--json-summary` is enabled, so CI artifact upload can reliably capture machine-readable outputs.
 - Consolidated the canonical PRD decisions ledger into `docs/decisions/PRD_DECISIONS.md`, merged unique historical decisions from `docs/foundation/04_PRD/PRD_DECISIONS.md`, and converted the foundation-path file into an archived pointer to prevent future drift.
 - Updated source-of-truth decision-log references in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to point to `docs/decisions/PRD_DECISIONS.md`.
 - Completed a CLI test-hardening task by adding built-CLI snapshot coverage for `validate` and `inspect` text/`--json` output using the existing E2E fixture flow, including byte-field normalization to keep snapshots deterministic while still catching contract drift.

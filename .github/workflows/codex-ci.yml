@@ -33,5 +33,16 @@ jobs:
       - name: Run Codex checks
         run: pnpm codex:check
 
+      - name: Run examples smoke with JSON summaries
+        run: pnpm examples:smoke -- --json-summary
+
+      - name: Upload examples smoke summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: examples-smoke-summaries
+          path: examples/dist/smoke-summaries/*.json
+          if-no-files-found: error
+
       - name: Pack example archives
         run: pnpm codex:pack

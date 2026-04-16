@@ -680,6 +680,148 @@ describe("validateManifestObject", () => {
     expect(result.errors.map((issue) => issue.code)).toContain("entry-traversal");
   });
 
+  it("returns stable entry-path issue codes for every `entry-*` validator branch", () => {
+    const cases: Array<{
+      name: string;
+      entry: string;
+      expectedCode:
+        | "entry-empty"
+        | "entry-absolute"
+        | "entry-backslash"
+        | "entry-url"
+        | "entry-traversal"
+        | "entry-directory";
+    }> = [
+      {
+        name: "empty paths",
+        entry: "",
+        expectedCode: "entry-empty"
+      },
+      {
+        name: "absolute paths",
+        entry: "/content/root.json",
+        expectedCode: "entry-absolute"
+      },
+      {
+        name: "backslash-separated paths",
+        entry: "content\\root.json",
+        expectedCode: "entry-backslash"
+      },
+      {
+        name: "scheme URLs",
+        entry: "https://example.com/root.json",
+        expectedCode: "entry-url"
+      },
+      {
+        name: "traversal segments",
+        entry: "content/../root.json",
+        expectedCode: "entry-traversal"
+      },
+      {
+        name: "directory-like paths",
+        entry: "content/",
+        expectedCode: "entry-directory"
+      }
+    ];
+
+    for (const testCase of cases) {
+      const result = validateManifestObject({
+        ...validManifest,
+        entry: testCase.entry
+      });
+      const errorCodes = result.errors.map((issue) => issue.code);
+
+      expect(errorCodes, `Expected ${testCase.name} to return ${testCase.expectedCode}`).toContain(
+        testCase.expectedCode
+      );
+    }
+  });
+
+  it("enforces a profile-entry compatibility matrix for core profiles", () => {
+    const cases: Array<{
+      profile: "general-document" | "comic" | "storyboard";
+      entry: string;
+      shouldBeValid: boolean;
+      expectedErrorCode?: "general-document-entry-format" | "comic-entry-format" | "storyboard-entry-format";
+      expectedWarningCode?: "comic-html-entry-legacy" | "storyboard-html-entry-legacy";
+    }> = [
+      {
+        profile: "general-document",
+        entry: "content/root.json",
+        shouldBeValid: true
+      },
+      {
+        profile: "general-document",
+        entry: "content/index.html",
+        shouldBeValid: false,
+        expectedErrorCode: "general-document-entry-format"
+      },
+      {
+        profile: "comic",
+        entry: "content/root.json",
+        shouldBeValid: true
+      },
+      {
+        profile: "comic",
+        entry: "content/index.html",
+        shouldBeValid: true,
+        expectedWarningCode: "comic-html-entry-legacy"
+      },
+      {
+        profile: "comic",
+        entry: "profiles/comic/panels.json",
+        shouldBeValid: false,
+        expectedErrorCode: "comic-entry-format"
+      },
+      {
+        profile: "storyboard",
+        entry: "content/root.json",
+        shouldBeValid: true
+      },
+      {
+        profile: "storyboard",
+        entry: "content/index.html",
+        shouldBeValid: true,
+        expectedWarningCode: "storyboard-html-entry-legacy"
+      },
+      {
+        profile: "storyboard",
+        entry: "profiles/storyboard/frames.json",
+        shouldBeValid: false,
+        expectedErrorCode: "storyboard-entry-format"
+      }
+    ];
+
+    for (const testCase of cases) {
+      const baseManifest =
+        testCase.profile === "general-document"
+          ? validManifest
+          : testCase.profile === "comic"
+            ? validComicManifest
+            : validStoryboardManifest;
+      const result = validateManifestObject({
+        ...baseManifest,
+        profile: testCase.profile,
+        entry: testCase.entry
+      });
+      const errorCodes = result.errors.map((issue) => issue.code);
+      const warningCodes = result.warnings.map((issue) => issue.code);
+
+      expect(
+        result.valid,
+        `Expected ${testCase.profile} + ${testCase.entry} validity to be ${testCase.shouldBeValid}`
+      ).toBe(testCase.shouldBeValid);
+
+      if (testCase.expectedErrorCode !== undefined) {
+        expect(errorCodes).toContain(testCase.expectedErrorCode);
+      }
+
+      if (testCase.expectedWarningCode !== undefined) {
+        expect(warningCodes).toContain(testCase.expectedWarningCode);
+      }
+    }
+  });
+
   it("rejects profile and entry mode mismatches for comic/storyboard structured paths", () => {
     const comicResult = validateManifestObject({
       ...validComicManifest,

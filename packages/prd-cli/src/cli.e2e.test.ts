@@ -101,6 +101,32 @@ async function createFixture(rootPrefix: string): Promise<string> {
   return root;
 }
 
+async function createInvalidFixture(rootPrefix: string): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), rootPrefix));
+  await mkdir(join(root, "content"), { recursive: true });
+
+  await writeFile(
+    join(root, "manifest.json"),
+    JSON.stringify({
+      prdVersion: "1.0",
+      manifestVersion: "1.0",
+      id: "urn:test:cli-e2e-invalid",
+      profile: "general-document",
+      title: "CLI E2E Invalid Fixture",
+      entry: "content/index.html"
+    }),
+    "utf8"
+  );
+
+  await writeFile(
+    join(root, "content/index.html"),
+    "<!doctype html><html><body>legacy</body></html>",
+    "utf8"
+  );
+
+  return root;
+}
+
 beforeAll(async () => {
   await execFileAsync("pnpm", ["--filter", "@eonhive/prd-cli", "build"], {
     cwd: repoRoot
@@ -255,6 +281,129 @@ describe("built CLI binary end-to-end", () => {
     } finally {
       await rm(sourceDir, { recursive: true, force: true });
       await rm(outDir, { recursive: true, force: true });
+    }
+  });
+
+  it("captures stable snapshots for invalid-package validate and inspect (text + --json)", async () => {
+    const sourceDir = await createInvalidFixture("prd-cli-e2e-invalid-snapshot-");
+
+    try {
+      const validateText = await runBuiltCli(["validate", sourceDir]);
+      expect(validateText.code).toBe(1);
+      expect(validateText.stdout.trimEnd()).toMatchInlineSnapshot(`
+        "valid: no
+        profile: general-document
+        profileStatus: canonical-core
+        entry: content/index.html
+        localization: none
+        errors:
+        - [general-document-entry-format] \`general-document\` packages must use a structured JSON entry under \`content/\`, such as \`content/root.json\`.
+        - [content-json-invalid] The \`general-document\` entry must parse as valid JSON structured content.
+        warnings:
+        - none"
+      `);
+
+      const validateJson = await runBuiltCli(["validate", sourceDir, "--json"]);
+      expect(validateJson.code).toBe(1);
+      expect(JSON.parse(validateJson.stdout) as Record<string, unknown>).toMatchInlineSnapshot(`
+        {
+          "entry": "content/index.html",
+          "errors": [
+            {
+              "code": "general-document-entry-format",
+              "message": "\`general-document\` packages must use a structured JSON entry under \`content/\`, such as \`content/root.json\`.",
+            },
+            {
+              "code": "content-json-invalid",
+              "message": "The \`general-document\` entry must parse as valid JSON structured content.",
+            },
+          ],
+          "manifest": {
+            "entry": "content/index.html",
+            "localizationDefaultLocale": null,
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": false,
+          "warnings": [],
+        }
+      `);
+
+      const inspectText = await runBuiltCli(["inspect", sourceDir]);
+      expect(inspectText.code).toBe(1);
+      expect(normalizeInspectTextSnapshot(inspectText.stdout.trimEnd())).toMatchInlineSnapshot(`
+        "valid: no
+        profile: general-document
+        profileStatus: canonical-core
+        entry: content/index.html
+        localization: none
+        errors:
+        - [general-document-entry-format] \`general-document\` packages must use a structured JSON entry under \`content/\`, such as \`content/root.json\`.
+        - [content-json-invalid] The \`general-document\` entry must parse as valid JSON structured content.
+        warnings:
+        - none
+        inspection:
+        - source: directory
+        - files: 2
+        - bytes: <number>
+        - assets: 0
+        - attachments: 0
+        - locales: 0
+        - series: no
+        - collections: 0
+        - entry mode: html-fallback
+        - segmentation: none
+        - localized resources: no
+        - localized alternate entries: no
+        - reference load mode: eager-whole-package"
+      `);
+
+      const inspectJson = await runBuiltCli(["inspect", sourceDir, "--json"]);
+      expect(inspectJson.code).toBe(1);
+      expect(normalizeInspectJsonSnapshot(inspectJson.stdout)).toMatchInlineSnapshot(`
+        {
+          "entry": "content/index.html",
+          "errors": [
+            {
+              "code": "general-document-entry-format",
+              "message": "\`general-document\` packages must use a structured JSON entry under \`content/\`, such as \`content/root.json\`.",
+            },
+            {
+              "code": "content-json-invalid",
+              "message": "The \`general-document\` entry must parse as valid JSON structured content.",
+            },
+          ],
+          "inspection": {
+            "assetCount": 0,
+            "attachmentCount": 0,
+            "collectionCount": 0,
+            "entryKind": "html-fallback",
+            "fileCount": 2,
+            "hasSeriesMembership": false,
+            "localeCount": 0,
+            "localizedAlternateEntries": false,
+            "localizedResources": false,
+            "referenceLoadMode": "eager-whole-package",
+            "segmentation": "none",
+            "sourceKind": "directory",
+            "totalBytes": -1,
+          },
+          "manifest": {
+            "entry": "content/index.html",
+            "localizationDefaultLocale": null,
+            "profile": "general-document",
+          },
+          "profileInfo": {
+            "supportClass": "canonical-core",
+          },
+          "valid": false,
+          "warnings": [],
+        }
+      `);
+    } finally {
+      await rm(sourceDir, { recursive: true, force: true });
     }
   });
 });

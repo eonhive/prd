@@ -1276,7 +1276,13 @@ function validateManifestObjectInternal(manifest: unknown): PrdPackageValidation
   ] as const;
 
   for (const field of requiredFields) {
-    if (!isNonEmptyString(candidate[field])) {
+    const value = candidate[field];
+    const isMissingRequiredString =
+      field === "entry"
+        ? typeof value !== "string"
+        : !isNonEmptyString(value);
+
+    if (isMissingRequiredString) {
       errors.push(
         makeIssue(
           "error",
