@@ -4,6 +4,8 @@ CLI for packaging, validating, and inspecting PRD packages.
 
 ## Commands
 
+Machine-readable JSON contract snippets and versioning notes: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.
+
 ### `prd pack <sourceDir> --out <file.prd>`
 
 Packages a directory-form PRD into an archive file.

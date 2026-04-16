@@ -11,12 +11,14 @@ const excludedDocPathPrefixes = [
   "docs/foundation/04_PRD/ARCHIVE/"
 ];
 
+const optionalRootDocs = ["BUILD_STATUS.md", "NEXT_STEPS.md"];
+const includeOptionalRootDocs = process.argv.includes("--include-root-docs");
 
 const explicitlyAllowedMatches = [
   {
     path: "docs/decisions/PRD_DECISIONS.md",
     label: "non-canonical decisions ledger path",
-    includes: "Legacy decisions from `docs/foundation/04_PRD/PRD_DECISIONS.md`"
+    snippet: "Legacy decisions from `docs/foundation/04_PRD/PRD_DECISIONS.md`"
   }
 ];
 
@@ -62,7 +64,8 @@ async function getControlledDocs() {
     discoveredDocs.push(...(await collectMarkdownFiles(root)));
   }
 
-  return [...alwaysIncludedDocs, ...discoveredDocs].sort();
+  const selectedRootDocs = includeOptionalRootDocs ? optionalRootDocs : [];
+  return [...alwaysIncludedDocs, ...selectedRootDocs, ...discoveredDocs].sort();
 }
 
 async function main() {
@@ -76,18 +79,19 @@ async function main() {
     for (const { label, pattern } of forbiddenPatterns) {
       for (const match of contents.matchAll(pattern)) {
         const matchedText = match[0]?.trim() ?? "<unknown>";
+        const index = match.index ?? 0;
+        const matchLength = match[0]?.length ?? 0;
         const isExplicitlyAllowed = explicitlyAllowedMatches.some(
           (allowed) =>
             allowed.path === relativePath &&
             allowed.label === label &&
-            contents.includes(allowed.includes)
+            matchFallsWithinAllowedSnippet(contents, index, matchLength, allowed.snippet)
         );
 
         if (isExplicitlyAllowed) {
           continue;
         }
 
-        const index = match.index ?? 0;
         const line = contents.slice(0, index).split("\n").length;
         failures.push(`${relativePath}:${line} contains ${label}: "${matchedText}"`);
       }
@@ -103,7 +107,32 @@ async function main() {
     return;
   }
 
+  if (includeOptionalRootDocs) {
+    console.log("Docs consistency check passed (including optional root docs).");
+    return;
+  }
+
   console.log("Docs consistency check passed.");
+}
+
+function matchFallsWithinAllowedSnippet(contents, matchIndex, matchLength, snippet) {
+  let searchFrom = 0;
+  while (searchFrom < contents.length) {
+    const snippetStart = contents.indexOf(snippet, searchFrom);
+    if (snippetStart === -1) {
+      return false;
+    }
+
+    const snippetEnd = snippetStart + snippet.length;
+    const matchEnd = matchIndex + matchLength;
+    if (matchIndex >= snippetStart && matchEnd <= snippetEnd) {
+      return true;
+    }
+
+    searchFrom = snippetStart + snippet.length;
+  }
+
+  return false;
 }
 
 main().catch((error) => {

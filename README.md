@@ -243,6 +243,11 @@ The current top-level scripts are:
 * `pnpm examples:validate`
 * `pnpm release:check`
 
+Docs consistency guard scope:
+
+- `pnpm docs:check` enforces canonical doc-path usage for `docs/**` plus root control docs (`README.md`, `AGENTS.md`).
+- Optional root-doc enforcement is available via `node ./scripts/check-docs-consistency.mjs --include-root-docs` for selected non-archive root docs (`BUILD_STATUS.md`, `NEXT_STEPS.md`).
+
 Example CLI usage:
 
 ```bash
@@ -251,11 +256,14 @@ prd inspect <path>
 ```
 
 CLI output/exit-code contract: `packages/prd-cli/README.md`.
+Versioned machine-readable JSON contract snippets: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.
 
 
 ## Contributor MVP gate (no npm credentials required)
 
 Use this flow when contributing in the monorepo before opening a PR.
+
+For the full contributor workflow and checklist, see `docs/contributing.md`.
 
 ### 1) Install and keep local package links via `workspace:*`
 

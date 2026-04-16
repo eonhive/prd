@@ -6,7 +6,7 @@
 
 1. [x] Keep the contributor MVP gate section aligned with any future script-name changes in the root `package.json`.
 2. [x] If release workflow policy changes, update the changeset vs. non-publishing guidance in `README.md` before the next milestone tag.
-3. [ ] Consider adding a dedicated `docs/contributing.md` and link it from `README.md` once contributor guidance grows beyond the current MVP gate section.
+3. [x] Added dedicated `docs/contributing.md` and linked it from `README.md` so contributor guidance can evolve beyond the MVP gate summary.
 4. [x] Document the stable CLI output contract in package-level CLI docs so downstream tooling can rely on it explicitly.
 5. [x] Add table-driven tests for every `entry-*` path validation code (`entry-absolute`, `entry-backslash`, `entry-url`, `entry-directory`, etc.).
 6. [x] Add a dedicated validator test matrix for profile-specific entry compatibility across `general-document`, `comic`, and `storyboard`.
@@ -20,8 +20,13 @@
 14. [x] Add built-CLI snapshot coverage for `validate` and `inspect` output (text and `--json`) using the existing E2E fixture setup.
 15. [x] Add invalid-package snapshot coverage for built CLI `validate`/`inspect` output (text and `--json`) so issue-list formatting drift is caught before release.
 16. [x] Add a single aggregate examples smoke script entrypoint (`examples:smoke`) backed by a dedicated orchestrator script.
-17. [x] Add a lightweight docs guard check that enforces `docs/decisions/PRD_DECISIONS.md` as the only canonical decisions path and fails on duplicate legacy references (for example `docs/foundation/04_PRD/PRD_DECISIONS.md`).
+17. [x] Add a lightweight docs guard check that enforces `docs/decisions/PRD_DECISIONS.md` as the only canonical decisions path and fails on duplicate legacy references (for example legacy foundation decisions-path pointer).
 18. [x] Ensure `README.md`, release docs, and contributor-facing guidance explicitly treat `pnpm examples:smoke` as the canonical aggregate smoke command, document `--json-summary` for CI annotation, and keep smoke-gate release/check flow docs consistent.
 
-19. [ ] Add a concise CLI JSON schema snippet (or generated type extract) so downstream automation can pin against a versioned machine-readable contract.
-20. [ ] Consider extending docs-consistency guard to optionally enforce canonical path checks in selected non-archive root docs beyond `docs/` and control files.
+19. [x] Added concise CLI JSON schema snippets under `docs/runtime/PRD_CLI_JSON_CONTRACT.md` with an explicit `prd-cli-json-v0.1` contract identifier for automation pinning.
+20. [x] Extended docs-consistency guard with an optional `--include-root-docs` mode for selected non-archive root docs (`BUILD_STATUS.md`, `NEXT_STEPS.md`) while preserving canonical decisions-path enforcement.
+
+21. [x] Hardened docs-consistency allowlist matching to validate the specific allowed snippet span in `docs/decisions/PRD_DECISIONS.md` rather than allowing file-wide sentinel-based bypasses.
+
+22. [x] Fixed `docs/runtime/PRD_CLI_JSON_CONTRACT.md` inspect schema snippet to remove the unsatisfiable `allOf` + `additionalProperties: false` combination and publish a valid combined output contract.
+

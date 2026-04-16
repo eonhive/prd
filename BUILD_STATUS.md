@@ -2,6 +2,11 @@
 
 ## 2026-04-16
 
+- Completed contributor-guidance extraction by adding `docs/contributing.md` and linking it from the README contributor MVP gate section so onboarding details can evolve without overloading top-level docs.
+- Completed a versioned machine-readable CLI contract doc by adding `docs/runtime/PRD_CLI_JSON_CONTRACT.md` (validate/inspect JSON schema snippets plus `prd-cli-json-v0.1` compatibility rules) and linking it from README + `packages/prd-cli/README.md`.
+- Completed optional root-doc canonical path enforcement by extending `scripts/check-docs-consistency.mjs` with `--include-root-docs` support for selected non-archive root docs (`BUILD_STATUS.md`, `NEXT_STEPS.md`), and documented the scope/rationale in README.
+- Hardened docs-consistency allowlist matching by requiring the explicit decisions-ledger allowance to match at the specific snippet span, preventing unrelated forbidden references in `docs/decisions/PRD_DECISIONS.md` from being silently ignored.
+- Corrected `docs/runtime/PRD_CLI_JSON_CONTRACT.md` inspect schema snippet to a satisfiable single-object contract so payloads that include both validate fields and `inspection` validate as intended for downstream automation.
 - Completed roadmap/glossary canonical path cleanup by normalizing stale references to `docs/...` paths and explicitly labeling still-missing planned docs in `docs/foundation/04_PRD/PRD_ROADMAP.md`.
 - Completed docs consistency guard expansion in `scripts/check-docs-consistency.mjs` by scanning markdown across canonical `docs/` paths, excluding archive/history trees by default, and preserving forbidden-pattern checks with an explicit intentional legacy-reference allowance in the canonical decisions ledger.
 - Completed package-level CLI contract documentation by adding `packages/prd-cli/README.md` (commands, exit codes, stable text/JSON contracts for `pack`, `validate`, and `inspect`) and linking it from repository top-level docs.
@@ -16,7 +21,7 @@
 - Completed NEXT_STEPS items 10 and 17 by adding a docs consistency guard script that fails on stale canonical path references in control docs and wiring it into the `codex:check` pipeline via `docs:check`.
 - Completed NEXT_STEPS item 11 by adding a CI step to run `pnpm examples:smoke -- --json-summary` and uploading generated summary JSON artifacts from `examples/dist/smoke-summaries/*.json`.
 - Extended smoke summary behavior to emit per-example JSON files under `examples/dist/smoke-summaries/` when `--json-summary` is enabled, so CI artifact upload can reliably capture machine-readable outputs.
-- Consolidated the canonical PRD decisions ledger into `docs/decisions/PRD_DECISIONS.md`, merged unique historical decisions from `docs/foundation/04_PRD/PRD_DECISIONS.md`, and converted the foundation-path file into an archived pointer to prevent future drift.
+- Consolidated the canonical PRD decisions ledger into `docs/decisions/PRD_DECISIONS.md`, merged unique historical decisions from legacy foundation decisions-path pointer, and converted the foundation-path file into an archived pointer to prevent future drift.
 - Updated source-of-truth decision-log references in `README.md`, `AGENTS.md`, `docs/governance/PRD_PROMPT_DOCTRINE.md`, and `docs/prompts/PRD_MASTER_PROMPTS.md` to point to `docs/decisions/PRD_DECISIONS.md`.
 - Completed a CLI test-hardening task by adding built-CLI snapshot coverage for `validate` and `inspect` text/`--json` output using the existing E2E fixture flow, including byte-field normalization to keep snapshots deterministic while still catching contract drift.
 - Completed NEXT_STEPS item 1 by aligning the README contributor MVP gate to current root script names (`typecheck`, `test`, `build`, `examples:smoke`) and clarifying script-name sync expectations.
