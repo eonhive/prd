@@ -25,3 +25,6 @@
 
 19. [x] Added concise CLI JSON schema snippets under `docs/runtime/PRD_CLI_JSON_CONTRACT.md` with an explicit `prd-cli-json-v0.1` contract identifier for automation pinning.
 20. [x] Extended docs-consistency guard with an optional `--include-root-docs` mode for selected non-archive root docs (`BUILD_STATUS.md`, `NEXT_STEPS.md`) while preserving canonical decisions-path enforcement.
+
+21. [x] Hardened docs-consistency allowlist matching to validate the specific allowed snippet span in `docs/decisions/PRD_DECISIONS.md` rather than allowing file-wide sentinel-based bypasses.
+
