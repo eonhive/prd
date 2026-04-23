@@ -10,7 +10,10 @@ import {
 } from "react";
 import type { PrdFileMap, PrdPackageValidationResult } from "@eonhive/prd-validator";
 import { validatePackageFiles } from "@eonhive/prd-validator";
-import { openPrdDocument } from "@eonhive/prd-viewer-core";
+import {
+  PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR,
+  openPrdDocument
+} from "@eonhive/prd-viewer-core";
 import {
   type PrdAssetDeclaration,
   type PrdAttachmentDeclaration,
@@ -26,6 +29,7 @@ import {
   type PrdOpenedDocument,
   type PrdPackageReader,
   type PrdPublicMetadata,
+  type PrdReferenceLoadMode,
   PRD_GENERAL_DOCUMENT_SECTION_ENTRY_PREFIX,
   type PrdStoryboardRoot,
   PRD_LOCALIZED_ENTRIES_PATH,
@@ -80,7 +84,33 @@ interface PackageFacts {
   segmentation: ViewerInspectionSegmentation;
   localizedResources: boolean;
   localizedAlternateEntries: boolean;
-  referenceLoadMode: "eager-whole-package";
+  referenceLoadMode: PrdReferenceLoadMode;
+}
+
+const referenceViewerRuntimeDescriptor = PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR;
+const referenceViewerLoadMode =
+  referenceViewerRuntimeDescriptor.referenceLoadMode ?? "eager-whole-package";
+
+function formatReferenceLoadMode(loadMode: PrdReferenceLoadMode): string {
+  if (loadMode === "eager-whole-package") {
+    return "eager whole-package in-memory";
+  }
+
+  return loadMode;
+}
+
+function formatReferenceViewerProfileSummary(): string {
+  const supportedProfiles = referenceViewerRuntimeDescriptor.supportedProfiles ?? [];
+
+  if (supportedProfiles.length === 0) {
+    return "none declared";
+  }
+
+  return supportedProfiles.map((profile) => getProfileDisplayLabel(profile)).join(", ");
+}
+
+function formatReferenceViewerSupportStateSummary(): string {
+  return referenceViewerRuntimeDescriptor.supportStates.join(", ");
 }
 
 function createPackageReader(files: PrdFileMap): PrdPackageReader {
@@ -484,7 +514,7 @@ function createPackageFacts(
     entryKind: inferViewerEntryKind(opened.entryPath),
     segmentation: inferViewerSegmentation(opened),
     ...summarizeLocalizedContentIndex(files),
-    referenceLoadMode: "eager-whole-package"
+    referenceLoadMode: referenceViewerLoadMode
   };
 }
 
@@ -1986,10 +2016,9 @@ function PackageFactsView({
   facts: PackageFacts;
 }) {
   const hasLocalization = facts.localeCount > 0;
-  const loadModeLabel =
-    facts.referenceLoadMode === "eager-whole-package"
-      ? "eager whole-package in-memory"
-      : facts.referenceLoadMode;
+  const loadModeLabel = formatReferenceLoadMode(facts.referenceLoadMode);
+  const supportedProfilesLabel = formatReferenceViewerProfileSummary();
+  const supportStatesLabel = formatReferenceViewerSupportStateSummary();
 
   return (
     <section className="package-facts-card" aria-label="Package facts and loading profile">
@@ -2046,9 +2075,10 @@ function PackageFactsView({
           </div>
         </dl>
         <p className="package-facts-note">
-          Current reference-viewer truth: the package is unzipped and loaded into
-          memory before rendering. Any media-level lazy presentation remains an
-          implementation detail, not a format guarantee.
+          Reference viewer descriptor: profiles {supportedProfilesLabel}; runtime
+          states {supportStatesLabel}; load mode {loadModeLabel}. Any media-level
+          lazy presentation remains an implementation detail, not a format
+          guarantee.
         </p>
       </div>
     </section>
