@@ -48,10 +48,10 @@ importers:
   apps/prd-viewer-web:
     dependencies:
       '@eonhive/prd-types':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../../packages/prd-types
       '@eonhive/prd-validator':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../../packages/prd-validator
       '@eonhive/prd-viewer-core':
         specifier: ^0.1.0
@@ -69,22 +69,22 @@ importers:
   packages/prd-cli:
     dependencies:
       '@eonhive/prd-packager':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-packager
       '@eonhive/prd-types':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-types
       '@eonhive/prd-validator':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-validator
 
   packages/prd-packager:
     dependencies:
       '@eonhive/prd-types':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-types
       '@eonhive/prd-validator':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-validator
       fflate:
         specifier: ^0.8.2
@@ -95,7 +95,7 @@ importers:
   packages/prd-validator:
     dependencies:
       '@eonhive/prd-types':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-types
       fflate:
         specifier: ^0.8.2
@@ -104,7 +104,7 @@ importers:
   packages/prd-viewer-core:
     dependencies:
       '@eonhive/prd-types':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../prd-types
 
 packages:

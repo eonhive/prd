@@ -1,6 +1,6 @@
 {
   "name": "@eonhive/prd-types",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared TypeScript types for Portable Responsive Document (PRD) tooling.",
   "keywords": [
     "prd",
