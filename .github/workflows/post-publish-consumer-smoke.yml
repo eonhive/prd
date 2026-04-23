@@ -1,0 +1,41 @@
+name: Post-Publish Consumer Smoke
+
+on:
+  workflow_run:
+    workflows:
+      - Release
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consumer-smoke:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Run published npm consumer smoke
+        run: node ./scripts/external-consumer-smoke.mjs
+
+      - name: Upload consumer smoke summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-consumer-smoke-summary
+          path: examples/dist/external-consumer-smoke-summary.json
+          if-no-files-found: error

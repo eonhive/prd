@@ -271,6 +271,7 @@ The current top-level scripts are:
 * `pnpm examples:smoke`
 * `pnpm foundation:gate`
 * `pnpm runtime:conformance`
+* `pnpm consumer:smoke:npm`
 * `pnpm release:check`
 
 Docs consistency guard scope:
@@ -402,13 +403,16 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 * `pnpm changeset` to record package changes
 * `pnpm release:bootstrap` to inspect first-preview bootstrap state
 * `pnpm release:check` for the release gate (including canonical `pnpm examples:smoke`)
+* `pnpm release:preflight` to verify npm token auth, `eonhive` org membership, target package names, and first-preview bootstrap state
 * `pnpm release:status` to inspect pending release state
 
-The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it first bootstraps any still-unpublished current preview packages and then falls back to normal Changesets behavior. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).
+The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it now runs a publish preflight first, then bootstraps any still-unpublished current preview packages, and then falls back to normal Changesets behavior. The preflight writes `examples/dist/release-publish-preflight-summary.json` so npm auth and org-scope failures are explicit instead of surfacing first at `pnpm publish`. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).
 
 `pnpm foundation:gate` is now the canonical repo-level conformance gate. It runs build, tests, docs consistency, example validation, and aggregate example smoke checks, then emits `examples/dist/foundation-gate-summary.json`.
 
 `pnpm runtime:conformance` is the canonical reference-viewer runtime corpus check. It evaluates the published fixtures in `examples/runtime-conformance/runtime-conformance-manifest.json` and emits `examples/dist/runtime-conformance-summary.json`.
+
+`pnpm consumer:smoke:npm` is the post-publish external-consumer smoke check. It installs the published `@eonhive/prd-*` packages from npm in a clean temp project, then exercises `prd pack`, `prd validate`, and `prd inspect` without workspace linking. It emits `examples/dist/external-consumer-smoke-summary.json`.
 
 ### Codex Run Environment
 

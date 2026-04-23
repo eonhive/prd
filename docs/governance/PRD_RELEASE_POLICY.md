@@ -80,6 +80,7 @@ No public npm publish is allowed unless all of these are green in CI on Node 20+
 - `pnpm examples:validate`
 - `pnpm examples:smoke` (canonical aggregate smoke command)
 - tarball smoke tests for all four public packages
+- release publish preflight passes with a valid npm token and verified `eonhive` org access
 - release workflow itself is healthy
 - install and release docs match the shipped package names and commands
 
@@ -91,4 +92,4 @@ For CI annotation/reporting, smoke-capable release/check jobs should run:
 
 The first publish happens only after this release-hardening baseline is merged and the release workflow is ready to publish the current unpublished `0.1.0` packages.
 
-For the one-time `0.1.0` public preview, the Release workflow first checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.
+For the one-time `0.1.0` public preview, the Release workflow first runs `pnpm release:preflight`, then checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.

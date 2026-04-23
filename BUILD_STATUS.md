@@ -1,7 +1,17 @@
 # BUILD STATUS
 
+## 2026-04-22
+
+- Started the `0.1.0` publish-recovery slice by adding `scripts/release-publish-preflight.mjs`, root `pnpm release:preflight`, and `examples/dist/release-publish-preflight-summary.json` as the canonical npm publish-identity diagnostic surface.
+- Wired the Release workflow to run publish preflight before first-preview bootstrap publish and upload the preflight summary as a workflow artifact for CI debugging.
+- Hardened the release docs (`README.md`, `docs/governance/PRD_RELEASE_POLICY.md`, `docs/governance/PRD_NPM_RELEASE_RUNBOOK.md`) so they now describe the real operator sequence for npm auth, `eonhive` org membership, and first-preview bootstrap behavior.
+- Fixed a real post-publish verification defect by removing TypeScript-only `as const` syntax from `scripts/external-consumer-smoke.mjs`, keeping the downstream npm consumer smoke path executable under plain Node.
+- The actual npm publish is still blocked outside the repo until the `NPM_TOKEN` owner has verified publish rights for the `eonhive` npm organization and the Release workflow is rerun successfully on `main`.
+
 ## 2026-04-16
 
+- Added a post-publish external-consumer smoke path with `scripts/external-consumer-smoke.mjs`, root `pnpm consumer:smoke:npm`, and `.github/workflows/post-publish-consumer-smoke.yml` so published npm packages are verified from a clean temp project without workspace linking.
+- Refactored `apps/prd-viewer-web` package-facts/runtime copy to consume `PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR` directly, removing duplicated app-local reference-viewer load-mode/support-state strings.
 - Published a validator-valid runtime conformance corpus under `examples/runtime-conformance/`, including a machine-readable expected-results manifest for `fully-supported`, `safe-mode`, and `unsupported-required-capability` reference-viewer outcomes.
 - Added `scripts/runtime-conformance-check.mjs`, root `pnpm runtime:conformance`, and `examples/dist/runtime-conformance-summary.json` as the canonical executable runtime-baseline surface for the reference viewer.
 - Added manifest-driven runtime tests and script tests so the published corpus is verified through validator truth, viewer-core support-state truth, and summary artifact generation.

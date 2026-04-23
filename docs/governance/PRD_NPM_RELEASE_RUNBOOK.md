@@ -14,11 +14,22 @@ Before release work:
 - ensure `NPM_TOKEN` is configured in GitHub Actions
 - ensure publish access exists for the `eonhive` npm organization
 
-Local verification command:
+Local verification commands:
 
 ```bash
 pnpm release:check
+pnpm release:preflight
 ```
+
+`pnpm release:preflight` is the publish-identity gate. It verifies:
+
+- `NPM_TOKEN` is present
+- npm auth works for the token
+- the token owner is visible in the `eonhive` npm org
+- the repo is still targeting the expected `@eonhive/prd-*` package set
+- first-preview bootstrap is still the correct release mode when packages are unpublished
+
+It emits `examples/dist/release-publish-preflight-summary.json`.
 
 `pnpm examples:smoke` is the canonical aggregate smoke gate command.
 When CI/release checks need machine-readable annotation artifacts, run:
@@ -62,6 +73,7 @@ The first public preview uses the current unpublished `0.1.0` package versions.
 
 That means:
 
+- the release workflow first runs `pnpm release:preflight`
 - the release workflow first runs `pnpm release:bootstrap --publish`
 - that bootstrap step checks npm for the current `0.1.0` package versions
 - any still-unpublished preview packages are published directly in dependency order
@@ -74,6 +86,16 @@ The publish set for the first preview is:
 - `@eonhive/prd-packager`
 - `@eonhive/prd-cli`
 
+After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
+
+If `release:preflight` fails:
+
+1. confirm the `eonhive` npm organization is the intended owner of the `@eonhive` scope
+2. confirm the npm account that created `NPM_TOKEN` belongs to that org
+3. confirm that account can publish public scoped packages for the org
+4. regenerate `NPM_TOKEN` from that exact authorized account if there is any doubt
+5. rerun the `Release` workflow on `main`
+
 ---
 
 ## 4. Quick Checks
@@ -83,6 +105,7 @@ Useful release commands:
 ```bash
 pnpm release:status
 pnpm release:check
+pnpm release:preflight
 pnpm release:version
 pnpm release:publish
 ```
@@ -90,6 +113,8 @@ pnpm release:publish
 Release/check flows should keep smoke gating consistent:
 
 - `release:check` must include canonical `pnpm examples:smoke`
+- `release:preflight` must run before first-preview bootstrap publish and fail clearly on npm auth or org-membership problems
 - CI jobs that annotate smoke outcomes should use `pnpm examples:smoke -- --json-summary`
+- post-publish consumer verification should use the published npm path via `node ./scripts/external-consumer-smoke.mjs`
 
 `release:publish` exists for workflow use and emergency maintainer recovery. It is not the default day-to-day path.

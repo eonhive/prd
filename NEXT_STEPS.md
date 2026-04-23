@@ -36,5 +36,8 @@
 27. [x] Add a canonical runtime capability/conformance draft (`docs/runtime/PRD_CAPABILITY_MODEL.md` and `docs/runtime/PRD_CONFORMANCE.md`) and align viewer-core capability typing with documented conformance levels.
 28. [x] Expand docs index/navigation so canonical control docs, runtime contracts, and prompt packs are discoverable in one path from root `README.md` and `docs/README.md`.
 29. [x] Publish a standard runtime conformance fixture corpus plus expected support-state manifest for `fully-supported`, `safe-mode`, and `unsupported-required-capability` so non-reference viewers can test against a shared baseline.
-30. [ ] Refactor `apps/prd-viewer-web` to consume `PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR` directly for package-facts/runtime copy instead of duplicating runtime-support strings in app-local constants.
-31. [ ] Add a post-publish external-consumer smoke workflow that installs `@eonhive/prd-*` packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
+30. [x] Refactor `apps/prd-viewer-web` to consume `PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR` directly for package-facts/runtime copy instead of duplicating runtime-support strings in app-local constants.
+31. [x] Add a post-publish external-consumer smoke workflow that installs `@eonhive/prd-*` packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
+32. [x] Add a release publish preflight that verifies `NPM_TOKEN`, npm auth identity, `eonhive` org membership, expected `@eonhive/prd-*` package targets, and first-preview bootstrap state before CI publish.
+33. [ ] Rerun the `Release` workflow on `main` after the `NPM_TOKEN` owner has confirmed publish rights for the `eonhive` npm organization, then verify all four public packages resolve on npm at `0.1.0`.
+34. [ ] Verify `Post-Publish Consumer Smoke` passes against the real published packages, then update `BUILD_STATUS.md` to record that the `0.1.0` preview actually shipped.

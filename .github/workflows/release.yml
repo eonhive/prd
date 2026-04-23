@@ -39,6 +39,19 @@ jobs:
       - name: Run release gate
         run: pnpm release:check
 
+      - name: Run release publish preflight
+        run: pnpm release:preflight
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Upload release preflight summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-publish-preflight-summary
+          path: examples/dist/release-publish-preflight-summary.json
+          if-no-files-found: error
+
       - name: Bootstrap first public preview publish
         run: pnpm release:bootstrap --publish
         env:
