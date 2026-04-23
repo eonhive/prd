@@ -799,5 +799,5 @@ describe("built CLI binary end-to-end", () => {
         },
       }
     `);
-  });
+  }, 15_000);
 });

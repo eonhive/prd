@@ -42,8 +42,8 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@eonhive/prd-types": "workspace:*",
-    "@eonhive/prd-validator": "workspace:*",
+    "@eonhive/prd-types": "^0.1.0",
+    "@eonhive/prd-validator": "^0.1.0",
     "fflate": "^0.8.2"
   }
 }

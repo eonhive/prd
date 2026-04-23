@@ -12,12 +12,14 @@ import { spawn } from "node:child_process";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const repoRoot = process.cwd();
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const pnpmCommand = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const tarCommand = process.platform === "win32" ? "tar.exe" : "tar";
 
-const publishablePackages = [
+export const publishablePackages = [
   {
     name: "@eonhive/prd-types",
     directory: "packages/prd-types"
@@ -35,6 +37,9 @@ const publishablePackages = [
     directory: "packages/prd-cli"
   }
 ];
+
+const concreteInternalDependencyRangePattern =
+  /^(?:[\^~])?\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 
 function runCommand(command, args, options = {}) {
   const {
@@ -85,6 +90,50 @@ function runCommand(command, args, options = {}) {
   });
 }
 
+function collectDependencyEntries(manifest) {
+  return [
+    ...Object.entries(manifest.dependencies ?? {}).map(([name, value]) => ({
+      field: "dependencies",
+      name,
+      value
+    })),
+    ...Object.entries(manifest.optionalDependencies ?? {}).map(([name, value]) => ({
+      field: "optionalDependencies",
+      name,
+      value
+    }))
+  ];
+}
+
+export function assertPackedManifestDependencyMetadata(packageName, manifest) {
+  const dependencyEntries = collectDependencyEntries(manifest);
+  const workspaceDependencies = dependencyEntries.filter(({ value }) =>
+    String(value).startsWith("workspace:")
+  );
+
+  if (workspaceDependencies.length > 0) {
+    throw new Error(
+      `${packageName} packed manifest still contains workspace protocol dependencies: ${workspaceDependencies
+        .map(({ field, name, value }) => `${field}.${name}=${value}`)
+        .join(", ")}`
+    );
+  }
+
+  const invalidInternalDependencyRanges = dependencyEntries.filter(
+    ({ name, value }) =>
+      name.startsWith("@eonhive/prd-") &&
+      !concreteInternalDependencyRangePattern.test(String(value))
+  );
+
+  if (invalidInternalDependencyRanges.length > 0) {
+    throw new Error(
+      `${packageName} packed manifest contains non-semver internal dependency ranges: ${invalidInternalDependencyRanges
+        .map(({ field, name, value }) => `${field}.${name}=${value}`)
+        .join(", ")}`
+    );
+  }
+}
+
 function packageTarballPath(output, tarballDir) {
   const lines = output
     .split(/\r?\n/)
@@ -121,6 +170,25 @@ async function packPublishablePackages(tarballDir) {
   return tarballs;
 }
 
+async function readPackedPackageManifest(tarballPath) {
+  const { stdout } = await runCommand(
+    tarCommand,
+    ["-xOf", tarballPath, "package/package.json"],
+    {
+      capture: true
+    }
+  );
+
+  return JSON.parse(stdout);
+}
+
+async function assertTarballManifestMetadata(tarballs) {
+  for (const pkg of publishablePackages) {
+    const manifest = await readPackedPackageManifest(tarballs[pkg.name]);
+    assertPackedManifestDependencyMetadata(pkg.name, manifest);
+  }
+}
+
 async function installSmokeProject(projectDir, tarballPaths, npmCacheDir) {
   await mkdir(projectDir, { recursive: true });
   await writeFile(
@@ -154,7 +222,7 @@ async function writeAndRunNodeCheck(projectDir, fileName, source) {
   await runCommand(process.execPath, [checkPath], { cwd: projectDir });
 }
 
-async function main() {
+export async function runReleaseSmoke() {
   const scratchRoot = await mkdtemp(join(tmpdir(), "prd-release-smoke-"));
   const tarballDir = join(scratchRoot, "tarballs");
   const npmCacheDir = join(scratchRoot, "npm-cache");
@@ -165,6 +233,7 @@ async function main() {
     await mkdir(npmCacheDir, { recursive: true });
 
     const tarballs = await packPublishablePackages(tarballDir);
+    await assertTarballManifestMetadata(tarballs);
 
     const typesProjectDir = join(scratchRoot, "types-project");
     await installSmokeProject(typesProjectDir, [tarballs["@eonhive/prd-types"]], npmCacheDir);
@@ -250,7 +319,12 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
-});
+const currentPath = fileURLToPath(import.meta.url);
+const invokedPath = process.argv[1] ? resolve(process.argv[1]) : null;
+
+if (invokedPath === currentPath) {
+  runReleaseSmoke().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  });
+}

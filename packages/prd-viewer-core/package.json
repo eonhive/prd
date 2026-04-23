@@ -15,7 +15,6 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@eonhive/prd-types": "workspace:*"
+    "@eonhive/prd-types": "^0.1.0"
   }
 }
-

@@ -27,6 +27,7 @@
     "preruntime:conformance": "pnpm --filter @eonhive/prd-viewer-core... build && pnpm --filter @eonhive/prd-validator... build",
     "runtime:conformance": "node ./scripts/runtime-conformance-check.mjs",
     "release:bootstrap": "node ./scripts/release-bootstrap.mjs",
+    "release:audit:registry": "node ./scripts/release-registry-audit.mjs",
     "release:check": "pnpm typecheck && pnpm test && pnpm build && pnpm examples:validate && node ./scripts/release-smoke.mjs",
     "release:preflight": "node ./scripts/release-publish-preflight.mjs",
     "release:publish": "changeset publish",

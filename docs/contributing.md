@@ -51,7 +51,8 @@ pnpm install
 Expected outcome:
 
 - install succeeds
-- internal dependencies resolve via `workspace:*`
+- internal dependencies resolve to local workspace packages through pnpm workspace linking and semver-compatible internal ranges
+- the repo-level `.npmrc` keeps semver-compatible internal dependencies linked locally via `link-workspace-packages=true`
 - local package changes are immediately consumable across the monorepo
 
 ## Required local MVP gate

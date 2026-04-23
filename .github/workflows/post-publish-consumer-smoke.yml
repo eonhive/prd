@@ -29,6 +29,17 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
+      - name: Run published registry metadata audit
+        run: node ./scripts/release-registry-audit.mjs
+
+      - name: Upload registry audit summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-registry-audit-summary
+          path: examples/dist/release-registry-audit-summary.json
+          if-no-files-found: error
+
       - name: Run published npm consumer smoke
         run: node ./scripts/external-consumer-smoke.mjs
 

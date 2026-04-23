@@ -272,6 +272,7 @@ The current top-level scripts are:
 * `pnpm foundation:gate`
 * `pnpm runtime:conformance`
 * `pnpm consumer:smoke:npm`
+* `pnpm release:audit:registry`
 * `pnpm release:check`
 
 Docs consistency guard scope:
@@ -297,10 +298,11 @@ Use this flow when contributing in the monorepo before opening a PR.
 
 For the full contributor workflow and checklist, see `docs/contributing.md`.
 
-### 1) Install and keep local package links via `workspace:*`
+### 1) Install and keep local workspace links
 
-PRD packages are linked locally through pnpm workspaces (`workspace:*` ranges in package manifests).
-This keeps changes in `packages/*` immediately available to `apps/*` and other packages without publishing to npm.
+PRD packages resolve locally through pnpm workspace linking plus semver-compatible internal package ranges.
+The repo pins that behavior in [`.npmrc`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.npmrc) with `link-workspace-packages=true`.
+That keeps changes in `packages/*` immediately available to `apps/*` and other packages without publishing to npm, while still producing consumer-safe package metadata for npm releases.
 
 Run:
 
@@ -404,15 +406,18 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 * `pnpm release:bootstrap` to inspect first-preview bootstrap state
 * `pnpm release:check` for the release gate (including canonical `pnpm examples:smoke`)
 * `pnpm release:preflight` to verify npm token auth, `eonhive` org membership, target package names, and first-preview bootstrap state
+* `pnpm release:audit:registry` to verify published npm metadata contains no `workspace:*` dependencies and that `latest` points to the expected version
 * `pnpm release:status` to inspect pending release state
 
-The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it now runs a publish preflight first, then bootstraps any still-unpublished current preview packages, and then falls back to normal Changesets behavior. The preflight writes `examples/dist/release-publish-preflight-summary.json` so npm auth and org-scope failures are explicit instead of surfacing first at `pnpm publish`. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).
+The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it runs a publish preflight first, then bootstraps any still-unpublished current preview packages, and then falls back to normal Changesets behavior. The preflight writes `examples/dist/release-publish-preflight-summary.json` so npm auth and org-scope failures are explicit instead of surfacing first at `pnpm publish`. After publish, the post-publish verification path now runs a registry metadata audit first and then npm consumer smoke. The audit writes `examples/dist/release-registry-audit-summary.json`. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).
 
 `pnpm foundation:gate` is now the canonical repo-level conformance gate. It runs build, tests, docs consistency, example validation, and aggregate example smoke checks, then emits `examples/dist/foundation-gate-summary.json`.
 
 `pnpm runtime:conformance` is the canonical reference-viewer runtime corpus check. It evaluates the published fixtures in `examples/runtime-conformance/runtime-conformance-manifest.json` and emits `examples/dist/runtime-conformance-summary.json`.
 
 `pnpm consumer:smoke:npm` is the post-publish external-consumer smoke check. It installs the published `@eonhive/prd-*` packages from npm in a clean temp project, then exercises `prd pack`, `prd validate`, and `prd inspect` without workspace linking. It emits `examples/dist/external-consumer-smoke-summary.json`.
+
+The current npm preview line starts at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. This repo now prepares `0.1.1` as the corrective consumer-safe patch and does not treat the preview as cleanly shipped until the registry audit and post-publish consumer smoke both pass for `0.1.1`.
 
 ### Codex Run Environment
 

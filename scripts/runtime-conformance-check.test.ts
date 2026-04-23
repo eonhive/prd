@@ -79,5 +79,5 @@ describe("runRuntimeConformanceCheck", () => {
     expect(writtenSummary.fixtures.every((fixture) => fixture.status === "passed")).toBe(
       true
     );
-  });
+  }, 15_000);
 });

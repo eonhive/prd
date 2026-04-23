@@ -19,6 +19,7 @@ Local verification commands:
 ```bash
 pnpm release:check
 pnpm release:preflight
+pnpm release:audit:registry
 ```
 
 `pnpm release:preflight` is the publish-identity gate. It verifies:
@@ -30,6 +31,16 @@ pnpm release:preflight
 - first-preview bootstrap is still the correct release mode when packages are unpublished
 
 It emits `examples/dist/release-publish-preflight-summary.json`.
+
+`pnpm release:audit:registry` is the post-publish registry metadata gate. It verifies:
+
+- each public package resolves on npm
+- the expected version is published
+- npm `latest` resolves to that expected version
+- published dependencies contain no `workspace:*` values
+- internal `@eonhive/prd-*` dependency edges resolve to concrete semver ranges
+
+It emits `examples/dist/release-registry-audit-summary.json`.
 
 `pnpm examples:smoke` is the canonical aggregate smoke gate command.
 When CI/release checks need machine-readable annotation artifacts, run:
@@ -88,6 +99,27 @@ The publish set for the first preview is:
 
 After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
 
+## 4. Corrective 0.1.1 Release
+
+`0.1.0` is published on npm, but it leaked `workspace:*` internal dependency metadata for consumer-installed packages. The next required public release is a corrective `0.1.1` patch.
+
+For `0.1.1`:
+
+1. merge the corrective changeset to `main`
+2. let the Release workflow publish `0.1.1` on `latest`
+3. run the post-publish registry audit
+4. run the post-publish consumer smoke workflow
+5. deprecate the broken `0.1.0` versions with an upgrade message
+
+Recommended deprecation commands after `0.1.1` is live:
+
+```bash
+npm deprecate @eonhive/prd-types@0.1.0 "Broken preview release. Upgrade to 0.1.1."
+npm deprecate @eonhive/prd-validator@0.1.0 "Broken preview release. Upgrade to 0.1.1."
+npm deprecate @eonhive/prd-packager@0.1.0 "Broken preview release. Upgrade to 0.1.1."
+npm deprecate @eonhive/prd-cli@0.1.0 "Broken preview release. Upgrade to 0.1.1."
+```
+
 If `release:preflight` fails:
 
 1. confirm the `eonhive` npm organization is the intended owner of the `@eonhive` scope
@@ -98,7 +130,7 @@ If `release:preflight` fails:
 
 ---
 
-## 4. Quick Checks
+## 5. Quick Checks
 
 Useful release commands:
 
@@ -106,6 +138,7 @@ Useful release commands:
 pnpm release:status
 pnpm release:check
 pnpm release:preflight
+pnpm release:audit:registry
 pnpm release:version
 pnpm release:publish
 ```
@@ -114,7 +147,10 @@ Release/check flows should keep smoke gating consistent:
 
 - `release:check` must include canonical `pnpm examples:smoke`
 - `release:preflight` must run before first-preview bootstrap publish and fail clearly on npm auth or org-membership problems
+- `release:audit:registry` must pass before post-publish consumer smoke is treated as authoritative
 - CI jobs that annotate smoke outcomes should use `pnpm examples:smoke -- --json-summary`
-- post-publish consumer verification should use the published npm path via `node ./scripts/external-consumer-smoke.mjs`
+- post-publish verification should run in this order:
+  1. `pnpm release:audit:registry`
+  2. `node ./scripts/external-consumer-smoke.mjs`
 
 `release:publish` exists for workflow use and emergency maintainer recovery. It is not the default day-to-day path.
