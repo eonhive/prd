@@ -1,6 +1,6 @@
 {
   "name": "@eonhive/prd-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command-line tools for PRD: validate and pack Portable Responsive Documents.",
   "keywords": [
     "prd",
@@ -45,8 +45,8 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@eonhive/prd-packager": "^0.1.0",
-    "@eonhive/prd-types": "^0.1.0",
-    "@eonhive/prd-validator": "^0.1.0"
+    "@eonhive/prd-packager": "^0.1.1",
+    "@eonhive/prd-types": "^0.1.1",
+    "@eonhive/prd-validator": "^0.1.1"
   }
 }

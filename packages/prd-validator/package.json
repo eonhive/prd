@@ -1,6 +1,6 @@
 {
   "name": "@eonhive/prd-validator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Validate PRD package structure, manifest, and profile content.",
   "keywords": [
     "prd",
@@ -46,7 +46,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@eonhive/prd-types": "^0.1.0",
+    "@eonhive/prd-types": "^0.1.1",
     "fflate": "^0.8.2"
   }
 }

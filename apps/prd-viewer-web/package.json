@@ -8,8 +8,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@eonhive/prd-types": "^0.1.0",
-    "@eonhive/prd-validator": "^0.1.0",
+    "@eonhive/prd-types": "^0.1.1",
+    "@eonhive/prd-validator": "^0.1.1",
     "@eonhive/prd-viewer-core": "^0.1.0",
     "fflate": "^0.8.2",
     "react": "^19.1.0",
