@@ -12,6 +12,8 @@
 - Release run `#43` succeeded on attempt 2 for `main` commit `4e62623ab44cc7b539b392152df236b49e19dfcf`.
 - Post-Publish Consumer Smoke run `#20` succeeded and uploaded both registry-audit and external-consumer-smoke summaries.
 - The current local branch is `thehive/prd-0-1-1-closeout`.
+- PR `#36` is open at `https://github.com/eonhive/prd/pull/36`.
+- Codex CI passed on the closeout branch and PR-triggered run `#151`.
 - The worktree has unrelated dirty changes in the comic example and web viewer styles.
 
 ## Completed work
@@ -27,6 +29,9 @@
 - Re-ran local registry audit and external npm consumer smoke against the published `0.1.1` packages.
 - Verified GitHub Release and Post-Publish Consumer Smoke workflows are green for the `0.1.1` closeout path.
 - Updated closeout docs so the repo no longer describes the preview as unshipped.
+- Created and pushed the release closeout branch.
+- Opened ready PR `#36`: `[stannesi] close out prd 0.1.1 release`.
+- Verified Codex CI run `#151` passed for PR `#36`.
 
 ## In-progress work
 
@@ -89,6 +94,12 @@ Recently relevant release-control files that were updated in the last release re
 - `pnpm docs:check -- --include-root-docs`
 - GitHub connector: reran/fetched Release workflow state for run `24838700450`
 - GitHub connector: fetched Post-Publish Consumer Smoke run `26076492445` jobs and artifacts
+- `git switch -c thehive/prd-0-1-1-closeout origin/main`
+- `git add BUILD_STATUS.md NEXT_STEPS.md README.md docs/governance/PRD_NPM_RELEASE_RUNBOOK.md docs/governance/PRD_RELEASE_POLICY.md codex/PLANS.md codex/SESSION_HANDOFF.md`
+- `git commit -m "docs: close out prd 0.1.1 release"`
+- `git push -u origin thehive/prd-0-1-1-closeout`
+- GitHub connector: created PR `#36`
+- GitHub API: checked PR mergeability and Codex CI run `#151`
 
 ## Tests / verification
 
@@ -102,6 +113,7 @@ Recently relevant release-control files that were updated in the last release re
 - Verified `pnpm consumer:smoke:npm` passed against npm `latest`.
 - Verified `pnpm docs:check -- --include-root-docs` passed.
 - Verified GitHub Post-Publish Consumer Smoke run `#20` passed with registry audit and consumer smoke artifact uploads.
+- Verified Codex CI run `#151` passed for PR `#36`.
 - Local validation ran under Node `v18.17.1`, which emits expected engine warnings. GitHub release/smoke workflows are the authoritative Node 20/22 validation lane.
 
 ## Known issues
@@ -111,7 +123,8 @@ Recently relevant release-control files that were updated in the last release re
 
 ## Next recommended task
 
-- After closeout lands, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
+- Merge PR `#36` after review.
+- After closeout lands on `main`, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
 
 ## Important decisions
 
