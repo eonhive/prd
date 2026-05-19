@@ -10,10 +10,10 @@ The public npm preview line starts at **`0.1.0`**.
 
 It is a real public release, but it should be read as **pre-1.0 tooling** rather than a claim that the format or tooling surface is permanently stable.
 
-The initial `0.1.0` publish is not yet treated as a cleanly shipped preview because some published package manifests leaked `workspace:*` internal dependencies. The next required public release is a corrective **`0.1.1`** patch, and the preview is only considered clean after:
+The initial `0.1.0` publish leaked `workspace:*` internal dependencies in some published package manifests. The corrective **`0.1.1`** patch is now the clean public preview baseline:
 
 - `0.1.1` is live on npm `latest`
-- broken `0.1.0` versions are deprecated
+- broken `0.1.0` versions are deprecated with upgrade guidance
 - post-publish registry audit passes
 - post-publish npm consumer smoke passes
 
@@ -71,9 +71,9 @@ Releases do **not** publish from:
 Local development may still use older Node versions for non-release work, but the supported release environment is:
 
 - **Node.js 20+**
-- the repo root `.nvmrc` pins the current release floor to Node 20
+- the repo root `.nvmrc` pins local release work to Node 22
 
-CI currently uses Node 20 for release and validation flows so the publish gate runs against the declared floor, not a higher accidental target.
+CI release validation currently runs on Node 22, and post-publish consumer smoke runs on Node 20 to verify the declared package floor.
 
 ---
 
@@ -99,8 +99,6 @@ For CI annotation/reporting, smoke-capable release/check jobs should run:
 
 `--json-summary` is a supported smoke option intended for machine-readable CI summaries/artifacts.
 
-The first publish happens only after this release-hardening baseline is merged and the release workflow is ready to publish the current unpublished `0.1.0` packages.
-
-For the one-time `0.1.0` public preview, the Release workflow first runs `pnpm release:preflight`, then checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.
+The first-preview bootstrap path has already been used for the initial `0.1.0` publication. For the one-time `0.1.0` public preview, the Release workflow first runs `pnpm release:preflight`, then checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.
 
 After `0.1.0` exists on npm, normal Changesets release flow remains the source of truth for `0.1.1+`. The post-publish verification lane then must run `pnpm release:audit:registry` before the external npm consumer smoke path is treated as authoritative.
