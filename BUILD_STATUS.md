@@ -1,5 +1,14 @@
 # BUILD STATUS
 
+## 2026-05-18
+
+- Completed the corrective `0.1.1` release closeout: all four public packages resolve on npm `latest` at `0.1.1`, and the published dependency metadata is consumer-safe with no `workspace:*` dependency values.
+- Deprecated the broken `0.1.0` public npm versions for `@eonhive/prd-types`, `@eonhive/prd-validator`, `@eonhive/prd-packager`, and `@eonhive/prd-cli` with the message `Broken preview release. Upgrade to 0.1.1.`
+- Reran the failed Release workflow path; Release run `#43` completed successfully on attempt 2 for `main` commit `4e62623ab44cc7b539b392152df236b49e19dfcf`.
+- Verified `Post-Publish Consumer Smoke` run `#20` completed successfully, including the registry audit and external npm consumer smoke artifact uploads.
+- Re-ran local `pnpm release:audit:registry` and `pnpm consumer:smoke:npm`; both passed against the real published `0.1.1` packages. The local shell is still Node `v18.17.1`, so pnpm emitted expected engine warnings while CI remains the authoritative Node 20/22 validation lane.
+- The public preview is now recorded as shipped in a clean consumer-safe state at `0.1.1`. The next work should start from a fresh planning lane rather than more release-bootstrap recovery.
+
 ## 2026-04-23
 
 - Started the `0.1.1` corrective-release slice after confirming published `0.1.0` npm tarballs still contained `workspace:*` internal dependency metadata for `@eonhive/prd-validator`, `@eonhive/prd-packager`, and `@eonhive/prd-cli`.
