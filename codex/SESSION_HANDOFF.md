@@ -6,6 +6,7 @@
 - Local `main` is synced to `origin/main`.
 - A backup branch preserves the previous divergent local `main` pointer: `thehive/local-main-pre-closeout-sync` at `0944654b01f077b83b58466b0d1547628d22f497`.
 - Current branch is `thehive/comic-raster-panel-refresh`, based on merged `origin/main`.
+- PR `#37` is open at `https://github.com/eonhive/prd/pull/37`.
 - The current branch contains the comic example raster panel refresh:
   - SVG comic panels removed.
   - PNG comic panels added.
@@ -26,7 +27,7 @@
 
 ## In-progress work
 
-- The comic raster panel refresh is ready to be committed/pushed as a separate branch.
+- The comic raster panel refresh is committed, pushed, and open for review in PR `#37`.
 - No npm publish, npm deprecation, or release-registry work remains open for `0.1.1`.
 
 ## Changed files
@@ -60,6 +61,10 @@ Current comic refresh files:
 - `pnpm --filter @eonhive/prd-web-viewer build`
 - `pnpm dev:web -- --host 127.0.0.1 --port 5173`
 - Browser visual harness against actual comic PNG and storyboard SVG assets
+- `git add apps/prd-viewer-web/src/styles.css codex/SESSION_HANDOFF.md examples/comic-basic`
+- `git commit -m "docs: refresh comic raster panel example"`
+- `git push -u origin thehive/comic-raster-panel-refresh`
+- GitHub connector: created PR `#37`
 
 ## Tests / verification
 
@@ -69,6 +74,7 @@ Current comic refresh files:
 - Verified `pnpm examples:validate` passed.
 - Verified `pnpm examples:smoke:comic-basic` passed.
 - Verified `pnpm --filter @eonhive/prd-web-viewer build` passed.
+- Pushed `thehive/comic-raster-panel-refresh` and opened PR `#37`.
 - Visual check used a temporary local Vite-served harness with the actual shared stage image classes:
   - comic PNG rendered complete at natural ratio (`600x212`, rendered `978x346`, `aspect-ratio: auto`)
   - storyboard SVG rendered complete at natural ratio (`267x150`, rendered `978x550`, `aspect-ratio: auto`)
@@ -76,15 +82,14 @@ Current comic refresh files:
 
 ## Known issues
 
-- The current comic refresh branch has not been committed/pushed yet.
+- PR `#37` has not been merged yet.
 - The browser visual check used a focused Vite-served harness for the shared image classes, not a full automated `.prd` upload through the file picker.
 - This shell is on Node `v18.17.1`; the repo expects Node 22 for local release-aligned work.
 
 ## Next recommended task
 
-- Commit and push `thehive/comic-raster-panel-refresh`.
-- Open a review PR for the comic raster panel refresh.
-- After that PR lands, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
+- Review and merge PR `#37`.
+- After PR `#37` lands, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
 
 ## Important decisions
 
