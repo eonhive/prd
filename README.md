@@ -358,8 +358,8 @@ When a change touches release/check flows, keep smoke gates documented and align
 
 ### 4) npm publication policy during MVP
 
-npm publication is optional and intentionally deferred until milestone stability.
-Contributors should focus on local workspace validation and MVP gate health; npm credentials are **not** required to contribute or verify work.
+The public npm preview is live for the core PRD tooling packages.
+Contributors should still focus on local workspace validation and MVP gate health; npm credentials are **not** required to contribute or verify normal development work.
 
 ## Current loading baseline
 
@@ -373,7 +373,7 @@ This repo does **not** currently claim streaming, range requests, worker unzip, 
 
 ### Install from npm
 
-The public npm surface is a **`0.1.0` public preview** of the PRD tooling packages under the **eonhive** org:
+The public npm surface is a **`0.1.1` public preview** of the PRD tooling packages under the **eonhive** org:
 
 * `@eonhive/prd-types`
 * `@eonhive/prd-validator`
@@ -382,7 +382,7 @@ The public npm surface is a **`0.1.0` public preview** of the PRD tooling packag
 
 They require **Node.js 20+**. The viewer packages stay private and are not part of the npm publish set.
 
-The repo root also now includes [`.nvmrc`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.nvmrc) pinned to Node 20 so local release and Codex sessions can match the CI floor directly.
+The repo root also includes [`.nvmrc`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.nvmrc) pinned to Node 22 so local release and Codex sessions can match the release workflow directly.
 
 ```bash
 npm install -g @eonhive/prd-cli
@@ -417,7 +417,7 @@ The release workflow publishes only after the Node 20+ CI gate is green. For the
 
 `pnpm consumer:smoke:npm` is the post-publish external-consumer smoke check. It installs the published `@eonhive/prd-*` packages from npm in a clean temp project, then exercises `prd pack`, `prd validate`, and `prd inspect` without workspace linking. It emits `examples/dist/external-consumer-smoke-summary.json`.
 
-The current npm preview line starts at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. This repo now prepares `0.1.1` as the corrective consumer-safe patch and does not treat the preview as cleanly shipped until the registry audit and post-publish consumer smoke both pass for `0.1.1`.
+The npm preview line started at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch is now the clean published preview; the broken `0.1.0` versions are deprecated with upgrade guidance, and post-publish registry audit plus npm consumer smoke pass for `0.1.1`.
 
 ### Codex Run Environment
 

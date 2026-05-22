@@ -39,6 +39,7 @@
 30. [x] Refactor `apps/prd-viewer-web` to consume `PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR` directly for package-facts/runtime copy instead of duplicating runtime-support strings in app-local constants.
 31. [x] Add a post-publish external-consumer smoke workflow that installs `@eonhive/prd-*` packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
 32. [x] Add a release publish preflight that verifies `NPM_TOKEN`, npm auth identity, `eonhive` org membership, expected `@eonhive/prd-*` package targets, and first-preview bootstrap state before CI publish.
-33. [ ] Merge the corrective `0.1.1` changeset + registry-audit slice to `main`, let the `Release` workflow publish `0.1.1`, and verify all four public packages resolve on npm at `0.1.1`.
-34. [ ] Deprecate the broken `0.1.0` public npm versions with an upgrade message pointing users to `0.1.1`.
-35. [ ] Verify `pnpm release:audit:registry` and `Post-Publish Consumer Smoke` both pass against the real published `0.1.1` packages, then update `BUILD_STATUS.md` to record that the preview shipped in a clean consumer-safe state.
+33. [x] Merged the corrective `0.1.1` changeset + registry-audit slice to `main`, let the `Release` workflow publish `0.1.1`, and verified all four public packages resolve on npm at `0.1.1`.
+34. [x] Deprecated the broken `0.1.0` public npm versions with `Broken preview release. Upgrade to 0.1.1.`
+35. [x] Verified `pnpm release:audit:registry` and `Post-Publish Consumer Smoke` both pass against the real published `0.1.1` packages, then updated `BUILD_STATUS.md` to record that the preview shipped in a clean consumer-safe state.
+36. [ ] Choose the next post-preview planning lane before new implementation work: recommended first options are Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.

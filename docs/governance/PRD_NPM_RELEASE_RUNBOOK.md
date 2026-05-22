@@ -105,17 +105,17 @@ After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow
 
 ## 4. Corrective 0.1.1 Release
 
-`0.1.0` is published on npm, but it leaked `workspace:*` internal dependency metadata for consumer-installed packages. The next required public release is a corrective `0.1.1` patch.
+`0.1.0` was published on npm, but it leaked `workspace:*` internal dependency metadata for consumer-installed packages. The corrective `0.1.1` patch is now the clean public preview baseline.
 
-For `0.1.1`:
+The completed `0.1.1` closeout state is:
 
-1. merge the corrective changeset to `main`
-2. let the Release workflow publish `0.1.1` on `latest`
-3. run the post-publish registry audit
-4. run the post-publish consumer smoke workflow
-5. deprecate the broken `0.1.0` versions with an upgrade message
+1. the corrective changeset is merged to `main`
+2. `0.1.1` is published on npm `latest`
+3. post-publish registry audit passes
+4. post-publish consumer smoke passes
+5. the broken `0.1.0` versions are deprecated with an upgrade message
 
-Recommended deprecation commands after `0.1.1` is live:
+Deprecation command pattern used after `0.1.1` was live:
 
 ```bash
 npm deprecate @eonhive/prd-types@0.1.0 "Broken preview release. Upgrade to 0.1.1."
