@@ -38,6 +38,8 @@ The following workspace packages stay private:
 
 ## 2. Versioning Expectations
 
+Detailed policy for separating PRD format versions, manifest versions, runtime contract versions, and npm package versions lives in `docs/core/PRD_VERSIONING_POLICY.md`.
+
 Until PRD reaches `1.0.0`:
 
 - semver is still used

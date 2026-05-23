@@ -1,5 +1,13 @@
 # BUILD STATUS
 
+## 2026-05-23
+
+- Merged PR `#37` (`[stannesi] refresh comic example raster panels`) into `main` and synced local `main` before starting the public-product canon slice.
+- Added the product-boundary canon in `docs/product/PRD_PRODUCT_BOUNDARIES.md`, defining PRD Core, Reference Stack, Studio, Viewer, Cloud, SDK, Renderer, and PRDc boundaries without changing manifest, schema, validator, CLI, or viewer behavior.
+- Added the versioning-policy canon in `docs/core/PRD_VERSIONING_POLICY.md`, separating PRD format versions, manifest versions, profile/extension versions, runtime contract versions, CLI JSON contract versions, and npm package versions.
+- Updated root/docs navigation, architecture docs, release policy, decisions, and `NEXT_STEPS.md` so the next open lane is Phase 5 authoring/tooling, starting with a minimal `prd init` or template-scaffold slice.
+- Local validation for this docs-only slice included `pnpm docs:check -- --include-root-docs`, `git diff --check`, and `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` under Node `v24.5.0`.
+
 ## 2026-05-18
 
 - Completed the corrective `0.1.1` release closeout: all four public packages resolve on npm `latest` at `0.1.1`, and the published dependency metadata is consumer-safe with no `workspace:*` dependency values.

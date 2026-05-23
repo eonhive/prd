@@ -2,7 +2,7 @@
 > Canonical decision log location: `docs/decisions/PRD_DECISIONS.md`.
 > Duplicate ledgers must be merged here; non-canonical copies must be archived to prevent drift.
 
-_Last updated: April 15, 2026_
+_Last updated: May 23, 2026_
 _Status: Working decision log v0.2 (canonical)_
 
 ## Purpose
@@ -651,6 +651,40 @@ Add `core/PRD_COLLECTION_AND_SERIES_MODEL.md` and align the metadata model, mani
 
 ---
 
+## PRD-037 — Product layers must not redefine PRD validity
+**Status:** Accepted
+
+**Decision:**
+PRD Core defines package validity. The Reference Stack proves the core is executable. Product layers such as Studio, Cloud, SDK product surfaces, advanced Viewer apps, Renderer implementations, and PRDc consume PRD but must not redefine what counts as a valid PRD package.
+
+**Why:**
+The project needs a public product path without blurring the standard, reference tooling, and future service/product layers. Keeping those boundaries explicit prevents PRD from becoming a viewer app, a Cloud product, or an archive system by accident.
+
+**Implication:**
+The current public preview consists of docs, schemas, examples, conformance fixtures, and the public `@eonhive/prd-*` tooling packages. Viewer packages remain private npm surfaces. Studio, Cloud, PRDc, and broad SDK/product surfaces remain future ecosystem lanes above the core.
+
+**Follow-up:**
+Keep `docs/product/PRD_PRODUCT_BOUNDARIES.md`, architecture docs, README navigation, and future Phase 5 authoring/tooling plans aligned.
+
+---
+
+## PRD-038 — Format, manifest, runtime, and npm versions are separate surfaces
+**Status:** Accepted
+
+**Decision:**
+PRD versioning uses separate surfaces for package-declared `prdVersion`, package-declared `manifestVersion`, optional profile and extension versions, runtime/viewer versions, CLI JSON contract versions, and public npm package versions. These surfaces may align in docs and tooling, but they must not be treated as interchangeable.
+
+**Why:**
+The current executable package examples use `prdVersion: "1.0"` and `manifestVersion: "1.0"` while the public npm tooling preview is `0.1.1`. Without explicit policy, contributors and consumers can mistake npm preview maturity for format finality or mistake manifest version values for package release numbers.
+
+**Implication:**
+Changes to format or manifest semantics need docs, validator/schema alignment, and decision coverage. Public npm releases remain Changesets-driven, CI-published, and registry-audited. Published package metadata must not contain `workspace:*` dependency values.
+
+**Follow-up:**
+Keep `docs/core/PRD_VERSIONING_POLICY.md`, `docs/governance/PRD_RELEASE_POLICY.md`, release runbooks, and package docs aligned.
+
+---
+
 ## Open Decisions Still Pending
 
 ### PRD-P001 — Minimal valid package structure
@@ -676,6 +710,9 @@ Narrowed by PRD-035. Remaining work is whether any later extension should standa
 
 ### PRD-P005 — Exact relation of PRD / PRDc / Studio / Viewer / Cloud / SDK / Renderer
 **Status:** Pending
+
+**Note:**
+Narrowed by PRD-037 and `docs/product/PRD_PRODUCT_BOUNDARIES.md`. Remaining work is detailed product implementation planning for Studio, Cloud, SDK product surfaces, Renderer implementations, and PRDc workflows.
 
 ### PRD-P006 — Collection/series model for large works
 **Status:** Pending
