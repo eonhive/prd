@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/prd-init-scaffold`, based on merged `main`.
 - The branch implements the Phase 5 authoring starter slice: `prd init`.
+- PR `#39` is open at `https://github.com/eonhive/prd/pull/39`.
 - No manifest, schema, validator, viewer, runtime support-state, or npm release behavior was changed.
 
 ## Completed work
@@ -57,6 +58,9 @@
 - `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
+- `git commit -m "feat: add prd init scaffold command"`
+- `git push -u origin thehive/prd-init-scaffold`
+- GitHub connector: created PR `#39`
 
 ## Tests / verification
 
@@ -67,12 +71,14 @@
 
 ## Known issues
 
+- PR `#39` has not been merged yet.
+- Re-check PR `#39` GitHub `validate` status before merge if the branch changes.
 - `prd init` intentionally creates starter package directories only; it does not create `.prd` archives, import existing documents, or provide a visual Studio/editor.
 - Full Phase 5 authoring workflow and import/export matrix are still pending.
 
 ## Next recommended task
 
-- Merge the `prd init` scaffold branch after PR checks pass.
+- Merge PR `#39` after GitHub checks pass.
 - After this branch lands, plan `NEXT_STEPS.md` item `38`: authoring workflow and import/export matrix.
 
 ## Important decisions
