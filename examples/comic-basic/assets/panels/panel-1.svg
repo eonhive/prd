@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="Comic panel 1 placeholder">
-  <rect width="960" height="540" rx="40" fill="#1f3f5e" />
-  <rect x="38" y="38" width="884" height="464" rx="28" fill="#2f597f" />
-  <circle cx="176" cy="128" r="34" fill="#f6c65b" />
-  <path d="M122 388C230 260 350 206 520 206C662 206 768 250 850 330" fill="none" stroke="#d9edf7" stroke-width="18" stroke-linecap="round" />
-  <path d="M294 296L360 190L420 296" fill="none" stroke="#f7fbff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
-  <text x="82" y="462" fill="#f7fbff" font-family="Arial, sans-serif" font-size="42" font-weight="700">Panel 1</text>
-  <text x="82" y="500" fill="#d7e8f3" font-family="Arial, sans-serif" font-size="22">City canopy establishing beat</text>
-</svg>

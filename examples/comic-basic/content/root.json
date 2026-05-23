@@ -8,20 +8,20 @@
     {
       "id": "panel-1",
       "asset": "panel-1-art",
-      "alt": "Courier balanced above the glowing city canopy at dusk",
-      "caption": "Establishing shot of the city canopy"
+      "alt": "A reader is frustrated because a static proposal only works on one screen and becomes too small elsewhere",
+      "caption": "Old documents are static and hard to use everywhere."
     },
     {
       "id": "panel-2",
       "asset": "panel-2-art",
-      "alt": "Courier leaping between two suspended walkways",
-      "caption": "Courier leaps between suspended walkways"
+      "alt": "PRD adapts across devices while keeping interactive charts, comments, media, and offline sync available",
+      "caption": "PRD is more than just resizing."
     },
     {
       "id": "panel-3",
       "asset": "panel-3-art",
-      "alt": "Close-up of the courier bracing before the handoff",
-      "caption": "Close-up beat before the handoff"
+      "alt": "One PRD travels across phone, desktop, collaboration, live update, and offline reading contexts",
+      "caption": "One PRD can be portable, responsive, collaborative, and rich."
     }
   ]
 }

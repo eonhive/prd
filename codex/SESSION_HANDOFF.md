@@ -2,50 +2,37 @@
 
 ## Current status
 
-- Public npm packages are live at `0.1.1`:
-  - `@eonhive/prd-types`
-  - `@eonhive/prd-validator`
-  - `@eonhive/prd-packager`
-  - `@eonhive/prd-cli`
-- Published `0.1.1` dependency metadata is consumer-safe and no longer uses `workspace:*`.
-- Broken `0.1.0` npm versions are deprecated with `Broken preview release. Upgrade to 0.1.1.`
-- Release run `#43` succeeded on attempt 2 for `main` commit `4e62623ab44cc7b539b392152df236b49e19dfcf`.
-- Post-Publish Consumer Smoke run `#20` succeeded and uploaded both registry-audit and external-consumer-smoke summaries.
-- The current local branch is `thehive/prd-0-1-1-closeout`.
-- PR `#36` is open at `https://github.com/eonhive/prd/pull/36`.
-- Codex CI passed on the closeout branch and PR-triggered run `#151`.
-- The worktree has unrelated dirty changes in the comic example and web viewer styles.
+- PR `#36` (`[stannesi] close out prd 0.1.1 release`) is merged into `main` at `42aaef16cb17a048ff48138349730c60101b0d5a`.
+- Local `main` is synced to `origin/main`.
+- A backup branch preserves the previous divergent local `main` pointer: `thehive/local-main-pre-closeout-sync` at `0944654b01f077b83b58466b0d1547628d22f497`.
+- Current branch is `thehive/comic-raster-panel-refresh`, based on merged `origin/main`.
+- PR `#37` is open at `https://github.com/eonhive/prd/pull/37`.
+- The current branch contains the comic example raster panel refresh:
+  - SVG comic panels removed.
+  - PNG comic panels added.
+  - comic manifest asset declarations switched to `image/png`.
+  - comic panel alt/caption text updated to match the new raster panels.
+  - shared comic/storyboard stage image CSS no longer forces `16 / 9`.
 
 ## Completed work
 
-- Fixed release preflight so unified unpublished post-preview versions such as `0.1.1` can pass in normal Changesets release mode.
-- Landed the manual versioning path for `0.1.1` so public package versions and internal public-package ranges now target `^0.1.1`.
-- Confirmed the corrective `0.1.1` release is published on npm.
-- Confirmed published `0.1.1` package dependencies are concrete semver ranges:
-  - validator depends on `@eonhive/prd-types@^0.1.1`
-  - packager depends on `@eonhive/prd-types@^0.1.1` and `@eonhive/prd-validator@^0.1.1`
-  - cli depends on `@eonhive/prd-types@^0.1.1`, `@eonhive/prd-validator@^0.1.1`, and `@eonhive/prd-packager@^0.1.1`
-- Deprecated the broken `0.1.0` npm versions for all four public packages.
-- Re-ran local registry audit and external npm consumer smoke against the published `0.1.1` packages.
-- Verified GitHub Release and Post-Publish Consumer Smoke workflows are green for the `0.1.1` closeout path.
-- Updated closeout docs so the repo no longer describes the preview as unshipped.
-- Created and pushed the release closeout branch.
-- Opened ready PR `#36`: `[stannesi] close out prd 0.1.1 release`.
-- Verified Codex CI run `#151` passed for PR `#36`.
+- Merged PR `#36` through GitHub using a squash merge.
+- Fetched `origin/main` and confirmed the merged closeout commit is on `main`.
+- Switched local work away from the release closeout branch.
+- Preserved the prior local `main` pointer with `thehive/local-main-pre-closeout-sync`.
+- Synced local `main` to `origin/main`.
+- Isolated the dirty comic/viewer edits on `thehive/comic-raster-panel-refresh`.
+- Cleaned up the comic candidate work by removing the commented CSS property and aligning panel captions/alt text to the actual PNG content.
+- Ran validation, smoke, build, and visual checks for the comic refresh branch.
 
 ## In-progress work
 
-- Local uncommitted edits exist and need owner review before any unrelated release or docs cleanup:
-  - `apps/prd-viewer-web/src/styles.css`
-  - `examples/comic-basic/content/root.json`
-  - `examples/comic-basic/manifest.json`
-  - deleted SVG panel assets under `examples/comic-basic/assets/panels/`
-  - added PNG panel assets under `examples/comic-basic/assets/panels/`
-- The closeout docs and codex handoff files are part of the current closeout change. The unrelated comic/viewer edits remain separate local worktree changes.
+- The comic raster panel refresh is committed, pushed, and open for review in PR `#37`.
+- No npm publish, npm deprecation, or release-registry work remains open for `0.1.1`.
 
 ## Changed files
 
-Current dirty worktree files:
+Current comic refresh files:
 
 - [styles.css](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/styles.css)
 - [root.json](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/examples/comic-basic/content/root.json)
@@ -56,89 +43,63 @@ Current dirty worktree files:
 - [panel-1.png](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/examples/comic-basic/assets/panels/panel-1.png)
 - [panel-2.png](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/examples/comic-basic/assets/panels/panel-2.png)
 - [panel-3.png](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/examples/comic-basic/assets/panels/panel-3.png)
-
-Recently relevant release-control files that were updated in the last release recovery cycle:
-
-- [release-publish-preflight.mjs](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/scripts/release-publish-preflight.mjs)
-- [release-publish-preflight.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/scripts/release-publish-preflight.test.ts)
-- [README.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/README.md)
-- [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md)
-- [BUILD_STATUS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/BUILD_STATUS.md)
-- [NEXT_STEPS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/NEXT_STEPS.md)
-- [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md)
-- [PLANS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/codex/PLANS.md)
 - [SESSION_HANDOFF.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/codex/SESSION_HANDOFF.md)
 
 ## Commands run
 
-- `git status --short`
-- `git branch --show-current`
-- `git log --oneline -5`
-- `npm view @eonhive/prd-types version`
-- `npm view @eonhive/prd-validator version`
-- `npm view @eonhive/prd-packager version`
-- `npm view @eonhive/prd-cli version`
-- `npm view @eonhive/prd-validator@0.1.1 dependencies --json`
-- `npm view @eonhive/prd-packager@0.1.1 dependencies --json`
-- `npm view @eonhive/prd-cli@0.1.1 dependencies --json`
-- `npm view @eonhive/prd-types@0.1.0 deprecated`
-- `npm view @eonhive/prd-validator@0.1.0 deprecated`
-- `npm view @eonhive/prd-packager@0.1.0 deprecated`
-- `npm view @eonhive/prd-cli@0.1.0 deprecated`
-- `npm deprecate @eonhive/prd-types@0.1.0 "Broken preview release. Upgrade to 0.1.1."`
-- `npm deprecate @eonhive/prd-validator@0.1.0 "Broken preview release. Upgrade to 0.1.1."`
-- `npm deprecate @eonhive/prd-packager@0.1.0 "Broken preview release. Upgrade to 0.1.1."`
-- `npm deprecate @eonhive/prd-cli@0.1.0 "Broken preview release. Upgrade to 0.1.1."`
-- `pnpm release:audit:registry`
-- `pnpm consumer:smoke:npm`
+- `git status --short --branch --untracked-files=all`
+- `git log --oneline --decorate -8`
+- `git ls-remote origin refs/heads/main refs/heads/thehive/prd-0-1-1-closeout`
+- GitHub connector: merged PR `#36`
+- `git fetch origin main thehive/prd-0-1-1-closeout`
+- `git branch thehive/local-main-pre-closeout-sync 0944654b01f077b83b58466b0d1547628d22f497`
+- `git switch -c thehive/comic-raster-panel-refresh origin/main`
+- `git branch -f main origin/main`
 - `pnpm docs:check -- --include-root-docs`
-- GitHub connector: reran/fetched Release workflow state for run `24838700450`
-- GitHub connector: fetched Post-Publish Consumer Smoke run `26076492445` jobs and artifacts
-- `git switch -c thehive/prd-0-1-1-closeout origin/main`
-- `git add BUILD_STATUS.md NEXT_STEPS.md README.md docs/governance/PRD_NPM_RELEASE_RUNBOOK.md docs/governance/PRD_RELEASE_POLICY.md codex/PLANS.md codex/SESSION_HANDOFF.md`
-- `git commit -m "docs: close out prd 0.1.1 release"`
-- `git push -u origin thehive/prd-0-1-1-closeout`
-- GitHub connector: created PR `#36`
-- GitHub API: checked PR mergeability and Codex CI run `#151`
+- `pnpm examples:validate`
+- `pnpm examples:smoke:comic-basic`
+- `pnpm --filter @eonhive/prd-web-viewer build`
+- `pnpm dev:web -- --host 127.0.0.1 --port 5173`
+- Browser visual harness against actual comic PNG and storyboard SVG assets
+- `git add apps/prd-viewer-web/src/styles.css codex/SESSION_HANDOFF.md examples/comic-basic`
+- `git commit -m "docs: refresh comic raster panel example"`
+- `git push -u origin thehive/comic-raster-panel-refresh`
+- GitHub connector: created PR `#37`
 
 ## Tests / verification
 
-- Verified all four public packages resolve on npm at `0.1.1`.
-- Verified published `0.1.1` dependency metadata contains no `workspace:*` values for:
-  - `@eonhive/prd-validator`
-  - `@eonhive/prd-packager`
-  - `@eonhive/prd-cli`
-- Verified all four `0.1.0` package versions are deprecated with `Broken preview release. Upgrade to 0.1.1.`
-- Verified `pnpm release:audit:registry` passed against `0.1.1`.
-- Verified `pnpm consumer:smoke:npm` passed against npm `latest`.
+- Verified PR `#36` merged and GitHub `main` points at `42aaef16cb17a048ff48138349730c60101b0d5a`.
+- Verified local `main` and `origin/main` match.
 - Verified `pnpm docs:check -- --include-root-docs` passed.
-- Verified GitHub Post-Publish Consumer Smoke run `#20` passed with registry audit and consumer smoke artifact uploads.
-- Verified Codex CI run `#151` passed for PR `#36`.
-- Local validation ran under Node `v18.17.1`, which emits expected engine warnings. GitHub release/smoke workflows are the authoritative Node 20/22 validation lane.
+- Verified `pnpm examples:validate` passed.
+- Verified `pnpm examples:smoke:comic-basic` passed.
+- Verified `pnpm --filter @eonhive/prd-web-viewer build` passed.
+- Pushed `thehive/comic-raster-panel-refresh` and opened PR `#37`.
+- Visual check used a temporary local Vite-served harness with the actual shared stage image classes:
+  - comic PNG rendered complete at natural ratio (`600x212`, rendered `978x346`, `aspect-ratio: auto`)
+  - storyboard SVG rendered complete at natural ratio (`267x150`, rendered `978x550`, `aspect-ratio: auto`)
+- Local validation ran under Node `v18.17.1`, which emits expected engine warnings. Use Node 20+ or Node 22 for final authoritative local validation.
 
 ## Known issues
 
-- There are unrelated local comic/style edits in the worktree that should not be overwritten casually.
-- This shell is on Node `v18.17.1`; use Node 20+ or Node 22 for full repo validation.
+- PR `#37` has not been merged yet.
+- The browser visual check used a focused Vite-served harness for the shared image classes, not a full automated `.prd` upload through the file picker.
+- This shell is on Node `v18.17.1`; the repo expects Node 22 for local release-aligned work.
 
 ## Next recommended task
 
-- Merge PR `#36` after review.
-- After closeout lands on `main`, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
+- Review and merge PR `#37`.
+- After PR `#37` lands, choose the next planning lane: Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
 
 ## Important decisions
 
-- Public package dependency metadata now uses concrete semver ranges, not `workspace:*`.
-- `release:preflight` supports two valid modes:
-  - bootstrap preview for `0.1.0`
-  - normal versioned release mode for later unified versions such as `0.1.1`
-- CI publish from `main` remains the canonical release path.
-- `0.1.0` deprecation should apply to the full public toolchain for simpler user guidance.
-- The clean public preview baseline is `0.1.1`, not the deprecated `0.1.0` first publish.
+- `0.1.1` is the clean public preview baseline; do not redo npm release closeout.
+- The comic raster panels are intentionally treated as a separate branch from the release closeout.
+- The shared comic/storyboard stage image selector should allow natural image ratio for the new wider comic PNGs while preserving storyboard rendering.
+- Keep `SESSION_HANDOFF.md` updated before stopping implementation work.
 
 ## Do not redo
 
-- Do not rerun `pnpm release:version` on the current branch unless you intentionally want another versioning pass.
-- Do not recreate `0.1.1`; it is already live on npm.
-- Do not assume the dirty comic/style files are safe to revert; they look like separate in-progress work.
-- Do not re-open release bootstrap recovery unless a new publish failure appears; the remaining work is commit hygiene and next-lane planning.
+- Do not rerun npm deprecation or republish `0.1.1`.
+- Do not reopen release-bootstrap recovery unless a new publish failure appears.
+- Do not collapse the comic raster panel work back into the already-merged release closeout.
