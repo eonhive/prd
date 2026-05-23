@@ -1,10 +1,39 @@
 # @eonhive/prd-cli
 
-CLI for packaging, validating, and inspecting PRD packages.
+CLI for initializing, packaging, validating, and inspecting PRD packages.
 
 ## Commands
 
 Machine-readable JSON contract snippets and versioning notes: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.
+
+### `prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]`
+
+Creates a validator-valid starter PRD package directory.
+
+Defaults:
+
+* `--profile`: `general-document`
+* `--title`: title-cased target directory name
+* `--id`: `urn:prd:local:<slug>`
+
+Safety behavior:
+
+* creates the target directory when it does not exist
+* allows an existing empty target directory
+* refuses to write into a non-empty target directory
+* refuses unsupported profiles
+
+**Text output (stable):**
+
+```text
+Created PRD package: <targetDir>
+profile: <profile>
+title: <title>
+entry: content/root.json
+next:
+- prd validate <targetDir>
+- prd pack <targetDir> --out <targetDir>.prd
+```
 
 ### `prd pack <sourceDir> --out <file.prd>`
 
@@ -33,14 +62,28 @@ Runs validation plus deterministic package metrics.
 ## Exit codes
 
 - `0`: command succeeded and result is valid.
+  - `init`: package directory written.
   - `pack`: package archive written.
   - `validate`/`inspect`: `valid: true`.
 - `1`: usage error, unsupported command, or validation/inspection invalid result.
-  - Missing required args (for example, missing `--out` or missing target path).
+  - Missing required args (for example, missing init target, missing `--out`, or missing validate/inspect target path).
   - Unknown command.
+  - `init` where the target is unsafe to write or profile is unsupported.
   - `validate`/`inspect` where `valid: false`.
 
 ## Stable output contract
+
+### `init --json` fields
+
+Top-level keys (stable):
+
+- `created` (`true`)
+- `profile` (`"general-document" | "comic" | "storyboard"`)
+- `title` (`string`)
+- `id` (`string`)
+- `targetDir` (`string`)
+- `entry` (`"content/root.json"`)
+- `files` (`string[]`)
 
 ### `validate` text output
 

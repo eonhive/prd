@@ -2,16 +2,42 @@
 
 _Status: active machine-readable contract for downstream automation._
 
-This document defines a concise, versioned JSON contract for `prd validate --json` and `prd inspect --json`.
+This document defines a concise, versioned JSON contract for `prd init --json`, `prd validate --json`, and `prd inspect --json`.
 
 Canonical command docs remain in `packages/prd-cli/README.md`.
 
 ## Contract versioning policy
 
 - Current contract version: `prd-cli-json-v0.1`
-- Compatibility target: PRD repo/package version line `0.1.x`
+- Compatibility target: PRD CLI preview line `0.x`
 - Additive fields MAY be introduced in minor releases.
 - Breaking shape changes MUST use a new contract version identifier (for example `prd-cli-json-v0.2`) and MUST be documented before release.
+
+## `init --json` contract snippet
+
+```json
+{
+  "$id": "https://eonhive.dev/prd/contracts/cli/init/v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["created", "profile", "title", "id", "targetDir", "entry", "files"],
+  "properties": {
+    "created": { "const": true },
+    "profile": {
+      "type": "string",
+      "enum": ["general-document", "comic", "storyboard"]
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "targetDir": { "type": "string", "minLength": 1 },
+    "entry": { "const": "content/root.json" },
+    "files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
+```
 
 ## Shared issue shape
 

@@ -1,11 +1,12 @@
 {
   "name": "@eonhive/prd-cli",
   "version": "0.1.1",
-  "description": "Command-line tools for PRD: validate and pack Portable Responsive Documents.",
+  "description": "Command-line tools for PRD: initialize, validate, inspect, and pack Portable Responsive Documents.",
   "keywords": [
     "prd",
     "portable-responsive-document",
     "cli",
+    "scaffold",
     "validator",
     "packager"
   ],

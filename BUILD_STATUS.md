@@ -7,6 +7,9 @@
 - Added the versioning-policy canon in `docs/core/PRD_VERSIONING_POLICY.md`, separating PRD format versions, manifest versions, profile/extension versions, runtime contract versions, CLI JSON contract versions, and npm package versions.
 - Updated root/docs navigation, architecture docs, release policy, decisions, and `NEXT_STEPS.md` so the next open lane is Phase 5 authoring/tooling, starting with a minimal `prd init` or template-scaffold slice.
 - Local validation for this docs-only slice included `pnpm docs:check -- --include-root-docs`, `git diff --check`, and `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` under Node `v24.5.0`.
+- Started Phase 5 authoring/tooling by adding `prd init`, which creates validator-valid starter package directories for `general-document`, `comic`, and `storyboard`.
+- Documented the new `prd init` text/JSON contract, added a minor changeset for `@eonhive/prd-cli`, and updated CLI tests to cover successful scaffolds, JSON output, unsupported profiles, and non-empty target safety.
+- Verified the authoring starter slice with `pnpm exec vitest run packages/prd-cli/src/index.test.ts packages/prd-cli/src/cli.e2e.test.ts`, `pnpm docs:check -- --include-root-docs`, `git diff --check`, and `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`.
 
 ## 2026-05-18
 

@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -109,20 +109,142 @@ describe("runCli", () => {
     const exitCode = await runCli(["wat"]);
 
     expect(exitCode).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <pack|validate|inspect> ...");
+    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <init|pack|validate|inspect> ...");
   });
 
   it("reports usage/help errors for missing command args", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
+    expect(await runCli(["init"])).toBe(1);
     expect(await runCli(["pack"])).toBe(1);
     expect(await runCli(["validate"])).toBe(1);
     expect(await runCli(["inspect"])).toBe(1);
 
     const messages = errorSpy.mock.calls.map(([value]) => String(value));
+    expect(messages).toContain(
+      "Usage: prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]"
+    );
     expect(messages).toContain("Usage: prd pack <sourceDir> --out <file.prd>");
     expect(messages).toContain("Usage: prd validate <path> [--json]");
     expect(messages).toContain("Usage: prd inspect <path> [--json]");
+  });
+
+  it("creates a default general-document package with prd init", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-init-default-"));
+    const targetDir = join(parent, "starter-document");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      expect(await runCli(["init", targetDir])).toBe(0);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+
+      const manifest = JSON.parse(await readFile(join(targetDir, "manifest.json"), "utf8")) as {
+        id: string;
+        profile: string;
+        title: string;
+        entry: string;
+      };
+      expect(manifest).toMatchObject({
+        id: "urn:prd:local:starter-document",
+        profile: "general-document",
+        title: "Starter Document",
+        entry: "content/root.json"
+      });
+      expect(String(logSpy.mock.calls[0]?.[0])).toMatchInlineSnapshot(`
+        "Created PRD package: ${targetDir}
+        profile: general-document
+        title: Starter Document
+        entry: content/root.json
+        next:
+        - prd validate ${targetDir}
+        - prd pack ${targetDir} --out ${targetDir}.prd"
+      `);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("creates explicit comic and storyboard packages with prd init", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-init-profiles-"));
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      const comicDir = join(parent, "comic-starter");
+      const storyboardDir = join(parent, "storyboard-starter");
+
+      await mkdir(comicDir, { recursive: true });
+      expect(await runCli(["init", comicDir, "--profile", "comic"])).toBe(0);
+      expect(await runCli(["validate", comicDir])).toBe(0);
+      expect(await readdir(join(comicDir, "assets/panels"))).toEqual(["panel-1.svg"]);
+
+      expect(await runCli(["init", storyboardDir, "--profile", "storyboard"])).toBe(0);
+      expect(await runCli(["validate", storyboardDir])).toBe(0);
+      expect(await readdir(join(storyboardDir, "assets/frames"))).toEqual(["frame-1.svg"]);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("emits structured JSON for prd init --json with title and id overrides", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-init-json-"));
+    const targetDir = join(parent, "custom");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      expect(
+        await runCli([
+          "init",
+          targetDir,
+          "--title",
+          "Custom Launch Doc",
+          "--id",
+          "urn:prd:test:custom",
+          "--json"
+        ])
+      ).toBe(0);
+
+      expect(JSON.parse(String(logSpy.mock.calls[0]?.[0]))).toMatchInlineSnapshot(`
+        {
+          "created": true,
+          "entry": "content/root.json",
+          "files": [
+            "manifest.json",
+            "content/root.json",
+          ],
+          "id": "urn:prd:test:custom",
+          "profile": "general-document",
+          "targetDir": "${targetDir}",
+          "title": "Custom Launch Doc",
+        }
+      `);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("fails prd init before writing for unsupported profile and non-empty target", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-init-fail-"));
+    const unsupportedDir = join(parent, "unsupported");
+    const nonEmptyDir = join(parent, "non-empty");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    try {
+      await mkdir(nonEmptyDir, { recursive: true });
+      await writeFile(join(nonEmptyDir, "existing.txt"), "keep", "utf8");
+
+      expect(await runCli(["init", unsupportedDir, "--profile", "resume"])).toBe(1);
+      expect(await runCli(["init", nonEmptyDir])).toBe(1);
+
+      const messages = errorSpy.mock.calls.map(([value]) => String(value));
+      expect(messages).toContain(
+        'Unsupported profile "resume". Supported profiles: general-document, comic, storyboard.'
+      );
+      expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
+      await expect(readdir(unsupportedDir)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(await readdir(nonEmptyDir)).toEqual(["existing.txt"]);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
   });
 
   it("returns exit code 0 on valid package and 1 on invalid package for validate", async () => {

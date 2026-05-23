@@ -139,6 +139,54 @@ beforeAll(async () => {
 });
 
 describe("built CLI binary end-to-end", () => {
+  it("executes built binary init, validate, inspect, and pack for a generated package", async () => {
+    const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-init-"));
+    const sourceDir = join(outDir, "starter-comic");
+    const packedFile = join(outDir, "starter-comic.prd");
+
+    try {
+      const initResult = await runBuiltCli([
+        "init",
+        sourceDir,
+        "--profile",
+        "comic",
+        "--title",
+        "Starter Comic",
+        "--json"
+      ]);
+      expect(initResult.code).toBe(0);
+      const initJson = JSON.parse(initResult.stdout) as {
+        created: boolean;
+        profile: string;
+        files: string[];
+      };
+      expect(initJson.created).toBe(true);
+      expect(initJson.profile).toBe("comic");
+      expect(initJson.files).toContain("assets/panels/panel-1.svg");
+
+      const validateResult = await runBuiltCli(["validate", sourceDir]);
+      expect(validateResult.code).toBe(0);
+      expect(validateResult.stdout).toContain("valid: yes");
+
+      const inspectResult = await runBuiltCli(["inspect", sourceDir, "--json"]);
+      expect(inspectResult.code).toBe(0);
+      const inspectJson = JSON.parse(inspectResult.stdout) as {
+        valid: boolean;
+        inspection: { assetCount: number; entryKind: string };
+      };
+      expect(inspectJson.valid).toBe(true);
+      expect(inspectJson.inspection.assetCount).toBe(1);
+      expect(inspectJson.inspection.entryKind).toBe("structured-json");
+
+      const packResult = await runBuiltCli(["pack", sourceDir, "--out", packedFile]);
+      expect(packResult.code).toBe(0);
+      const packedBuffer = await readFile(packedFile);
+      expect(packedBuffer.length).toBeGreaterThan(0);
+    } finally {
+      await rm(outDir, { recursive: true, force: true });
+    }
+  });
+
   it("executes built binary commands pack, validate, and inspect", async () => {
     const sourceDir = await createFixture("prd-cli-e2e-");
     const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-dist-"));
