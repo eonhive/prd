@@ -1,5 +1,5 @@
 # PRD_SYSTEM_ARCHITECTURE.md
-_Last updated: April 1, 2026_  
+_Last updated: May 23, 2026_
 _Status: Canonical architecture draft v0.1_
 
 ## 1. Purpose
@@ -15,7 +15,7 @@ It separates:
 
 This is an architecture document, not a market document.
 
-Current source-of-truth is still incomplete for some product-boundary details. Those areas are labeled explicitly as assumptions instead of being presented as closed architecture.
+Current source-of-truth now includes a product-boundary baseline in `docs/product/PRD_PRODUCT_BOUNDARIES.md`. Fine-grained SDK, renderer, and future product implementation details should still be treated as follow-on work unless a dedicated doc closes them.
 
 ---
 
@@ -339,7 +339,7 @@ This split keeps rendering rules part of the standard while allowing multiple ru
 
 ### 13.1 Assumptions
 
-- The current source-of-truth is incomplete for the exact PRD / PRDc / Studio / Viewer / Cloud / SDK / Renderer boundary map.
+- The high-level PRD / PRDc / Studio / Viewer / Cloud / SDK / Renderer boundary map is now anchored by `docs/product/PRD_PRODUCT_BOUNDARIES.md`.
 - This document therefore treats PRDc, Studio, Viewer, Cloud, SDK, and Renderer as ecosystem-facing roles around PRD, while keeping PRDc specifically anchored to archive/codex behavior.
 - SDK and Renderer are described as cross-cutting between Core, Reference Stack, and Ecosystem Stack because the canon has not fully closed those boundaries yet.
 
@@ -347,10 +347,7 @@ This split keeps rendering rules part of the standard while allowing multiple ru
 
 The current canon should still be extended with:
 
-- `product/PRD_PRODUCT_BOUNDARIES.md`
-- `runtime/PRD_CAPABILITY_MODEL.md`
-- `runtime/PRD_CONFORMANCE.md`
 - `extensions/PRD_PROTECTION_MODEL.md`
-- `core/PRD_VERSIONING_POLICY.md`
+- detailed Phase 5 authoring/tooling surface docs
 
-Until those docs exist, this architecture document should be treated as the current canonical baseline, not the final closed boundary map.
+Until those follow-on docs exist, this architecture document plus `docs/product/PRD_PRODUCT_BOUNDARIES.md` should be treated as the current canonical baseline, not the final closed product implementation plan.

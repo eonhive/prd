@@ -67,6 +67,7 @@ Use these focused paths from there:
   * `docs/core/PRD_MINIMAL_VALID_SPEC.md`
   * `docs/core/PRD_MANIFEST_DRAFT.md`
   * `docs/core/PRD_PACKAGE_LAYOUT_DRAFT.md`
+  * `docs/core/PRD_VERSIONING_POLICY.md`
 * runtime contracts
   * `docs/runtime/PRD_CAPABILITY_MODEL.md`
   * `docs/runtime/PRD_CONFORMANCE.md`
@@ -75,6 +76,8 @@ Use these focused paths from there:
   * `docs/decisions/PRD_DECISIONS.md`
   * `docs/governance/PRD_PROFILE_REGISTRY.md`
   * `docs/governance/PRD_RELEASE_POLICY.md`
+* product boundaries
+  * `docs/product/PRD_PRODUCT_BOUNDARIES.md`
 * prompt packs and doctrine
   * `docs/governance/PRD_PROMPT_DOCTRINE.md`
   * `docs/prompts/PRD_MASTER_PROMPTS.md`
@@ -290,6 +293,8 @@ prd inspect <path>
 CLI output/exit-code contract: `packages/prd-cli/README.md`.
 Versioned machine-readable JSON contract snippets: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.
 Published reference-viewer runtime corpus: `examples/runtime-conformance/runtime-conformance-manifest.json`.
+Public product and ecosystem boundaries: `docs/product/PRD_PRODUCT_BOUNDARIES.md`.
+Versioning policy across format, manifest, runtime, and npm tooling surfaces: `docs/core/PRD_VERSIONING_POLICY.md`.
 
 
 ## Contributor MVP gate (no npm credentials required)
@@ -409,7 +414,7 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 * `pnpm release:audit:registry` to verify published npm metadata contains no `workspace:*` dependencies and that `latest` points to the expected version
 * `pnpm release:status` to inspect pending release state
 
-The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it runs a publish preflight first, then bootstraps any still-unpublished current preview packages, and then falls back to normal Changesets behavior. For later unified versions such as `0.1.1`, the same preflight now passes in normal versioned-release mode without requiring unpublished packages to stay at `0.1.0`. The preflight writes `examples/dist/release-publish-preflight-summary.json` so npm auth and org-scope failures are explicit instead of surfacing first at `pnpm publish`. After publish, the post-publish verification path now runs a registry metadata audit first and then npm consumer smoke. The audit writes `examples/dist/release-registry-audit-summary.json`. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md).
+The release workflow publishes only after the Node 20+ CI gate is green. For the one-time `0.1.0` preview, it runs a publish preflight first, then bootstraps any still-unpublished current preview packages, and then falls back to normal Changesets behavior. For later unified versions such as `0.1.1`, the same preflight now passes in normal versioned-release mode without requiring unpublished packages to stay at `0.1.0`. The preflight writes `examples/dist/release-publish-preflight-summary.json` so npm auth and org-scope failures are explicit instead of surfacing first at `pnpm publish`. After publish, the post-publish verification path now runs a registry metadata audit first and then npm consumer smoke. The audit writes `examples/dist/release-registry-audit-summary.json`. Maintainer docs live in [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md) and [PRD_NPM_RELEASE_RUNBOOK.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_NPM_RELEASE_RUNBOOK.md); version-surface policy lives in [PRD_VERSIONING_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/core/PRD_VERSIONING_POLICY.md).
 
 `pnpm foundation:gate` is now the canonical repo-level conformance gate. It runs build, tests, docs consistency, example validation, and aggregate example smoke checks, then emits `examples/dist/foundation-gate-summary.json`.
 
@@ -481,6 +486,8 @@ This monorepo preserves the PRD boundary between format and viewer:
 * `apps/prd-viewer-web` owns browser UI and web delivery concerns
 
 The app does not define PRD validity, and the format packages do not depend on React UI code.
+
+The public product boundary is locked in [PRD_PRODUCT_BOUNDARIES.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/product/PRD_PRODUCT_BOUNDARIES.md): core PRD defines package validity, the reference stack proves implementation truth, and Studio/Cloud/SDK/PRDc remain optional product or ecosystem layers above the core.
 
 ---
 

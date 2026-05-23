@@ -20,6 +20,7 @@ Primary paths:
   * `core/PRD_MINIMAL_VALID_SPEC.md`
   * `core/PRD_MANIFEST_DRAFT.md`
   * `core/PRD_PACKAGE_LAYOUT_DRAFT.md`
+  * `core/PRD_VERSIONING_POLICY.md`
 * runtime contracts
   * `runtime/PRD_CAPABILITY_MODEL.md`
   * `runtime/PRD_CONFORMANCE.md`
@@ -33,6 +34,8 @@ Primary paths:
   * `governance/PRD_PROFILE_REGISTRY.md`
   * `governance/PRD_PROMPT_DOCTRINE.md`
   * `governance/PRD_RELEASE_POLICY.md`
+* product boundaries
+  * `product/PRD_PRODUCT_BOUNDARIES.md`
 * prompt packs
   * `prompts/PRD_MASTER_PROMPTS.md`
 
@@ -119,6 +122,7 @@ Format/spec-layer docs:
 * `PRD_METADATA_MODEL.md`
 * `PRD_PACKAGE_LAYOUT_DRAFT.md`
 * `PRD_LOCALIZATION_MODEL.md`
+* `PRD_VERSIONING_POLICY.md`
 
 ### `runtime/`
 
@@ -146,7 +150,9 @@ Reserved location for optional extension-layer specs.
 
 ### `product/`
 
-Reserved location for product-boundary and ecosystem-role docs.
+Product-boundary and ecosystem-role docs:
+
+* `PRD_PRODUCT_BOUNDARIES.md`
 
 ### `market/`
 

@@ -1,5 +1,5 @@
 # PRD_ROADMAP.md
-_Last updated: April 1, 2026_  
+_Last updated: May 23, 2026_
 _Status: Roadmap draft v0.1_
 
 ## Purpose
@@ -157,6 +157,10 @@ Do not build late-stage fantasy systems before the base format is real.
 ## Exit criteria
 - there is a believable path from concept to usable toolchain
 
+## Current next slice
+- start with a minimal `prd init` or template-scaffold workflow for existing first-class profiles
+- defer full visual Studio, broad conversion, and hosted workflows until the package scaffold path is real
+
 ---
 
 # Phase 6 — PRDc / Archive / Ecosystem Mapping
@@ -231,7 +235,7 @@ This phase is optional ecosystem growth, not the base definition of PRD.
 
 ---
 
-# Immediate Next Documents to Create
+# Canonical Doc Sequence
 
 ## Highest priority
 1. `docs/architecture/PRD_SYSTEM_BLUEPRINT.md`
@@ -246,8 +250,8 @@ This phase is optional ecosystem growth, not the base definition of PRD.
 10. `docs/profiles/PRD_PROFILE_STORYBOARD.md`
 
 ## After that
-11. `docs/product/PRD_PRODUCT_BOUNDARIES.md` *(planned; not yet created)*
-12. `docs/core/PRD_VERSIONING_POLICY.md` *(planned; not yet created)*
+11. `docs/product/PRD_PRODUCT_BOUNDARIES.md`
+12. `docs/core/PRD_VERSIONING_POLICY.md`
 13. `docs/core/PRD_ASSETS_AND_ATTACHMENTS.md`
 14. `docs/extensions/PRD_PROTECTION_MODEL.md` *(planned; not yet created)*
 15. `docs/core/PRD_LOCALIZATION_MODEL.md`

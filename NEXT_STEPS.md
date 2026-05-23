@@ -42,4 +42,6 @@
 33. [x] Merged the corrective `0.1.1` changeset + registry-audit slice to `main`, let the `Release` workflow publish `0.1.1`, and verified all four public packages resolve on npm at `0.1.1`.
 34. [x] Deprecated the broken `0.1.0` public npm versions with `Broken preview release. Upgrade to 0.1.1.`
 35. [x] Verified `pnpm release:audit:registry` and `Post-Publish Consumer Smoke` both pass against the real published `0.1.1` packages, then updated `BUILD_STATUS.md` to record that the preview shipped in a clean consumer-safe state.
-36. [ ] Choose the next post-preview planning lane before new implementation work: recommended first options are Phase 5 authoring/tooling surface or missing governance canon such as versioning policy and product boundaries.
+36. [x] Chose the post-preview governance canon lane first, added `docs/product/PRD_PRODUCT_BOUNDARIES.md` and `docs/core/PRD_VERSIONING_POLICY.md`, and aligned README/docs/architecture controls before starting Phase 5 product implementation.
+37. [ ] Start Phase 5 authoring/tooling with a minimal `prd init` or template-scaffold slice for the existing first-class profiles (`general-document`, `comic`, `storyboard`) instead of jumping directly to full Studio or broad conversion.
+38. [ ] After the scaffold slice is real, draft the Phase 5 authoring workflow and import/export matrix so Markdown, HTML, Docx, EPUB, and PDF conversion work is sequenced intentionally rather than bundled into the first authoring command.

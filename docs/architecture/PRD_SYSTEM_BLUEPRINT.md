@@ -1,5 +1,5 @@
 # PRD_SYSTEM_BLUEPRINT.md
-_Last updated: April 1, 2026_  
+_Last updated: May 23, 2026_
 _Status: PRD execution blueprint draft v0.1_
 
 ## Purpose
@@ -162,9 +162,9 @@ Do not mix normative spec language with hype copy in the same document.
 
 ---
 
-## Missing Additions PRD Should Introduce Next
+## Additions PRD Should Track
 
-These are the highest-value additions beyond the current set:
+These are the highest-value additions beyond the original foundation set:
 
 1. A minimal valid package spec
 2. A manifest schema draft
@@ -178,6 +178,8 @@ These are the highest-value additions beyond the current set:
 10. An extension registry policy
 
 Without these, PRD remains promising but underspecified.
+
+As of May 23, 2026, the versioning policy and product-boundary map are live docs. The next governance gap in this list is the extension/protection model; the next product/tooling gap is the Phase 5 authoring surface.
 
 ---
 
@@ -575,6 +577,8 @@ In order:
 12. `extensions/PRD_PROTECTION_MODEL.md`
 
 That ordering is more disciplined than jumping straight from vision docs to white paper or monetization language.
+
+Current status: items 1 through 11 now have live repo docs. Item 12 remains a later extension lane. The next implementation lane should start Phase 5 with a minimal authoring scaffold such as `prd init`, not full Studio or broad conversion.
 
 ---
 
