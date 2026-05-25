@@ -286,6 +286,7 @@ Docs consistency guard scope:
 Example CLI usage:
 
 ```bash
+prd init ./my-prd --profile general-document
 prd validate <path>
 prd inspect <path>
 ```
@@ -391,12 +392,14 @@ The repo root also includes [`.nvmrc`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab
 
 ```bash
 npm install -g @eonhive/prd-cli
+prd init ./my-first-prd --profile general-document
 prd validate path/to/package.prd
 ```
 
 Without a global install:
 
 ```bash
+npx @eonhive/prd-cli init ./my-first-prd --profile general-document
 npx @eonhive/prd-cli validate path/to/examples/document-basic
 npx @eonhive/prd-cli pack path/to/examples/document-basic --out ./out.prd
 ```

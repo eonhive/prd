@@ -2,92 +2,94 @@
 
 ## Current status
 
-- PR `#37` (`[stannesi] refresh comic example raster panels`) was squash-merged into `main` at `90be504d37254aae989a81bf94a7f05419747fc1`.
+- PR `#38` (`[stannesi] lock public product readiness canon`) is merged into `main` at `95f96379172cf16573dc9e9d4c7b9406e04779ec`.
 - Local `main` was fast-forwarded to `origin/main`.
-- Current branch is `thehive/public-product-readiness-canon`, based on `main` at `90be504d37254aae989a81bf94a7f05419747fc1`.
-- The branch contains a docs/control-only public product readiness canon slice.
-- PR `#38` is open at `https://github.com/eonhive/prd/pull/38`.
-- No manifest, schema, validator, CLI, viewer, package export, or npm release behavior was changed.
+- Current branch is `thehive/prd-init-scaffold`, based on merged `main`.
+- The branch implements the Phase 5 authoring starter slice: `prd init`.
+- PR `#39` is open at `https://github.com/eonhive/prd/pull/39`.
+- No manifest, schema, validator, viewer, runtime support-state, or npm release behavior was changed.
 
 ## Completed work
 
-- Verified PR `#37` was open, mergeable, and had successful `validate` check runs before merging.
-- Merged PR `#37` through the GitHub connector using a squash merge with expected head SHA `b91e1a5fe8349623ee602d58852c744f8f3e8345`.
-- Added `docs/product/PRD_PRODUCT_BOUNDARIES.md` as the canonical product-boundary baseline.
-- Added `docs/core/PRD_VERSIONING_POLICY.md` as the canonical versioning-policy baseline.
-- Added accepted decisions for product-layer boundaries and separated version surfaces.
-- Updated root/docs navigation, roadmap, architecture docs, release policy, `BUILD_STATUS.md`, and `NEXT_STEPS.md`.
-- Marked `NEXT_STEPS.md` item `36` complete and added the next Phase 5 authoring/tooling backlog items.
+- Added `prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]`.
+- Added a focused CLI scaffold module that creates validator-valid unpacked package directories.
+- Implemented safe write behavior:
+  - missing target directories are created
+  - existing empty target directories are allowed
+  - non-empty target directories fail before package files are written
+  - unsupported profiles fail before package files are written
+- Generated package behavior:
+  - `general-document` creates `manifest.json` and `content/root.json`
+  - `comic` creates `manifest.json`, `content/root.json`, and one SVG panel asset
+  - `storyboard` creates `manifest.json`, `content/root.json`, and one SVG frame asset
+- Added `init --json` output documentation to the CLI JSON contract.
+- Updated root and package CLI docs with the new command.
+- Added a minor changeset for `@eonhive/prd-cli`.
+- Marked `NEXT_STEPS.md` item `37` complete.
 
 ## In-progress work
 
-- The public-product readiness canon branch is committed, pushed, open as PR `#38`, and ready for review/merge.
-- Next implementation lane after this branch should be Phase 5 authoring/tooling, starting with a minimal `prd init` or template-scaffold slice.
+- The `thehive/prd-init-scaffold` branch contains the complete `prd init` authoring starter slice.
+- Next backlog item remains `NEXT_STEPS.md` item `38`: draft the Phase 5 authoring workflow and import/export matrix after this scaffold slice lands.
 
 ## Changed files
 
+- [prd-init-scaffold.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.changeset/prd-init-scaffold.md)
 - [BUILD_STATUS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/BUILD_STATUS.md)
 - [NEXT_STEPS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/NEXT_STEPS.md)
 - [README.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/README.md)
-- [docs/README.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/README.md)
-- [PRD_VERSIONING_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/core/PRD_VERSIONING_POLICY.md)
-- [PRD_PRODUCT_BOUNDARIES.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/product/PRD_PRODUCT_BOUNDARIES.md)
-- [PRD_SYSTEM_ARCHITECTURE.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/architecture/PRD_SYSTEM_ARCHITECTURE.md)
-- [PRD_SYSTEM_BLUEPRINT.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/architecture/PRD_SYSTEM_BLUEPRINT.md)
-- [PRD_DECISIONS.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/decisions/PRD_DECISIONS.md)
-- [PRD_ROADMAP.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/foundation/04_PRD/PRD_ROADMAP.md)
-- [PRD_RELEASE_POLICY.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/governance/PRD_RELEASE_POLICY.md)
+- [PRD_CLI_JSON_CONTRACT.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/docs/runtime/PRD_CLI_JSON_CONTRACT.md)
+- [package.json](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/package.json)
+- [README.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/README.md)
+- [init.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/src/init.ts)
+- [index.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/src/index.ts)
+- [index.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/src/index.test.ts)
+- [cli.e2e.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/packages/prd-cli/src/cli.e2e.test.ts)
 - [SESSION_HANDOFF.md](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/codex/SESSION_HANDOFF.md)
 
 ## Commands run
 
 - `git status --short --branch --untracked-files=all`
-- `git log --oneline --decorate -5`
-- `curl -s https://api.github.com/repos/eonhive/prd/pulls/37`
-- `curl -s https://api.github.com/repos/eonhive/prd/commits/b91e1a5fe8349623ee602d58852c744f8f3e8345/check-runs`
-- GitHub connector: merge PR `#37`
 - `git fetch origin main`
 - `git switch main`
 - `git pull --ff-only origin main`
-- `git switch -c thehive/public-product-readiness-canon`
+- `git switch -c thehive/prd-init-scaffold`
+- `pnpm exec vitest run packages/prd-cli/src/index.test.ts packages/prd-cli/src/cli.e2e.test.ts`
 - `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
-- `git commit -m "docs: lock public product readiness canon"`
-- `git push -u origin thehive/public-product-readiness-canon`
-- GitHub connector: created PR `#38`
-- GitHub API: checked PR `#38` mergeability and validate check state
+- `git commit -m "feat: add prd init scaffold command"`
+- `git push -u origin thehive/prd-init-scaffold`
+- GitHub connector: created PR `#39`
 
 ## Tests / verification
 
-- Verified PR `#37` merged successfully and local `main` synced to `90be504d37254aae989a81bf94a7f05419747fc1`.
-- `pnpm docs:check -- --include-root-docs` passed.
-- `git diff --check` passed after removing trailing markdown whitespace.
+- `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run packages/prd-cli/src/index.test.ts packages/prd-cli/src/cli.e2e.test.ts` passed.
+- `pnpm docs:check -- --include-root-docs` passed. The default shell still reports Node `v18.17.1`, so this command emitted the expected engine warning.
+- `git diff --check` passed.
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` passed under Node `v24.5.0`.
-- The default shell still reports Node `v18.17.1`; Node `v24.5.0` is available at `/opt/homebrew/bin/node` and was used for the full gate.
 
 ## Known issues
 
-- PR `#38` has not been merged yet.
-- Re-check PR `#38` GitHub `validate` status immediately before merge if the branch is amended again.
-- No product code for Phase 5 authoring/tooling exists yet.
-- `docs/extensions/PRD_PROTECTION_MODEL.md` remains a later planned extension-governance doc.
+- PR `#39` has not been merged yet.
+- Re-check PR `#39` GitHub `validate` status before merge if the branch changes.
+- `prd init` intentionally creates starter package directories only; it does not create `.prd` archives, import existing documents, or provide a visual Studio/editor.
+- Full Phase 5 authoring workflow and import/export matrix are still pending.
 
 ## Next recommended task
 
-- Merge PR `#38`, sync local `main`, and then start the Phase 5 authoring/tooling lane from a clean branch.
-- After this branch lands, implement the Phase 5 authoring/tooling starter slice: a minimal `prd init` or template-scaffold workflow for `general-document`, `comic`, and `storyboard`.
+- Merge PR `#39` after GitHub checks pass.
+- After this branch lands, plan `NEXT_STEPS.md` item `38`: authoring workflow and import/export matrix.
 
 ## Important decisions
 
-- Product layers must not redefine PRD validity.
-- Version surfaces are separate: PRD format, manifest, profile, extension, runtime, CLI JSON, and npm package versions are not interchangeable.
-- The public product path should start with minimal authoring scaffolding, not full Studio, Cloud, broad conversion, payment, crypto, or PRDc product behavior.
-- `0.1.1` remains the clean public npm preview baseline; release recovery should not be redone.
+- `prd init` is the first executable Phase 5 authoring surface.
+- The command creates only unpacked PRD package directories; users still run `prd pack` to create `.prd` archives.
+- The command supports only current first-class profiles: `general-document`, `comic`, and `storyboard`.
+- This is a public CLI feature, so the branch includes a minor changeset for `@eonhive/prd-cli`.
 
 ## Do not redo
 
 - Do not redo npm publication, deprecation, registry audit, or consumer smoke for `0.1.1`.
-- Do not reopen PR `#37`; it is merged.
-- Do not add manifest, schema, validator, CLI, viewer, or package-export changes to this docs/control slice.
-- Do not start full Studio or broad conversion work before the minimal Phase 5 scaffold lane is scoped.
+- Do not add Studio, Cloud, PRDc, payment, crypto, rights, broad conversion, or visual-editor behavior to this slice.
+- Do not add new manifest fields, schema rules, validator issue codes, viewer support states, or package exports for this slice.

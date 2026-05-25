@@ -6,6 +6,7 @@ import {
   type PrdPackageInspectionResult,
   validatePackage
 } from "@eonhive/prd-validator/node";
+import { initPrdPackage, type PrdInitResult } from "./init.js";
 
 type CommandHandler = (args: string[]) => Promise<number>;
 type CliIssue = { code: string; message: string };
@@ -53,6 +54,8 @@ type CliInspectionOutput = CliValidationOutput & {
     referenceLoadMode: string;
   };
 };
+
+type CliInitOutput = PrdInitResult;
 
 function parseFlag(args: string[], flag: string): string | undefined {
   const index = args.indexOf(flag);
@@ -186,7 +189,49 @@ function toCliInspectionOutput(
   };
 }
 
+function formatInitResult(payload: CliInitOutput, jsonOutput: boolean): string {
+  if (jsonOutput) {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  return [
+    `Created PRD package: ${payload.targetDir}`,
+    `profile: ${payload.profile}`,
+    `title: ${payload.title}`,
+    `entry: ${payload.entry}`,
+    "next:",
+    `- prd validate ${payload.targetDir}`,
+    `- prd pack ${payload.targetDir} --out ${payload.targetDir}.prd`
+  ].join("\n");
+}
+
 const handlers: Record<string, CommandHandler> = {
+  async init(args) {
+    const targetDir = args[0];
+    const jsonOutput = hasFlag(args, "--json");
+
+    if (!targetDir) {
+      console.error(
+        "Usage: prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]"
+      );
+      return 1;
+    }
+
+    try {
+      const result = await initPrdPackage({
+        targetDir,
+        profile: parseFlag(args, "--profile"),
+        title: parseFlag(args, "--title"),
+        id: parseFlag(args, "--id")
+      });
+      console.log(formatInitResult(result, jsonOutput));
+      return 0;
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  },
+
   async pack(args) {
     const sourceDir = args[0];
     const outFile = parseFlag(args, "--out");
@@ -237,7 +282,7 @@ export async function runCli(argv: string[]): Promise<number> {
   const handler = command ? handlers[command] : undefined;
 
   if (!handler) {
-    console.error("Usage: prd <pack|validate|inspect> ...");
+    console.error("Usage: prd <init|pack|validate|inspect> ...");
     return 1;
   }
 
