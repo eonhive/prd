@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/phase-5-authoring-workflow`, based on merged `main`.
 - The branch is a docs/control slice for Phase 5 authoring workflow and import/export sequencing after `prd init`.
+- PR `#40` is open at `https://github.com/eonhive/prd/pull/40`.
 - No manifest, schema, validator, CLI behavior, viewer behavior, package export, or npm release behavior was changed.
 
 ## Completed work
@@ -48,6 +49,10 @@
 - `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
+- `git commit -m "docs: define phase 5 authoring workflow"`
+- `git push -u origin thehive/phase-5-authoring-workflow`
+- GitHub connector: created PR `#40`
+- GitHub connector: checked combined status for PR `#40` head commit
 
 ## Tests / verification
 
@@ -57,7 +62,8 @@
 
 ## Known issues
 
-- The docs/control branch is not yet merged.
+- PR `#40` is open and not yet merged.
+- GitHub combined status for the initial PR head returned no legacy statuses immediately after PR creation; GitHub Actions checks may still initialize separately.
 - Markdown import is not implemented yet; it is the recommended next executable lane.
 - `prd init` intentionally creates starter package directories only; it does not create `.prd` archives, import existing documents, or provide a visual Studio/editor.
 
