@@ -1,5 +1,14 @@
 # BUILD STATUS
 
+## 2026-05-24
+
+- Merged PR `#39` (`[stannesi] add prd init scaffold command`) into `main` at `1135a4b4e60556fce221e6daf0395035de36d893` and synced local `main` before starting the Phase 5 authoring workflow slice.
+- Added `docs/product/PRD_AUTHORING_WORKFLOW.md` to define the current public authoring path: `prd init`, edit package files, `prd validate`, `prd inspect`, `prd pack`, then open or share the `.prd` archive.
+- Added `docs/product/PRD_IMPORT_EXPORT_MATRIX.md` to sequence import/export lanes without bundling broad conversion into the first authoring surface.
+- Marked Markdown-to-structured-`general-document` import as the recommended next executable lane, while keeping HTML, DOCX, EPUB, PDF, full Studio, Cloud workflows, and broad conversion deferred.
+- This was a docs/control slice only; it did not change manifest shape, schema, validator behavior, CLI commands, viewer behavior, package exports, or npm release behavior.
+- Local validation for this docs-only slice included `pnpm docs:check -- --include-root-docs`, `git diff --check`, and `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` under Homebrew Node.
+
 ## 2026-05-23
 
 - Merged PR `#37` (`[stannesi] refresh comic example raster panels`) into `main` and synced local `main` before starting the public-product canon slice.

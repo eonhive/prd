@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: May 23, 2026_
+_Last updated: May 24, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -74,7 +74,7 @@ Studio is the future authoring, editing, preview, validation, and export surface
 
 Studio belongs to the Product Ecosystem. It may use the validator, packager, reference viewer, renderer code, and SDK helpers, but it must emit normal PRD packages rather than private product-only bundles.
 
-The first practical Phase 5 lane should be a minimal authoring/tooling surface such as package scaffolding or templates, not a full visual Studio.
+The first practical Phase 5 lane is now the minimal `prd init` authoring surface. It creates valid starter package directories without pretending that a full visual Studio exists yet.
 
 ### 5.4 Cloud
 
@@ -173,6 +173,9 @@ Those remain later optional lanes and must be introduced through explicit docs, 
 
 ## 9. Next Product Step
 
-The next implementation lane after this boundary lock should be Phase 5 authoring/tooling.
+The current Phase 5 authoring docs are:
 
-The recommended first slice is a minimal `prd init` or template-scaffold workflow that can create valid starter package directories for the existing first-class profiles. That keeps the next product step executable and small without pretending a full Studio exists yet.
+- `docs/product/PRD_AUTHORING_WORKFLOW.md`
+- `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`
+
+The next recommended executable lane is a deterministic Markdown import command that creates structured `general-document` package directories. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, and broad visual editing remain deferred product lanes.

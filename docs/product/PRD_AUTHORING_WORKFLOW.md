@@ -1,0 +1,168 @@
+# PRD_AUTHORING_WORKFLOW.md
+_Last updated: May 24, 2026_
+_Status: Phase 5 authoring workflow baseline v0.1_
+
+## 1. Purpose
+
+This document defines the current public authoring workflow for PRD after the first Phase 5 tooling slice.
+
+The goal is to make PRD authoring repeatable without pretending a full Studio, broad conversion platform, or hosted workflow exists yet.
+
+---
+
+## 2. Current Executable Workflow
+
+The current supported authoring path is:
+
+```text
+prd init
+  -> edit package files
+  -> prd validate
+  -> prd inspect
+  -> prd pack
+  -> open or share the .prd archive
+```
+
+This path is intentionally file-system first and package-first.
+
+It creates and works on unpacked package directories during authoring, then emits a `.prd` ZIP archive for interchange.
+
+---
+
+## 3. Authoring Steps
+
+### 3.1 Create a starter package
+
+Use `prd init` to create a validator-valid starter package directory:
+
+```bash
+prd init ./my-document --profile general-document
+prd init ./my-comic --profile comic
+prd init ./my-board --profile storyboard
+```
+
+Supported starter profiles:
+
+- `general-document`
+- `comic`
+- `storyboard`
+
+`prd init` does not create a `.prd` archive directly. It creates an unpacked package directory so authors can edit the manifest, content, and assets before packaging.
+
+### 3.2 Edit package files
+
+Authors edit normal package files:
+
+- `manifest.json`
+- `content/root.json`
+- declared assets under `assets/`
+- optional profile-specific files under `profiles/`
+- optional attachments under `attachments/`
+
+The manifest remains the canonical package control surface. The content root remains structured JSON for the current first-class profile baselines.
+
+### 3.3 Validate during authoring
+
+Run validation after meaningful edits:
+
+```bash
+prd validate ./my-document
+```
+
+Validation answers whether the package is structurally valid. It does not guarantee every viewer can fully render every future optional feature.
+
+### 3.4 Inspect package shape
+
+Run inspection when package shape or loading-relevant facts matter:
+
+```bash
+prd inspect ./my-document
+```
+
+Inspection reports facts such as file count, byte count, entry mode, segmentation status, localization status, attachment presence, and reference load mode.
+
+### 3.5 Pack for interchange
+
+Create a `.prd` archive only after the source directory validates:
+
+```bash
+prd pack ./my-document --out ./my-document.prd
+```
+
+The `.prd` archive is the interchange form. The unpacked directory is the authoring and CI form.
+
+### 3.6 Open or share
+
+Open the packed archive in a compatible viewer or distribute it as a portable package.
+
+The current reference viewer baseline remains eager whole-package in-memory loading. Streaming, range requests, worker unzip, lazy section fetch, and hosted opening flows are not part of the current authoring contract.
+
+---
+
+## 4. Profile-Specific Authoring Notes
+
+### 4.1 General document
+
+Use `general-document` for prose-led works such as articles, reports, manuals, resumes, portfolios, magazines, and web novels.
+
+Current authoring shape:
+
+- structured root at `content/root.json`
+- document node with `children`
+- sections, headings, paragraphs, lists, tables, images, charts, and media according to the current structured content model
+
+### 4.2 Comic
+
+Use `comic` for panel-led sequential visual works.
+
+Current authoring shape:
+
+- structured root at `content/root.json`
+- comic node with `panels`
+- panel assets declared in `manifest.assets`
+- optional series metadata through the lean collection/series model
+
+### 4.3 Storyboard
+
+Use `storyboard` for frame-led planning and review packages.
+
+Current authoring shape:
+
+- structured root at `content/root.json`
+- storyboard node with `frames`
+- frame assets declared in `manifest.assets`
+- notes and alt text kept close to frame declarations
+
+---
+
+## 5. Current Non-goals
+
+This workflow does not define:
+
+- full visual Studio behavior
+- hosted authoring or Cloud sync
+- collaborative editing
+- broad import/conversion pipelines
+- PDF, DOCX, EPUB, or HTML fidelity guarantees
+- payment, rights, crypto, entitlement, or protected-content authoring flows
+
+Those remain future product or extension lanes.
+
+---
+
+## 6. Next Implementation Lane
+
+The next executable Phase 5 lane should be a narrow Markdown import path:
+
+```text
+Markdown source -> structured general-document PRD package directory
+```
+
+Recommended command direction:
+
+```bash
+prd import markdown ./source.md --out ./my-document
+```
+
+That lane is small enough to test deterministically and useful enough to prove authoring beyond hand-editing JSON.
+
