@@ -2,7 +2,7 @@
 
 _Status: active machine-readable contract for downstream automation._
 
-This document defines a concise, versioned JSON contract for `prd init --json`, `prd validate --json`, and `prd inspect --json`.
+This document defines a concise, versioned JSON contract for `prd init --json`, `prd import markdown --json`, `prd validate --json`, and `prd inspect --json`.
 
 Canonical command docs remain in `packages/prd-cli/README.md`.
 
@@ -32,6 +32,48 @@ Canonical command docs remain in `packages/prd-cli/README.md`.
     "targetDir": { "type": "string", "minLength": 1 },
     "entry": { "const": "content/root.json" },
     "files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
+```
+
+## `import markdown --json` contract snippet
+
+```json
+{
+  "$id": "https://eonhive.dev/prd/contracts/cli/import-markdown/v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "imported",
+    "sourcePath",
+    "targetDir",
+    "profile",
+    "title",
+    "id",
+    "entry",
+    "files",
+    "nodeCount",
+    "assetCount",
+    "warnings"
+  ],
+  "properties": {
+    "imported": { "const": true },
+    "sourcePath": { "type": "string", "minLength": 1 },
+    "targetDir": { "type": "string", "minLength": 1 },
+    "profile": { "const": "general-document" },
+    "title": { "type": "string", "minLength": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "entry": { "const": "content/root.json" },
+    "files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "nodeCount": { "type": "number" },
+    "assetCount": { "type": "number" },
+    "warnings": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 }
     }

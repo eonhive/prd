@@ -6,6 +6,10 @@ import {
   type PrdPackageInspectionResult,
   validatePackage
 } from "@eonhive/prd-validator/node";
+import {
+  importMarkdownToPrdPackage,
+  type PrdMarkdownImportResult
+} from "./importMarkdown.js";
 import { initPrdPackage, type PrdInitResult } from "./init.js";
 
 type CommandHandler = (args: string[]) => Promise<number>;
@@ -56,6 +60,7 @@ type CliInspectionOutput = CliValidationOutput & {
 };
 
 type CliInitOutput = PrdInitResult;
+type CliMarkdownImportOutput = PrdMarkdownImportResult;
 
 function parseFlag(args: string[], flag: string): string | undefined {
   const index = args.indexOf(flag);
@@ -205,6 +210,42 @@ function formatInitResult(payload: CliInitOutput, jsonOutput: boolean): string {
   ].join("\n");
 }
 
+function formatMarkdownImportResult(
+  payload: CliMarkdownImportOutput,
+  jsonOutput: boolean
+): string {
+  if (jsonOutput) {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  const lines = [
+    `Imported PRD package: ${payload.targetDir}`,
+    `profile: ${payload.profile}`,
+    `title: ${payload.title}`,
+    `entry: ${payload.entry}`,
+    `nodes: ${payload.nodeCount}`,
+    `assets: ${payload.assetCount}`,
+    "warnings:"
+  ];
+
+  if (payload.warnings.length === 0) {
+    lines.push("- none");
+  } else {
+    for (const warning of payload.warnings) {
+      lines.push(`- ${warning}`);
+    }
+  }
+
+  lines.push(
+    "next:",
+    `- prd validate ${payload.targetDir}`,
+    `- prd inspect ${payload.targetDir}`,
+    `- prd pack ${payload.targetDir} --out ${payload.targetDir}.prd`
+  );
+
+  return lines.join("\n");
+}
+
 const handlers: Record<string, CommandHandler> = {
   async init(args) {
     const targetDir = args[0];
@@ -225,6 +266,48 @@ const handlers: Record<string, CommandHandler> = {
         id: parseFlag(args, "--id")
       });
       console.log(formatInitResult(result, jsonOutput));
+      return 0;
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  },
+
+  async import(args) {
+    const sourceKind = args[0];
+    const sourcePath = args[1];
+    const outDir = parseFlag(args, "--out");
+    const jsonOutput = hasFlag(args, "--json");
+
+    if (!sourceKind) {
+      console.error(
+        "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
+      );
+      return 1;
+    }
+
+    if (sourceKind !== "markdown") {
+      console.error(
+        `Unsupported import source "${sourceKind}". Supported import sources: markdown.`
+      );
+      return 1;
+    }
+
+    if (!sourcePath || !outDir) {
+      console.error(
+        "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
+      );
+      return 1;
+    }
+
+    try {
+      const result = await importMarkdownToPrdPackage({
+        sourcePath,
+        targetDir: outDir,
+        title: parseFlag(args, "--title"),
+        id: parseFlag(args, "--id")
+      });
+      console.log(formatMarkdownImportResult(result, jsonOutput));
       return 0;
     } catch (error) {
       console.error(error instanceof Error ? error.message : String(error));
@@ -282,7 +365,7 @@ export async function runCli(argv: string[]): Promise<number> {
   const handler = command ? handlers[command] : undefined;
 
   if (!handler) {
-    console.error("Usage: prd <init|pack|validate|inspect> ...");
+    console.error("Usage: prd <init|import|pack|validate|inspect> ...");
     return 1;
   }
 

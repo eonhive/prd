@@ -1,6 +1,6 @@
 # PRD_AUTHORING_WORKFLOW.md
-_Last updated: May 24, 2026_
-_Status: Phase 5 authoring workflow baseline v0.1_
+_Last updated: May 27, 2026_
+_Status: Phase 5 authoring workflow baseline v0.2_
 
 ## 1. Purpose
 
@@ -15,7 +15,7 @@ The goal is to make PRD authoring repeatable without pretending a full Studio, b
 The current supported authoring path is:
 
 ```text
-prd init
+prd init or prd import markdown
   -> edit package files
   -> prd validate
   -> prd inspect
@@ -31,7 +31,7 @@ It creates and works on unpacked package directories during authoring, then emit
 
 ## 3. Authoring Steps
 
-### 3.1 Create a starter package
+### 3.1 Create or import a starter package
 
 Use `prd init` to create a validator-valid starter package directory:
 
@@ -48,6 +48,14 @@ Supported starter profiles:
 - `storyboard`
 
 `prd init` does not create a `.prd` archive directly. It creates an unpacked package directory so authors can edit the manifest, content, and assets before packaging.
+
+Use `prd import markdown` when the source material already exists as Markdown:
+
+```bash
+prd import markdown ./source.md --out ./my-document
+```
+
+The v0.1 Markdown import lane targets `general-document` only. It supports a small deterministic subset: ATX headings, paragraphs, unordered and ordered lists, blockquotes, and standalone local relative images. Unsupported features are skipped or preserved as plain text with explicit import warnings rather than inventing broad conversion behavior.
 
 ### 3.2 Edit package files
 
@@ -152,17 +160,6 @@ Those remain future product or extension lanes.
 
 ## 6. Next Implementation Lane
 
-The next executable Phase 5 lane should be a narrow Markdown import path:
+After `prd import markdown`, the next executable Phase 5 lane should stay small and visual-profile focused: image-folder import for `comic` or `storyboard` packages.
 
-```text
-Markdown source -> structured general-document PRD package directory
-```
-
-Recommended command direction:
-
-```bash
-prd import markdown ./source.md --out ./my-document
-```
-
-That lane is small enough to test deterministically and useful enough to prove authoring beyond hand-editing JSON.
-
+Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.

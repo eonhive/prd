@@ -109,13 +109,15 @@ describe("runCli", () => {
     const exitCode = await runCli(["wat"]);
 
     expect(exitCode).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <init|pack|validate|inspect> ...");
+    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <init|import|pack|validate|inspect> ...");
   });
 
   it("reports usage/help errors for missing command args", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     expect(await runCli(["init"])).toBe(1);
+    expect(await runCli(["import"])).toBe(1);
+    expect(await runCli(["import", "markdown"])).toBe(1);
     expect(await runCli(["pack"])).toBe(1);
     expect(await runCli(["validate"])).toBe(1);
     expect(await runCli(["inspect"])).toBe(1);
@@ -123,6 +125,9 @@ describe("runCli", () => {
     const messages = errorSpy.mock.calls.map(([value]) => String(value));
     expect(messages).toContain(
       "Usage: prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]"
+    );
+    expect(messages).toContain(
+      "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
     );
     expect(messages).toContain("Usage: prd pack <sourceDir> --out <file.prd>");
     expect(messages).toContain("Usage: prd validate <path> [--json]");
@@ -241,6 +246,212 @@ describe("runCli", () => {
       );
       expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
       await expect(readdir(unsupportedDir)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(await readdir(nonEmptyDir)).toEqual(["existing.txt"]);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("imports a markdown document into a valid general-document package", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-md-"));
+    const sourcePath = join(parent, "launch-notes.md");
+    const targetDir = join(parent, "launch-notes-prd");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await writeFile(
+        sourcePath,
+        [
+          "# Launch Notes",
+          "Intro paragraph wraps",
+          "across lines.",
+          "",
+          "## Goals",
+          "- Validate generated package",
+          "- Pack archive",
+          "",
+          "> Keep the path deterministic.",
+          "",
+          "![Architecture sketch](diagram.svg \"Imported diagram\")"
+        ].join("\n"),
+        "utf8"
+      );
+      await writeFile(
+        join(parent, "diagram.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+
+      expect(await runCli(["import", "markdown", sourcePath, "--out", targetDir])).toBe(0);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+
+      const manifest = JSON.parse(await readFile(join(targetDir, "manifest.json"), "utf8")) as {
+        id: string;
+        profile: string;
+        title: string;
+        assets: Array<{ id: string; href: string; type: string }>;
+      };
+      const root = JSON.parse(await readFile(join(targetDir, "content/root.json"), "utf8")) as {
+        title: string;
+        children: Array<{ type: string; asset?: string; caption?: string }>;
+      };
+
+      expect(manifest).toMatchObject({
+        id: "urn:prd:local:launch-notes",
+        profile: "general-document",
+        title: "Launch Notes",
+        assets: [
+          {
+            id: "markdown-image-1",
+            href: "assets/images/diagram.svg",
+            type: "image/svg+xml"
+          }
+        ]
+      });
+      expect(root.title).toBe("Launch Notes");
+      expect(root.children.map((node) => node.type)).toEqual([
+        "heading",
+        "paragraph",
+        "heading",
+        "list",
+        "quote",
+        "image"
+      ]);
+      expect(await readFile(join(targetDir, "assets/images/diagram.svg"), "utf8")).toContain(
+        "<svg"
+      );
+      expect(String(logSpy.mock.calls[0]?.[0])).toMatchInlineSnapshot(`
+        "Imported PRD package: ${targetDir}
+        profile: general-document
+        title: Launch Notes
+        entry: content/root.json
+        nodes: 6
+        assets: 1
+        warnings:
+        - none
+        next:
+        - prd validate ${targetDir}
+        - prd inspect ${targetDir}
+        - prd pack ${targetDir} --out ${targetDir}.prd"
+      `);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("emits structured JSON for markdown import with title and id overrides", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-md-json-"));
+    const sourcePath = join(parent, "notes.md");
+    const targetDir = join(parent, "custom-import");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await writeFile(sourcePath, "Plain imported paragraph.", "utf8");
+
+      expect(
+        await runCli([
+          "import",
+          "markdown",
+          sourcePath,
+          "--out",
+          targetDir,
+          "--title",
+          "Custom Import",
+          "--id",
+          "urn:prd:test:custom-import",
+          "--json"
+        ])
+      ).toBe(0);
+
+      expect(JSON.parse(String(logSpy.mock.calls[0]?.[0]))).toMatchInlineSnapshot(`
+        {
+          "assetCount": 0,
+          "entry": "content/root.json",
+          "files": [
+            "manifest.json",
+            "content/root.json",
+          ],
+          "id": "urn:prd:test:custom-import",
+          "imported": true,
+          "nodeCount": 1,
+          "profile": "general-document",
+          "sourcePath": "${sourcePath}",
+          "targetDir": "${targetDir}",
+          "title": "Custom Import",
+          "warnings": [],
+        }
+      `);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("warns and skips unsupported markdown features without creating invalid packages", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-md-warn-"));
+    const sourcePath = join(parent, "warnings.md");
+    const targetDir = join(parent, "warnings-prd");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await writeFile(
+        sourcePath,
+        [
+          "# Warnings",
+          "![Remote](https://example.com/remote.png)",
+          "![Missing](missing.png)",
+          "<div>raw html</div>",
+          "```",
+          "const unsupported = true;",
+          "```"
+        ].join("\n"),
+        "utf8"
+      );
+
+      expect(
+        await runCli(["import", "markdown", sourcePath, "--out", targetDir, "--json"])
+      ).toBe(0);
+
+      const payload = JSON.parse(String(logSpy.mock.calls[0]?.[0])) as {
+        assetCount: number;
+        nodeCount: number;
+        warnings: string[];
+      };
+      expect(payload.assetCount).toBe(0);
+      expect(payload.nodeCount).toBe(1);
+      expect(payload.warnings).toEqual([
+        "Skipped image `https://example.com/remote.png`; only local relative image paths are supported.",
+        "Skipped image `missing.png`; source image was not found.",
+        "Skipped raw HTML; HTML import is not supported by markdown import v0.1.",
+        "Skipped fenced code block; code nodes are not supported by markdown import v0.1."
+      ]);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("fails markdown import for unsupported sources and unsafe targets", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-md-fail-"));
+    const sourcePath = join(parent, "source.md");
+    const targetDir = join(parent, "target");
+    const nonEmptyDir = join(parent, "non-empty");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    try {
+      await writeFile(sourcePath, "# Safe Source", "utf8");
+      await mkdir(nonEmptyDir, { recursive: true });
+      await writeFile(join(nonEmptyDir, "existing.txt"), "keep", "utf8");
+
+      expect(await runCli(["import", "html", sourcePath, "--out", targetDir])).toBe(1);
+      expect(await runCli(["import", "markdown", sourcePath, "--out", nonEmptyDir])).toBe(1);
+
+      const messages = errorSpy.mock.calls.map(([value]) => String(value));
+      expect(messages).toContain(
+        'Unsupported import source "html". Supported import sources: markdown.'
+      );
+      expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
+      await expect(readdir(targetDir)).rejects.toMatchObject({ code: "ENOENT" });
       expect(await readdir(nonEmptyDir)).toEqual(["existing.txt"]);
     } finally {
       await rm(parent, { recursive: true, force: true });

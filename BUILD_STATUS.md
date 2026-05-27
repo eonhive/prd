@@ -1,5 +1,15 @@
 # BUILD STATUS
 
+## 2026-05-27
+
+- Merged PR `#40` (`[stannesi] define phase 5 authoring workflow`) into `main` at `b2f5b12217338f749d1733507f7b69fc39416751` and synced local `main` before starting the Markdown import slice.
+- Added `prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]` as the first real import lane for structured `general-document` package directories.
+- Implemented a small deterministic Markdown subset parser with no new Markdown dependency. It maps ATX headings, paragraphs, unordered and ordered lists, blockquotes, and standalone local relative images.
+- Markdown import now copies supported local images into `assets/images/`, declares them in `manifest.assets`, and skips remote, missing, unsafe, unsupported, raw HTML, and fenced-code inputs with explicit warnings instead of creating invalid packages.
+- Added CLI unit and built-binary E2E coverage for Markdown import, including JSON output, title/id overrides, local image copy, warning behavior, unsupported import source, and non-empty target safety.
+- Added a minor changeset for `@eonhive/prd-cli` and updated README, CLI docs, CLI JSON contract, authoring workflow, and import/export matrix docs.
+- Local validation included `pnpm exec vitest run packages/prd-cli/src/index.test.ts packages/prd-cli/src/cli.e2e.test.ts`, `pnpm docs:check -- --include-root-docs`, `git diff --check`, and `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`.
+
 ## 2026-05-24
 
 - Merged PR `#39` (`[stannesi] add prd init scaffold command`) into `main` at `1135a4b4e60556fce221e6daf0395035de36d893` and synced local `main` before starting the Phase 5 authoring workflow slice.

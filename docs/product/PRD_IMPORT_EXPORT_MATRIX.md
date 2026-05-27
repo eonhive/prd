@@ -1,6 +1,6 @@
 # PRD_IMPORT_EXPORT_MATRIX.md
-_Last updated: May 24, 2026_
-_Status: Phase 5 import/export matrix baseline v0.1_
+_Last updated: May 27, 2026_
+_Status: Phase 5 import/export matrix baseline v0.2_
 
 ## 1. Purpose
 
@@ -27,7 +27,7 @@ Import and export work should follow these rules:
 
 | Source | Target PRD profile | Priority | Current status | Notes |
 | --- | --- | --- | --- | --- |
-| Markdown | `general-document` | First implementation lane | Planned next | Map headings, paragraphs, lists, links, block quotes, code blocks, and simple images to structured content. |
+| Markdown | `general-document` | First implementation lane | Supported v0.1 | Maps ATX headings, paragraphs, lists, blockquotes, and standalone local relative images to structured content. |
 | HTML | `general-document` | Later MVP lane | Deferred | Needs a disciplined subset and sanitizer policy before implementation. |
 | DOCX | `general-document` | Later conversion lane | Deferred | Useful, but high-fidelity mapping is complex and should not be first. |
 | EPUB | `general-document` | Later conversion lane | Deferred | Needs spine, asset, metadata, and chapter mapping decisions. |
@@ -52,9 +52,9 @@ Import and export work should follow these rules:
 
 ---
 
-## 5. Recommended First Import Lane
+## 5. Current Markdown Import Lane
 
-The first real import implementation should be:
+The first real import implementation is:
 
 ```text
 Markdown -> structured general-document package directory
@@ -66,22 +66,30 @@ Recommended command shape:
 prd import markdown ./source.md --out ./my-document
 ```
 
-Recommended v0.1 mapping:
+Supported v0.1 mapping:
 
 - document title from the first level-1 heading or source filename
 - headings to structured heading nodes
 - paragraphs to paragraph nodes
 - unordered and ordered lists to list nodes
-- links to inline or link-list representations according to the existing content model
 - block quotes to quote nodes
-- fenced code blocks to plain code/preformatted nodes only if the current content model supports them cleanly; otherwise document as deferred
 - images only when they can be copied into `assets/` and declared in the manifest
 
-The first lane should not attempt full Markdown extension coverage, HTML passthrough, PDF-like layout preservation, or Cloud-hosted asset resolution.
+The first lane does not attempt full Markdown extension coverage, links-to-structured-link conversion, fenced code block conversion, HTML passthrough, PDF-like layout preservation, or Cloud-hosted asset resolution.
+
+## 6. Recommended Next Import Lane
+
+The next import implementation should be one visual-profile lane:
+
+```text
+ordered image folder -> comic or storyboard package directory
+```
+
+That keeps the product path aligned with the first-class `comic` and `storyboard` profiles without jumping to broad document conversion.
 
 ---
 
-## 6. Deferred Work
+## 7. Deferred Work
 
 Deferred work includes:
 
@@ -95,4 +103,3 @@ Deferred work includes:
 - rights, payment, crypto, or protected-content conversion behavior
 
 These may become product or extension lanes later, but they should not block the first public authoring path.
-
