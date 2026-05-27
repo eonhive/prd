@@ -1,5 +1,5 @@
 # PRD_ROADMAP.md
-_Last updated: May 23, 2026_
+_Last updated: May 24, 2026_
 _Status: Roadmap draft v0.1_
 
 ## Purpose
@@ -158,8 +158,10 @@ Do not build late-stage fantasy systems before the base format is real.
 - there is a believable path from concept to usable toolchain
 
 ## Current next slice
-- start with a minimal `prd init` or template-scaffold workflow for existing first-class profiles
-- defer full visual Studio, broad conversion, and hosted workflows until the package scaffold path is real
+- `prd init` now provides the minimal starter-package scaffold path for existing first-class profiles
+- the current authoring workflow and import/export matrix docs define how that scaffold fits into public authoring
+- the next executable lane should be deterministic Markdown import into structured `general-document`
+- defer full visual Studio, broad conversion, and hosted workflows until the Markdown import path is real and testable
 
 ---
 

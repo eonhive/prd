@@ -1,5 +1,5 @@
 # PRD_SYSTEM_BLUEPRINT.md
-_Last updated: May 23, 2026_
+_Last updated: May 24, 2026_
 _Status: PRD execution blueprint draft v0.1_
 
 ## Purpose
@@ -179,7 +179,7 @@ These are the highest-value additions beyond the original foundation set:
 
 Without these, PRD remains promising but underspecified.
 
-As of May 23, 2026, the versioning policy and product-boundary map are live docs. The next governance gap in this list is the extension/protection model; the next product/tooling gap is the Phase 5 authoring surface.
+As of May 24, 2026, the versioning policy, product-boundary map, Phase 5 authoring workflow, and import/export matrix are live docs. The next governance gap in this list is the extension/protection model; the next product/tooling gap is deterministic Markdown import into structured `general-document`.
 
 ---
 
@@ -578,7 +578,7 @@ In order:
 
 That ordering is more disciplined than jumping straight from vision docs to white paper or monetization language.
 
-Current status: items 1 through 11 now have live repo docs. Item 12 remains a later extension lane. The next implementation lane should start Phase 5 with a minimal authoring scaffold such as `prd init`, not full Studio or broad conversion.
+Current status: items 1 through 11 now have live repo docs. Item 12 remains a later extension lane. Phase 5 authoring has started with `prd init`, and the next implementation lane should be Markdown import into structured `general-document`, not full Studio or broad conversion.
 
 ---
 

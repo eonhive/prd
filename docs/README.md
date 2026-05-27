@@ -36,6 +36,8 @@ Primary paths:
   * `governance/PRD_RELEASE_POLICY.md`
 * product boundaries
   * `product/PRD_PRODUCT_BOUNDARIES.md`
+  * `product/PRD_AUTHORING_WORKFLOW.md`
+  * `product/PRD_IMPORT_EXPORT_MATRIX.md`
 * prompt packs
   * `prompts/PRD_MASTER_PROMPTS.md`
 
@@ -153,6 +155,8 @@ Reserved location for optional extension-layer specs.
 Product-boundary and ecosystem-role docs:
 
 * `PRD_PRODUCT_BOUNDARIES.md`
+* `PRD_AUTHORING_WORKFLOW.md`
+* `PRD_IMPORT_EXPORT_MATRIX.md`
 
 ### `market/`
 

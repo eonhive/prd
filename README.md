@@ -78,6 +78,8 @@ Use these focused paths from there:
   * `docs/governance/PRD_RELEASE_POLICY.md`
 * product boundaries
   * `docs/product/PRD_PRODUCT_BOUNDARIES.md`
+  * `docs/product/PRD_AUTHORING_WORKFLOW.md`
+  * `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`
 * prompt packs and doctrine
   * `docs/governance/PRD_PROMPT_DOCTRINE.md`
   * `docs/prompts/PRD_MASTER_PROMPTS.md`
@@ -289,12 +291,15 @@ Example CLI usage:
 prd init ./my-prd --profile general-document
 prd validate <path>
 prd inspect <path>
+prd pack <path> --out ./out.prd
 ```
 
 CLI output/exit-code contract: `packages/prd-cli/README.md`.
 Versioned machine-readable JSON contract snippets: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.
 Published reference-viewer runtime corpus: `examples/runtime-conformance/runtime-conformance-manifest.json`.
 Public product and ecosystem boundaries: `docs/product/PRD_PRODUCT_BOUNDARIES.md`.
+Current authoring workflow: `docs/product/PRD_AUTHORING_WORKFLOW.md`.
+Import/export sequencing matrix: `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`.
 Versioning policy across format, manifest, runtime, and npm tooling surfaces: `docs/core/PRD_VERSIONING_POLICY.md`.
 
 
