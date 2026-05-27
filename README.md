@@ -289,6 +289,7 @@ Example CLI usage:
 
 ```bash
 prd init ./my-prd --profile general-document
+prd import markdown ./source.md --out ./my-prd-from-markdown
 prd validate <path>
 prd inspect <path>
 prd pack <path> --out ./out.prd
@@ -398,6 +399,7 @@ The repo root also includes [`.nvmrc`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab
 ```bash
 npm install -g @eonhive/prd-cli
 prd init ./my-first-prd --profile general-document
+prd import markdown ./source.md --out ./my-first-prd-from-markdown
 prd validate path/to/package.prd
 ```
 
@@ -405,6 +407,7 @@ Without a global install:
 
 ```bash
 npx @eonhive/prd-cli init ./my-first-prd --profile general-document
+npx @eonhive/prd-cli import markdown ./source.md --out ./my-first-prd-from-markdown
 npx @eonhive/prd-cli validate path/to/examples/document-basic
 npx @eonhive/prd-cli pack path/to/examples/document-basic --out ./out.prd
 ```

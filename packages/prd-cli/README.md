@@ -1,6 +1,6 @@
 # @eonhive/prd-cli
 
-CLI for initializing, packaging, validating, and inspecting PRD packages.
+CLI for initializing, importing, packaging, validating, and inspecting PRD packages.
 
 ## Commands
 
@@ -35,6 +35,48 @@ next:
 - prd pack <targetDir> --out <targetDir>.prd
 ```
 
+### `prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]`
+
+Imports a small Markdown subset into a validator-valid `general-document` package directory.
+
+Supported v0.1 Markdown mappings:
+
+* ATX headings
+* paragraphs
+* unordered and ordered lists
+* blockquotes
+* standalone local relative images
+
+Defaults:
+
+* `--title`: first level-1 heading, then source filename
+* `--id`: `urn:prd:local:<slug>`
+
+Safety behavior:
+
+* creates the target directory when it does not exist
+* allows an existing empty target directory
+* refuses to write into a non-empty target directory
+* skips remote, missing, unsafe, or unsupported images with warnings
+* skips fenced code blocks and raw HTML with warnings
+
+**Text output (stable):**
+
+```text
+Imported PRD package: <targetDir>
+profile: general-document
+title: <title>
+entry: content/root.json
+nodes: <count>
+assets: <count>
+warnings:
+- none
+next:
+- prd validate <targetDir>
+- prd inspect <targetDir>
+- prd pack <targetDir> --out <targetDir>.prd
+```
+
 ### `prd pack <sourceDir> --out <file.prd>`
 
 Packages a directory-form PRD into an archive file.
@@ -63,12 +105,14 @@ Runs validation plus deterministic package metrics.
 
 - `0`: command succeeded and result is valid.
   - `init`: package directory written.
+  - `import`: package directory written.
   - `pack`: package archive written.
   - `validate`/`inspect`: `valid: true`.
 - `1`: usage error, unsupported command, or validation/inspection invalid result.
   - Missing required args (for example, missing init target, missing `--out`, or missing validate/inspect target path).
   - Unknown command.
   - `init` where the target is unsafe to write or profile is unsupported.
+  - `import` where the source kind is unsupported or the target is unsafe to write.
   - `validate`/`inspect` where `valid: false`.
 
 ## Stable output contract
@@ -84,6 +128,22 @@ Top-level keys (stable):
 - `targetDir` (`string`)
 - `entry` (`"content/root.json"`)
 - `files` (`string[]`)
+
+### `import markdown --json` fields
+
+Top-level keys (stable):
+
+- `imported` (`true`)
+- `sourcePath` (`string`)
+- `targetDir` (`string`)
+- `profile` (`"general-document"`)
+- `title` (`string`)
+- `id` (`string`)
+- `entry` (`"content/root.json"`)
+- `files` (`string[]`)
+- `nodeCount` (`number`)
+- `assetCount` (`number`)
+- `warnings` (`string[]`)
 
 ### `validate` text output
 

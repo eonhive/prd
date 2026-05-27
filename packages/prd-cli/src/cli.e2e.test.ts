@@ -139,6 +139,70 @@ beforeAll(async () => {
 });
 
 describe("built CLI binary end-to-end", () => {
+  it("executes built binary markdown import, validate, inspect, and pack", async () => {
+    const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-import-md-"));
+    const sourcePath = join(outDir, "launch.md");
+    const sourceDir = join(outDir, "launch-prd");
+    const packedFile = join(outDir, "launch.prd");
+
+    try {
+      await writeFile(
+        sourcePath,
+        [
+          "# Launch Plan",
+          "This Markdown file becomes structured PRD content.",
+          "",
+          "## Checks",
+          "1. Validate",
+          "2. Inspect",
+          "3. Pack"
+        ].join("\n"),
+        "utf8"
+      );
+
+      const importResult = await runBuiltCli([
+        "import",
+        "markdown",
+        sourcePath,
+        "--out",
+        sourceDir,
+        "--json"
+      ]);
+      expect(importResult.code).toBe(0);
+      const importJson = JSON.parse(importResult.stdout) as {
+        imported: boolean;
+        profile: string;
+        nodeCount: number;
+        assetCount: number;
+      };
+      expect(importJson.imported).toBe(true);
+      expect(importJson.profile).toBe("general-document");
+      expect(importJson.nodeCount).toBe(4);
+      expect(importJson.assetCount).toBe(0);
+
+      const validateResult = await runBuiltCli(["validate", sourceDir]);
+      expect(validateResult.code).toBe(0);
+      expect(validateResult.stdout).toContain("valid: yes");
+
+      const inspectResult = await runBuiltCli(["inspect", sourceDir, "--json"]);
+      expect(inspectResult.code).toBe(0);
+      const inspectJson = JSON.parse(inspectResult.stdout) as {
+        valid: boolean;
+        inspection: { entryKind: string; assetCount: number };
+      };
+      expect(inspectJson.valid).toBe(true);
+      expect(inspectJson.inspection.entryKind).toBe("structured-json");
+      expect(inspectJson.inspection.assetCount).toBe(0);
+
+      const packResult = await runBuiltCli(["pack", sourceDir, "--out", packedFile]);
+      expect(packResult.code).toBe(0);
+      const packedBuffer = await readFile(packedFile);
+      expect(packedBuffer.length).toBeGreaterThan(0);
+    } finally {
+      await rm(outDir, { recursive: true, force: true });
+    }
+  });
+
   it("executes built binary init, validate, inspect, and pack for a generated package", async () => {
     const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-init-"));
     const sourceDir = join(outDir, "starter-comic");
