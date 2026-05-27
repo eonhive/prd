@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/prd-import-markdown`, based on merged `main`.
 - The branch implements `NEXT_STEPS.md` item `39`: `prd import markdown`.
+- PR `#41` is open at `https://github.com/eonhive/prd/pull/41`.
 - This branch changes public CLI behavior for `@eonhive/prd-cli` and includes a minor changeset.
 - No manifest, schema, validator, viewer behavior, package export, or npm release behavior was changed.
 
@@ -26,7 +27,7 @@
 ## In-progress work
 
 - The `thehive/prd-import-markdown` branch contains the Markdown import implementation and docs.
-- Validation has passed locally. The branch is not yet committed, pushed, or opened as a PR.
+- Validation has passed locally, and PR `#41` is open.
 
 ## Changed files
 
@@ -60,6 +61,9 @@
 - `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
+- `git commit -m "feat: add markdown import command"`
+- `git push -u origin thehive/prd-import-markdown`
+- GitHub connector: created PR `#41`
 
 ## Tests / verification
 
@@ -78,7 +82,7 @@
 
 ## Next recommended task
 
-- Commit, push, and open a PR for `thehive/prd-import-markdown`.
+- Merge PR `#41` after GitHub checks pass.
 - After this branch lands, plan `NEXT_STEPS.md` item `40`: ordered image-folder import for `comic` or `storyboard`.
 
 ## Important decisions
