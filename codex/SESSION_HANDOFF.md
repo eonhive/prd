@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/prd-import-images`, based on merged `main`.
 - The branch implements `NEXT_STEPS.md` item `40`: ordered image-folder import for `comic` and `storyboard`.
+- PR `#42` is open at `https://github.com/eonhive/prd/pull/42`.
 - This branch changes public CLI behavior for `@eonhive/prd-cli` and includes a minor changeset.
 - No manifest, schema, validator, viewer behavior, package export, release automation, Studio, Cloud, PRDc, payment, crypto, rights, DOCX/EPUB/PDF, or HTML import behavior was changed.
 
@@ -27,7 +28,7 @@
 ## In-progress work
 
 - The `thehive/prd-import-images` branch contains the ordered image import implementation and docs.
-- Final repo-level validation has passed. Commit, push, and PR creation are still pending.
+- Final repo-level validation has passed, the branch is pushed, and PR `#42` is open.
 
 ## Changed files
 
@@ -63,6 +64,9 @@
 - `PATH="/opt/homebrew/bin:$PATH" node ./scripts/check-docs-consistency.mjs --include-root-docs`
 - `git diff --check`
 - `PATH="<temp-pnpm-shim>:/opt/homebrew/bin:$PATH" node ./scripts/foundation-gate.mjs`
+- `git commit -m "feat: add ordered image import command"`
+- `git push -u origin thehive/prd-import-images`
+- GitHub connector: created PR `#42`
 
 ## Tests / verification
 
@@ -84,7 +88,7 @@
 
 ## Next recommended task
 
-- Commit, push, and open PR `[stannesi] add ordered image import command`.
+- Merge PR `#42` after GitHub checks pass.
 - After this branch lands, start `NEXT_STEPS.md` item `41`: public demo/viewer/landing UX that demonstrates `init/import -> validate -> inspect -> pack -> open`.
 
 ## Important decisions
