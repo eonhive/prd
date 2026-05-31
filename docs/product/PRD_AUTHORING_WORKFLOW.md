@@ -1,6 +1,6 @@
 # PRD_AUTHORING_WORKFLOW.md
-_Last updated: May 27, 2026_
-_Status: Phase 5 authoring workflow baseline v0.2_
+_Last updated: May 31, 2026_
+_Status: Phase 5 authoring workflow baseline v0.3_
 
 ## 1. Purpose
 
@@ -15,7 +15,7 @@ The goal is to make PRD authoring repeatable without pretending a full Studio, b
 The current supported authoring path is:
 
 ```text
-prd init or prd import markdown
+prd init or prd import markdown or prd import images
   -> edit package files
   -> prd validate
   -> prd inspect
@@ -56,6 +56,15 @@ prd import markdown ./source.md --out ./my-document
 ```
 
 The v0.1 Markdown import lane targets `general-document` only. It supports a small deterministic subset: ATX headings, paragraphs, unordered and ordered lists, blockquotes, and standalone local relative images. Unsupported features are skipped or preserved as plain text with explicit import warnings rather than inventing broad conversion behavior.
+
+Use `prd import images` when the source material is already an ordered folder of page, panel, or frame images:
+
+```bash
+prd import images ./pages --profile comic --out ./my-comic
+prd import images ./frames --profile storyboard --out ./my-board
+```
+
+The v0.1 image import lane targets `comic` and `storyboard` only. It imports supported top-level image files (`.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`) in deterministic natural filename order, so `page-2.png` sorts before `page-10.png`. Non-image files and nested directories are skipped with warnings. The command does not edit, resize, optimize, OCR, or fetch images.
 
 ### 3.2 Edit package files
 
@@ -130,6 +139,8 @@ Current authoring shape:
 - panel assets declared in `manifest.assets`
 - optional series metadata through the lean collection/series model
 
+`prd import images --profile comic` creates this baseline from an ordered image folder by copying images into `assets/panels/` and generating one panel per imported image.
+
 ### 4.3 Storyboard
 
 Use `storyboard` for frame-led planning and review packages.
@@ -140,6 +151,8 @@ Current authoring shape:
 - storyboard node with `frames`
 - frame assets declared in `manifest.assets`
 - notes and alt text kept close to frame declarations
+
+`prd import images --profile storyboard` creates this baseline from an ordered image folder by copying images into `assets/frames/` and generating one frame per imported image with placeholder notes.
 
 ---
 
@@ -160,6 +173,6 @@ Those remain future product or extension lanes.
 
 ## 6. Next Implementation Lane
 
-After `prd import markdown`, the next executable Phase 5 lane should stay small and visual-profile focused: image-folder import for `comic` or `storyboard` packages.
+After `prd import markdown` and `prd import images`, the next executable public-product lane should be viewer/demo/landing UX polish that demonstrates the real create/import, validate, pack, and open flow.
 
 Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.

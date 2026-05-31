@@ -126,6 +126,7 @@ describe("runCli", () => {
     expect(messages).toContain(
       "Usage: prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]"
     );
+    expect(messages).toContain("Usage: prd import <markdown|images> ...");
     expect(messages).toContain(
       "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
     );
@@ -448,9 +449,209 @@ describe("runCli", () => {
 
       const messages = errorSpy.mock.calls.map(([value]) => String(value));
       expect(messages).toContain(
-        'Unsupported import source "html". Supported import sources: markdown.'
+        'Unsupported import source "html". Supported import sources: markdown, images.'
       );
       expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
+      await expect(readdir(targetDir)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(await readdir(nonEmptyDir)).toEqual(["existing.txt"]);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("imports ordered images into a valid comic package", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-images-comic-"));
+    const sourceDir = join(parent, "comic-pages");
+    const targetDir = join(parent, "comic-prd");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(
+        join(sourceDir, "page-10.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+      await writeFile(
+        join(sourceDir, "page-2.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+      await writeFile(join(sourceDir, "notes.txt"), "skip me", "utf8");
+
+      expect(
+        await runCli(["import", "images", sourceDir, "--profile", "comic", "--out", targetDir])
+      ).toBe(0);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+
+      const manifest = JSON.parse(await readFile(join(targetDir, "manifest.json"), "utf8")) as {
+        profile: string;
+        title: string;
+        assets: Array<{ id: string; href: string; type: string }>;
+      };
+      const root = JSON.parse(await readFile(join(targetDir, "content/root.json"), "utf8")) as {
+        profile: string;
+        type: string;
+        panels: Array<{ id: string; asset: string; alt: string }>;
+      };
+
+      expect(manifest).toMatchObject({
+        profile: "comic",
+        title: "Comic Pages",
+        assets: [
+          {
+            id: "panel-1-art",
+            href: "assets/panels/page-2.svg",
+            type: "image/svg+xml"
+          },
+          {
+            id: "panel-2-art",
+            href: "assets/panels/page-10.svg",
+            type: "image/svg+xml"
+          }
+        ]
+      });
+      expect(root.profile).toBe("comic");
+      expect(root.type).toBe("comic");
+      expect(root.panels.map((panel) => panel.asset)).toEqual(["panel-1-art", "panel-2-art"]);
+      expect((await readdir(join(targetDir, "assets/panels"))).sort()).toEqual([
+        "page-10.svg",
+        "page-2.svg"
+      ]);
+      expect(String(logSpy.mock.calls[0]?.[0])).toMatchInlineSnapshot(`
+        "Imported PRD package: ${targetDir}
+        profile: comic
+        title: Comic Pages
+        entry: content/root.json
+        images: 2
+        assets: 2
+        skipped files:
+        - notes.txt
+        warnings:
+        - Skipped \`notes.txt\`; unsupported image extension.
+        next:
+        - prd validate ${targetDir}
+        - prd inspect ${targetDir}
+        - prd pack ${targetDir} --out ${targetDir}.prd"
+      `);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("imports ordered images into a valid storyboard package with JSON output and overrides", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-images-storyboard-"));
+    const sourceDir = join(parent, "frames");
+    const targetDir = join(parent, "storyboard-prd");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(join(sourceDir, "frame-1.png"), "png", "utf8");
+      await writeFile(join(sourceDir, "frame-2.webp"), "webp", "utf8");
+
+      expect(
+        await runCli([
+          "import",
+          "images",
+          sourceDir,
+          "--profile",
+          "storyboard",
+          "--out",
+          targetDir,
+          "--title",
+          "Custom Board",
+          "--id",
+          "urn:prd:test:custom-board",
+          "--json"
+        ])
+      ).toBe(0);
+      expect(await runCli(["validate", targetDir])).toBe(0);
+
+      const root = JSON.parse(await readFile(join(targetDir, "content/root.json"), "utf8")) as {
+        frames: Array<{ id: string; asset: string; notes: string }>;
+      };
+      expect(root.frames.map((frame) => frame.asset)).toEqual(["frame-1-art", "frame-2-art"]);
+      expect(root.frames.every((frame) => frame.notes.length > 0)).toBe(true);
+
+      expect(JSON.parse(String(logSpy.mock.calls[0]?.[0]))).toMatchInlineSnapshot(`
+        {
+          "assetCount": 2,
+          "entry": "content/root.json",
+          "files": [
+            "manifest.json",
+            "content/root.json",
+            "assets/frames/frame-1.png",
+            "assets/frames/frame-2.webp",
+          ],
+          "id": "urn:prd:test:custom-board",
+          "imageCount": 2,
+          "imported": true,
+          "profile": "storyboard",
+          "skippedFiles": [],
+          "sourceDir": "${sourceDir}",
+          "targetDir": "${targetDir}",
+          "title": "Custom Board",
+          "warnings": [],
+        }
+      `);
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
+  it("fails image import for unsupported profiles, empty sources, missing sources, and unsafe targets", async () => {
+    const parent = await mkdtemp(join(tmpdir(), "prd-cli-import-images-fail-"));
+    const sourceDir = join(parent, "images");
+    const emptyDir = join(parent, "empty");
+    const nonEmptyDir = join(parent, "non-empty");
+    const missingDir = join(parent, "missing");
+    const targetDir = join(parent, "target");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await mkdir(emptyDir, { recursive: true });
+      await mkdir(nonEmptyDir, { recursive: true });
+      await writeFile(
+        join(sourceDir, "page-1.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+      await writeFile(join(nonEmptyDir, "existing.txt"), "keep", "utf8");
+
+      expect(
+        await runCli(["import", "images", sourceDir, "--profile", "resume", "--out", targetDir])
+      ).toBe(1);
+      expect(
+        await runCli(["import", "images", emptyDir, "--profile", "comic", "--out", targetDir])
+      ).toBe(1);
+      expect(
+        await runCli(["import", "images", missingDir, "--profile", "comic", "--out", targetDir])
+      ).toBe(1);
+      expect(
+        await runCli([
+          "import",
+          "images",
+          sourceDir,
+          "--profile",
+          "comic",
+          "--out",
+          nonEmptyDir
+        ])
+      ).toBe(1);
+      expect(await runCli(["import", "images", sourceDir, "--out", targetDir])).toBe(1);
+
+      const messages = errorSpy.mock.calls.map(([value]) => String(value));
+      expect(messages).toContain(
+        'Unsupported image import profile "resume". Supported profiles: comic, storyboard.'
+      );
+      expect(messages).toContain(`No supported image files found in source directory: ${emptyDir}`);
+      expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
+      expect(messages).toContain(
+        "Missing required image import profile. Use --profile <comic|storyboard>."
+      );
+      expect(messages.some((message) => message.includes(missingDir))).toBe(true);
       await expect(readdir(targetDir)).rejects.toMatchObject({ code: "ENOENT" });
       expect(await readdir(nonEmptyDir)).toEqual(["existing.txt"]);
     } finally {

@@ -7,6 +7,10 @@ import {
   validatePackage
 } from "@eonhive/prd-validator/node";
 import {
+  importImagesToPrdPackage,
+  type PrdImageImportResult
+} from "./importImages.js";
+import {
   importMarkdownToPrdPackage,
   type PrdMarkdownImportResult
 } from "./importMarkdown.js";
@@ -60,6 +64,7 @@ type CliInspectionOutput = CliValidationOutput & {
 };
 
 type CliInitOutput = PrdInitResult;
+type CliImageImportOutput = PrdImageImportResult;
 type CliMarkdownImportOutput = PrdMarkdownImportResult;
 
 function parseFlag(args: string[], flag: string): string | undefined {
@@ -246,6 +251,51 @@ function formatMarkdownImportResult(
   return lines.join("\n");
 }
 
+function formatImageImportResult(
+  payload: CliImageImportOutput,
+  jsonOutput: boolean
+): string {
+  if (jsonOutput) {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  const lines = [
+    `Imported PRD package: ${payload.targetDir}`,
+    `profile: ${payload.profile}`,
+    `title: ${payload.title}`,
+    `entry: ${payload.entry}`,
+    `images: ${payload.imageCount}`,
+    `assets: ${payload.assetCount}`,
+    "skipped files:"
+  ];
+
+  if (payload.skippedFiles.length === 0) {
+    lines.push("- none");
+  } else {
+    for (const skippedFile of payload.skippedFiles) {
+      lines.push(`- ${skippedFile}`);
+    }
+  }
+
+  lines.push("warnings:");
+  if (payload.warnings.length === 0) {
+    lines.push("- none");
+  } else {
+    for (const warning of payload.warnings) {
+      lines.push(`- ${warning}`);
+    }
+  }
+
+  lines.push(
+    "next:",
+    `- prd validate ${payload.targetDir}`,
+    `- prd inspect ${payload.targetDir}`,
+    `- prd pack ${payload.targetDir} --out ${payload.targetDir}.prd`
+  );
+
+  return lines.join("\n");
+}
+
 const handlers: Record<string, CommandHandler> = {
   async init(args) {
     const targetDir = args[0];
@@ -280,27 +330,35 @@ const handlers: Record<string, CommandHandler> = {
     const jsonOutput = hasFlag(args, "--json");
 
     if (!sourceKind) {
-      console.error(
-        "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
-      );
+      console.error("Usage: prd import <markdown|images> ...");
       return 1;
     }
 
-    if (sourceKind !== "markdown") {
+    if (sourceKind !== "markdown" && sourceKind !== "images") {
       console.error(
-        `Unsupported import source "${sourceKind}". Supported import sources: markdown.`
+        `Unsupported import source "${sourceKind}". Supported import sources: markdown, images.`
       );
       return 1;
     }
 
     if (!sourcePath || !outDir) {
-      console.error(
-        "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
-      );
+      console.error(getImportUsage(sourceKind));
       return 1;
     }
 
     try {
+      if (sourceKind === "images") {
+        const result = await importImagesToPrdPackage({
+          sourceDir: sourcePath,
+          targetDir: outDir,
+          profile: parseFlag(args, "--profile"),
+          title: parseFlag(args, "--title"),
+          id: parseFlag(args, "--id")
+        });
+        console.log(formatImageImportResult(result, jsonOutput));
+        return 0;
+      }
+
       const result = await importMarkdownToPrdPackage({
         sourcePath,
         targetDir: outDir,
@@ -359,6 +417,14 @@ const handlers: Record<string, CommandHandler> = {
     return payload.valid ? 0 : 1;
   }
 };
+
+function getImportUsage(sourceKind: "markdown" | "images"): string {
+  if (sourceKind === "images") {
+    return "Usage: prd import images <sourceDir> --profile <comic|storyboard> --out <targetDir> [--title <title>] [--id <id>] [--json]";
+  }
+
+  return "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]";
+}
 
 export async function runCli(argv: string[]): Promise<number> {
   const [command, ...args] = argv;
