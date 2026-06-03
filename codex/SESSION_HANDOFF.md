@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/public-viewer-demo-ux`, based on merged `main`.
 - The branch implements `NEXT_STEPS.md` item `41`: public demo/viewer/landing UX inside `apps/prd-viewer-web`.
+- PR `#43` (`[stannesi] add public viewer demo ux`) is open: https://github.com/eonhive/prd/pull/43.
 - This branch changes only the private web viewer app plus docs/control state.
 - No manifest, schema, validator, CLI command, package export, release automation, Studio, Cloud, PRDc, broad conversion, or npm release behavior was changed.
 - No changeset was added.
@@ -26,8 +27,8 @@
 
 ## In-progress work
 
-- The `thehive/public-viewer-demo-ux` branch contains the implementation and docs.
-- Commit, push, and PR creation are still pending.
+- PR `#43` is open and ready for normal GitHub validation/review.
+- After PR `#43` lands, the next public-product blocker is choosing and implementing a public hosted demo/deployment path for the reference viewer.
 
 ## Changed files
 
@@ -61,6 +62,10 @@
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
 - Browser verification at `http://localhost:5173/`
+- `git add ...`
+- `git commit -m "feat: add public viewer demo ux"`
+- `git push -u origin thehive/public-viewer-demo-ux`
+- GitHub connector: opened PR `#43`
 
 ## Tests / verification
 
@@ -86,7 +91,7 @@
 
 ## Next recommended task
 
-- Commit, push, and open PR `[stannesi] add public viewer demo ux`.
+- Monitor and merge PR `#43`.
 - After this branch lands, start `NEXT_STEPS.md` item `42`: choose and implement a public hosted demo/deployment path for the reference viewer.
 
 ## Important decisions
