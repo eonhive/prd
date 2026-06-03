@@ -471,7 +471,9 @@ For release automation, the repo also includes [`.github/workflows/release.yml`]
 
 1. Run `pnpm codex:check`
 2. Run `pnpm codex:run:web`
-3. Open the web viewer and load files from `examples/dist/`
+3. Open the web viewer demo landing page
+4. Choose or drag a `.prd` archive from `examples/dist/` into the drop zone
+5. Confirm package status, package facts, and rendered content in the reference viewer
 
 Current example behavior:
 

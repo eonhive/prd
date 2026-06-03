@@ -47,4 +47,5 @@
 38. [x] After the scaffold slice is real, draft the Phase 5 authoring workflow and import/export matrix so Markdown, HTML, DOCX, EPUB, and PDF conversion work is sequenced intentionally rather than bundled into the first authoring command.
 39. [x] Implement the first real import lane: `prd import markdown ./source.md --out ./my-document`, targeting structured `general-document` package directories with deterministic validation-friendly output.
 40. [x] Implemented the next small visual-profile import lane: `prd import images ./pages --profile <comic|storyboard> --out ./package`, producing validator-valid ordered image packages without broad conversion, Studio, Cloud, PRDc, payment, crypto, rights, or visual-editor scope.
-41. [ ] Plan and implement a public demo/viewer/landing UX slice that demonstrates the real create/import, validate, pack, and open flow now that text and visual import lanes exist.
+41. [x] Implemented a public demo/viewer/landing UX slice inside `apps/prd-viewer-web` that demonstrates the real `prd init/import -> validate -> inspect -> pack -> open` flow now that text and visual import lanes exist.
+42. [ ] Choose and implement a public hosted demo/deployment path for the reference viewer so the demo can be shared without a local repo checkout.

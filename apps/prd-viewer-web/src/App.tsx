@@ -1,5 +1,6 @@
 import { unzipSync, strFromU8 } from "fflate";
 import {
+  type DragEvent as ReactDragEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
@@ -41,6 +42,11 @@ import {
   getViewerRenderModeMessage,
   inferViewerRenderMode
 } from "./viewerRenderMode.js";
+import {
+  viewerDemoExampleArchives,
+  viewerDemoFlowSteps,
+  viewerDemoPreparationCommands
+} from "./viewerDemoContent.js";
 
 type AssetUrlMap = Record<string, string>;
 type AttachmentUrlMap = Record<string, string>;
@@ -520,6 +526,14 @@ function createPackageFacts(
 
 function formatBytes(byteCount: number): string {
   return new Intl.NumberFormat("en-US").format(byteCount);
+}
+
+function isPrdArchiveFile(file: File): boolean {
+  return file.name.toLowerCase().endsWith(".prd");
+}
+
+function findFirstPrdArchive(files: FileList | File[]): File | undefined {
+  return Array.from(files).find((file) => isPrdArchiveFile(file));
 }
 
 function parseLocalizedDocumentOverridesRoot(
@@ -2085,6 +2099,72 @@ function PackageFactsView({
   );
 }
 
+function ViewerDemoFlowView() {
+  return (
+    <section className="demo-flow" aria-label="PRD public product flow">
+      <div className="demo-section-header">
+        <p className="eyebrow">Public product path</p>
+        <h2>Create or import, verify, package, then open.</h2>
+        <p>
+          PRD is now usable without hand-building every package. The CLI creates
+          or imports source material, the validator locks package truth, and this
+          reference viewer shows the current browser open path.
+        </p>
+      </div>
+      <ol className="demo-flow-grid">
+        {viewerDemoFlowSteps.map((step) => (
+          <li key={step.label} className="demo-flow-card">
+            <span className="demo-step-label">{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
+            <div className="demo-command-stack" aria-label={`${step.title} commands`}>
+              {step.commands.map((command) => (
+                <code key={command}>{command}</code>
+              ))}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function ViewerExampleGuideView() {
+  return (
+    <section className="example-guide" aria-label="Reference example archives">
+      <div className="demo-section-header">
+        <p className="eyebrow">Try canonical examples</p>
+        <h2>Pack examples, then drop an archive here.</h2>
+        <p>
+          The viewer does not fetch or bundle examples. Generate the archives
+          locally, then use the drop zone to open any `.prd` file from
+          `examples/dist/`.
+        </p>
+      </div>
+      <div className="example-guide-body">
+        <div className="example-command-card">
+          <p>Prepare demo archives</p>
+          {viewerDemoPreparationCommands.map((command) => (
+            <code key={command}>{command}</code>
+          ))}
+        </div>
+        <ul className="example-archive-list">
+          {viewerDemoExampleArchives.map((example) => (
+            <li key={example.id}>
+              <div>
+                <strong>{example.label}</strong>
+                <span>{example.profile}</span>
+              </div>
+              <code>{example.path}</code>
+              <p>{example.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 interface ViewerState {
   validation: PrdPackageValidationResult;
   opened?: PrdOpenedDocument;
@@ -2098,10 +2178,12 @@ interface ViewerState {
 
 export function App() {
   const objectUrlsRef = useRef<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [viewerState, setViewerState] = useState<ViewerState | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -2305,38 +2387,101 @@ export function App() {
     }
   }
 
+  function handleArchiveFiles(files: FileList | File[] | null) {
+    if (!files || files.length === 0) {
+      setError("Choose or drop a .prd archive to open in the reference viewer.");
+      return;
+    }
+
+    const archive = findFirstPrdArchive(files);
+    if (!archive) {
+      setError(
+        "No .prd archive found. Package source directories first with `prd pack`, then choose or drop the generated archive."
+      );
+      return;
+    }
+
+    void handleFile(archive);
+  }
+
+  function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(false);
+    handleArchiveFiles(event.dataTransfer.files);
+  }
+
+  function handleDragOver(event: ReactDragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(true);
+  }
+
+  function handleDragLeave(event: ReactDragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragActive(false);
+  }
+
+  function handleUploadKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    fileInputRef.current?.click();
+  }
+
   return (
     <div className="app-shell">
-      <header className="hero">
-        <div>
+      <header className="hero hero-demo">
+        <div className="hero-copy">
           <p className="eyebrow">PRD Reference Viewer</p>
-          <h1>Open packaged Portable Responsive Documents in the browser.</h1>
+          <h1>Create a PRD package, verify it, then open it in the browser.</h1>
           <p className="subhead">
-            This app validates the uploaded package first, then hands it to the
-            viewer core. Structured `general-document`, `comic`, and `storyboard`
-            packages now have canonical JSON entry paths. Structured
-            `general-document` packages may also segment large works into
-            packaged section files under `content/sections/`. The current
-            reference viewer renders image-backed comic and storyboard content
-            directly, including optional `panel-navigation` and `review-grid`
-            behaviors when declared, while legacy HTML visual-profile packages
-            still open in `safe-mode` as fallback behavior.
+            The public preview now has a complete local loop: scaffold or import
+            source material, validate and inspect the package, pack it into a
+            portable archive, then open it here. This app validates the uploaded
+            package first, then hands it to viewer-core for the current
+            reference render path.
           </p>
+          <div className="hero-badges" aria-label="Current reference viewer facts">
+            <span>general-document</span>
+            <span>comic</span>
+            <span>storyboard</span>
+            <span>{formatReferenceLoadMode(referenceViewerLoadMode)}</span>
+          </div>
         </div>
-        <label className="upload-card">
-          <span>Choose a `.prd` archive</span>
+        <div
+          className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => fileInputRef.current?.click()}
+          onKeyDown={handleUploadKeyDown}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          aria-label="Choose or drop a PRD archive"
+        >
+          <p className="upload-kicker">Open package</p>
+          <strong>
+            Choose or drag a <code>.prd</code> archive
+          </strong>
+          <span>
+            Source folders must be packed first. If you drop multiple files, the
+            first <code>.prd</code> archive is opened.
+          </span>
           <input
+            ref={fileInputRef}
             type="file"
             accept=".prd"
             onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) {
-                void handleFile(file);
-              }
+              handleArchiveFiles(event.target.files);
+              event.currentTarget.value = "";
             }}
           />
-        </label>
+        </div>
       </header>
+
+      <ViewerDemoFlowView />
+      <ViewerExampleGuideView />
 
       {loading && <p className="status">Loading package…</p>}
       {error && <p className="status error">{error}</p>}

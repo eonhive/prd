@@ -103,15 +103,17 @@ Supported v0.1 mapping:
 
 This lane does not attempt image processing, optimization, OCR, panel detection, frame timing, series metadata prompts, hosted fetches, Cloud conversion, or visual editing.
 
-## 7. Recommended Next Product Lane
+## 7. Current Viewer Demo Lane
 
-The next public-product implementation should be viewer/demo/landing UX polish that demonstrates the now-real authoring loop:
+The current public-product implementation is viewer/demo/landing UX polish that demonstrates the now-real authoring loop:
 
 ```text
 init/import -> validate -> inspect -> pack -> open in the reference viewer
 ```
 
 That keeps the product story focused on usable PRD creation before adding broad conversion.
+
+The next public-product lane should choose and implement a hosted deployment path for the reference viewer demo.
 
 ---
 
