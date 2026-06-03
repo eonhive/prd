@@ -179,7 +179,7 @@ These are the highest-value additions beyond the original foundation set:
 
 Without these, PRD remains promising but underspecified.
 
-As of May 31, 2026, the versioning policy, product-boundary map, Phase 5 authoring workflow, and import/export matrix are live docs. Phase 5 authoring now includes `prd init`, `prd import markdown`, and `prd import images`. The next governance gap in this list is the extension/protection model; the next product/tooling gap is public viewer/demo/landing UX polish that demonstrates the real create/import, validate, pack, and open loop.
+As of June 2, 2026, the versioning policy, product-boundary map, Phase 5 authoring workflow, and import/export matrix are live docs. Phase 5 authoring now includes `prd init`, `prd import markdown`, and `prd import images`. The next governance gap in this list is the extension/protection model; the next product/tooling gap is a hosted deployment path for the public reference viewer demo.
 
 ---
 
@@ -578,7 +578,7 @@ In order:
 
 That ordering is more disciplined than jumping straight from vision docs to white paper or monetization language.
 
-Current status: items 1 through 11 now have live repo docs. Item 12 remains a later extension lane. Phase 5 authoring has started with `prd init`, `prd import markdown`, and `prd import images`; the next implementation lane should be public viewer/demo/landing UX polish, not full Studio or broad conversion.
+Current status: items 1 through 11 now have live repo docs. Item 12 remains a later extension lane. Phase 5 authoring has started with `prd init`, `prd import markdown`, and `prd import images`; the current implementation lane is public viewer/demo/landing UX polish, followed by a hosted deployment path for the reference viewer demo.
 
 ---
 

@@ -1,5 +1,15 @@
 # BUILD STATUS
 
+## 2026-06-02
+
+- Merged PR `#42` (`[stannesi] add ordered image import command`) into `main` at `22d76df4e601a15508ab9475aff7924669b0e913` and synced local `main` before starting the public viewer demo UX slice.
+- Added a viewer-integrated demo landing layer in `apps/prd-viewer-web` that explains the public product flow: `prd init/import`, `prd validate`, `prd inspect`, `prd pack`, then open the generated `.prd` archive in the reference viewer.
+- Replaced the plain file picker with a stronger `.prd` upload/drop zone that supports click-to-browse, drag/drop, first-archive selection from multi-file drops, and clear local errors when no `.prd` archive is provided.
+- Added a small testable viewer demo content module that locks the public flow copy, canonical example archive references, and local preparation commands without adding a DOM testing dependency.
+- Updated root README, product-boundary docs, authoring workflow, import/export matrix, roadmap/blueprint pointers, and `NEXT_STEPS.md` so the next blocker is choosing a public hosted demo/deployment path for the reference viewer.
+- This slice did not add a changeset because it changes only the private web viewer app plus docs/control state.
+- Local validation included targeted web viewer tests, `pnpm --filter @eonhive/prd-web-viewer build`, docs consistency with root docs, `git diff --check`, browser desktop/mobile visual checks, and `pnpm foundation:gate` under Homebrew Node.
+
 ## 2026-05-31
 
 - Merged PR `#41` (`[stannesi] add markdown import command`) into `main` at `668c57dc94e3b00d55d695cbb87fc871d10f3790` and synced local `main` before starting the ordered image import slice.

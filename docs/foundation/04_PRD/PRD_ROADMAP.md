@@ -162,8 +162,9 @@ Do not build late-stage fantasy systems before the base format is real.
 - `prd import markdown` now provides deterministic Markdown-to-structured-`general-document` import
 - `prd import images` now provides deterministic ordered image-folder import for `comic` and `storyboard`
 - the current authoring workflow and import/export matrix docs define how those commands fit into public authoring
-- the next executable lane should be public viewer/demo/landing UX polish that demonstrates the create/import, validate, pack, and open flow
-- defer full visual Studio, broad conversion, and hosted workflows until the public demo/viewer path is coherent
+- the current executable lane is public viewer/demo/landing UX polish that demonstrates the create/import, validate, pack, and open flow
+- the next executable lane should choose a public hosted demo/deployment path for the reference viewer
+- defer full visual Studio, broad conversion, and hosted conversion workflows until the public demo/viewer path is coherent
 
 ---
 

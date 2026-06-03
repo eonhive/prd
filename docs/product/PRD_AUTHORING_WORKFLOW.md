@@ -173,6 +173,8 @@ Those remain future product or extension lanes.
 
 ## 6. Next Implementation Lane
 
-After `prd import markdown` and `prd import images`, the next executable public-product lane should be viewer/demo/landing UX polish that demonstrates the real create/import, validate, pack, and open flow.
+After `prd import markdown` and `prd import images`, the current executable public-product lane is viewer/demo/landing UX polish that demonstrates the real create/import, validate, pack, and open flow.
+
+The next lane should choose and implement a public hosted demo/deployment path for the reference viewer so the demo can be shared without a local repo checkout.
 
 Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.

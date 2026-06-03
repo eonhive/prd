@@ -180,4 +180,4 @@ The current Phase 5 authoring docs are:
 
 The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, and `prd import images`. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The next recommended public-product lane is viewer/demo/landing UX polish that shows the real create/import, validate, pack, and open flow. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, and broad visual editing remain deferred product lanes.
+The current public-product lane is the viewer-integrated demo landing surface that shows the real create/import, validate, pack, and open flow. The next recommended public-product lane is choosing and implementing a hosted deployment path for that reference viewer demo. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, and broad visual editing remain deferred product lanes.
