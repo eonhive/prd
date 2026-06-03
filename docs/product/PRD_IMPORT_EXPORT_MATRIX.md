@@ -1,6 +1,6 @@
 # PRD_IMPORT_EXPORT_MATRIX.md
-_Last updated: May 27, 2026_
-_Status: Phase 5 import/export matrix baseline v0.2_
+_Last updated: May 31, 2026_
+_Status: Phase 5 import/export matrix baseline v0.3_
 
 ## 1. Purpose
 
@@ -32,9 +32,9 @@ Import and export work should follow these rules:
 | DOCX | `general-document` | Later conversion lane | Deferred | Useful, but high-fidelity mapping is complex and should not be first. |
 | EPUB | `general-document` | Later conversion lane | Deferred | Needs spine, asset, metadata, and chapter mapping decisions. |
 | PDF | `general-document` or attachment-first | Deferred | Deferred | PDF is difficult to convert structurally; initial handling should likely stay attachment or reference-led until a conversion policy exists. |
-| Image folder | `comic` | Early visual-profile lane | Planned after Markdown | Map ordered image files to panels with generated manifest asset declarations. |
-| Comic pages | `comic` | Early visual-profile lane | Planned after Markdown | Same core path as image folder, with comic-specific naming and series metadata prompts later. |
-| Storyboard frames | `storyboard` | Early visual-profile lane | Planned after Markdown | Map ordered image files to frames with notes placeholders. |
+| Image folder | `comic` | Early visual-profile lane | Supported v0.1 | Maps ordered top-level image files to panels with generated manifest asset declarations. |
+| Comic pages | `comic` | Early visual-profile lane | Supported v0.1 | Same core path as image folder, with comic-specific naming and series metadata prompts later. |
+| Storyboard frames | `storyboard` | Early visual-profile lane | Supported v0.1 | Maps ordered top-level image files to frames with notes placeholders. |
 | Existing PRD archive | same as source | Utility lane | Already supported indirectly | Use validation, inspection, and unpack/pack tooling later; do not treat this as conversion. |
 
 ---
@@ -77,19 +77,45 @@ Supported v0.1 mapping:
 
 The first lane does not attempt full Markdown extension coverage, links-to-structured-link conversion, fenced code block conversion, HTML passthrough, PDF-like layout preservation, or Cloud-hosted asset resolution.
 
-## 6. Recommended Next Import Lane
+## 6. Current Ordered Image Import Lane
 
-The next import implementation should be one visual-profile lane:
+The second real import implementation is:
 
 ```text
 ordered image folder -> comic or storyboard package directory
 ```
 
-That keeps the product path aligned with the first-class `comic` and `storyboard` profiles without jumping to broad document conversion.
+Command shape:
+
+```bash
+prd import images ./pages --profile comic --out ./my-comic
+prd import images ./frames --profile storyboard --out ./my-board
+```
+
+Supported v0.1 mapping:
+
+- top-level `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, and `.svg` files only
+- deterministic natural filename order, so `page-2.png` sorts before `page-10.png`
+- `comic` outputs `panels[]` and copies images into `assets/panels/`
+- `storyboard` outputs `frames[]` and copies images into `assets/frames/`
+- non-image files and nested directories are skipped with warnings
+- generated assets are declared in `manifest.assets`
+
+This lane does not attempt image processing, optimization, OCR, panel detection, frame timing, series metadata prompts, hosted fetches, Cloud conversion, or visual editing.
+
+## 7. Recommended Next Product Lane
+
+The next public-product implementation should be viewer/demo/landing UX polish that demonstrates the now-real authoring loop:
+
+```text
+init/import -> validate -> inspect -> pack -> open in the reference viewer
+```
+
+That keeps the product story focused on usable PRD creation before adding broad conversion.
 
 ---
 
-## 7. Deferred Work
+## 8. Deferred Work
 
 Deferred work includes:
 

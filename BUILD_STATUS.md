@@ -1,5 +1,16 @@
 # BUILD STATUS
 
+## 2026-05-31
+
+- Merged PR `#41` (`[stannesi] add markdown import command`) into `main` at `668c57dc94e3b00d55d695cbb87fc871d10f3790` and synced local `main` before starting the ordered image import slice.
+- Added `prd import images <sourceDir> --profile <comic|storyboard> --out <targetDir> [--title <title>] [--id <id>] [--json]` as the visual-profile import lane for ordered image folders.
+- Implemented deterministic natural filename ordering for supported top-level image files (`.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.svg`) so numbered page/frame names import in reading order.
+- Image import now creates validator-valid `comic` packages with `panels[]` and `assets/panels/`, and validator-valid `storyboard` packages with `frames[]`, placeholder notes, and `assets/frames/`.
+- Non-image files and nested directories are skipped with explicit warnings; unsupported profiles, missing source directories, empty/no-image sources, and non-empty targets fail before package output is written.
+- Added CLI unit and built-binary E2E coverage for image import, including JSON output, title/id overrides, deterministic ordering, skipped files, unsupported profile, empty source, missing source, and non-empty target safety.
+- Added a minor changeset for `@eonhive/prd-cli` and updated README, CLI docs, CLI JSON contract, authoring workflow, import/export matrix, product-boundary, roadmap, and blueprint docs.
+- Local validation included CLI package typecheck, root typecheck, targeted CLI unit/E2E tests, docs consistency with root docs, `git diff --check`, and `foundation:gate` through a temporary local `pnpm` shim because the current Codex app shell has Node but no `pnpm` binary on PATH.
+
 ## 2026-05-27
 
 - Merged PR `#40` (`[stannesi] define phase 5 authoring workflow`) into `main` at `b2f5b12217338f749d1733507f7b69fc39416751` and synced local `main` before starting the Markdown import slice.

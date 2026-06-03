@@ -2,7 +2,7 @@
 
 _Status: active machine-readable contract for downstream automation._
 
-This document defines a concise, versioned JSON contract for `prd init --json`, `prd import markdown --json`, `prd validate --json`, and `prd inspect --json`.
+This document defines a concise, versioned JSON contract for `prd init --json`, `prd import markdown --json`, `prd import images --json`, `prd validate --json`, and `prd inspect --json`.
 
 Canonical command docs remain in `packages/prd-cli/README.md`.
 
@@ -73,6 +73,56 @@ Canonical command docs remain in `packages/prd-cli/README.md`.
     },
     "nodeCount": { "type": "number" },
     "assetCount": { "type": "number" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
+```
+
+## `import images --json` contract snippet
+
+```json
+{
+  "$id": "https://eonhive.dev/prd/contracts/cli/import-images/v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "imported",
+    "sourceDir",
+    "targetDir",
+    "profile",
+    "title",
+    "id",
+    "entry",
+    "files",
+    "imageCount",
+    "assetCount",
+    "skippedFiles",
+    "warnings"
+  ],
+  "properties": {
+    "imported": { "const": true },
+    "sourceDir": { "type": "string", "minLength": 1 },
+    "targetDir": { "type": "string", "minLength": 1 },
+    "profile": {
+      "type": "string",
+      "enum": ["comic", "storyboard"]
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "entry": { "const": "content/root.json" },
+    "files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "imageCount": { "type": "number" },
+    "assetCount": { "type": "number" },
+    "skippedFiles": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
     "warnings": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 }

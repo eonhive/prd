@@ -139,6 +139,93 @@ beforeAll(async () => {
 });
 
 describe("built CLI binary end-to-end", () => {
+  it("executes built binary image import, validate, inspect, and pack for visual profiles", async () => {
+    const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-import-images-"));
+    const sourceDir = join(outDir, "pages");
+    const comicDir = join(outDir, "comic-prd");
+    const storyboardDir = join(outDir, "storyboard-prd");
+    const packedComicFile = join(outDir, "comic.prd");
+
+    try {
+      await mkdir(sourceDir, { recursive: true });
+      await writeFile(
+        join(sourceDir, "page-2.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+      await writeFile(
+        join(sourceDir, "page-10.svg"),
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" />",
+        "utf8"
+      );
+
+      const comicImportResult = await runBuiltCli([
+        "import",
+        "images",
+        sourceDir,
+        "--profile",
+        "comic",
+        "--out",
+        comicDir,
+        "--json"
+      ]);
+      expect(comicImportResult.code).toBe(0);
+      const comicImportJson = JSON.parse(comicImportResult.stdout) as {
+        imported: boolean;
+        profile: string;
+        imageCount: number;
+        assetCount: number;
+      };
+      expect(comicImportJson.imported).toBe(true);
+      expect(comicImportJson.profile).toBe("comic");
+      expect(comicImportJson.imageCount).toBe(2);
+      expect(comicImportJson.assetCount).toBe(2);
+
+      const validateComicResult = await runBuiltCli(["validate", comicDir]);
+      expect(validateComicResult.code).toBe(0);
+      expect(validateComicResult.stdout).toContain("valid: yes");
+
+      const inspectComicResult = await runBuiltCli(["inspect", comicDir, "--json"]);
+      expect(inspectComicResult.code).toBe(0);
+      const inspectComicJson = JSON.parse(inspectComicResult.stdout) as {
+        valid: boolean;
+        inspection: { assetCount: number; entryKind: string };
+      };
+      expect(inspectComicJson.valid).toBe(true);
+      expect(inspectComicJson.inspection.assetCount).toBe(2);
+      expect(inspectComicJson.inspection.entryKind).toBe("structured-json");
+
+      const packComicResult = await runBuiltCli(["pack", comicDir, "--out", packedComicFile]);
+      expect(packComicResult.code).toBe(0);
+      const packedBuffer = await readFile(packedComicFile);
+      expect(packedBuffer.length).toBeGreaterThan(0);
+
+      const storyboardImportResult = await runBuiltCli([
+        "import",
+        "images",
+        sourceDir,
+        "--profile",
+        "storyboard",
+        "--out",
+        storyboardDir,
+        "--json"
+      ]);
+      expect(storyboardImportResult.code).toBe(0);
+      const storyboardImportJson = JSON.parse(storyboardImportResult.stdout) as {
+        profile: string;
+        imageCount: number;
+      };
+      expect(storyboardImportJson.profile).toBe("storyboard");
+      expect(storyboardImportJson.imageCount).toBe(2);
+
+      const validateStoryboardResult = await runBuiltCli(["validate", storyboardDir]);
+      expect(validateStoryboardResult.code).toBe(0);
+      expect(validateStoryboardResult.stdout).toContain("valid: yes");
+    } finally {
+      await rm(outDir, { recursive: true, force: true });
+    }
+  });
+
   it("executes built binary markdown import, validate, inspect, and pack", async () => {
     const outDir = await mkdtemp(join(tmpdir(), "prd-cli-e2e-import-md-"));
     const sourcePath = join(outDir, "launch.md");

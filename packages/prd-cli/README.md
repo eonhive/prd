@@ -77,6 +77,58 @@ next:
 - prd pack <targetDir> --out <targetDir>.prd
 ```
 
+### `prd import images <sourceDir> --profile <comic|storyboard> --out <targetDir> [--title <title>] [--id <id>] [--json]`
+
+Imports an ordered image folder into a validator-valid `comic` or `storyboard` package directory.
+
+Supported v0.1 image inputs:
+
+* `.png`
+* `.jpg`
+* `.jpeg`
+* `.webp`
+* `.gif`
+* `.svg`
+
+Defaults:
+
+* `--title`: title-cased source directory name
+* `--id`: `urn:prd:local:<slug>`
+
+Safety behavior:
+
+* sorts top-level image files by deterministic natural filename order
+* creates the target directory when it does not exist
+* allows an existing empty target directory
+* refuses to write into a non-empty target directory
+* refuses unsupported profiles
+* skips non-image files and nested directories with warnings
+* fails when no supported images are found
+
+Generated package shape:
+
+* `comic`: copies images into `assets/panels/`, declares them in `manifest.assets`, and creates `panels[]`
+* `storyboard`: copies images into `assets/frames/`, declares them in `manifest.assets`, and creates `frames[]`
+
+**Text output (stable):**
+
+```text
+Imported PRD package: <targetDir>
+profile: <comic|storyboard>
+title: <title>
+entry: content/root.json
+images: <count>
+assets: <count>
+skipped files:
+- none
+warnings:
+- none
+next:
+- prd validate <targetDir>
+- prd inspect <targetDir>
+- prd pack <targetDir> --out <targetDir>.prd
+```
+
 ### `prd pack <sourceDir> --out <file.prd>`
 
 Packages a directory-form PRD into an archive file.
@@ -112,7 +164,7 @@ Runs validation plus deterministic package metrics.
   - Missing required args (for example, missing init target, missing `--out`, or missing validate/inspect target path).
   - Unknown command.
   - `init` where the target is unsafe to write or profile is unsupported.
-  - `import` where the source kind is unsupported or the target is unsafe to write.
+  - `import` where the source kind is unsupported, the target is unsafe to write, a required import flag is missing, or no supported input files are found.
   - `validate`/`inspect` where `valid: false`.
 
 ## Stable output contract
@@ -143,6 +195,23 @@ Top-level keys (stable):
 - `files` (`string[]`)
 - `nodeCount` (`number`)
 - `assetCount` (`number`)
+- `warnings` (`string[]`)
+
+### `import images --json` fields
+
+Top-level keys (stable):
+
+- `imported` (`true`)
+- `sourceDir` (`string`)
+- `targetDir` (`string`)
+- `profile` (`"comic" | "storyboard"`)
+- `title` (`string`)
+- `id` (`string`)
+- `entry` (`"content/root.json"`)
+- `files` (`string[]`)
+- `imageCount` (`number`)
+- `assetCount` (`number`)
+- `skippedFiles` (`string[]`)
 - `warnings` (`string[]`)
 
 ### `validate` text output
