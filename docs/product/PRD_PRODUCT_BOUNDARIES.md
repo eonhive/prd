@@ -52,6 +52,8 @@ The current clean public npm baseline is `0.1.1`.
 
 The web viewer and viewer-core packages are present in the repository as reference implementation surfaces, but they are not part of the public npm publish set.
 
+The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as a static GitHub Pages app, and may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
+
 ---
 
 ## 5. Product Roles
@@ -180,4 +182,4 @@ The current Phase 5 authoring docs are:
 
 The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, and `prd import images`. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The current public-product lane is the viewer-integrated demo landing surface that shows the real create/import, validate, pack, and open flow. The next recommended public-product lane is choosing and implementing a hosted deployment path for that reference viewer demo. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, and broad visual editing remain deferred product lanes.
+The current public-product lane is the hosted PRD landing page and reference web viewer demo. It shows the real create/import, validate, inspect, pack, and open flow, includes light and premium dark modes, and deploys through GitHub Pages as a static app. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.

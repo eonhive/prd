@@ -271,6 +271,9 @@ The current top-level scripts are:
 * `pnpm codex:pack`
 * `pnpm codex:run:web`
 * `pnpm dev:web`
+* `pnpm viewer:demo:assets`
+* `pnpm viewer:demo:build`
+* `pnpm viewer:demo:dev`
 * `pnpm examples:pack`
 * `pnpm examples:validate`
 * `pnpm examples:smoke`
@@ -303,6 +306,16 @@ Public product and ecosystem boundaries: `docs/product/PRD_PRODUCT_BOUNDARIES.md
 Current authoring workflow: `docs/product/PRD_AUTHORING_WORKFLOW.md`.
 Import/export sequencing matrix: `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`.
 Versioning policy across format, manifest, runtime, and npm tooling surfaces: `docs/core/PRD_VERSIONING_POLICY.md`.
+
+Hosted viewer demo workflow:
+
+```bash
+pnpm viewer:demo:assets
+pnpm viewer:demo:build
+pnpm viewer:demo:dev
+```
+
+`viewer:demo:assets` packs canonical examples and copies selected `.prd` archives into the web viewer's ignored `public/examples/` directory for the hosted demo. Those hosted samples are demo assets only; they do not change PRD's packaged-first loading contract.
 
 
 ## Contributor MVP gate (no npm credentials required)
@@ -448,6 +461,10 @@ For Codex-driven work, use the repo-local run actions instead of manually piecin
   Builds the workspace and produces the example `.prd` archives under `examples/dist/`.
 * `pnpm codex:run:web`
   Builds the workspace, packs the example archives, and starts the web viewer.
+* `pnpm viewer:demo:build`
+  Packs canonical examples, prepares hosted sample assets, and builds the deployable PRD Web Viewer demo.
+* `pnpm viewer:demo:dev`
+  Prepares hosted sample assets and starts the PRD Web Viewer demo locally.
 
 Codex desktop also reads [`.codex/environments/environment.toml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.codex/environments/environment.toml) for this workspace. That file now defines:
 
@@ -465,15 +482,17 @@ The repo also now includes [`.github/workflows/codex-ci.yml`](/Users/nappy.cat/L
 
 For release automation, the repo also includes [`.github/workflows/release.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/release.yml), which gates npm publication through Changesets and CI on `main`.
 
+The hosted PRD Web Viewer demo is built and deployed by [`.github/workflows/viewer-demo-pages.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/viewer-demo-pages.yml) using GitHub Pages. The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`.
+
 ---
 
 ## Example flow
 
 1. Run `pnpm codex:check`
-2. Run `pnpm codex:run:web`
-3. Open the web viewer demo landing page
-4. Choose or drag a `.prd` archive from `examples/dist/` into the drop zone
-5. Confirm package status, package facts, and rendered content in the reference viewer
+2. Run `pnpm viewer:demo:dev`
+3. Open the PRD landing page and use either light or premium dark mode
+4. Load a hosted sample archive or choose/drag a `.prd` archive into the viewer drop zone
+5. Confirm package status, package facts, manifest metadata, localization/attachments, and rendered content in the reference viewer
 
 Current example behavior:
 

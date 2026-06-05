@@ -158,6 +158,11 @@ Product-boundary and ecosystem-role docs:
 * `PRD_AUTHORING_WORKFLOW.md`
 * `PRD_IMPORT_EXPORT_MATRIX.md`
 
+Current public demo surface:
+
+* `../apps/prd-viewer-web/` (PRD landing page + reference web viewer)
+* `../.github/workflows/viewer-demo-pages.yml` (GitHub Pages deployment)
+
 ### `market/`
 
 Reserved location for white paper and external narrative docs.

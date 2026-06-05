@@ -6,7 +6,7 @@ _Status: Phase 5 authoring workflow baseline v0.3_
 
 This document defines the current public authoring workflow for PRD after the first Phase 5 tooling slice.
 
-The goal is to make PRD authoring repeatable without pretending a full Studio, broad conversion platform, or hosted workflow exists yet.
+The goal is to make PRD authoring repeatable without pretending a full Studio, broad conversion platform, or hosted authoring workflow exists yet. The current hosted surface is a static reference viewer demo, not Cloud authoring.
 
 ---
 
@@ -112,7 +112,7 @@ The `.prd` archive is the interchange form. The unpacked directory is the author
 
 Open the packed archive in a compatible viewer or distribute it as a portable package.
 
-The current reference viewer baseline remains eager whole-package in-memory loading. Streaming, range requests, worker unzip, lazy section fetch, and hosted opening flows are not part of the current authoring contract.
+The current reference viewer baseline remains eager whole-package in-memory loading. Streaming, range requests, worker unzip, lazy section fetch, and hosted opening flows are not part of the current authoring contract. Hosted sample archives in the web demo are demonstration assets, not a format-level network-loading guarantee.
 
 ---
 
@@ -173,8 +173,6 @@ Those remain future product or extension lanes.
 
 ## 6. Next Implementation Lane
 
-After `prd import markdown` and `prd import images`, the current executable public-product lane is viewer/demo/landing UX polish that demonstrates the real create/import, validate, pack, and open flow.
-
-The next lane should choose and implement a public hosted demo/deployment path for the reference viewer so the demo can be shared without a local repo checkout.
+After `prd import markdown` and `prd import images`, the current executable public-product lane is the hosted PRD landing page and reference web viewer demo. It demonstrates the real create/import, validate, inspect, pack, and open flow with light and premium dark modes.
 
 Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.

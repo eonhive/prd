@@ -48,4 +48,5 @@
 39. [x] Implement the first real import lane: `prd import markdown ./source.md --out ./my-document`, targeting structured `general-document` package directories with deterministic validation-friendly output.
 40. [x] Implemented the next small visual-profile import lane: `prd import images ./pages --profile <comic|storyboard> --out ./package`, producing validator-valid ordered image packages without broad conversion, Studio, Cloud, PRDc, payment, crypto, rights, or visual-editor scope.
 41. [x] Implemented a public demo/viewer/landing UX slice inside `apps/prd-viewer-web` that demonstrates the real `prd init/import -> validate -> inspect -> pack -> open` flow now that text and visual import lanes exist.
-42. [ ] Choose and implement a public hosted demo/deployment path for the reference viewer so the demo can be shared without a local repo checkout.
+42. [x] Chose and implemented a public hosted demo/deployment path for the reference viewer using a single `apps/prd-viewer-web` landing/viewer app, generated hosted sample archives, light/dark theme support, and a GitHub Pages workflow.
+43. [ ] After the hosted demo PR lands, run launch QA against the live GitHub Pages URL, verify hosted samples open correctly, and choose the next focused viewer/product polish step.
