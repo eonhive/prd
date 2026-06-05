@@ -43,10 +43,20 @@ import {
   inferViewerRenderMode
 } from "./viewerRenderMode.js";
 import {
+  type ViewerDemoExampleArchive,
   viewerDemoExampleArchives,
   viewerDemoFlowSteps,
-  viewerDemoPreparationCommands
+  viewerDemoPreparationCommands,
+  viewerFutureLanes,
+  viewerLandingCapabilities,
+  viewerLandingHero,
+  viewerLandingProfiles
 } from "./viewerDemoContent.js";
+import {
+  findFirstPrdArchive,
+  getPrdArchiveSelectionError,
+  getViewerDemoSampleArchiveUrl
+} from "./viewerArchiveFiles.js";
 
 type AssetUrlMap = Record<string, string>;
 type AttachmentUrlMap = Record<string, string>;
@@ -77,6 +87,7 @@ type ViewerRenderMode =
   | "structured-json-rendered"
   | "html-fallback-rendered"
   | "unsupported-entry-mode";
+type ViewerTheme = "dark" | "light";
 
 interface PackageFacts {
   fileCount: number;
@@ -96,6 +107,7 @@ interface PackageFacts {
 const referenceViewerRuntimeDescriptor = PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR;
 const referenceViewerLoadMode =
   referenceViewerRuntimeDescriptor.referenceLoadMode ?? "eager-whole-package";
+const viewerThemeStorageKey = "prd-viewer-theme";
 
 function formatReferenceLoadMode(loadMode: PrdReferenceLoadMode): string {
   if (loadMode === "eager-whole-package") {
@@ -528,12 +540,13 @@ function formatBytes(byteCount: number): string {
   return new Intl.NumberFormat("en-US").format(byteCount);
 }
 
-function isPrdArchiveFile(file: File): boolean {
-  return file.name.toLowerCase().endsWith(".prd");
-}
+function getInitialViewerTheme(): ViewerTheme {
+  if (typeof window === "undefined") {
+    return "dark";
+  }
 
-function findFirstPrdArchive(files: FileList | File[]): File | undefined {
-  return Array.from(files).find((file) => isPrdArchiveFile(file));
+  const storedTheme = window.localStorage.getItem(viewerThemeStorageKey);
+  return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
 }
 
 function parseLocalizedDocumentOverridesRoot(
@@ -2099,9 +2112,119 @@ function PackageFactsView({
   );
 }
 
+function ThemeToggle({
+  theme,
+  onToggle
+}: {
+  theme: ViewerTheme;
+  onToggle: () => void;
+}) {
+  return (
+    <button type="button" className="theme-toggle" onClick={onToggle}>
+      <span aria-hidden="true">{theme === "dark" ? "Dark" : "Light"}</span>
+      <strong>{theme === "dark" ? "Switch to light" : "Switch to dark"}</strong>
+    </button>
+  );
+}
+
+function LandingSurface({
+  onOpenViewer,
+  onLoadSample,
+  sampleLoadingId
+}: {
+  onOpenViewer: () => void;
+  onLoadSample: () => void;
+  sampleLoadingId: string | null;
+}) {
+  return (
+    <section className="landing-surface" aria-label="PRD product landing">
+      <div className="landing-hero">
+        <div className="landing-hero-copy">
+          <p className="eyebrow">{viewerLandingHero.eyebrow}</p>
+          <h1>{viewerLandingHero.title}</h1>
+          <p className="subhead">{viewerLandingHero.description}</p>
+          <div className="landing-actions">
+            <button type="button" className="primary-action" onClick={onOpenViewer}>
+              {viewerLandingHero.primaryAction}
+            </button>
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={onLoadSample}
+              disabled={sampleLoadingId !== null}
+            >
+              {sampleLoadingId ? "Loading sample..." : viewerLandingHero.secondaryAction}
+            </button>
+            <a className="text-action" href="#cli-flow">
+              {viewerLandingHero.tertiaryAction}
+            </a>
+          </div>
+        </div>
+
+        <div className="landing-preview-card" aria-label="Reference viewer preview">
+          <div className="preview-window-bar">
+            <span />
+            <span />
+            <span />
+            <strong>PRD Web Viewer</strong>
+          </div>
+          <div className="preview-reader">
+            <div className="preview-sidebar">
+              <span>Manifest</span>
+              <span>Package facts</span>
+              <span>Assets</span>
+              <span>Localization</span>
+            </div>
+            <div className="preview-document">
+              <p className="preview-kicker">Reference package</p>
+              <h2>Responsive document, packed and portable.</h2>
+              <p>
+                Validates first. Opens locally. Reports the actual loading profile.
+              </p>
+              <div className="preview-status-row">
+                <span>Valid</span>
+                <span>Structured JSON</span>
+                <span>Offline package</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="landing-capabilities" aria-label="Current PRD capabilities">
+        {viewerLandingCapabilities.map((capability) => (
+          <article key={capability.title} className="landing-card">
+            <p className="card-proof">{capability.proof}</p>
+            <h2>{capability.title}</h2>
+            <p>{capability.description}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="landing-profile-grid" aria-label="First-class PRD profiles">
+        {viewerLandingProfiles.map((profile) => (
+          <article key={profile.id} className="profile-card">
+            <span className="profile-orb" aria-hidden="true" />
+            <p className="card-proof">{profile.id}</p>
+            <h2>{profile.title}</h2>
+            <p>{profile.description}</p>
+            <code>{profile.command}</code>
+          </article>
+        ))}
+      </div>
+
+      <div className="future-lanes-note">
+        <strong>Future lanes stay future:</strong>{" "}
+        {viewerFutureLanes.join(", ")} are not shipped by this demo and do not
+        change what counts as a valid PRD package.
+      </div>
+    </section>
+  );
+}
+
 function ViewerDemoFlowView() {
   return (
-    <section className="demo-flow" aria-label="PRD public product flow">
+    <section id="cli-flow" className="demo-flow" aria-label="PRD public product flow">
       <div className="demo-section-header">
         <p className="eyebrow">Public product path</p>
         <h2>Create or import, verify, package, then open.</h2>
@@ -2129,16 +2252,22 @@ function ViewerDemoFlowView() {
   );
 }
 
-function ViewerExampleGuideView() {
+function ViewerExampleGuideView({
+  onLoadSample,
+  sampleLoadingId
+}: {
+  onLoadSample: (example: ViewerDemoExampleArchive) => void;
+  sampleLoadingId: string | null;
+}) {
   return (
     <section className="example-guide" aria-label="Reference example archives">
       <div className="demo-section-header">
-        <p className="eyebrow">Try canonical examples</p>
-        <h2>Pack examples, then drop an archive here.</h2>
+        <p className="eyebrow">Try hosted examples</p>
+        <h2>Load a sample archive or pack one locally.</h2>
         <p>
-          The viewer does not fetch or bundle examples. Generate the archives
-          locally, then use the drop zone to open any `.prd` file from
-          `examples/dist/`.
+          Hosted samples are generated from canonical examples for this demo
+          build. They use the same eager whole-package in-memory open path as
+          user-selected archives; this is not a new PRD network-loading contract.
         </p>
       </div>
       <div className="example-guide-body">
@@ -2157,6 +2286,14 @@ function ViewerExampleGuideView() {
               </div>
               <code>{example.path}</code>
               <p>{example.description}</p>
+              <button
+                type="button"
+                className="sample-load-button"
+                onClick={() => onLoadSample(example)}
+                disabled={sampleLoadingId !== null}
+              >
+                {sampleLoadingId === example.id ? "Loading..." : "Load hosted sample"}
+              </button>
             </li>
           ))}
         </ul>
@@ -2179,11 +2316,14 @@ interface ViewerState {
 export function App() {
   const objectUrlsRef = useRef<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const viewerSectionRef = useRef<HTMLElement | null>(null);
+  const [theme, setTheme] = useState<ViewerTheme>(getInitialViewerTheme);
   const [viewerState, setViewerState] = useState<ViewerState | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -2192,6 +2332,12 @@ export function App() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem(viewerThemeStorageKey, theme);
+  }, [theme]);
 
   const profileLabel = useMemo(() => {
     if (!viewerState?.opened) {
@@ -2388,20 +2534,50 @@ export function App() {
   }
 
   function handleArchiveFiles(files: FileList | File[] | null) {
-    if (!files || files.length === 0) {
-      setError("Choose or drop a .prd archive to open in the reference viewer.");
+    const selectionError = getPrdArchiveSelectionError(files);
+    if (selectionError) {
+      setError(selectionError);
       return;
     }
 
-    const archive = findFirstPrdArchive(files);
-    if (!archive) {
+    const archive = findFirstPrdArchive(files ?? []);
+    if (archive) {
+      void handleFile(archive);
+    }
+  }
+
+  function scrollToViewer() {
+    viewerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function handleSampleArchive(example: ViewerDemoExampleArchive) {
+    setSampleLoadingId(example.id);
+    setError(null);
+    scrollToViewer();
+
+    try {
+      const url = getViewerDemoSampleArchiveUrl(example.hostedPath, window.location.href);
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(
+          `Could not load hosted sample ${example.hostedPath}. Run \`pnpm viewer:demo:assets\` locally or check the deployed demo assets.`
+        );
+      }
+
+      const archiveName = example.hostedPath.split("/").pop() ?? `${example.id}.prd`;
+      const archive = new File([await response.arrayBuffer()], archiveName, {
+        type: "application/zip"
+      });
+      await handleFile(archive);
+    } catch (caught) {
       setError(
-        "No .prd archive found. Package source directories first with `prd pack`, then choose or drop the generated archive."
+        caught instanceof Error
+          ? caught.message
+          : "Failed to load the hosted sample PRD archive."
       );
-      return;
+    } finally {
+      setSampleLoadingId(null);
     }
-
-    void handleFile(archive);
   }
 
   function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
@@ -2430,257 +2606,325 @@ export function App() {
   }
 
   return (
-    <div className="app-shell">
-      <header className="hero hero-demo">
-        <div className="hero-copy">
-          <p className="eyebrow">PRD Reference Viewer</p>
-          <h1>Create a PRD package, verify it, then open it in the browser.</h1>
-          <p className="subhead">
-            The public preview now has a complete local loop: scaffold or import
-            source material, validate and inspect the package, pack it into a
-            portable archive, then open it here. This app validates the uploaded
-            package first, then hands it to viewer-core for the current
-            reference render path.
-          </p>
-          <div className="hero-badges" aria-label="Current reference viewer facts">
-            <span>general-document</span>
-            <span>comic</span>
-            <span>storyboard</span>
-            <span>{formatReferenceLoadMode(referenceViewerLoadMode)}</span>
-          </div>
-        </div>
-        <div
-          className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
-          role="button"
-          tabIndex={0}
-          onClick={() => fileInputRef.current?.click()}
-          onKeyDown={handleUploadKeyDown}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          aria-label="Choose or drop a PRD archive"
-        >
-          <p className="upload-kicker">Open package</p>
-          <strong>
-            Choose or drag a <code>.prd</code> archive
-          </strong>
+    <div id="top" className="app-shell">
+      <header className="site-nav">
+        <a className="brand-lockup" href="#top" aria-label="PRD home">
+          <span className="brand-mark">PRD</span>
           <span>
-            Source folders must be packed first. If you drop multiple files, the
-            first <code>.prd</code> archive is opened.
+            <strong>Portable Responsive Document</strong>
+            <small>Reference viewer demo</small>
           </span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".prd"
-            onChange={(event) => {
-              handleArchiveFiles(event.target.files);
-              event.currentTarget.value = "";
-            }}
+        </a>
+        <nav className="site-nav-links" aria-label="Demo navigation">
+          <a href="#cli-flow">CLI Flow</a>
+          <a href="#viewer">Viewer</a>
+          <a href="#samples">Samples</a>
+        </nav>
+        <div className="site-nav-actions">
+          <ThemeToggle
+            theme={theme}
+            onToggle={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
           />
+          <button
+            type="button"
+            className="nav-open-button"
+            onClick={() => {
+              scrollToViewer();
+              fileInputRef.current?.click();
+            }}
+          >
+            Open .prd
+          </button>
         </div>
       </header>
 
+      <LandingSurface
+        onOpenViewer={scrollToViewer}
+        onLoadSample={() => {
+          const firstSample = viewerDemoExampleArchives[0];
+          if (firstSample) {
+            void handleSampleArchive(firstSample);
+          }
+        }}
+        sampleLoadingId={sampleLoadingId}
+      />
+
       <ViewerDemoFlowView />
-      <ViewerExampleGuideView />
 
-      {loading && <p className="status">Loading package…</p>}
-      {error && <p className="status error">{error}</p>}
+      <section
+        id="viewer"
+        ref={viewerSectionRef}
+        className="viewer-dashboard"
+        aria-label="PRD web viewer workspace"
+      >
+        <div className="viewer-dashboard-topbar">
+          <div>
+            <p className="eyebrow">PRD Web Viewer</p>
+            <h2>Validate, inspect, and open a package.</h2>
+          </div>
+          <div className="viewer-dashboard-status">
+            <span className={viewerState?.validation.valid ? "status-pill valid" : "status-pill"}>
+              {viewerState?.validation.valid ? "Valid package" : "No package loaded"}
+            </span>
+            <span className="status-pill muted">
+              {formatReferenceLoadMode(referenceViewerLoadMode)}
+            </span>
+          </div>
+        </div>
 
-      {viewerState && (
-        <main className="workspace">
-          <section className="panel">
-            <h2>Package Status</h2>
-            <dl className="meta-grid">
-              <div>
-                <dt>Valid</dt>
-                <dd>{viewerState.validation.valid ? "yes" : "no"}</dd>
-              </div>
-              <div>
-                <dt>Profile</dt>
-                <dd>{profileLabel ?? "n/a"}</dd>
-              </div>
-              <div>
-                <dt>Profile ID</dt>
-                <dd>{viewerState.opened?.manifest.profile ?? "n/a"}</dd>
-              </div>
-              <div>
-                <dt>Support state</dt>
-                <dd>{viewerState.opened?.supportState ?? "n/a"}</dd>
-              </div>
-              <div>
-                <dt>Localization</dt>
-                <dd>
-                  {viewerState.opened?.localization
-                    ? viewerState.opened.localization.defaultLocale
-                    : "none"}
-                </dd>
-              </div>
-              {viewerState.opened?.localization && (
-                <div>
-                  <dt>Active locale</dt>
-                  <dd>{activeLocale ?? viewerState.opened.localization.defaultLocale}</dd>
-                </div>
-              )}
-              <div>
-                <dt>Entry</dt>
-                <dd>{activeEntryPath ?? "n/a"}</dd>
-              </div>
-            </dl>
+        <div className="viewer-dashboard-grid">
+          <aside className="viewer-demo-sidebar">
+            <ViewerExampleGuideView
+              onLoadSample={(example) => void handleSampleArchive(example)}
+              sampleLoadingId={sampleLoadingId}
+            />
+          </aside>
 
-            {viewerState.validation.errors.length > 0 && (
-              <>
-                <h3>Errors</h3>
-                <ul className="issues">
-                  {viewerState.validation.errors.map((issue) => (
-                    <li key={`${issue.code}-${issue.path ?? issue.message}`}>
-                      <code>{issue.code}</code> {issue.message}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-
-            {viewerState.validation.warnings.length > 0 && (
-              <>
-                <h3>Warnings</h3>
-                <ul className="issues warning">
-                  {viewerState.validation.warnings.map((issue) => (
-                    <li key={`${issue.code}-${issue.path ?? issue.message}`}>
-                      <code>{issue.code}</code> {issue.message}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </section>
-
-          <section className="panel viewer-panel">
-            <h2>Viewer</h2>
-            <div className="viewer-message">
-              <p>{getViewerRenderModeMessage(viewerRenderMode)}</p>
+          <div className="viewer-stage-column">
+            <div
+              className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => fileInputRef.current?.click()}
+              onKeyDown={handleUploadKeyDown}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              aria-label="Choose or drop a PRD archive"
+            >
+              <p className="upload-kicker">Open package</p>
+              <strong>
+                Choose or drag a <code>.prd</code> archive
+              </strong>
+              <span>
+                Source folders must be packed first. If you drop multiple files,
+                the first <code>.prd</code> archive is opened.
+              </span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".prd"
+                onChange={(event) => {
+                  handleArchiveFiles(event.target.files);
+                  event.currentTarget.value = "";
+                }}
+              />
             </div>
 
-            {viewerState.opened && (
-              <PublicMetadataView
-                title={activeEntryDocument?.title ?? viewerState.opened.manifest.title}
-                identity={viewerState.opened.manifest.identity}
-                publicMetadata={activePublicMetadata}
-                coverUrl={
-                  activePublicMetadata?.cover
-                    ? viewerState.assetUrls?.[activePublicMetadata.cover]
-                    : undefined
-                }
-                document={activeEntryDocument}
-              />
-            )}
+            {loading && <p className="status">Loading package...</p>}
+            {error && <p className="status error">{error}</p>}
 
-            {viewerState.opened && viewerState.packageFacts && (
-              <PackageFactsView facts={viewerState.packageFacts} />
-            )}
-
-            {viewerState.opened && (
-              <AttachmentListView
-                attachments={viewerState.opened.manifest.attachments}
-                attachmentUrls={viewerState.attachmentUrls ?? {}}
-              />
-            )}
-
-            {viewerState.opened?.localization && localeOptions.length > 1 && (
-              <section className="viewer-locale-card" aria-label="Localized content selection">
-                <div className="viewer-locale-card-body">
-                  <p className="structured-kicker">Localized content</p>
-                  <label className="viewer-locale-label" htmlFor="viewer-locale-select">
-                    Active locale
-                  </label>
-                  <select
-                    id="viewer-locale-select"
-                    className="viewer-locale-select"
-                    value={activeLocale ?? viewerState.opened.localization.defaultLocale}
-                    onChange={(event) => setSelectedLocale(event.target.value)}
-                  >
-                    {localeOptions.map((locale) => (
-                      <option key={locale} value={locale}>
-                        {viewerState.localizedVariants?.[locale]?.label ?? locale}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="viewer-locale-hint">
-                    Applies localized document resources when available, including
-                    reader-facing summary, cover, and collection/series labels. A
-                    locale may also map a full alternate structured entry and a
-                    small localized resource together when it needs both.
-                  </p>
-                </div>
+            {!viewerState && !loading && (
+              <section className="empty-viewer-state" aria-label="No package loaded">
+                <p className="eyebrow">Ready for a package</p>
+                <h2>Load a hosted sample or open your own `.prd` archive.</h2>
+                <p>
+                  The viewer validates the package first, then reports package
+                  status, manifest metadata, runtime support state, and the
+                  current reference render mode.
+                </p>
               </section>
             )}
 
-            {viewerState.opened?.supportState === "reserved-profile" && (
-              <div className="reserved">
-                <strong>{profileLabel}</strong>
-                <p>{viewerState.opened.message}</p>
-              </div>
+            {viewerState && (
+              <main className="workspace">
+                <section className="panel">
+                  <h2>Package Status</h2>
+                  <dl className="meta-grid">
+                    <div>
+                      <dt>Valid</dt>
+                      <dd>{viewerState.validation.valid ? "yes" : "no"}</dd>
+                    </div>
+                    <div>
+                      <dt>Profile</dt>
+                      <dd>{profileLabel ?? "n/a"}</dd>
+                    </div>
+                    <div>
+                      <dt>Profile ID</dt>
+                      <dd>{viewerState.opened?.manifest.profile ?? "n/a"}</dd>
+                    </div>
+                    <div>
+                      <dt>Support state</dt>
+                      <dd>{viewerState.opened?.supportState ?? "n/a"}</dd>
+                    </div>
+                    <div>
+                      <dt>Localization</dt>
+                      <dd>
+                        {viewerState.opened?.localization
+                          ? viewerState.opened.localization.defaultLocale
+                          : "none"}
+                      </dd>
+                    </div>
+                    {viewerState.opened?.localization && (
+                      <div>
+                        <dt>Active locale</dt>
+                        <dd>{activeLocale ?? viewerState.opened.localization.defaultLocale}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt>Entry</dt>
+                      <dd>{activeEntryPath ?? "n/a"}</dd>
+                    </div>
+                  </dl>
+
+                  {viewerState.validation.errors.length > 0 && (
+                    <>
+                      <h3>Errors</h3>
+                      <ul className="issues">
+                        {viewerState.validation.errors.map((issue) => (
+                          <li key={`${issue.code}-${issue.path ?? issue.message}`}>
+                            <code>{issue.code}</code> {issue.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+
+                  {viewerState.validation.warnings.length > 0 && (
+                    <>
+                      <h3>Warnings</h3>
+                      <ul className="issues warning">
+                        {viewerState.validation.warnings.map((issue) => (
+                          <li key={`${issue.code}-${issue.path ?? issue.message}`}>
+                            <code>{issue.code}</code> {issue.message}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </section>
+
+                <section className="panel viewer-panel">
+                  <h2>Viewer</h2>
+                  <div className="viewer-message">
+                    <p>{getViewerRenderModeMessage(viewerRenderMode)}</p>
+                  </div>
+
+                  {viewerState.opened && (
+                    <PublicMetadataView
+                      title={activeEntryDocument?.title ?? viewerState.opened.manifest.title}
+                      identity={viewerState.opened.manifest.identity}
+                      publicMetadata={activePublicMetadata}
+                      coverUrl={
+                        activePublicMetadata?.cover
+                          ? viewerState.assetUrls?.[activePublicMetadata.cover]
+                          : undefined
+                      }
+                      document={activeEntryDocument}
+                    />
+                  )}
+
+                  {viewerState.opened && viewerState.packageFacts && (
+                    <PackageFactsView facts={viewerState.packageFacts} />
+                  )}
+
+                  {viewerState.opened && (
+                    <AttachmentListView
+                      attachments={viewerState.opened.manifest.attachments}
+                      attachmentUrls={viewerState.attachmentUrls ?? {}}
+                    />
+                  )}
+
+                  {viewerState.opened?.localization && localeOptions.length > 1 && (
+                    <section className="viewer-locale-card" aria-label="Localized content selection">
+                      <div className="viewer-locale-card-body">
+                        <p className="structured-kicker">Localized content</p>
+                        <label className="viewer-locale-label" htmlFor="viewer-locale-select">
+                          Active locale
+                        </label>
+                        <select
+                          id="viewer-locale-select"
+                          className="viewer-locale-select"
+                          value={activeLocale ?? viewerState.opened.localization.defaultLocale}
+                          onChange={(event) => setSelectedLocale(event.target.value)}
+                        >
+                          {localeOptions.map((locale) => (
+                            <option key={locale} value={locale}>
+                              {viewerState.localizedVariants?.[locale]?.label ?? locale}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="viewer-locale-hint">
+                          Applies localized document resources when available,
+                          including reader-facing summary, cover, and
+                          collection/series labels. A locale may also map a full
+                          alternate structured entry and a small localized
+                          resource together when it needs both.
+                        </p>
+                      </div>
+                    </section>
+                  )}
+
+                  {viewerState.opened?.supportState === "reserved-profile" && (
+                    <div className="reserved">
+                      <strong>{profileLabel}</strong>
+                      <p>{viewerState.opened.message}</p>
+                    </div>
+                  )}
+
+                  {viewerState.opened?.message &&
+                    viewerState.opened.supportState !== "reserved-profile" && (
+                      <div className="viewer-message">
+                        <p>{viewerState.opened.message}</p>
+                      </div>
+                    )}
+
+                  {activeComicDocument &&
+                    (comicPanelNavigationEnabled ? (
+                      <ComicPanelNavigationView
+                        comicDocument={activeComicDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    ) : (
+                      <ComicPanelStripView
+                        comicDocument={activeComicDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    ))}
+
+                  {activeStoryboardDocument &&
+                    (storyboardReviewGridEnabled ? (
+                      <StoryboardReviewGridView
+                        storyboardDocument={activeStoryboardDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    ) : (
+                      <StoryboardFrameGridView
+                        storyboardDocument={activeStoryboardDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    ))}
+
+                  {viewerState.opened?.supportState !== "reserved-profile" &&
+                    activeRenderedHtml && (
+                      <iframe
+                        className="viewer-surface"
+                        title="PRD content frame"
+                        sandbox=""
+                        srcDoc={activeRenderedHtml}
+                      />
+                    )}
+
+                  {activeEntryDocument && (
+                    resumePresentationEnabled ? (
+                      <ResumeDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                        resumeProfile={viewerState.resumeProfile!}
+                      />
+                    ) : (
+                      <StructuredDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    )
+                  )}
+                </section>
+              </main>
             )}
-
-            {viewerState.opened?.message &&
-              viewerState.opened.supportState !== "reserved-profile" && (
-                <div className="viewer-message">
-                  <p>{viewerState.opened.message}</p>
-                </div>
-              )}
-
-            {activeComicDocument &&
-              (comicPanelNavigationEnabled ? (
-                <ComicPanelNavigationView
-                  comicDocument={activeComicDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                />
-              ) : (
-                <ComicPanelStripView
-                  comicDocument={activeComicDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                />
-              ))}
-
-            {activeStoryboardDocument &&
-              (storyboardReviewGridEnabled ? (
-                <StoryboardReviewGridView
-                  storyboardDocument={activeStoryboardDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                />
-              ) : (
-                <StoryboardFrameGridView
-                  storyboardDocument={activeStoryboardDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                />
-              ))}
-
-            {viewerState.opened?.supportState !== "reserved-profile" &&
-              activeRenderedHtml && (
-                <iframe
-                  className="viewer-surface"
-                  title="PRD content frame"
-                  sandbox=""
-                  srcDoc={activeRenderedHtml}
-                />
-              )}
-
-            {activeEntryDocument && (
-              resumePresentationEnabled ? (
-                <ResumeDocumentView
-                  document={activeEntryDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                  resumeProfile={viewerState.resumeProfile!}
-                />
-              ) : (
-                <StructuredDocumentView
-                  document={activeEntryDocument}
-                  assetUrls={viewerState.assetUrls ?? {}}
-                />
-              )
-            )}
-          </section>
-        </main>
-      )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

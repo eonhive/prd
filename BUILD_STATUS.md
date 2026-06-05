@@ -1,5 +1,17 @@
 # BUILD STATUS
 
+## 2026-06-05
+
+- Synced local `main` after PR `#43` (`[stannesi] add public viewer demo ux`) merged, then created `thehive/prd-landing-viewer-dashboard` for the hosted landing/viewer refresh.
+- Refreshed `apps/prd-viewer-web` into one deployable PRD landing page plus reference web viewer workspace with premium dark mode by default, first-class light mode, persistent theme selection, and a dashboard-style viewer surface inspired by the provided references.
+- Added hosted sample archive support through generated demo assets under the ignored `apps/prd-viewer-web/public/examples/` path. Hosted samples load through the same eager whole-package in-memory open path as user-selected archives and do not change PRD format loading semantics.
+- Added `scripts/prepare-viewer-demo-assets.mjs`, root `pnpm viewer:demo:assets`, `pnpm viewer:demo:build`, and `pnpm viewer:demo:dev` so canonical examples can be packed and copied into the web viewer demo surface without committing `.prd` binaries.
+- Added `.github/workflows/viewer-demo-pages.yml` to build the static viewer with `PRD_VIEWER_BASE_PATH=/prd/` and deploy `apps/prd-viewer-web/dist` through GitHub Pages.
+- Added test coverage for landing/demo content, archive file filtering/sample URL behavior, and demo asset preparation.
+- Updated root README, docs index, product-boundary docs, authoring workflow, import/export matrix, roadmap, `NEXT_STEPS.md`, and `codex/SESSION_HANDOFF.md`.
+- This slice did not add a changeset because it changes only the private web viewer app plus docs/operator/deployment surfaces.
+- Local validation included targeted web viewer/script tests, web viewer TypeScript build, `pnpm viewer:demo:build`, docs consistency with root docs, `git diff --check`, root typecheck, `pnpm foundation:gate`, and browser desktop/mobile visual checks. Browser verification confirmed dark/light mode, hosted sample loading for `document-basic`, `comic-basic`, and `storyboard-basic`, and no console warnings/errors.
+
 ## 2026-06-02
 
 - Merged PR `#42` (`[stannesi] add ordered image import command`) into `main` at `22d76df4e601a15508ab9475aff7924669b0e913` and synced local `main` before starting the public viewer demo UX slice.

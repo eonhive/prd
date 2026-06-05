@@ -4,5 +4,6 @@ dist
 .vite
 coverage
 examples/dist
+apps/prd-viewer-web/public/examples
 *.tsbuildinfo
 .DS_Store
