@@ -52,7 +52,7 @@ The current clean public npm baseline is `0.1.1`.
 
 The web viewer and viewer-core packages are present in the repository as reference implementation surfaces, but they are not part of the public npm publish set.
 
-The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as a static GitHub Pages app, and may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
+The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as one static GitHub Pages app, and separates the product landing page (`/`) from the actual reference Web Viewer workspace (`/viewer/`). It may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
 
 ---
 
@@ -182,4 +182,4 @@ The current Phase 5 authoring docs are:
 
 The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, and `prd import images`. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The current public-product lane is the hosted PRD landing page and reference web viewer demo. It shows the real create/import, validate, inspect, pack, and open flow, includes light and premium dark modes, and deploys through GitHub Pages as a static app. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.
+The current public-product lane is the hosted PRD landing page and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow, separates `/` landing from `/viewer/` workspace, includes light and premium dark modes, and deploys through GitHub Pages as a static app. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.

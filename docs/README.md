@@ -160,7 +160,7 @@ Product-boundary and ecosystem-role docs:
 
 Current public demo surface:
 
-* `../apps/prd-viewer-web/` (PRD landing page + reference web viewer)
+* `../apps/prd-viewer-web/` (one deployable app with `/` landing page and `/viewer/` reference Web Viewer workspace)
 * `../.github/workflows/viewer-demo-pages.yml` (GitHub Pages deployment)
 
 ### `market/`

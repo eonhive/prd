@@ -111,7 +111,7 @@ The current public-product implementation is the hosted PRD landing page and ref
 init/import -> validate -> inspect -> pack -> open in the reference viewer
 ```
 
-That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
+That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` landing from `/viewer/` workspace. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
 
 The next public-product lane should launch-QA the hosted demo, verify the GitHub Pages deployment, and then choose the next viewer/product polish step.
 
