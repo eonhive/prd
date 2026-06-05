@@ -4,9 +4,11 @@
 
 - PR `#43` (`[stannesi] add public viewer demo ux`) is merged into `main` at `2f3e2221a70fcc13a843b9e0db204d0ca22b0b8a`.
 - Local `main` was fast-forwarded to `origin/main`.
-- Current branch is `thehive/prd-landing-viewer-dashboard`, based on merged `main`.
+- Current branch is `thehive/prd-landing-viewer-route-split`, based on current `origin/main`.
 - This branch implements `NEXT_STEPS.md` item `42`: hosted PRD landing page plus reference web viewer demo/deployment path.
-- PR `#44` (`[stannesi] add hosted landing and viewer dashboard`) is open: https://github.com/eonhive/prd/pull/44.
+- PR `#44` (`[stannesi] add hosted landing and viewer dashboard`) was merged while the route-split revision was being implemented.
+- PR `#45` was opened from the pre-squash PR `#44` branch and then closed because it included already-merged files in the comparison.
+- Clean PR `#46` (`[stannesi] separate hosted landing and viewer routes`) is open: https://github.com/eonhive/prd/pull/46.
 - Scope remains one deployable app under `apps/prd-viewer-web`.
 - After design review, the app was revised so `/` is the product landing page and `/viewer/` is the actual PRD Web Viewer workspace. Under GitHub Pages those become `/prd/` and `/prd/viewer/`.
 - No manifest, schema, validator, CLI command, package export, npm package, Studio, Cloud, PRDc, AI assistant, account/library, payment, crypto, rights, universal viewer, or broad conversion behavior was added.
@@ -34,7 +36,7 @@
 ## In-progress work
 
 - Implementation and validation are complete locally.
-- PR `#44` is open and ready for normal GitHub validation/review.
+- PR `#46` is open and ready for normal GitHub validation/review.
 
 ## Changed files
 
@@ -71,6 +73,8 @@
 - `git switch main`
 - `git pull --ff-only origin main`
 - `git switch -c thehive/prd-landing-viewer-dashboard`
+- `git switch -c thehive/prd-landing-viewer-route-split origin/main`
+- `git cherry-pick 7210e667fe88b79f02f769c7288eb26827de4512`
 - `PATH="/opt/homebrew/bin:$PATH" node_modules/.bin/tsc -b apps/prd-viewer-web/tsconfig.json --pretty false`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts scripts/prepare-viewer-demo-assets.test.ts`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts scripts/prepare-viewer-demo-assets.test.ts apps/prd-viewer-web/src/viewerRenderMode.test.ts apps/prd-viewer-web/src/viewerRenderMode.integration.test.ts`
@@ -87,6 +91,9 @@
 - `git commit -m "feat: add hosted landing and viewer dashboard"`
 - `git push -u origin thehive/prd-landing-viewer-dashboard`
 - GitHub connector: opened PR `#44`
+- `git push -u origin thehive/prd-landing-viewer-route-split`
+- GitHub connector: opened clean PR `#46`
+- GitHub connector: commented on and closed duplicate PR `#45`
 
 ## Tests / verification
 
@@ -123,7 +130,7 @@
 
 ## Next recommended task
 
-- Push the route-split redesign revision to PR `#44`, then monitor and merge it after checks pass.
+- Monitor and merge clean PR `#46` after checks pass.
 - After the PR lands, run `NEXT_STEPS.md` item `43`: launch QA against the live GitHub Pages URL and choose the next focused viewer/product polish step.
 
 ## Important decisions
