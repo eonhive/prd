@@ -6,6 +6,7 @@
 - Local `main` was fast-forwarded to `origin/main`.
 - Current branch is `thehive/prd-landing-viewer-dashboard`, based on merged `main`.
 - This branch implements `NEXT_STEPS.md` item `42`: hosted PRD landing page plus reference web viewer demo/deployment path.
+- PR `#44` (`[stannesi] add hosted landing and viewer dashboard`) is open: https://github.com/eonhive/prd/pull/44.
 - Scope remains one deployable app under `apps/prd-viewer-web`.
 - No manifest, schema, validator, CLI command, package export, npm package, Studio, Cloud, PRDc, AI assistant, account/library, payment, crypto, rights, universal viewer, or broad conversion behavior was added.
 - No changeset was added.
@@ -28,7 +29,7 @@
 ## In-progress work
 
 - Implementation and validation are complete locally.
-- Commit, push, and open PR `[stannesi] add hosted landing and viewer dashboard`.
+- PR `#44` is open and ready for normal GitHub validation/review.
 
 ## Changed files
 
@@ -71,6 +72,10 @@
 - `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:dev -- --host 127.0.0.1 --port 5173`
 - Browser verification at `http://localhost:5173/`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
+- `git add ...`
+- `git commit -m "feat: add hosted landing and viewer dashboard"`
+- `git push -u origin thehive/prd-landing-viewer-dashboard`
+- GitHub connector: opened PR `#44`
 
 ## Tests / verification
 
@@ -105,7 +110,7 @@
 
 ## Next recommended task
 
-- Commit, push, and open PR `[stannesi] add hosted landing and viewer dashboard`.
+- Monitor and merge PR `#44`.
 - After the PR lands, run `NEXT_STEPS.md` item `43`: launch QA against the live GitHub Pages URL and choose the next focused viewer/product polish step.
 
 ## Important decisions
