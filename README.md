@@ -317,6 +317,8 @@ pnpm viewer:demo:dev
 
 `viewer:demo:assets` packs canonical examples and copies selected `.prd` archives into the web viewer's ignored `public/examples/` directory for the hosted demo. Those hosted samples are demo assets only; they do not change PRD's packaged-first loading contract.
 
+The hosted app has two public routes in one deployable Vite build: `/` is the PRD landing page and `/viewer/` is the reference Web Viewer workspace. Under GitHub Pages those routes are served beneath the configured `/prd/` base path.
+
 
 ## Contributor MVP gate (no npm credentials required)
 
@@ -482,7 +484,7 @@ The repo also now includes [`.github/workflows/codex-ci.yml`](/Users/nappy.cat/L
 
 For release automation, the repo also includes [`.github/workflows/release.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/release.yml), which gates npm publication through Changesets and CI on `main`.
 
-The hosted PRD Web Viewer demo is built and deployed by [`.github/workflows/viewer-demo-pages.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/viewer-demo-pages.yml) using GitHub Pages. The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`.
+The hosted PRD Web Viewer demo is built and deployed by [`.github/workflows/viewer-demo-pages.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/viewer-demo-pages.yml) using GitHub Pages. The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as the landing route and `/prd/viewer/` as the viewer workspace route.
 
 ---
 
@@ -490,8 +492,8 @@ The hosted PRD Web Viewer demo is built and deployed by [`.github/workflows/view
 
 1. Run `pnpm codex:check`
 2. Run `pnpm viewer:demo:dev`
-3. Open the PRD landing page and use either light or premium dark mode
-4. Load a hosted sample archive or choose/drag a `.prd` archive into the viewer drop zone
+3. Open the PRD landing page at `/` and use either light or premium dark mode
+4. Open the viewer workspace at `/viewer/`, then load a hosted sample archive or choose/drag a `.prd` archive into the viewer drop zone
 5. Confirm package status, package facts, manifest metadata, localization/attachments, and rendered content in the reference viewer
 
 Current example behavior:

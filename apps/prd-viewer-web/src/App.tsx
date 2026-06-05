@@ -4,6 +4,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
+  type RefObject,
   useEffect,
   useMemo,
   useRef,
@@ -57,6 +58,15 @@ import {
   getPrdArchiveSelectionError,
   getViewerDemoSampleArchiveUrl
 } from "./viewerArchiveFiles.js";
+import {
+  createViewerDocumentOutline,
+  type ViewerDocumentOutlineItem
+} from "./viewerDocumentOutline.js";
+import {
+  getViewerAppRouteFromPath,
+  getViewerAppRoutePath,
+  type ViewerAppRoute
+} from "./viewerRoutes.js";
 
 type AssetUrlMap = Record<string, string>;
 type AttachmentUrlMap = Record<string, string>;
@@ -108,6 +118,9 @@ const referenceViewerRuntimeDescriptor = PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR
 const referenceViewerLoadMode =
   referenceViewerRuntimeDescriptor.referenceLoadMode ?? "eager-whole-package";
 const viewerThemeStorageKey = "prd-viewer-theme";
+const viewerAppBasePath =
+  ((import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env?.BASE_URL ??
+    "/");
 
 function formatReferenceLoadMode(loadMode: PrdReferenceLoadMode): string {
   if (loadMode === "eager-whole-package") {
@@ -2127,19 +2140,79 @@ function ThemeToggle({
   );
 }
 
+function AppNavigation({
+  route,
+  theme,
+  onNavigate,
+  onToggleTheme,
+  onOpenArchive
+}: {
+  route: ViewerAppRoute;
+  theme: ViewerTheme;
+  onNavigate: (route: ViewerAppRoute, hash?: string) => void;
+  onToggleTheme: () => void;
+  onOpenArchive: () => void;
+}) {
+  return (
+    <header className="site-nav">
+      <button
+        type="button"
+        className="brand-lockup"
+        onClick={() => onNavigate("landing")}
+        aria-label="PRD landing"
+      >
+        <span className="brand-mark">P</span>
+        <span>
+          <strong>PRD</strong>
+          <small>Portable Responsive Document</small>
+        </span>
+      </button>
+      <nav className="site-nav-links" aria-label="Demo navigation">
+        <button
+          type="button"
+          className={route === "landing" ? "is-active" : undefined}
+          onClick={() => onNavigate("landing")}
+        >
+          Landing
+        </button>
+        <button
+          type="button"
+          className={route === "viewer" ? "is-active" : undefined}
+          onClick={() => onNavigate("viewer")}
+        >
+          Viewer
+        </button>
+        <button type="button" onClick={() => onNavigate("landing", "cli-flow")}>
+          CLI Flow
+        </button>
+        <a href="https://github.com/eonhive/prd/tree/main/docs">Docs</a>
+      </nav>
+      <div className="site-nav-actions">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        <button type="button" className="nav-open-button" onClick={onOpenArchive}>
+          Open .prd
+        </button>
+      </div>
+    </header>
+  );
+}
+
 function LandingSurface({
   onOpenViewer,
   onLoadSample,
-  sampleLoadingId
+  sampleLoadingId,
+  onLoadArchive
 }: {
   onOpenViewer: () => void;
   onLoadSample: () => void;
   sampleLoadingId: string | null;
+  onLoadArchive: (example: ViewerDemoExampleArchive) => void;
 }) {
   return (
-    <section className="landing-surface" aria-label="PRD product landing">
-      <div className="landing-hero">
+    <main className="landing-surface" aria-label="PRD product landing">
+      <section className="landing-hero">
         <div className="landing-hero-copy">
+          <span className="release-pill">0.1.1 public preview</span>
           <p className="eyebrow">{viewerLandingHero.eyebrow}</p>
           <h1>{viewerLandingHero.title}</h1>
           <p className="subhead">{viewerLandingHero.description}</p>
@@ -2159,6 +2232,11 @@ function LandingSurface({
               {viewerLandingHero.tertiaryAction}
             </a>
           </div>
+          <div className="hero-badges" aria-label="Current public truths">
+            <span>No account required</span>
+            <span>Packaged-first</span>
+            <span>Offline-first core</span>
+          </div>
         </div>
 
         <div className="landing-preview-card" aria-label="Reference viewer preview">
@@ -2170,6 +2248,7 @@ function LandingSurface({
           </div>
           <div className="preview-reader">
             <div className="preview-sidebar">
+              <span className="is-active">Table of contents</span>
               <span>Manifest</span>
               <span>Package facts</span>
               <span>Assets</span>
@@ -2189,9 +2268,9 @@ function LandingSurface({
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="landing-capabilities" aria-label="Current PRD capabilities">
+      <section className="landing-capabilities" aria-label="Current PRD capabilities">
         {viewerLandingCapabilities.map((capability) => (
           <article key={capability.title} className="landing-card">
             <p className="card-proof">{capability.proof}</p>
@@ -2199,9 +2278,11 @@ function LandingSurface({
             <p>{capability.description}</p>
           </article>
         ))}
-      </div>
+      </section>
 
-      <div className="landing-profile-grid" aria-label="First-class PRD profiles">
+      <ViewerDemoFlowView />
+
+      <section className="landing-profile-grid" aria-label="First-class PRD profiles">
         {viewerLandingProfiles.map((profile) => (
           <article key={profile.id} className="profile-card">
             <span className="profile-orb" aria-hidden="true" />
@@ -2211,14 +2292,20 @@ function LandingSurface({
             <code>{profile.command}</code>
           </article>
         ))}
-      </div>
+      </section>
+
+      <ViewerExampleGuideView
+        onLoadSample={onLoadArchive}
+        sampleLoadingId={sampleLoadingId}
+        compact={false}
+      />
 
       <div className="future-lanes-note">
         <strong>Future lanes stay future:</strong>{" "}
         {viewerFutureLanes.join(", ")} are not shipped by this demo and do not
         change what counts as a valid PRD package.
       </div>
-    </section>
+    </main>
   );
 }
 
@@ -2254,13 +2341,19 @@ function ViewerDemoFlowView() {
 
 function ViewerExampleGuideView({
   onLoadSample,
-  sampleLoadingId
+  sampleLoadingId,
+  compact = false
 }: {
   onLoadSample: (example: ViewerDemoExampleArchive) => void;
   sampleLoadingId: string | null;
+  compact?: boolean;
 }) {
   return (
-    <section className="example-guide" aria-label="Reference example archives">
+    <section
+      id="samples"
+      className={compact ? "example-guide compact" : "example-guide"}
+      aria-label="Reference example archives"
+    >
       <div className="demo-section-header">
         <p className="eyebrow">Try hosted examples</p>
         <h2>Load a sample archive or pack one locally.</h2>
@@ -2302,6 +2395,432 @@ function ViewerExampleGuideView({
   );
 }
 
+function ViewerDocumentOutlineView({
+  items
+}: {
+  items: ViewerDocumentOutlineItem[];
+}) {
+  return (
+    <section className="viewer-outline-card" aria-label="Document outline">
+      <div className="panel-heading-row">
+        <p className="eyebrow">Outline</p>
+        <span>{items.length > 0 ? `${items.length} items` : "empty"}</span>
+      </div>
+      {items.length > 0 ? (
+        <ol className="viewer-outline-list">
+          {items.map((item) => (
+            <li key={`${item.kind}-${item.id}`}>
+              <a
+                href={`#${item.id}`}
+                className="viewer-outline-link"
+                style={{ "--outline-depth": item.depth } as React.CSSProperties}
+              >
+                <span>{item.kind}</span>
+                <strong>{item.label}</strong>
+              </a>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="viewer-panel-empty">
+          Load a structured package to show document sections, comic panels, or
+          storyboard frames.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function UploadDropzoneView({
+  fileInputRef,
+  dragActive,
+  onArchiveFiles,
+  onDrop,
+  onDragOver,
+  onDragLeave,
+  onKeyDown
+}: {
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  dragActive: boolean;
+  onArchiveFiles: (files: FileList | File[] | null) => void;
+  onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
+}) {
+  return (
+    <div
+      className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => fileInputRef.current?.click()}
+      onKeyDown={onKeyDown}
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      aria-label="Choose or drop a PRD archive"
+    >
+      <p className="upload-kicker">Open package</p>
+      <strong>
+        Choose or drag a <code>.prd</code> archive
+      </strong>
+      <span>
+        Source folders must be packed first. If you drop multiple files, the
+        first <code>.prd</code> archive is opened.
+      </span>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".prd"
+        onChange={(event) => {
+          onArchiveFiles(event.target.files);
+          event.currentTarget.value = "";
+        }}
+      />
+    </div>
+  );
+}
+
+function PackageStatusPanel({
+  viewerState,
+  profileLabel,
+  activeLocale,
+  activeEntryPath
+}: {
+  viewerState: ViewerState;
+  profileLabel: string | null;
+  activeLocale: string | undefined;
+  activeEntryPath: string | undefined;
+}) {
+  return (
+    <section className="panel package-status-panel">
+      <div className="panel-heading-row">
+        <h2>Package Status</h2>
+        <span className={viewerState.validation.valid ? "status-pill valid" : "status-pill"}>
+          {viewerState.validation.valid ? "Valid" : "Invalid"}
+        </span>
+      </div>
+      <dl className="meta-grid">
+        <div>
+          <dt>Profile</dt>
+          <dd>{profileLabel ?? "n/a"}</dd>
+        </div>
+        <div>
+          <dt>Profile ID</dt>
+          <dd>{viewerState.opened?.manifest.profile ?? "n/a"}</dd>
+        </div>
+        <div>
+          <dt>Support state</dt>
+          <dd>{viewerState.opened?.supportState ?? "n/a"}</dd>
+        </div>
+        <div>
+          <dt>Entry</dt>
+          <dd>{activeEntryPath ?? "n/a"}</dd>
+        </div>
+        <div>
+          <dt>Default locale</dt>
+          <dd>{viewerState.opened?.localization?.defaultLocale ?? "none"}</dd>
+        </div>
+        <div>
+          <dt>Active locale</dt>
+          <dd>{activeLocale ?? "none"}</dd>
+        </div>
+      </dl>
+
+      {viewerState.validation.errors.length > 0 && (
+        <>
+          <h3>Errors</h3>
+          <ul className="issues">
+            {viewerState.validation.errors.map((issue) => (
+              <li key={`${issue.code}-${issue.path ?? issue.message}`}>
+                <code>{issue.code}</code> {issue.message}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {viewerState.validation.warnings.length > 0 && (
+        <>
+          <h3>Warnings</h3>
+          <ul className="issues warning">
+            {viewerState.validation.warnings.map((issue) => (
+              <li key={`${issue.code}-${issue.path ?? issue.message}`}>
+                <code>{issue.code}</code> {issue.message}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
+function ViewerWorkspaceView({
+  fileInputRef,
+  dragActive,
+  loading,
+  error,
+  sampleLoadingId,
+  viewerState,
+  profileLabel,
+  viewerRenderMode,
+  activeLocale,
+  activeEntryPath,
+  activeEntryDocument,
+  activeComicDocument,
+  activeStoryboardDocument,
+  activeRenderedHtml,
+  activePublicMetadata,
+  documentOutline,
+  localeOptions,
+  comicPanelNavigationEnabled,
+  storyboardReviewGridEnabled,
+  resumePresentationEnabled,
+  onArchiveFiles,
+  onDrop,
+  onDragOver,
+  onDragLeave,
+  onUploadKeyDown,
+  onLoadSample,
+  onLocaleChange
+}: {
+  fileInputRef: RefObject<HTMLInputElement | null>;
+  dragActive: boolean;
+  loading: boolean;
+  error: string | null;
+  sampleLoadingId: string | null;
+  viewerState: ViewerState | null;
+  profileLabel: string | null;
+  viewerRenderMode: ViewerRenderMode;
+  activeLocale: string | undefined;
+  activeEntryPath: string | undefined;
+  activeEntryDocument: PrdGeneralDocumentRoot | undefined;
+  activeComicDocument: PrdComicRoot | undefined;
+  activeStoryboardDocument: PrdStoryboardRoot | undefined;
+  activeRenderedHtml: string | undefined;
+  activePublicMetadata: PrdPublicMetadata | undefined;
+  documentOutline: ViewerDocumentOutlineItem[];
+  localeOptions: string[];
+  comicPanelNavigationEnabled: boolean;
+  storyboardReviewGridEnabled: boolean;
+  resumePresentationEnabled: boolean;
+  onArchiveFiles: (files: FileList | File[] | null) => void;
+  onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onUploadKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
+  onLoadSample: (example: ViewerDemoExampleArchive) => void;
+  onLocaleChange: (locale: string) => void;
+}) {
+  return (
+    <main className="viewer-route" aria-label="PRD web viewer workspace">
+      <section className="viewer-dashboard">
+        <div className="viewer-dashboard-topbar">
+          <div>
+            <p className="eyebrow">PRD Web Viewer</p>
+            <h1>Open, validate, and inspect portable documents.</h1>
+          </div>
+          <div className="viewer-dashboard-status">
+            <span className={viewerState?.validation.valid ? "status-pill valid" : "status-pill"}>
+              {viewerState?.validation.valid ? "Valid package" : "No package loaded"}
+            </span>
+            <span className="status-pill muted">
+              {formatReferenceLoadMode(referenceViewerLoadMode)}
+            </span>
+          </div>
+        </div>
+
+        <div className="viewer-shell-grid">
+          <aside className="viewer-left-rail">
+            <UploadDropzoneView
+              fileInputRef={fileInputRef}
+              dragActive={dragActive}
+              onArchiveFiles={onArchiveFiles}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onKeyDown={onUploadKeyDown}
+            />
+            <ViewerDocumentOutlineView items={documentOutline} />
+            <ViewerExampleGuideView
+              onLoadSample={onLoadSample}
+              sampleLoadingId={sampleLoadingId}
+              compact
+            />
+          </aside>
+
+          <section className="viewer-stage-column" aria-label="Viewer stage">
+            {loading && <p className="status">Loading package...</p>}
+            {error && <p className="status error">{error}</p>}
+
+            {!viewerState && !loading && (
+              <section className="empty-viewer-state" aria-label="No package loaded">
+                <p className="eyebrow">Ready for a package</p>
+                <h2>Load a hosted sample or open your own `.prd` archive.</h2>
+                <p>
+                  The viewer validates the package first, then reports package
+                  status, manifest metadata, runtime support state, and the
+                  current reference render mode.
+                </p>
+              </section>
+            )}
+
+            {viewerState && (
+              <section className="panel viewer-panel">
+                <div className="panel-heading-row">
+                  <h2>Render Stage</h2>
+                  <span>{getViewerRenderModeMessage(viewerRenderMode)}</span>
+                </div>
+
+                {viewerState.opened?.supportState === "reserved-profile" && (
+                  <div className="reserved">
+                    <strong>{profileLabel}</strong>
+                    <p>{viewerState.opened.message}</p>
+                  </div>
+                )}
+
+                {viewerState.opened?.message &&
+                  viewerState.opened.supportState !== "reserved-profile" && (
+                    <div className="viewer-message">
+                      <p>{viewerState.opened.message}</p>
+                    </div>
+                  )}
+
+                {activeComicDocument &&
+                  (comicPanelNavigationEnabled ? (
+                    <ComicPanelNavigationView
+                      comicDocument={activeComicDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                    />
+                  ) : (
+                    <ComicPanelStripView
+                      comicDocument={activeComicDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                    />
+                  ))}
+
+                {activeStoryboardDocument &&
+                  (storyboardReviewGridEnabled ? (
+                    <StoryboardReviewGridView
+                      storyboardDocument={activeStoryboardDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                    />
+                  ) : (
+                    <StoryboardFrameGridView
+                      storyboardDocument={activeStoryboardDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                    />
+                  ))}
+
+                {viewerState.opened?.supportState !== "reserved-profile" &&
+                  activeRenderedHtml && (
+                    <iframe
+                      className="viewer-surface"
+                      title="PRD content frame"
+                      sandbox=""
+                      srcDoc={activeRenderedHtml}
+                    />
+                  )}
+
+                {activeEntryDocument && (
+                  resumePresentationEnabled ? (
+                    <ResumeDocumentView
+                      document={activeEntryDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                      resumeProfile={viewerState.resumeProfile!}
+                    />
+                  ) : (
+                    <StructuredDocumentView
+                      document={activeEntryDocument}
+                      assetUrls={viewerState.assetUrls ?? {}}
+                    />
+                  )
+                )}
+              </section>
+            )}
+          </section>
+
+          <aside className="viewer-right-rail">
+            {viewerState ? (
+              <>
+                <PackageStatusPanel
+                  viewerState={viewerState}
+                  profileLabel={profileLabel}
+                  activeLocale={activeLocale}
+                  activeEntryPath={activeEntryPath}
+                />
+
+                {viewerState.opened && (
+                  <PublicMetadataView
+                    title={activeEntryDocument?.title ?? viewerState.opened.manifest.title}
+                    identity={viewerState.opened.manifest.identity}
+                    publicMetadata={activePublicMetadata}
+                    coverUrl={
+                      activePublicMetadata?.cover
+                        ? viewerState.assetUrls?.[activePublicMetadata.cover]
+                        : undefined
+                    }
+                    document={activeEntryDocument}
+                  />
+                )}
+
+                {viewerState.opened && viewerState.packageFacts && (
+                  <PackageFactsView facts={viewerState.packageFacts} />
+                )}
+
+                {viewerState.opened && (
+                  <AttachmentListView
+                    attachments={viewerState.opened.manifest.attachments}
+                    attachmentUrls={viewerState.attachmentUrls ?? {}}
+                  />
+                )}
+
+                {viewerState.opened?.localization && localeOptions.length > 1 && (
+                  <section className="viewer-locale-card" aria-label="Localized content selection">
+                    <div className="viewer-locale-card-body">
+                      <p className="structured-kicker">Localized content</p>
+                      <label className="viewer-locale-label" htmlFor="viewer-locale-select">
+                        Active locale
+                      </label>
+                      <select
+                        id="viewer-locale-select"
+                        className="viewer-locale-select"
+                        value={activeLocale ?? viewerState.opened.localization.defaultLocale}
+                        onChange={(event) => onLocaleChange(event.target.value)}
+                      >
+                        {localeOptions.map((locale) => (
+                          <option key={locale} value={locale}>
+                            {viewerState.localizedVariants?.[locale]?.label ?? locale}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="viewer-locale-hint">
+                        Applies localized document resources when available. This
+                        is still packaged content, not a network fetch contract.
+                      </p>
+                    </div>
+                  </section>
+                )}
+              </>
+            ) : (
+              <section className="panel viewer-truth-panel">
+                <p className="eyebrow">Reference truth</p>
+                <h2>Viewer behavior stays format-honest.</h2>
+                <p>
+                  Current loading is eager whole-package in-memory. Hosted
+                  samples are demo assets only; PRD core remains packaged-first
+                  and offline-first.
+                </p>
+              </section>
+            )}
+          </aside>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 interface ViewerState {
   validation: PrdPackageValidationResult;
   opened?: PrdOpenedDocument;
@@ -2316,7 +2835,9 @@ interface ViewerState {
 export function App() {
   const objectUrlsRef = useRef<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const viewerSectionRef = useRef<HTMLElement | null>(null);
+  const [route, setRoute] = useState<ViewerAppRoute>(() =>
+    getViewerAppRouteFromPath(window.location.pathname, viewerAppBasePath)
+  );
   const [theme, setTheme] = useState<ViewerTheme>(getInitialViewerTheme);
   const [viewerState, setViewerState] = useState<ViewerState | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<string | undefined>(undefined);
@@ -2331,6 +2852,15 @@ export function App() {
         URL.revokeObjectURL(url);
       }
     };
+  }, []);
+
+  useEffect(() => {
+    function handlePopState() {
+      setRoute(getViewerAppRouteFromPath(window.location.pathname, viewerAppBasePath));
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   useEffect(() => {
@@ -2448,6 +2978,37 @@ export function App() {
     activeStoryboardDocument,
     viewerState?.opened
   ]);
+  const documentOutline = useMemo(() => {
+    return createViewerDocumentOutline({
+      entryDocument: activeEntryDocument,
+      comicDocument: activeComicDocument,
+      storyboardDocument: activeStoryboardDocument
+    });
+  }, [activeComicDocument, activeEntryDocument, activeStoryboardDocument]);
+
+  function navigateToRoute(nextRoute: ViewerAppRoute, hash?: string) {
+    const routePath = getViewerAppRoutePath(nextRoute, viewerAppBasePath);
+    const nextPath = hash ? `${routePath}#${hash}` : routePath;
+    const currentPath = `${window.location.pathname}${window.location.hash}`;
+
+    if (currentPath !== nextPath) {
+      window.history.pushState(null, "", nextPath);
+    }
+
+    setRoute(nextRoute);
+
+    window.setTimeout(() => {
+      if (hash) {
+        document.getElementById(hash)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 0);
+  }
 
   async function handleFile(file: File) {
     setLoading(true);
@@ -2546,17 +3107,14 @@ export function App() {
     }
   }
 
-  function scrollToViewer() {
-    viewerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
   async function handleSampleArchive(example: ViewerDemoExampleArchive) {
+    navigateToRoute("viewer");
     setSampleLoadingId(example.id);
     setError(null);
-    scrollToViewer();
 
     try {
-      const url = getViewerDemoSampleArchiveUrl(example.hostedPath, window.location.href);
+      const demoBaseUrl = new URL(viewerAppBasePath, window.location.origin).toString();
+      const url = getViewerDemoSampleArchiveUrl(example.hostedPath, demoBaseUrl);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(
@@ -2606,325 +3164,61 @@ export function App() {
   }
 
   return (
-    <div id="top" className="app-shell">
-      <header className="site-nav">
-        <a className="brand-lockup" href="#top" aria-label="PRD home">
-          <span className="brand-mark">PRD</span>
-          <span>
-            <strong>Portable Responsive Document</strong>
-            <small>Reference viewer demo</small>
-          </span>
-        </a>
-        <nav className="site-nav-links" aria-label="Demo navigation">
-          <a href="#cli-flow">CLI Flow</a>
-          <a href="#viewer">Viewer</a>
-          <a href="#samples">Samples</a>
-        </nav>
-        <div className="site-nav-actions">
-          <ThemeToggle
-            theme={theme}
-            onToggle={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-          />
-          <button
-            type="button"
-            className="nav-open-button"
-            onClick={() => {
-              scrollToViewer();
-              fileInputRef.current?.click();
-            }}
-          >
-            Open .prd
-          </button>
-        </div>
-      </header>
-
-      <LandingSurface
-        onOpenViewer={scrollToViewer}
-        onLoadSample={() => {
-          const firstSample = viewerDemoExampleArchives[0];
-          if (firstSample) {
-            void handleSampleArchive(firstSample);
-          }
+    <div className={`app-shell app-route-${route}`} data-route={route}>
+      <AppNavigation
+        route={route}
+        theme={theme}
+        onNavigate={navigateToRoute}
+        onToggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+        onOpenArchive={() => {
+          navigateToRoute("viewer");
+          window.setTimeout(() => fileInputRef.current?.click(), 0);
         }}
-        sampleLoadingId={sampleLoadingId}
       />
 
-      <ViewerDemoFlowView />
-
-      <section
-        id="viewer"
-        ref={viewerSectionRef}
-        className="viewer-dashboard"
-        aria-label="PRD web viewer workspace"
-      >
-        <div className="viewer-dashboard-topbar">
-          <div>
-            <p className="eyebrow">PRD Web Viewer</p>
-            <h2>Validate, inspect, and open a package.</h2>
-          </div>
-          <div className="viewer-dashboard-status">
-            <span className={viewerState?.validation.valid ? "status-pill valid" : "status-pill"}>
-              {viewerState?.validation.valid ? "Valid package" : "No package loaded"}
-            </span>
-            <span className="status-pill muted">
-              {formatReferenceLoadMode(referenceViewerLoadMode)}
-            </span>
-          </div>
-        </div>
-
-        <div className="viewer-dashboard-grid">
-          <aside className="viewer-demo-sidebar">
-            <ViewerExampleGuideView
-              onLoadSample={(example) => void handleSampleArchive(example)}
-              sampleLoadingId={sampleLoadingId}
-            />
-          </aside>
-
-          <div className="viewer-stage-column">
-            <div
-              className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
-              role="button"
-              tabIndex={0}
-              onClick={() => fileInputRef.current?.click()}
-              onKeyDown={handleUploadKeyDown}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              aria-label="Choose or drop a PRD archive"
-            >
-              <p className="upload-kicker">Open package</p>
-              <strong>
-                Choose or drag a <code>.prd</code> archive
-              </strong>
-              <span>
-                Source folders must be packed first. If you drop multiple files,
-                the first <code>.prd</code> archive is opened.
-              </span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".prd"
-                onChange={(event) => {
-                  handleArchiveFiles(event.target.files);
-                  event.currentTarget.value = "";
-                }}
-              />
-            </div>
-
-            {loading && <p className="status">Loading package...</p>}
-            {error && <p className="status error">{error}</p>}
-
-            {!viewerState && !loading && (
-              <section className="empty-viewer-state" aria-label="No package loaded">
-                <p className="eyebrow">Ready for a package</p>
-                <h2>Load a hosted sample or open your own `.prd` archive.</h2>
-                <p>
-                  The viewer validates the package first, then reports package
-                  status, manifest metadata, runtime support state, and the
-                  current reference render mode.
-                </p>
-              </section>
-            )}
-
-            {viewerState && (
-              <main className="workspace">
-                <section className="panel">
-                  <h2>Package Status</h2>
-                  <dl className="meta-grid">
-                    <div>
-                      <dt>Valid</dt>
-                      <dd>{viewerState.validation.valid ? "yes" : "no"}</dd>
-                    </div>
-                    <div>
-                      <dt>Profile</dt>
-                      <dd>{profileLabel ?? "n/a"}</dd>
-                    </div>
-                    <div>
-                      <dt>Profile ID</dt>
-                      <dd>{viewerState.opened?.manifest.profile ?? "n/a"}</dd>
-                    </div>
-                    <div>
-                      <dt>Support state</dt>
-                      <dd>{viewerState.opened?.supportState ?? "n/a"}</dd>
-                    </div>
-                    <div>
-                      <dt>Localization</dt>
-                      <dd>
-                        {viewerState.opened?.localization
-                          ? viewerState.opened.localization.defaultLocale
-                          : "none"}
-                      </dd>
-                    </div>
-                    {viewerState.opened?.localization && (
-                      <div>
-                        <dt>Active locale</dt>
-                        <dd>{activeLocale ?? viewerState.opened.localization.defaultLocale}</dd>
-                      </div>
-                    )}
-                    <div>
-                      <dt>Entry</dt>
-                      <dd>{activeEntryPath ?? "n/a"}</dd>
-                    </div>
-                  </dl>
-
-                  {viewerState.validation.errors.length > 0 && (
-                    <>
-                      <h3>Errors</h3>
-                      <ul className="issues">
-                        {viewerState.validation.errors.map((issue) => (
-                          <li key={`${issue.code}-${issue.path ?? issue.message}`}>
-                            <code>{issue.code}</code> {issue.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-
-                  {viewerState.validation.warnings.length > 0 && (
-                    <>
-                      <h3>Warnings</h3>
-                      <ul className="issues warning">
-                        {viewerState.validation.warnings.map((issue) => (
-                          <li key={`${issue.code}-${issue.path ?? issue.message}`}>
-                            <code>{issue.code}</code> {issue.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </section>
-
-                <section className="panel viewer-panel">
-                  <h2>Viewer</h2>
-                  <div className="viewer-message">
-                    <p>{getViewerRenderModeMessage(viewerRenderMode)}</p>
-                  </div>
-
-                  {viewerState.opened && (
-                    <PublicMetadataView
-                      title={activeEntryDocument?.title ?? viewerState.opened.manifest.title}
-                      identity={viewerState.opened.manifest.identity}
-                      publicMetadata={activePublicMetadata}
-                      coverUrl={
-                        activePublicMetadata?.cover
-                          ? viewerState.assetUrls?.[activePublicMetadata.cover]
-                          : undefined
-                      }
-                      document={activeEntryDocument}
-                    />
-                  )}
-
-                  {viewerState.opened && viewerState.packageFacts && (
-                    <PackageFactsView facts={viewerState.packageFacts} />
-                  )}
-
-                  {viewerState.opened && (
-                    <AttachmentListView
-                      attachments={viewerState.opened.manifest.attachments}
-                      attachmentUrls={viewerState.attachmentUrls ?? {}}
-                    />
-                  )}
-
-                  {viewerState.opened?.localization && localeOptions.length > 1 && (
-                    <section className="viewer-locale-card" aria-label="Localized content selection">
-                      <div className="viewer-locale-card-body">
-                        <p className="structured-kicker">Localized content</p>
-                        <label className="viewer-locale-label" htmlFor="viewer-locale-select">
-                          Active locale
-                        </label>
-                        <select
-                          id="viewer-locale-select"
-                          className="viewer-locale-select"
-                          value={activeLocale ?? viewerState.opened.localization.defaultLocale}
-                          onChange={(event) => setSelectedLocale(event.target.value)}
-                        >
-                          {localeOptions.map((locale) => (
-                            <option key={locale} value={locale}>
-                              {viewerState.localizedVariants?.[locale]?.label ?? locale}
-                            </option>
-                          ))}
-                        </select>
-                        <p className="viewer-locale-hint">
-                          Applies localized document resources when available,
-                          including reader-facing summary, cover, and
-                          collection/series labels. A locale may also map a full
-                          alternate structured entry and a small localized
-                          resource together when it needs both.
-                        </p>
-                      </div>
-                    </section>
-                  )}
-
-                  {viewerState.opened?.supportState === "reserved-profile" && (
-                    <div className="reserved">
-                      <strong>{profileLabel}</strong>
-                      <p>{viewerState.opened.message}</p>
-                    </div>
-                  )}
-
-                  {viewerState.opened?.message &&
-                    viewerState.opened.supportState !== "reserved-profile" && (
-                      <div className="viewer-message">
-                        <p>{viewerState.opened.message}</p>
-                      </div>
-                    )}
-
-                  {activeComicDocument &&
-                    (comicPanelNavigationEnabled ? (
-                      <ComicPanelNavigationView
-                        comicDocument={activeComicDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                      />
-                    ) : (
-                      <ComicPanelStripView
-                        comicDocument={activeComicDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                      />
-                    ))}
-
-                  {activeStoryboardDocument &&
-                    (storyboardReviewGridEnabled ? (
-                      <StoryboardReviewGridView
-                        storyboardDocument={activeStoryboardDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                      />
-                    ) : (
-                      <StoryboardFrameGridView
-                        storyboardDocument={activeStoryboardDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                      />
-                    ))}
-
-                  {viewerState.opened?.supportState !== "reserved-profile" &&
-                    activeRenderedHtml && (
-                      <iframe
-                        className="viewer-surface"
-                        title="PRD content frame"
-                        sandbox=""
-                        srcDoc={activeRenderedHtml}
-                      />
-                    )}
-
-                  {activeEntryDocument && (
-                    resumePresentationEnabled ? (
-                      <ResumeDocumentView
-                        document={activeEntryDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                        resumeProfile={viewerState.resumeProfile!}
-                      />
-                    ) : (
-                      <StructuredDocumentView
-                        document={activeEntryDocument}
-                        assetUrls={viewerState.assetUrls ?? {}}
-                      />
-                    )
-                  )}
-                </section>
-              </main>
-            )}
-          </div>
-        </div>
-      </section>
+      {route === "landing" ? (
+        <LandingSurface
+          onOpenViewer={() => navigateToRoute("viewer")}
+          onLoadSample={() => {
+            const firstSample = viewerDemoExampleArchives[0];
+            if (firstSample) {
+              void handleSampleArchive(firstSample);
+            }
+          }}
+          onLoadArchive={(example) => void handleSampleArchive(example)}
+          sampleLoadingId={sampleLoadingId}
+        />
+      ) : (
+        <ViewerWorkspaceView
+          fileInputRef={fileInputRef}
+          dragActive={dragActive}
+          loading={loading}
+          error={error}
+          sampleLoadingId={sampleLoadingId}
+          viewerState={viewerState}
+          profileLabel={profileLabel}
+          viewerRenderMode={viewerRenderMode}
+          activeLocale={activeLocale}
+          activeEntryPath={activeEntryPath}
+          activeEntryDocument={activeEntryDocument}
+          activeComicDocument={activeComicDocument}
+          activeStoryboardDocument={activeStoryboardDocument}
+          activeRenderedHtml={activeRenderedHtml}
+          activePublicMetadata={activePublicMetadata}
+          documentOutline={documentOutline}
+          localeOptions={localeOptions}
+          comicPanelNavigationEnabled={comicPanelNavigationEnabled}
+          storyboardReviewGridEnabled={storyboardReviewGridEnabled}
+          resumePresentationEnabled={resumePresentationEnabled}
+          onArchiveFiles={handleArchiveFiles}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onUploadKeyDown={handleUploadKeyDown}
+          onLoadSample={(example) => void handleSampleArchive(example)}
+          onLocaleChange={setSelectedLocale}
+        />
+      )}
     </div>
   );
 }
