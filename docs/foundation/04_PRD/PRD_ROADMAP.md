@@ -162,9 +162,10 @@ Do not build late-stage fantasy systems before the base format is real.
 - `prd import markdown` now provides deterministic Markdown-to-structured-`general-document` import
 - `prd import images` now provides deterministic ordered image-folder import for `comic` and `storyboard`
 - the current authoring workflow and import/export matrix docs define how those commands fit into public authoring
-- the current executable lane is public viewer/demo/landing UX polish that demonstrates the create/import, validate, pack, and open flow
-- the current executable lane is the hosted PRD landing page and reference Web Viewer demo deployed through GitHub Pages, with `/` for landing and `/viewer/` for the workspace
-- the next product lane should launch-QA the hosted demo and then choose the next viewer/product polish step
+- the current executable lane is public Home/docs/viewer polish that demonstrates the create/import, validate, pack, and open flow
+- the current executable lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo, with `/` for Home, `/viewer/` for the workspace, and `/docs/` for public docs
+- Cloudflare Pages at `prd.eonhive.com` is the intended production host; GitHub Pages remains staging/fallback under `/prd/` until Cloudflare launch QA passes
+- the next product lane should launch-QA the Cloudflare production path, keep GitHub Pages as fallback, and then choose the next focused viewer/product polish step
 - defer full visual Studio, broad conversion, and hosted conversion workflows until the hosted public demo/viewer path is proven
 
 ---

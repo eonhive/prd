@@ -52,7 +52,9 @@ The current clean public npm baseline is `0.1.1`.
 
 The web viewer and viewer-core packages are present in the repository as reference implementation surfaces, but they are not part of the public npm publish set.
 
-The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as one static GitHub Pages app, and separates the product landing page (`/`) from the actual reference Web Viewer workspace (`/viewer/`). It may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
+The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as one static app, and separates Home (`/`), the actual reference Web Viewer workspace (`/viewer/`), and the public docs index (`/docs/`). Cloudflare Pages is the intended production host for `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path under `/prd/`. It may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
+
+Codex operational files under `codex/` may remain tracked for implementation continuity, but they are not part of the public product docs, public site navigation, or canonical format documentation.
 
 ---
 
@@ -182,4 +184,4 @@ The current Phase 5 authoring docs are:
 
 The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, and `prd import images`. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The current public-product lane is the hosted PRD landing page and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow, separates `/` landing from `/viewer/` workspace, includes light and premium dark modes, and deploys through GitHub Pages as a static app. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.
+The current public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow; separates `/` Home, `/viewer/` workspace, and `/docs/` public docs; includes light and premium dark modes; and treats Cloudflare Pages at `prd.eonhive.com` as the intended production host with GitHub Pages as staging/fallback. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.

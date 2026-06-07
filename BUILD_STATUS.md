@@ -1,10 +1,20 @@
 # BUILD STATUS
 
+## 2026-06-07
+
+- Merged PR `#46` (`[stannesi] separate hosted landing and viewer routes`) into `main` before starting the public site/docs/hosting polish slice.
+- Renamed user-facing hosted-app language from “Landing” to “Home” while keeping the route `/`.
+- Added `/docs/` as a public docs index inside `apps/prd-viewer-web`, giving users a clean navigation layer for Home, Getting Started, CLI, Format, Profiles, Examples, Viewer, Conformance, and Release/Operator Notes without linking internal `codex/` workflow docs.
+- Documented Cloudflare Pages as the intended production host for `prd.eonhive.com` and kept GitHub Pages as temporary staging/fallback under `/prd/`.
+- Added `docs/governance/PRD_HOSTING_RUNBOOK.md` for the public hosting path, custom-domain launch checklist, and route expectations.
+- Added Cloudflare Pages SPA fallback configuration through `apps/prd-viewer-web/public/_redirects` and GitHub Pages `404.html` fallback generation in the viewer demo workflow.
+- This slice did not change manifest shape, schemas, validator behavior, CLI commands, npm exports, Studio, Cloud, PRDc, AI, account/library, payment, crypto, rights, or broad conversion behavior.
+
 ## 2026-06-05
 
 - Synced local `main` after PR `#43` (`[stannesi] add public viewer demo ux`) merged, then created `thehive/prd-landing-viewer-dashboard` for the hosted landing/viewer refresh.
-- Refreshed `apps/prd-viewer-web` into one deployable PRD landing page plus reference web viewer workspace with premium dark mode by default, first-class light mode, persistent theme selection, and a dashboard-style viewer surface inspired by the provided references.
-- Revised the hosted app route structure so `/` is the product landing page and `/viewer/` is the actual PRD Web Viewer workspace, including base-path support for GitHub Pages at `/prd/`.
+- Refreshed `apps/prd-viewer-web` into one deployable PRD Home page plus reference web viewer workspace with premium dark mode by default, first-class light mode, persistent theme selection, and a dashboard-style viewer surface inspired by the provided references.
+- Revised the hosted app route structure so `/` is the Home page and `/viewer/` is the actual PRD Web Viewer workspace, including base-path support for GitHub Pages at `/prd/`.
 - Added real package-derived outline panels for structured `general-document`, `comic`, and `storyboard` content rather than static/fake dashboard navigation.
 - Added hosted sample archive support through generated demo assets under the ignored `apps/prd-viewer-web/public/examples/` path. Hosted samples load through the same eager whole-package in-memory open path as user-selected archives and do not change PRD format loading semantics.
 - Added `scripts/prepare-viewer-demo-assets.mjs`, root `pnpm viewer:demo:assets`, `pnpm viewer:demo:build`, and `pnpm viewer:demo:dev` so canonical examples can be packed and copied into the web viewer demo surface without committing `.prd` binaries.

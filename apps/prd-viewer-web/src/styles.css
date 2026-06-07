@@ -234,6 +234,7 @@ a {
 
 .landing-surface,
 .demo-flow,
+.docs-surface,
 .viewer-dashboard {
   max-width: 118rem;
   margin: 0 auto 1rem;
@@ -257,6 +258,10 @@ a {
 .landing-card,
 .profile-card,
 .future-lanes-note,
+.docs-hero,
+.docs-card,
+.docs-hosting-card,
+.docs-operator-note,
 .demo-flow,
 .example-guide,
 .viewer-dashboard,
@@ -1515,7 +1520,7 @@ code {
   }
 }
 
-/* Route split redesign: landing page and viewer workspace share tokens, not layout. */
+/* Route split redesign: Home page and viewer workspace share tokens, not layout. */
 :root {
   --nav-height: 4.6rem;
   --glow-purple: rgba(138, 74, 255, 0.44);
@@ -1635,12 +1640,14 @@ body {
 }
 
 .landing-surface,
+.docs-surface,
 .viewer-route {
   max-width: 116rem;
   margin: 0 auto;
 }
 
-.landing-surface {
+.landing-surface,
+.docs-surface {
   display: grid;
   gap: 1rem;
 }
@@ -1672,6 +1679,10 @@ body {
 .demo-flow,
 .example-guide,
 .future-lanes-note,
+.docs-hero,
+.docs-card,
+.docs-hosting-card,
+.docs-operator-note,
 .viewer-dashboard,
 .panel,
 .viewer-outline-card,
@@ -1846,6 +1857,131 @@ body {
 
 .future-lanes-note {
   color: var(--text-muted);
+}
+
+.docs-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 34rem);
+  gap: clamp(1rem, 2vw, 1.4rem);
+  align-items: stretch;
+  padding: clamp(1.5rem, 4vw, 3.4rem);
+}
+
+.docs-hero h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.6rem, 6vw, 6rem);
+  line-height: 0.96;
+  letter-spacing: -0.075em;
+}
+
+:root[data-theme="dark"] .docs-hero h1 {
+  background: linear-gradient(110deg, #fff7ff 8%, #b86bff 42%, #57d9ff 82%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.docs-hosting-card {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+  padding: 1rem;
+}
+
+.docs-hosting-card h2,
+.docs-card h2 {
+  margin: 0;
+  letter-spacing: -0.04em;
+}
+
+.docs-hosting-card dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.docs-hosting-card div {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--bg-elevated) 58%, transparent);
+}
+
+.docs-hosting-card dt {
+  color: var(--text-soft);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-hosting-card dd {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.docs-hosting-card dd strong {
+  color: var(--text);
+}
+
+.docs-hosting-card dd span,
+.docs-card p,
+.docs-operator-note {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.docs-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  padding: 1rem;
+}
+
+.docs-card p {
+  margin: 0;
+}
+
+.docs-primary-link,
+.docs-link-list a {
+  color: var(--accent-cyan);
+  font-weight: 900;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+.docs-primary-link {
+  width: fit-content;
+  padding: 0.62rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--accent-cyan) 38%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-cyan) 9%, transparent);
+  text-decoration: none;
+}
+
+.docs-link-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.docs-operator-note {
+  padding: 1rem 1.1rem;
+}
+
+.docs-operator-note p {
+  margin: 0;
 }
 
 .viewer-route {
@@ -2146,6 +2282,7 @@ body {
   }
 
   .landing-hero,
+  .docs-hero,
   .viewer-shell-grid {
     grid-template-columns: 1fr;
   }
@@ -2217,6 +2354,7 @@ body {
 
   .landing-capabilities,
   .landing-profile-grid,
+  .docs-grid,
   .demo-flow-grid,
   .example-guide-body,
   .example-archive-list,

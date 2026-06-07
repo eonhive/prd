@@ -54,6 +54,9 @@ jobs:
         env:
           PRD_VIEWER_BASE_PATH: /prd/
 
+      - name: Add GitHub Pages SPA fallback
+        run: cp apps/prd-viewer-web/dist/index.html apps/prd-viewer-web/dist/404.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
