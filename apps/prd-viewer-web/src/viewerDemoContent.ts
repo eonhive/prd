@@ -1,10 +1,10 @@
 /*
  * Company: EonHive Inc.
  * Title: PRD Viewer Demo Content
- * Purpose: Keep public viewer demo copy and command examples stable and testable.
+ * Purpose: Keep public site, docs, and viewer demo copy stable and testable.
  * Author: Stan Nesi
  * Created: June 2, 2026
- * Updated: June 5, 2026
+ * Updated: June 7, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -19,6 +19,25 @@ export interface ViewerLandingProfile {
   title: string;
   description: string;
   command: string;
+}
+
+export interface ViewerPublicDocsLink {
+  label: string;
+  href: string;
+}
+
+export interface ViewerPublicDocsSection {
+  id: string;
+  title: string;
+  summary: string;
+  primaryLink: ViewerPublicDocsLink;
+  links: ViewerPublicDocsLink[];
+}
+
+export interface ViewerPublicHostingNote {
+  label: string;
+  value: string;
+  description: string;
 }
 
 export interface ViewerDemoFlowStep {
@@ -46,6 +65,138 @@ export const viewerLandingHero = {
   secondaryAction: "Load Sample PRD",
   tertiaryAction: "View CLI Flow"
 };
+
+export const viewerPublicDocsIntro = {
+  eyebrow: "Public docs",
+  title: "Start with the product path, then go deeper into canon.",
+  description:
+    "This docs page is a public navigation layer over the canonical repository docs. It keeps users oriented around Home, authoring, CLI tooling, format basics, profiles, examples, the viewer, conformance, and release/operator notes without exposing internal Codex workflow docs as product documentation."
+};
+
+export const viewerPublicDocsSections: ViewerPublicDocsSection[] = [
+  {
+    id: "home",
+    title: "Home",
+    summary:
+      "The public product overview for PRD: what ships now, what is deferred, and how the create/import to open loop works.",
+    primaryLink: { label: "Open Home", href: "/" },
+    links: [
+      { label: "Product boundaries", href: "docs/product/PRD_PRODUCT_BOUNDARIES.md" },
+      { label: "Roadmap", href: "docs/foundation/04_PRD/PRD_ROADMAP.md" }
+    ]
+  },
+  {
+    id: "getting-started",
+    title: "Getting Started",
+    summary:
+      "Install the public CLI, create or import a package, validate it, inspect package facts, pack it, and open it in the reference viewer.",
+    primaryLink: { label: "Authoring workflow", href: "docs/product/PRD_AUTHORING_WORKFLOW.md" },
+    links: [
+      { label: "Root quickstart", href: "README.md" },
+      { label: "Import/export matrix", href: "docs/product/PRD_IMPORT_EXPORT_MATRIX.md" }
+    ]
+  },
+  {
+    id: "cli",
+    title: "CLI",
+    summary:
+      "Command contracts for `prd init`, imports, validation, inspection, packing, text output, JSON output, and exit codes.",
+    primaryLink: { label: "CLI README", href: "packages/prd-cli/README.md" },
+    links: [
+      { label: "CLI JSON contract", href: "docs/runtime/PRD_CLI_JSON_CONTRACT.md" },
+      { label: "npm release policy", href: "docs/governance/PRD_RELEASE_POLICY.md" }
+    ]
+  },
+  {
+    id: "format",
+    title: "Format",
+    summary:
+      "Manifest-first package rules, minimal valid PRD requirements, package layout, versioning, localization, assets, attachments, and loading truth.",
+    primaryLink: { label: "Minimal valid spec", href: "docs/core/PRD_MINIMAL_VALID_SPEC.md" },
+    links: [
+      { label: "Manifest draft", href: "docs/core/PRD_MANIFEST_DRAFT.md" },
+      { label: "Package layout", href: "docs/core/PRD_PACKAGE_LAYOUT_DRAFT.md" },
+      { label: "Performance and loading", href: "docs/core/PRD_PERFORMANCE_AND_LOADING.md" }
+    ]
+  },
+  {
+    id: "profiles",
+    title: "Profiles",
+    summary:
+      "Current first-class profiles are `general-document`, `comic`, and `storyboard`. Other document kinds stay inside those families unless canon promotes them later.",
+    primaryLink: { label: "Profile registry", href: "docs/governance/PRD_PROFILE_REGISTRY.md" },
+    links: [
+      { label: "General document", href: "docs/profiles/PRD_PROFILE_GENERAL_DOCUMENT.md" },
+      { label: "Comic", href: "docs/profiles/PRD_PROFILE_COMIC.md" },
+      { label: "Storyboard", href: "docs/profiles/PRD_PROFILE_STORYBOARD.md" }
+    ]
+  },
+  {
+    id: "examples",
+    title: "Examples",
+    summary:
+      "Canonical example packages prove validation, packaging, import lanes, hosted samples, and viewer behavior without committing generated `.prd` binaries.",
+    primaryLink: { label: "Example packages", href: "examples/" },
+    links: [
+      { label: "Runtime conformance corpus", href: "examples/runtime-conformance/runtime-conformance-manifest.json" },
+      { label: "Pack examples", href: "README.md#example-flow" }
+    ]
+  },
+  {
+    id: "viewer",
+    title: "Viewer",
+    summary:
+      "The reference Web Viewer validates first, reports real package facts, and opens supported packages through eager whole-package in-memory loading.",
+    primaryLink: { label: "Open Viewer", href: "/viewer/" },
+    links: [
+      { label: "Runtime capabilities", href: "docs/runtime/PRD_CAPABILITY_MODEL.md" },
+      { label: "Runtime conformance", href: "docs/runtime/PRD_CONFORMANCE.md" }
+    ]
+  },
+  {
+    id: "conformance",
+    title: "Conformance",
+    summary:
+      "Executable foundation and runtime checks define the current reference baseline for package validity, support states, and fixture expectations.",
+    primaryLink: { label: "Runtime conformance", href: "docs/runtime/PRD_CONFORMANCE.md" },
+    links: [
+      { label: "Minimal valid spec", href: "docs/core/PRD_MINIMAL_VALID_SPEC.md" },
+      { label: "Foundation gate", href: "README.md#foundation-gate" }
+    ]
+  },
+  {
+    id: "release-operator-notes",
+    title: "Release/Operator Notes",
+    summary:
+      "Maintainer-facing release, npm verification, and hosting runbooks for operating the public preview without mixing those notes into user-facing product docs.",
+    primaryLink: { label: "Release policy", href: "docs/governance/PRD_RELEASE_POLICY.md" },
+    links: [
+      { label: "npm runbook", href: "docs/governance/PRD_NPM_RELEASE_RUNBOOK.md" },
+      { label: "Hosting runbook", href: "docs/governance/PRD_HOSTING_RUNBOOK.md" }
+    ]
+  }
+];
+
+export const viewerPublicHostingNotes: ViewerPublicHostingNote[] = [
+  {
+    label: "Production",
+    value: "Cloudflare Pages",
+    description:
+      "`prd.eonhive.com` is the intended production host after custom-domain setup and launch QA."
+  },
+  {
+    label: "Staging/fallback",
+    value: "GitHub Pages",
+    description:
+      "GitHub Pages remains the temporary staging and fallback deployment using the `/prd/` base path."
+  },
+  {
+    label: "Routes",
+    value: "/, /viewer/, /docs/",
+    description:
+      "`/` is Home, `/viewer/` is the Web Viewer workspace, and `/docs/` is the public docs index."
+  }
+];
 
 export const viewerLandingCapabilities: ViewerLandingCapability[] = [
   {

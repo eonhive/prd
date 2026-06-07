@@ -51,7 +51,10 @@ import {
   viewerFutureLanes,
   viewerLandingCapabilities,
   viewerLandingHero,
-  viewerLandingProfiles
+  viewerLandingProfiles,
+  viewerPublicDocsIntro,
+  viewerPublicDocsSections,
+  viewerPublicHostingNotes
 } from "./viewerDemoContent.js";
 import {
   findFirstPrdArchive,
@@ -121,6 +124,7 @@ const viewerThemeStorageKey = "prd-viewer-theme";
 const viewerAppBasePath =
   ((import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env?.BASE_URL ??
     "/");
+const canonicalDocsRepositoryUrl = "https://github.com/eonhive/prd/blob/main/";
 
 function formatReferenceLoadMode(loadMode: PrdReferenceLoadMode): string {
   if (loadMode === "eager-whole-package") {
@@ -142,6 +146,22 @@ function formatReferenceViewerProfileSummary(): string {
 
 function formatReferenceViewerSupportStateSummary(): string {
   return referenceViewerRuntimeDescriptor.supportStates.join(", ");
+}
+
+function getPublicDocsLinkHref(href: string): string {
+  if (href === "/" || href === "/viewer/") {
+    return href;
+  }
+
+  if (href === "examples/") {
+    return "https://github.com/eonhive/prd/tree/main/examples";
+  }
+
+  if (href.startsWith("http://") || href.startsWith("https://")) {
+    return href;
+  }
+
+  return `${canonicalDocsRepositoryUrl}${href}`;
 }
 
 function createPackageReader(files: PrdFileMap): PrdPackageReader {
@@ -2158,8 +2178,8 @@ function AppNavigation({
       <button
         type="button"
         className="brand-lockup"
-        onClick={() => onNavigate("landing")}
-        aria-label="PRD landing"
+        onClick={() => onNavigate("home")}
+        aria-label="PRD Home"
       >
         <span className="brand-mark">P</span>
         <span>
@@ -2170,10 +2190,10 @@ function AppNavigation({
       <nav className="site-nav-links" aria-label="Demo navigation">
         <button
           type="button"
-          className={route === "landing" ? "is-active" : undefined}
-          onClick={() => onNavigate("landing")}
+          className={route === "home" ? "is-active" : undefined}
+          onClick={() => onNavigate("home")}
         >
-          Landing
+          Home
         </button>
         <button
           type="button"
@@ -2182,10 +2202,16 @@ function AppNavigation({
         >
           Viewer
         </button>
-        <button type="button" onClick={() => onNavigate("landing", "cli-flow")}>
+        <button
+          type="button"
+          className={route === "docs" ? "is-active" : undefined}
+          onClick={() => onNavigate("docs")}
+        >
+          Docs
+        </button>
+        <button type="button" onClick={() => onNavigate("home", "cli-flow")}>
           CLI Flow
         </button>
-        <a href="https://github.com/eonhive/prd/tree/main/docs">Docs</a>
       </nav>
       <div className="site-nav-actions">
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
@@ -2197,7 +2223,7 @@ function AppNavigation({
   );
 }
 
-function LandingSurface({
+function HomeSurface({
   onOpenViewer,
   onLoadSample,
   sampleLoadingId,
@@ -2209,7 +2235,7 @@ function LandingSurface({
   onLoadArchive: (example: ViewerDemoExampleArchive) => void;
 }) {
   return (
-    <main className="landing-surface" aria-label="PRD product landing">
+    <main className="landing-surface" aria-label="PRD Home">
       <section className="landing-hero">
         <div className="landing-hero-copy">
           <span className="release-pill">0.1.1 public preview</span>
@@ -2392,6 +2418,137 @@ function ViewerExampleGuideView({
         </ul>
       </div>
     </section>
+  );
+}
+
+function PublicDocsSurface({
+  onNavigate
+}: {
+  onNavigate: (route: ViewerAppRoute, hash?: string) => void;
+}) {
+  return (
+    <main className="docs-surface" aria-label="PRD public docs">
+      <section className="docs-hero">
+        <div>
+          <p className="eyebrow">{viewerPublicDocsIntro.eyebrow}</p>
+          <h1>{viewerPublicDocsIntro.title}</h1>
+          <p className="subhead">{viewerPublicDocsIntro.description}</p>
+          <div className="landing-actions">
+            <button
+              type="button"
+              className="primary-action"
+              onClick={() => onNavigate("home")}
+            >
+              Back to Home
+            </button>
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={() => onNavigate("viewer")}
+            >
+              Open Viewer
+            </button>
+          </div>
+        </div>
+        <aside className="docs-hosting-card" aria-label="Hosting direction">
+          <p className="eyebrow">Hosting path</p>
+          <h2>Cloudflare production, GitHub Pages staging.</h2>
+          <dl>
+            {viewerPublicHostingNotes.map((note) => (
+              <div key={note.label}>
+                <dt>{note.label}</dt>
+                <dd>
+                  <strong>{note.value}</strong>
+                  <span>{note.description}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </aside>
+      </section>
+
+      <section className="docs-grid" aria-label="Public docs navigation">
+        {viewerPublicDocsSections.map((section) => (
+          <article key={section.id} className="docs-card">
+            <p className="card-proof">{section.id}</p>
+            <h2>{section.title}</h2>
+            <p>{section.summary}</p>
+            <DocsLink
+              link={section.primaryLink}
+              className="docs-primary-link"
+              onNavigate={onNavigate}
+            />
+            <ul className="docs-link-list">
+              {section.links.map((link) => (
+                <li key={`${section.id}-${link.href}`}>
+                  <DocsLink link={link} onNavigate={onNavigate} />
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </section>
+
+      <section className="docs-operator-note" aria-label="Public documentation boundary">
+        <p>
+          Canonical docs remain in the repository under <code>docs/</code>. This
+          page is the public docs index for users and implementers; Codex
+          planning and session handoff files stay tracked for workflow
+          continuity, but they are not linked from public navigation.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+function DocsLink({
+  link,
+  className,
+  onNavigate
+}: {
+  link: { label: string; href: string };
+  className?: string;
+  onNavigate: (route: ViewerAppRoute, hash?: string) => void;
+}) {
+  if (link.href === "/") {
+    return (
+      <a
+        className={className}
+        href={getViewerAppRoutePath("home", viewerAppBasePath)}
+        onClick={(event) => {
+          event.preventDefault();
+          onNavigate("home");
+        }}
+      >
+        {link.label}
+      </a>
+    );
+  }
+
+  if (link.href === "/viewer/") {
+    return (
+      <a
+        className={className}
+        href={getViewerAppRoutePath("viewer", viewerAppBasePath)}
+        onClick={(event) => {
+          event.preventDefault();
+          onNavigate("viewer");
+        }}
+      >
+        {link.label}
+      </a>
+    );
+  }
+
+  return (
+    <a
+      className={className}
+      href={getPublicDocsLinkHref(link.href)}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {link.label}
+    </a>
   );
 }
 
@@ -3176,8 +3333,8 @@ export function App() {
         }}
       />
 
-      {route === "landing" ? (
-        <LandingSurface
+      {route === "home" ? (
+        <HomeSurface
           onOpenViewer={() => navigateToRoute("viewer")}
           onLoadSample={() => {
             const firstSample = viewerDemoExampleArchives[0];
@@ -3188,6 +3345,8 @@ export function App() {
           onLoadArchive={(example) => void handleSampleArchive(example)}
           sampleLoadingId={sampleLoadingId}
         />
+      ) : route === "docs" ? (
+        <PublicDocsSurface onNavigate={navigateToRoute} />
       ) : (
         <ViewerWorkspaceView
           fileInputRef={fileInputRef}

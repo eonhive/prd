@@ -1,14 +1,14 @@
 /*
  * Company: EonHive Inc.
  * Title: PRD Viewer Routes
- * Purpose: Keep hosted landing/viewer route behavior stable under local and GitHub Pages base paths.
+ * Purpose: Keep hosted Home/docs/viewer route behavior stable under local and hosted base paths.
  * Author: Stan Nesi
  * Created: June 5, 2026
- * Updated: June 5, 2026
+ * Updated: June 7, 2026
  * Notes: Vibe coded with Codex.
  */
 
-export type ViewerAppRoute = "landing" | "viewer";
+export type ViewerAppRoute = "home" | "viewer" | "docs";
 
 export function normalizeViewerBasePath(basePath: string): string {
   const trimmed = basePath.trim();
@@ -33,9 +33,15 @@ export function getViewerAppRouteFromPath(
     ? normalizedPath.slice(normalizedBase.length)
     : normalizedPath.replace(/^\/+/, "");
 
-  return routePath === "viewer" || routePath.startsWith("viewer/")
-    ? "viewer"
-    : "landing";
+  if (routePath === "viewer" || routePath.startsWith("viewer/")) {
+    return "viewer";
+  }
+
+  if (routePath === "docs" || routePath.startsWith("docs/")) {
+    return "docs";
+  }
+
+  return "home";
 }
 
 export function getViewerAppRoutePath(
@@ -43,6 +49,13 @@ export function getViewerAppRoutePath(
   basePath: string
 ): string {
   const normalizedBase = normalizeViewerBasePath(basePath);
-  return route === "viewer" ? `${normalizedBase}viewer/` : normalizedBase;
-}
+  if (route === "viewer") {
+    return `${normalizedBase}viewer/`;
+  }
 
+  if (route === "docs") {
+    return `${normalizedBase}docs/`;
+  }
+
+  return normalizedBase;
+}

@@ -1,10 +1,10 @@
 /*
  * Company: EonHive Inc.
  * Title: PRD Viewer Demo Content Tests
- * Purpose: Lock the public viewer demo flow copy and example archive references.
+ * Purpose: Lock public site, docs, and viewer demo flow copy.
  * Author: Stan Nesi
  * Created: June 2, 2026
- * Updated: June 5, 2026
+ * Updated: June 7, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -16,11 +16,14 @@ import {
   viewerFutureLanes,
   viewerLandingCapabilities,
   viewerLandingHero,
-  viewerLandingProfiles
+  viewerLandingProfiles,
+  viewerPublicDocsIntro,
+  viewerPublicDocsSections,
+  viewerPublicHostingNotes
 } from "./viewerDemoContent.js";
 
 describe("viewer demo content", () => {
-  it("describes the landing page without inventing unavailable product behavior", () => {
+  it("describes the Home page without inventing unavailable product behavior", () => {
     expect(viewerLandingHero.title).toContain("Create");
     expect(viewerLandingHero.description).toContain("Portable Responsive Document");
     expect(viewerLandingHero.primaryAction).toBe("Open Viewer");
@@ -47,6 +50,43 @@ describe("viewer demo content", () => {
     expect(viewerLandingProfiles[0]?.command).toContain("prd import markdown");
     expect(viewerLandingProfiles[1]?.command).toContain("--profile comic");
     expect(viewerLandingProfiles[2]?.command).toContain("--profile storyboard");
+  });
+
+  it("publishes a public docs navigation layer without linking Codex workflow docs", () => {
+    expect(viewerPublicDocsIntro.title).toContain("Start");
+    expect(viewerPublicDocsSections.map((section) => section.title)).toEqual([
+      "Home",
+      "Getting Started",
+      "CLI",
+      "Format",
+      "Profiles",
+      "Examples",
+      "Viewer",
+      "Conformance",
+      "Release/Operator Notes"
+    ]);
+    const allPublicDocsHrefs = viewerPublicDocsSections.flatMap((section) => [
+      section.primaryLink.href,
+      ...section.links.map((link) => link.href)
+    ]);
+    expect(allPublicDocsHrefs).toEqual(
+      expect.arrayContaining([
+        "/",
+        "/viewer/",
+        "docs/product/PRD_AUTHORING_WORKFLOW.md",
+        "docs/core/PRD_MINIMAL_VALID_SPEC.md",
+        "docs/governance/PRD_HOSTING_RUNBOOK.md"
+      ])
+    );
+    expect(allPublicDocsHrefs.every((href) => !href.startsWith("codex/"))).toBe(true);
+  });
+
+  it("locks Cloudflare production and GitHub Pages staging hosting copy", () => {
+    expect(viewerPublicHostingNotes.map((note) => note.value)).toEqual(
+      expect.arrayContaining(["Cloudflare Pages", "GitHub Pages", "/, /viewer/, /docs/"])
+    );
+    expect(viewerPublicHostingNotes[0]?.description).toContain("prd.eonhive.com");
+    expect(viewerPublicHostingNotes[1]?.description).toContain("/prd/");
   });
 
   it("describes the create/import to open public product flow", () => {

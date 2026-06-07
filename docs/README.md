@@ -34,6 +34,7 @@ Primary paths:
   * `governance/PRD_PROFILE_REGISTRY.md`
   * `governance/PRD_PROMPT_DOCTRINE.md`
   * `governance/PRD_RELEASE_POLICY.md`
+  * `governance/PRD_HOSTING_RUNBOOK.md`
 * product boundaries
   * `product/PRD_PRODUCT_BOUNDARIES.md`
   * `product/PRD_AUTHORING_WORKFLOW.md`
@@ -62,6 +63,7 @@ Supporting control docs:
 * `governance/PRD_PROMPT_DOCTRINE.md`
 * `governance/PRD_RELEASE_POLICY.md`
 * `governance/PRD_NPM_RELEASE_RUNBOOK.md`
+* `governance/PRD_HOSTING_RUNBOOK.md`
 * `prompts/PRD_MASTER_PROMPTS.md`
 
 ---
@@ -103,6 +105,7 @@ Control docs for profile governance and prompt discipline:
 * `PRD_PROMPT_DOCTRINE.md`
 * `PRD_RELEASE_POLICY.md`
 * `PRD_NPM_RELEASE_RUNBOOK.md`
+* `PRD_HOSTING_RUNBOOK.md`
 
 ### `prompts/`
 
@@ -160,8 +163,11 @@ Product-boundary and ecosystem-role docs:
 
 Current public demo surface:
 
-* `../apps/prd-viewer-web/` (one deployable app with `/` landing page and `/viewer/` reference Web Viewer workspace)
-* `../.github/workflows/viewer-demo-pages.yml` (GitHub Pages deployment)
+* `../apps/prd-viewer-web/` (one deployable app with `/` Home, `/viewer/` reference Web Viewer workspace, and `/docs/` public docs index)
+* `governance/PRD_HOSTING_RUNBOOK.md` (Cloudflare production and GitHub Pages fallback/staging path)
+* `../.github/workflows/viewer-demo-pages.yml` (temporary GitHub Pages staging/fallback deployment)
+
+The public `/docs/` route is a navigation layer over canonical repo docs. It is not a replacement for this directory, and it intentionally does not link `../codex/` operational planning files.
 
 ### `market/`
 

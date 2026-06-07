@@ -105,15 +105,15 @@ This lane does not attempt image processing, optimization, OCR, panel detection,
 
 ## 7. Current Hosted Viewer Demo Lane
 
-The current public-product implementation is the hosted PRD landing page and reference web viewer demo that demonstrates the now-real authoring loop:
+The current public-product implementation is the hosted PRD Home page, public docs index, and reference web viewer demo that demonstrates the now-real authoring loop:
 
 ```text
 init/import -> validate -> inspect -> pack -> open in the reference viewer
 ```
 
-That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` landing from `/viewer/` workspace. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
+That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` Home, `/viewer/` workspace, and `/docs/` public docs navigation. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
 
-The next public-product lane should launch-QA the hosted demo, verify the GitHub Pages deployment, and then choose the next viewer/product polish step.
+The next public-product lane should launch-QA the hosted demo, verify the Cloudflare Pages production path at `prd.eonhive.com`, keep GitHub Pages as staging/fallback until that passes, and then choose the next viewer/product polish step.
 
 ---
 
