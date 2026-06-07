@@ -163,7 +163,7 @@ Do not build late-stage fantasy systems before the base format is real.
 - `prd import images` now provides deterministic ordered image-folder import for `comic` and `storyboard`
 - the current authoring workflow and import/export matrix docs define how those commands fit into public authoring
 - the current executable lane is public viewer/demo/landing UX polish that demonstrates the create/import, validate, pack, and open flow
-- the current executable lane is the hosted PRD landing page and reference web viewer demo deployed through GitHub Pages
+- the current executable lane is the hosted PRD landing page and reference Web Viewer demo deployed through GitHub Pages, with `/` for landing and `/viewer/` for the workspace
 - the next product lane should launch-QA the hosted demo and then choose the next viewer/product polish step
 - defer full visual Studio, broad conversion, and hosted conversion workflows until the hosted public demo/viewer path is proven
 

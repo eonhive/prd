@@ -4,21 +4,28 @@
 
 - PR `#43` (`[stannesi] add public viewer demo ux`) is merged into `main` at `2f3e2221a70fcc13a843b9e0db204d0ca22b0b8a`.
 - Local `main` was fast-forwarded to `origin/main`.
-- Current branch is `thehive/prd-landing-viewer-dashboard`, based on merged `main`.
+- Current branch is `thehive/prd-landing-viewer-route-split`, based on current `origin/main`.
 - This branch implements `NEXT_STEPS.md` item `42`: hosted PRD landing page plus reference web viewer demo/deployment path.
-- PR `#44` (`[stannesi] add hosted landing and viewer dashboard`) is open: https://github.com/eonhive/prd/pull/44.
+- PR `#44` (`[stannesi] add hosted landing and viewer dashboard`) was merged while the route-split revision was being implemented.
+- PR `#45` was opened from the pre-squash PR `#44` branch and then closed because it included already-merged files in the comparison.
+- Clean PR `#46` (`[stannesi] separate hosted landing and viewer routes`) is open: https://github.com/eonhive/prd/pull/46.
 - Scope remains one deployable app under `apps/prd-viewer-web`.
+- After design review, the app was revised so `/` is the product landing page and `/viewer/` is the actual PRD Web Viewer workspace. Under GitHub Pages those become `/prd/` and `/prd/viewer/`.
 - No manifest, schema, validator, CLI command, package export, npm package, Studio, Cloud, PRDc, AI assistant, account/library, payment, crypto, rights, universal viewer, or broad conversion behavior was added.
 - No changeset was added.
 
 ## Completed work
 
 - Added a premium dark/light PRD landing page and viewer workspace inside the existing web viewer app.
+- Separated landing and viewer into route-level surfaces using a small no-dependency route helper.
 - Added persistent theme selection with dark mode as the default.
 - Added landing content for the real public loop: `prd init/import -> validate -> inspect -> pack -> open`.
 - Added dashboard-style viewer chrome while preserving the existing validator-first archive open path and renderer behavior.
+- Added package-derived document outline rows for structured `general-document`, `comic`, and `storyboard` packages.
 - Added hosted sample archive loading for generated examples. Hosted samples load through the same eager whole-package in-memory open path as user-selected `.prd` archives.
 - Added `apps/prd-viewer-web/src/viewerArchiveFiles.ts` and tests for `.prd` archive selection and hosted sample URL behavior.
+- Added `apps/prd-viewer-web/src/viewerRoutes.ts` and tests for local/GitHub Pages route mapping.
+- Added `apps/prd-viewer-web/src/viewerDocumentOutline.ts` and tests for package-derived outline rows.
 - Expanded `apps/prd-viewer-web/src/viewerDemoContent.ts` and tests for landing capabilities, profile cards, command copy, sample archive labels, and future-lane disclaimers.
 - Added `scripts/prepare-viewer-demo-assets.mjs` and tests to copy generated `.prd` archives from `examples/dist` into ignored `apps/prd-viewer-web/public/examples/`.
 - Added root scripts: `viewer:demo:assets`, `viewer:demo:build`, and `viewer:demo:dev`.
@@ -29,7 +36,7 @@
 ## In-progress work
 
 - Implementation and validation are complete locally.
-- PR `#44` is open and ready for normal GitHub validation/review.
+- PR `#46` is open and ready for normal GitHub validation/review.
 
 ## Changed files
 
@@ -40,8 +47,12 @@
 - [styles.css](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/styles.css)
 - [viewerArchiveFiles.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerArchiveFiles.ts)
 - [viewerArchiveFiles.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerArchiveFiles.test.ts)
+- [viewerDocumentOutline.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerDocumentOutline.ts)
+- [viewerDocumentOutline.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerDocumentOutline.test.ts)
 - [viewerDemoContent.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerDemoContent.ts)
 - [viewerDemoContent.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerDemoContent.test.ts)
+- [viewerRoutes.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerRoutes.ts)
+- [viewerRoutes.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/src/viewerRoutes.test.ts)
 - [vite.config.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/apps/prd-viewer-web/vite.config.ts)
 - [prepare-viewer-demo-assets.mjs](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/scripts/prepare-viewer-demo-assets.mjs)
 - [prepare-viewer-demo-assets.test.ts](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/scripts/prepare-viewer-demo-assets.test.ts)
@@ -62,44 +73,53 @@
 - `git switch main`
 - `git pull --ff-only origin main`
 - `git switch -c thehive/prd-landing-viewer-dashboard`
+- `git switch -c thehive/prd-landing-viewer-route-split origin/main`
+- `git cherry-pick 7210e667fe88b79f02f769c7288eb26827de4512`
 - `PATH="/opt/homebrew/bin:$PATH" node_modules/.bin/tsc -b apps/prd-viewer-web/tsconfig.json --pretty false`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts scripts/prepare-viewer-demo-assets.test.ts`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts scripts/prepare-viewer-demo-assets.test.ts apps/prd-viewer-web/src/viewerRenderMode.test.ts apps/prd-viewer-web/src/viewerRenderMode.integration.test.ts`
+- `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerRoutes.test.ts apps/prd-viewer-web/src/viewerDocumentOutline.test.ts apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts scripts/prepare-viewer-demo-assets.test.ts apps/prd-viewer-web/src/viewerRenderMode.test.ts apps/prd-viewer-web/src/viewerRenderMode.integration.test.ts`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm typecheck`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:dev -- --host 127.0.0.1 --port 5173`
 - Browser verification at `http://localhost:5173/`
+- Browser verification at `http://localhost:5173/viewer/`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
 - `git add ...`
 - `git commit -m "feat: add hosted landing and viewer dashboard"`
 - `git push -u origin thehive/prd-landing-viewer-dashboard`
 - GitHub connector: opened PR `#44`
+- `git push -u origin thehive/prd-landing-viewer-route-split`
+- GitHub connector: opened clean PR `#46`
+- GitHub connector: commented on and closed duplicate PR `#45`
 
 ## Tests / verification
 
 - `PATH="/opt/homebrew/bin:$PATH" node_modules/.bin/tsc -b apps/prd-viewer-web/tsconfig.json --pretty false` passed.
-- Targeted viewer/script tests passed: 5 files, 18 tests.
+- Targeted viewer/script tests passed after route revision: 7 files, 25 tests.
 - `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build` passed and generated ignored hosted sample archives.
 - `PATH="/opt/homebrew/bin:$PATH" pnpm docs:check -- --include-root-docs` passed.
 - `git diff --check` passed.
 - `PATH="/opt/homebrew/bin:$PATH" pnpm typecheck` passed.
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` passed: 18 test files, 177 tests, docs consistency, example validation, and aggregate example smoke.
 - Browser desktop verification passed for:
-  - premium dark landing surface
+  - `/` premium dark landing surface
+  - `/viewer/` separate viewer workspace route
   - light mode toggle and theme DOM state
   - hosted sample buttons
   - dashboard viewer workspace
   - hosted `document-basic`, `comic-basic`, and `storyboard-basic` sample open paths
+  - package-derived outline panels
   - no browser console warnings/errors
 - Browser mobile verification passed for light/dark single-column layout with samples and drop zone present.
 - Screenshot artifacts:
-  - `/tmp/prd-hosted-viewer-screens/desktop-dark.png`
-  - `/tmp/prd-hosted-viewer-screens/desktop-light.png`
-  - `/tmp/prd-hosted-viewer-screens/desktop-loaded-storyboard.png`
-  - `/tmp/prd-hosted-viewer-screens/mobile-light.png`
-  - `/tmp/prd-hosted-viewer-screens/mobile-dark.png`
+  - `/tmp/prd-redesign-screens/landing-dark.png`
+  - `/tmp/prd-redesign-screens/viewer-loaded-storyboard.png`
+  - `/tmp/prd-redesign-screens/viewer-light.png`
+  - `/tmp/prd-redesign-screens/mobile-viewer-light.png`
+  - `/tmp/prd-redesign-screens/mobile-landing-light.png`
 
 ## Known issues
 
@@ -110,12 +130,13 @@
 
 ## Next recommended task
 
-- Monitor and merge PR `#44`.
+- Monitor and merge clean PR `#46` after checks pass.
 - After the PR lands, run `NEXT_STEPS.md` item `43`: launch QA against the live GitHub Pages URL and choose the next focused viewer/product polish step.
 
 ## Important decisions
 
 - Use one app: `apps/prd-viewer-web`.
+- Separate the one app into `/` landing and `/viewer/` workspace routes instead of creating separate apps or deployments.
 - Use GitHub Pages for the public hosted demo path.
 - Support both light mode and premium dark mode; dark mode is default.
 - Keep hosted samples as generated demo assets instead of committed `.prd` binaries.

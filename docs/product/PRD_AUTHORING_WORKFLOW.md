@@ -173,6 +173,6 @@ Those remain future product or extension lanes.
 
 ## 6. Next Implementation Lane
 
-After `prd import markdown` and `prd import images`, the current executable public-product lane is the hosted PRD landing page and reference web viewer demo. It demonstrates the real create/import, validate, inspect, pack, and open flow with light and premium dark modes.
+After `prd import markdown` and `prd import images`, the current executable public-product lane is the hosted PRD landing page and reference Web Viewer demo. It demonstrates the real create/import, validate, inspect, pack, and open flow with light and premium dark modes, using `/` for the product landing page and `/viewer/` for the actual package-opening workspace.
 
 Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.
