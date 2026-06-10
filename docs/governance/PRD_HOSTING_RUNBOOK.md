@@ -36,10 +36,16 @@ Current build surfaces:
 ```bash
 pnpm viewer:demo:assets
 pnpm viewer:demo:build
+pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:build:github-pages
 pnpm viewer:demo:dev
 ```
 
 `viewer:demo:assets` packs canonical examples and copies selected generated `.prd` archives into the ignored `apps/prd-viewer-web/public/examples/` directory.
+
+`viewer:demo:build:cloudflare` is the production Cloudflare Pages build. It uses root-domain base path `/`.
+
+`viewer:demo:build:github-pages` is the staging/fallback GitHub Pages build. It uses base path `/prd/`.
 
 Hosted sample archives are demo assets only. They do not define a PRD network-loading guarantee and do not change the reference viewer truth: eager whole-package in-memory loading.
 
@@ -49,12 +55,19 @@ The Vite public directory includes `_redirects` so Cloudflare Pages serves the S
 
 1. Create or select the Cloudflare Pages project for `apps/prd-viewer-web`.
 2. Configure production domain `prd.eonhive.com`.
-3. Build with a root-domain base path, not the GitHub Pages `/prd/` base path.
-4. Ensure generated demo assets are prepared before the Vite build.
-5. Verify direct refresh for `/`, `/viewer/`, and `/docs/`.
-6. Verify hosted sample archives open through the same viewer path as manual `.prd` uploads.
-7. Verify dark/light theme persistence on production.
-8. Verify desktop and mobile layouts.
+3. Use the repository root as the Cloudflare project root.
+4. Use build command `pnpm viewer:demo:build:cloudflare`.
+5. Use build output directory `apps/prd-viewer-web/dist`.
+6. Build with a root-domain base path, not the GitHub Pages `/prd/` base path.
+7. Ensure generated demo assets are prepared before the Vite build.
+8. Verify direct refresh for `/`, `/viewer/`, and `/docs/`.
+9. Verify hosted sample archives open through the same viewer path as manual `.prd` uploads.
+10. Verify dark/light theme persistence on production.
+11. Verify desktop and mobile layouts.
+
+Do not set the Cloudflare project root to `apps/prd-viewer-web`. The production build needs the repository root so it can build the CLI, pack example archives, copy hosted demo assets, and then build the Vite app.
+
+The root `wrangler.toml` declares `pages_build_output_dir = "apps/prd-viewer-web/dist"` for Cloudflare Pages.
 
 Reference docs:
 
