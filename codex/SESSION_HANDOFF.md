@@ -2,116 +2,83 @@
 
 ## Current status
 
-- PR `#46` (`[stannesi] separate hosted landing and viewer routes`) was merged into `main`.
-- Local `main` was synced, then branch `thehive/prd-public-site-docs-hosting` was created.
-- Current branch implements the public site/docs/hosting polish lane.
-- The hosted app still lives in one deployable Vite app: `apps/prd-viewer-web`.
-- Public app routes are now `/` = Home, `/viewer/` = PRD Web Viewer, and `/docs/` = public docs index.
-- Cloudflare Pages at `prd.eonhive.com` is documented as the intended production host.
-- GitHub Pages remains staging/fallback under `/prd/` until Cloudflare launch QA passes.
+- PR `#47` (`[stannesi] add public docs and hosting path`) is merged into `main`.
+- Local `main` was fast-forwarded to `origin/main`.
+- Current branch is `thehive/cloudflare-pages-build-config`.
+- This branch addresses Cloudflare Pages build ambiguity after the hosted public site/docs lane.
+- The user pasted only the Cloudflare dependency-install portion of the failing build log, so the exact failing line was not available.
 
 ## Completed work
 
-- Renamed user-facing hosted-app navigation from “Landing” to “Home” while keeping route `/`.
-- Added `/docs/` to the app route helper and browser app shell.
-- Added an in-app public docs index for Home, Getting Started, CLI, Format, Profiles, Examples, Viewer, Conformance, and Release/Operator Notes.
-- Kept public docs as a navigation layer over canonical repo docs rather than copying or replacing `docs/`.
-- Ensured public docs do not link tracked `codex/` planning or handoff files.
-- Added Cloudflare/GitHub Pages hosting notes to the public docs surface.
-- Added Cloudflare Pages `_redirects` SPA fallback for `/viewer/` and `/docs/` refreshes.
-- Added GitHub Pages `404.html` fallback generation in the Pages workflow.
-- Added `docs/governance/PRD_HOSTING_RUNBOOK.md`.
-- Updated README, docs index, product docs, roadmap, build status, and backlog state.
-- Marked `NEXT_STEPS.md` item `43` complete and added next launch-QA/polish items.
+- Added root script `viewer:demo:build:cloudflare` for production Cloudflare Pages builds with root-domain base path `/`.
+- Added root script `viewer:demo:build:github-pages` for GitHub Pages staging/fallback builds with base path `/prd/`.
+- Updated `.github/workflows/viewer-demo-pages.yml` to use `pnpm viewer:demo:build:github-pages`.
+- Added root `wrangler.toml` declaring Cloudflare Pages output directory `apps/prd-viewer-web/dist`.
+- Updated the hosting runbook with exact Cloudflare dashboard settings:
+  - project root: repository root
+  - build command: `pnpm viewer:demo:build:cloudflare`
+  - output directory: `apps/prd-viewer-web/dist`
+- Updated README, docs index, build status, and backlog state.
 
 ## In-progress work
 
-- No code work is currently in progress.
-- Branch is ready for commit/push/PR after final review.
+- Implementation and validation are complete locally.
+- Branch is ready for commit/push/PR.
 
 ## Changed files
 
+- `.github/workflows/viewer-demo-pages.yml`
 - `BUILD_STATUS.md`
 - `NEXT_STEPS.md`
 - `README.md`
-- `.github/workflows/viewer-demo-pages.yml`
-- `apps/prd-viewer-web/public/_redirects`
-- `apps/prd-viewer-web/src/App.tsx`
-- `apps/prd-viewer-web/src/styles.css`
-- `apps/prd-viewer-web/src/viewerDemoContent.ts`
-- `apps/prd-viewer-web/src/viewerDemoContent.test.ts`
-- `apps/prd-viewer-web/src/viewerRoutes.ts`
-- `apps/prd-viewer-web/src/viewerRoutes.test.ts`
-- `docs/README.md`
-- `docs/foundation/04_PRD/PRD_ROADMAP.md`
-- `docs/governance/PRD_HOSTING_RUNBOOK.md`
-- `docs/product/PRD_AUTHORING_WORKFLOW.md`
-- `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`
-- `docs/product/PRD_PRODUCT_BOUNDARIES.md`
 - `codex/SESSION_HANDOFF.md`
+- `docs/README.md`
+- `docs/governance/PRD_HOSTING_RUNBOOK.md`
+- `package.json`
+- `wrangler.toml`
 
 ## Commands run
 
 - `git status --short --branch`
-- GitHub connector: inspected and merged PR `#46`
 - `git fetch origin main`
 - `git switch main`
 - `git pull --ff-only origin main`
-- `git switch -c thehive/prd-public-site-docs-hosting`
-- `PATH="/opt/homebrew/bin:$PATH" node_modules/.bin/tsc -b apps/prd-viewer-web/tsconfig.json --pretty false`
-- `PATH="/opt/homebrew/bin:$PATH" pnpm exec vitest run apps/prd-viewer-web/src/viewerRoutes.test.ts apps/prd-viewer-web/src/viewerDemoContent.test.ts apps/prd-viewer-web/src/viewerArchiveFiles.test.ts apps/prd-viewer-web/src/viewerDocumentOutline.test.ts apps/prd-viewer-web/src/viewerRenderMode.test.ts apps/prd-viewer-web/src/viewerRenderMode.integration.test.ts`
+- `git switch -c thehive/cloudflare-pages-build-config`
+- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build:cloudflare`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm docs:check -- --include-root-docs`
 - `git diff --check`
-- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build`
-- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:dev -- --host 127.0.0.1 --port 5173`
-- Browser verification at `http://localhost:5173/`
-- Browser verification at `http://localhost:5173/viewer/`
-- Browser verification at `http://localhost:5173/docs/`
+- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build:github-pages`
 - `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate`
 
 ## Tests / verification
 
-- Viewer route/content/render targeted tests passed: 6 files, 24 tests.
-- `apps/prd-viewer-web` TypeScript build passed.
-- `pnpm docs:check -- --include-root-docs` passed.
+- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build:cloudflare` passed.
+- `PATH="/opt/homebrew/bin:$PATH" pnpm viewer:demo:build:github-pages` passed.
+- `PATH="/opt/homebrew/bin:$PATH" pnpm docs:check -- --include-root-docs` passed.
 - `git diff --check` passed.
-- `pnpm viewer:demo:build` passed and regenerated ignored hosted sample archives.
-- Cloudflare Pages `_redirects` is expected to be copied into `apps/prd-viewer-web/dist` during Vite build.
-- GitHub Pages workflow now creates `apps/prd-viewer-web/dist/404.html` during CI deployment.
-- Browser verification confirmed:
-  - `/` renders Home with route state `home`
-  - `/viewer/` renders the PRD Web Viewer with route state `viewer`
-  - `/docs/` renders the public docs index with route state `docs`
-  - public docs sections render in the expected order
-  - Cloudflare Pages and GitHub Pages hosting copy is visible
-  - public docs contain no `codex/` links
-  - browser console had no errors or warnings
-- `pnpm foundation:gate` passed: build, tests, docs consistency, example validation, and aggregate example smoke.
+- `PATH="/opt/homebrew/bin:$PATH" pnpm foundation:gate` passed: build, tests, docs consistency, example validation, and aggregate example smoke.
 
 ## Known issues
 
-- Cloudflare Pages production deployment is not configured or launch-QA verified yet.
-- GitHub Pages remains staging/fallback until `prd.eonhive.com` passes launch QA.
-- Hosted sample archives are generated ignored build assets and should not be committed.
-- Manual `.prd` file-picker/drop upload was not automated in-browser; archive filtering remains covered by tests, and hosted sample loading exercises the same in-memory open path after archive bytes are available.
+- The exact Cloudflare failing command/error line was not included in the pasted log.
+- Cloudflare Pages still needs to be configured in the dashboard to build from repository root with `pnpm viewer:demo:build:cloudflare` and output `apps/prd-viewer-web/dist`.
+- Cloudflare launch QA is still pending after build succeeds.
 
 ## Next recommended task
 
-- Commit and open PR `[stannesi] add public docs and hosting path`.
-- After merge, run `NEXT_STEPS.md` item `44`: configure/verify Cloudflare Pages for `prd.eonhive.com`, then launch-QA `/`, `/viewer/`, `/docs/`, hosted samples, route refresh, theme persistence, mobile layout, and manual `.prd` upload.
+- Commit, push, and open a PR for the Cloudflare build-config fix.
+- After merge, retry Cloudflare Pages with the documented settings.
 
 ## Important decisions
 
-- Keep one deployable app: `apps/prd-viewer-web`.
-- Use route labels `/` Home, `/viewer/` Web Viewer, and `/docs/` public docs.
-- Use Cloudflare Pages as intended production hosting for `prd.eonhive.com`.
-- Keep GitHub Pages as staging/fallback under `/prd/`.
-- Keep canonical docs in `docs/`; public `/docs/` is an index/navigation layer.
-- Keep `codex/PLANS.md` and `codex/SESSION_HANDOFF.md` tracked but hidden from public docs/site navigation.
-- Do not add a changeset; this is private app/docs/operator state.
+- Cloudflare production uses base path `/`.
+- GitHub Pages staging/fallback uses base path `/prd/`.
+- Cloudflare Pages must build from repo root, not `apps/prd-viewer-web`, because hosted sample preparation needs the CLI and examples.
+- No PRD manifest, schema, validator, CLI command, viewer runtime, npm package, Studio, Cloud authoring, PRDc, payment, crypto, rights, or broad conversion behavior changes belong in this fix.
 
 ## Do not redo
 
-- Do not redo npm publication, deprecation, registry audit, or consumer smoke for `0.1.1`.
-- Do not add Studio, Cloud authoring, PRDc product behavior, AI assistant, accounts/library, payment, crypto, rights, universal file viewer, DOCX/EPUB/PDF conversion, HTML import, or visual-editor behavior in this slice.
-- Do not add new manifest fields, schema rules, validator issue codes, viewer support states, CLI commands, package exports, or npm release behavior in this slice.
+- Do not redo npm release work.
+- Do not change PRD package format semantics.
+- Do not replace the one-app Home/docs/viewer route model.
+- Do not remove `codex/PLANS.md` or `codex/SESSION_HANDOFF.md`; keep them tracked but hidden from public docs/site navigation.

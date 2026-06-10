@@ -313,6 +313,8 @@ Hosted viewer demo workflow:
 ```bash
 pnpm viewer:demo:assets
 pnpm viewer:demo:build
+pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:build:github-pages
 pnpm viewer:demo:dev
 ```
 
@@ -321,6 +323,8 @@ pnpm viewer:demo:dev
 The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Pages at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in `docs/governance/PRD_HOSTING_RUNBOOK.md`.
 
 The public `/docs/` route is a user-friendly navigation layer over canonical repo docs. It does not replace `docs/`, and it intentionally does not link the tracked `codex/` operational planning files.
+
+Cloudflare Pages should build from the repository root with `pnpm viewer:demo:build:cloudflare` and output `apps/prd-viewer-web/dist`. Do not set the Cloudflare project root to `apps/prd-viewer-web`; the production build needs root access to build the CLI and pack hosted sample archives before the Vite build.
 
 
 ## Contributor MVP gate (no npm credentials required)
@@ -468,6 +472,10 @@ For Codex-driven work, use the repo-local run actions instead of manually piecin
   Builds the workspace, packs the example archives, and starts the web viewer.
 * `pnpm viewer:demo:build`
   Packs canonical examples, prepares hosted sample assets, and builds the deployable PRD Web Viewer demo.
+* `pnpm viewer:demo:build:cloudflare`
+  Builds the hosted viewer demo for the root-domain Cloudflare Pages production path.
+* `pnpm viewer:demo:build:github-pages`
+  Builds the hosted viewer demo for the GitHub Pages `/prd/` staging/fallback path.
 * `pnpm viewer:demo:dev`
   Prepares hosted sample assets and starts the PRD Web Viewer demo locally.
 

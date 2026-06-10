@@ -8,6 +8,7 @@
 - Documented Cloudflare Pages as the intended production host for `prd.eonhive.com` and kept GitHub Pages as temporary staging/fallback under `/prd/`.
 - Added `docs/governance/PRD_HOSTING_RUNBOOK.md` for the public hosting path, custom-domain launch checklist, and route expectations.
 - Added Cloudflare Pages SPA fallback configuration through `apps/prd-viewer-web/public/_redirects` and GitHub Pages `404.html` fallback generation in the viewer demo workflow.
+- Added explicit production/staging build scripts (`viewer:demo:build:cloudflare` and `viewer:demo:build:github-pages`) plus root `wrangler.toml` so Cloudflare Pages has a repo-native output directory and does not depend on ambiguous dashboard-only settings.
 - This slice did not change manifest shape, schemas, validator behavior, CLI commands, npm exports, Studio, Cloud, PRDc, AI, account/library, payment, crypto, rights, or broad conversion behavior.
 
 ## 2026-06-05

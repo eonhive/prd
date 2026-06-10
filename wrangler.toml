@@ -1,0 +1,10 @@
+# Company: EonHive Inc.
+# Title: PRD Cloudflare Pages Config
+# Purpose: Declare the public PRD site build output for Cloudflare Pages.
+# Author: Stan Nesi
+# Created: June 9, 2026
+# Updated: June 9, 2026
+# Notes: Vibe coded with Codex.
+
+name = "prd"
+pages_build_output_dir = "apps/prd-viewer-web/dist"

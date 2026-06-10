@@ -50,9 +50,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build hosted viewer demo
-        run: pnpm viewer:demo:build
-        env:
-          PRD_VIEWER_BASE_PATH: /prd/
+        run: pnpm viewer:demo:build:github-pages
 
       - name: Add GitHub Pages SPA fallback
         run: cp apps/prd-viewer-web/dist/index.html apps/prd-viewer-web/dist/404.html
