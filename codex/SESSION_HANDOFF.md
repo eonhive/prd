@@ -5,7 +5,8 @@
 - October 25, 2026: Workers Static Assets migration is implemented and locally verified, not deployed.
 - Branch: `thehive/prd-workers-static-assets`, created from current `origin/main` at `73c0b31`. PR #48 is already in that history; do not recreate its Pages build fix.
 - The existing `prd-worker` name is preserved. The only pre-existing local edit was that same name change, already on current `origin/main`; it was saved in a safety stash before switching branches.
-- Preparing a hosting-only review PR. Production launch remains backlog item 44, with item 45 reserved for later focused product polish.
+- Hosting-only [PR #49](https://github.com/eonhive/prd/pull/49) is open for review. Production launch remains backlog item 44, with item 45 reserved for later focused product polish.
+- HTTPS Git push had no saved credentials, so the connected GitHub integration published the exact verified file tree. The checkout now tracks the PR branch. The original local commit remains on `thehive/prd-workers-static-assets-local` as a backup; no user work was discarded.
 
 ## Completed work
 
@@ -36,6 +37,7 @@
 ## Commands run
 
 - Git status/diff, fetch `origin/main`, safety stash, and branch creation using the bundled Git wrapper.
+- Local implementation commit, attempted HTTPS push (authentication unavailable), connected-GitHub publication/PR creation, and fetch of the PR branch. Remote/local file-tree equality was verified before switching to the PR branch.
 - `pnpm install --no-frozen-lockfile`, then `pnpm install --frozen-lockfile`
 - Targeted Vitest run covering hosting config, demo asset preparation/content, archive helpers, routes, and render-mode unit/integration tests.
 - `pnpm viewer:demo:check:cloudflare`, `pnpm viewer:demo:build:github-pages`
@@ -67,7 +69,7 @@
 
 ## Next recommended task
 
-- Review/merge the migration. Configure Workers Builds: repository root, `main`, Node 22, Worker name `prd-worker`, build `pnpm viewer:demo:build:cloudflare`, deploy `pnpm exec wrangler deploy`.
+- Review CI and merge PR #49. Configure Workers Builds: repository root, `main`, Node 22, Worker name `prd-worker`, build `pnpm viewer:demo:build:cloudflare`, deploy `pnpm exec wrangler deploy`.
 - Verify the assigned `workers.dev` URL before domain cutover. Resolve any previous Pages domain assignment/CNAME intentionally, then attach `prd.eonhive.com`.
 - Complete the hosting-runbook launch checklist, including mobile, theme persistence, route refresh, all sample profiles, and manual upload/drop. Only then close item 44; retain GitHub Pages fallback.
 
