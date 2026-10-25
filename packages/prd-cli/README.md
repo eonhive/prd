@@ -2,6 +2,10 @@
 
 CLI for initializing, importing, packaging, validating, and inspecting PRD packages.
 
+## Command Availability
+
+The commands below describe the current repository build. As verified on October 25, 2026, npm `latest` is still `0.1.1`, whose command surface is `pack`, `validate`, and `inspect`. The `init`, `import markdown`, and `import images` implementations have queued minor changesets and are not in that published version yet. Build from the repository to try them; publication remains a separate CI-driven release task.
+
 ## Commands
 
 Machine-readable JSON contract snippets and versioning notes: `docs/runtime/PRD_CLI_JSON_CONTRACT.md`.

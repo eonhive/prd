@@ -2,6 +2,17 @@
 
 ## 2026-10-25
 
+### Public Experience Follow-Up
+
+- Synced `main` after PR #49 merged and started the focused public-experience branch. The production domain now serves Home, Viewer, Docs, and all four sample archives; downloaded samples passed existing validator checks with their expected profiles.
+- Implemented bounded/wrapping hero typography, mobile navigation/open access, real route links, skip/focus targets, and a document-first narrow-screen workspace. The header now shows the actual document title and distinguishes empty, loading, valid, and invalid package labels without changing runtime support states.
+- Replaced nested upload-button semantics with a native chooser button and hidden `.prd` input, collapsed sample guidance after a package opens, simplified the Docs entry path, and added reduced-motion/storage-blocked theme handling.
+- Added server-rendered markup/status tests and source layout safeguards. Node 22 checks passed: 40 targeted tests, root typecheck, both hosting builds, Wrangler deployment dry run, docs consistency, and the foundation gate (209 tests across 23 files).
+- Confirmed npm CLI latest is still `0.1.1`, exposing `pack`, `validate`, and `inspect`; public flow/CLI docs now distinguish repository authoring features from the queued release. No CLI implementation, release automation, package exports, schemas, parsing, or renderer behavior was changed.
+- Browser access was disabled in Work settings. Desktop/mobile visual checks, route/history/theme interaction checks, and manual upload/drop remain unverified; backlog items 44 and 45 stay open. This UI slice has not been deployed or accepted as launch QA.
+
+### Earlier Workers Migration
+
 - Migrated the public Home/Docs/Web Viewer deployment configuration from Cloudflare Pages to Workers Static Assets (PRD-039), preserving the existing `prd-worker` name and GitHub Pages staging/fallback.
 - Pinned Wrangler and added production rebuild plus dry-run, local preview, and authenticated deploy commands. Native Workers SPA fallback replaces the Pages `_redirects` catch-all; no backend Worker script or document-upload service was added.
 - Updated public hosting copy, the hosting runbook, product/roadmap docs, and active backlog. Deployment and launch QA remain open; local validation is not a production launch claim.

@@ -8,6 +8,8 @@ This document defines the current public authoring workflow for PRD after the fi
 
 The goal is to make PRD authoring repeatable without pretending a full Studio, broad conversion platform, or hosted authoring workflow exists yet. The current hosted surface is a static reference viewer demo, not Cloud authoring.
 
+Command availability: this workflow describes the repository build. On October 25, 2026, npm `@eonhive/prd-cli` latest is still `0.1.1` with `pack`, `validate`, and `inspect`; the `init` and import lanes have queued minor changesets. Until that release ships, use the repository build for authoring. See the [CLI availability note](../../packages/prd-cli/README.md#command-availability).
+
 ---
 
 ## 2. Current Executable Workflow

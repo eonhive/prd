@@ -101,6 +101,14 @@ For an authorized manual deployment, run `pnpm exec wrangler whoami` to confirm 
 
 When diagnosing a failed Cloudflare build, capture the first failing command and error after dependency installation. A successful install log alone does not establish the deployment failure.
 
+### Verification Record: October 25, 2026
+
+PR #49 is merged and `https://prd.eonhive.com/` now serves the public app. Live HTTP checks passed for `/`, `/viewer/`, `/docs/`, and the referenced JavaScript/CSS assets. All four downloaded sample archives (`document-basic`, `document-segmented-basic`, `comic-basic`, `storyboard-basic`) were unzipped and validated with the existing validator, including expected profiles.
+
+This verifies the deployed baseline's HTTP/package surface, not browser interactions or the subsequent UI changes. Browser access was disabled in Work settings during the follow-up implementation. Direct refresh, history navigation, upload/drop, keyboard behavior, dark/light persistence, and desktop/mobile visual QA remain unverified on production. Dashboard ownership/deployment settings were not independently rechecked. Keep backlog item 44 open and GitHub Pages available until the full launch checklist passes.
+
+The first usability pass adds real route anchors, mobile navigation/open access, native file-picker button semantics, correct invalid-package labels, document-first narrow-screen layout, and reduced-motion handling. Test these on the new deployed revision after review; server-rendered markup and stylesheet assertions alone do not prove visual correctness.
+
 Reference docs:
 
 - [Workers Static Assets migration from Pages](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)

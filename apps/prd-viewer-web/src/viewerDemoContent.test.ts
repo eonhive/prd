@@ -4,12 +4,13 @@
  * Purpose: Lock public site, docs, and viewer demo flow copy.
  * Author: Stan Nesi
  * Created: June 2, 2026
- * Updated: June 7, 2026
+ * Updated: October 25, 2026
  * Notes: Vibe coded with Codex.
  */
 
 import { describe, expect, it } from "vitest";
 import {
+  viewerAuthoringAvailabilityNote,
   viewerDemoExampleArchives,
   viewerDemoFlowSteps,
   viewerDemoPreparationCommands,
@@ -23,6 +24,12 @@ import {
 } from "./viewerDemoContent.js";
 
 describe("viewer demo content", () => {
+  it("distinguishes repository authoring commands from the published CLI", () => {
+    expect(viewerAuthoringAvailabilityNote).toContain("repository build");
+    expect(viewerAuthoringAvailabilityNote).toContain("npm CLI 0.1.1");
+    expect(viewerAuthoringAvailabilityNote).toContain("init and import await");
+  });
+
   it("describes the Home page without inventing unavailable product behavior", () => {
     expect(viewerLandingHero.title).toContain("Create");
     expect(viewerLandingHero.description).toContain("Portable Responsive Document");

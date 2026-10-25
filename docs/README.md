@@ -172,6 +172,8 @@ Current public demo surface:
 
 The public `/docs/` route is a navigation layer over canonical repo docs. It is not a replacement for this directory, and it intentionally does not link `../codex/` operational planning files.
 
+The index offers a first-use sample path and section jump links; hosting details are kept in a maintainer disclosure instead of the introductory panel. Published CLI command availability is documented in `../packages/prd-cli/README.md`; repository authoring commands must not be assumed to exist in npm `0.1.1`.
+
 ### `market/`
 
 Reserved location for white paper and external narrative docs.

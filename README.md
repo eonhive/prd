@@ -326,6 +326,12 @@ The hosted app has three public routes in one deployable Vite build: `/` is Home
 
 The public `/docs/` route is a user-friendly navigation layer over canonical repo docs. It does not replace `docs/`, and it intentionally does not link the tracked `codex/` operational planning files.
 
+The public demo is reachable at [prd.eonhive.com](https://prd.eonhive.com/). Home uses bounded, wrapping hero copy; navigation and the open action remain available on narrow screens. The Viewer identifies the opened package, distinguishes invalid packages from an empty workspace, and puts loaded content ahead of its rails on narrow screens. Docs provides section jump links and keeps hosting notes in a disclosure. These changes do not alter package parsing or eager in-memory loading.
+
+Authoring command availability: the repository build includes `prd init`, `prd import markdown`, and `prd import images`. As verified on October 25, 2026, npm CLI `0.1.1` still exposes only `pack`, `validate`, and `inspect`; the authoring changesets await a separate CI release. See the [CLI guide](packages/prd-cli/README.md#command-availability) before choosing an install path.
+
+Live HTTP/package checks are not a substitute for browser launch QA. Mobile rendering, keyboard/file-picker behavior, drag/drop, route refresh, and theme persistence must be verified on the deployed revision before the launch checklist is closed.
+
 Cloudflare Workers Builds should use the repository root, Node 22, build command `pnpm viewer:demo:build:cloudflare`, and deploy command `pnpm exec wrangler deploy`. Root `wrangler.toml` points to `apps/prd-viewer-web/dist` with native SPA routing. Do not use `wrangler pages deploy` or set the project root to `apps/prd-viewer-web`; the build needs root access to build the CLI and pack hosted sample archives before Vite. No backend Worker script is needed, and user-selected packages remain in the browser.
 
 
