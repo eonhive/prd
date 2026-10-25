@@ -83,7 +83,11 @@ describe("viewer demo content", () => {
 
   it("locks Cloudflare production and GitHub Pages staging hosting copy", () => {
     expect(viewerPublicHostingNotes.map((note) => note.value)).toEqual(
-      expect.arrayContaining(["Cloudflare Pages", "GitHub Pages", "/, /viewer/, /docs/"])
+      expect.arrayContaining([
+        "Cloudflare Workers Static Assets",
+        "GitHub Pages",
+        "/, /viewer/, /docs/"
+      ])
     );
     expect(viewerPublicHostingNotes[0]?.description).toContain("prd.eonhive.com");
     expect(viewerPublicHostingNotes[1]?.description).toContain("/prd/");

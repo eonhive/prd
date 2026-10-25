@@ -314,17 +314,19 @@ Hosted viewer demo workflow:
 pnpm viewer:demo:assets
 pnpm viewer:demo:build
 pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:check:cloudflare
+pnpm viewer:demo:preview:cloudflare
 pnpm viewer:demo:build:github-pages
 pnpm viewer:demo:dev
 ```
 
 `viewer:demo:assets` packs canonical examples and copies selected `.prd` archives into the web viewer's ignored `public/examples/` directory for the hosted demo. Those hosted samples are demo assets only; they do not change PRD's packaged-first loading contract.
 
-The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Pages at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in `docs/governance/PRD_HOSTING_RUNBOOK.md`.
+The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Workers Static Assets at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in [the hosting runbook](docs/governance/PRD_HOSTING_RUNBOOK.md).
 
 The public `/docs/` route is a user-friendly navigation layer over canonical repo docs. It does not replace `docs/`, and it intentionally does not link the tracked `codex/` operational planning files.
 
-Cloudflare Pages should build from the repository root with `pnpm viewer:demo:build:cloudflare` and output `apps/prd-viewer-web/dist`. Do not set the Cloudflare project root to `apps/prd-viewer-web`; the production build needs root access to build the CLI and pack hosted sample archives before the Vite build.
+Cloudflare Workers Builds should use the repository root, Node 22, build command `pnpm viewer:demo:build:cloudflare`, and deploy command `pnpm exec wrangler deploy`. Root `wrangler.toml` points to `apps/prd-viewer-web/dist` with native SPA routing. Do not use `wrangler pages deploy` or set the project root to `apps/prd-viewer-web`; the build needs root access to build the CLI and pack hosted sample archives before Vite. No backend Worker script is needed, and user-selected packages remain in the browser.
 
 
 ## Contributor MVP gate (no npm credentials required)
@@ -473,7 +475,13 @@ For Codex-driven work, use the repo-local run actions instead of manually piecin
 * `pnpm viewer:demo:build`
   Packs canonical examples, prepares hosted sample assets, and builds the deployable PRD Web Viewer demo.
 * `pnpm viewer:demo:build:cloudflare`
-  Builds the hosted viewer demo for the root-domain Cloudflare Pages production path.
+  Builds the hosted viewer demo for the root-domain Cloudflare Workers production path.
+* `pnpm viewer:demo:check:cloudflare`
+  Rebuilds production assets and validates the Workers deployment with an unauthenticated dry run.
+* `pnpm viewer:demo:preview:cloudflare`
+  Rebuilds production assets and serves them through the local Workers runtime.
+* `pnpm viewer:demo:deploy:cloudflare`
+  Rebuilds and publishes the static app to the authorized Cloudflare account. Requires Cloudflare authentication, not npm credentials.
 * `pnpm viewer:demo:build:github-pages`
   Builds the hosted viewer demo for the GitHub Pages `/prd/` staging/fallback path.
 * `pnpm viewer:demo:dev`
@@ -495,7 +503,7 @@ The repo also now includes [`.github/workflows/codex-ci.yml`](/Users/nappy.cat/L
 
 For release automation, the repo also includes [`.github/workflows/release.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/release.yml), which gates npm publication through Changesets and CI on `main`.
 
-The hosted PRD Web Viewer demo is currently built and deployed by [`.github/workflows/viewer-demo-pages.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/viewer-demo-pages.yml) using GitHub Pages as staging/fallback. The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, and `/prd/docs/` as the public docs index. Production is intended to move to Cloudflare Pages at `prd.eonhive.com` after launch QA. The app includes a Cloudflare Pages `_redirects` fallback, and the GitHub Pages workflow copies `index.html` to `404.html` for SPA route refresh support.
+The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/workflows/viewer-demo-pages.yml). The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, and `/prd/docs/` as the public docs index. Production targets Cloudflare Workers Static Assets at `prd.eonhive.com`, pending authenticated deployment and launch QA. Workers uses native SPA fallback; the GitHub Pages workflow separately copies `index.html` to `404.html` for route refresh support.
 
 ---
 

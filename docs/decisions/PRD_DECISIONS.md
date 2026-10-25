@@ -2,7 +2,7 @@
 > Canonical decision log location: `docs/decisions/PRD_DECISIONS.md`.
 > Duplicate ledgers must be merged here; non-canonical copies must be archived to prevent drift.
 
-_Last updated: May 23, 2026_
+_Last updated: October 25, 2026_
 _Status: Working decision log v0.2 (canonical)_
 
 ## Purpose
@@ -682,6 +682,23 @@ Changes to format or manifest semantics need docs, validator/schema alignment, a
 
 **Follow-up:**
 Keep `docs/core/PRD_VERSIONING_POLICY.md`, `docs/governance/PRD_RELEASE_POLICY.md`, release runbooks, and package docs aligned.
+
+---
+
+## PRD-039 - Public reference site uses Workers Static Assets without a backend
+**Status:** Accepted
+
+**Decision:**
+The public Home, Docs, and reference Web Viewer remain routes in one static Vite app. Production targets Cloudflare Workers Static Assets at `prd.eonhive.com`, replacing the earlier Pages-specific setup. GitHub Pages remains staging/fallback under `/prd/` until production launch QA passes.
+
+**Why:**
+Workers Static Assets supports the existing static output and SPA route refreshes without introducing backend services or changing PRD's offline-first package contract.
+
+**Implication:**
+Wrangler declares the built asset directory and native SPA fallback; no Worker script or new API is needed. User-selected packages are parsed in-browser. Hosted sample downloads remain demo behavior, not a format-level network-loading guarantee. Build/dry-run success must not be reported as verified production launch.
+
+**Follow-up:**
+Complete authenticated deployment, custom-domain setup, and launch QA using `docs/governance/PRD_HOSTING_RUNBOOK.md`. Keep the fallback deployment and public product copy aligned.
 
 ---
 
