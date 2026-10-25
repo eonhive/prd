@@ -4,7 +4,7 @@
 
 - October 25, 2026: PR #49 is merged; local `main` was fast-forwarded to `0b8def2`. Current branch: `thehive/prd-public-experience-polish`.
 - The public domain now serves the app and sample archives. The prior DNS failure is no longer current.
-- The Home/Viewer/Docs usability implementation is complete locally and automated checks pass. Preparing a draft review PR; these UI changes have not been deployed.
+- The Home/Viewer/Docs usability implementation is in [draft PR #50](https://github.com/eonhive/prd/pull/50), with automated checks passing locally. These UI changes have not been deployed.
 - Browser access is disabled in Work settings. Items 44 (production launch QA) and 45 (visual acceptance) remain open.
 
 ## Completed work
@@ -20,7 +20,7 @@
 
 ## In-progress work
 
-- Publish a draft PR and complete code review, then browser/visual acceptance before merge or production launch sign-off.
+- Complete code review and browser/visual acceptance of draft PR #50 before merge or production launch sign-off.
 - Browser checks were not bypassed through another automation runtime after Work settings reported browser use disabled.
 - No hosting account, DNS, production deployment, npm publication, or permissions were changed.
 
@@ -36,6 +36,7 @@
 ## Commands run
 
 - Git status, fetch `origin/main`, switch/fast-forward `main`, create the public-experience branch (bundled Git wrapper).
+- Published the verified staged tree through the authorized GitHub connector because local HTTPS push credentials were unavailable. PR #50 is deliberately a draft; no merge was requested or performed.
 - Targeted Vitest runs covering chrome, route markup, content, archive helpers, route paths, and render-mode unit/integration cases.
 - `pnpm typecheck`
 - `pnpm viewer:demo:build:github-pages`
@@ -67,7 +68,7 @@
 
 ## Next recommended task
 
-- Review the draft UI PR and complete visual/browser QA against its deployed revision; retain GitHub Pages fallback and leave items 44/45 open until verified.
+- Review draft PR #50 and complete visual/browser QA before marking it ready, then verify the deployed revision; retain GitHub Pages fallback and leave items 44/45 open until verified.
 - Then take item 46 as a separate release slice: reconcile preflight/version policy, version/publish the queued authoring CLI changes through CI, and verify a clean npm consumer's init/import/validate/inspect/pack flow.
 - Update repository-vs-published availability notes only after the release is verified live.
 
