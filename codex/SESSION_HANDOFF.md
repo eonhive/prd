@@ -2,89 +2,86 @@
 
 ## Current status
 
-- October 25, 2026: Workers Static Assets migration is implemented and locally verified, not deployed.
-- Branch: `thehive/prd-workers-static-assets`, created from current `origin/main` at `73c0b31`. PR #48 is already in that history; do not recreate its Pages build fix.
-- The existing `prd-worker` name is preserved. The only pre-existing local edit was that same name change, already on current `origin/main`; it was saved in a safety stash before switching branches.
-- Hosting-only [PR #49](https://github.com/eonhive/prd/pull/49) is open for review. Production launch remains backlog item 44, with item 45 reserved for later focused product polish.
-- HTTPS Git push had no saved credentials, so the connected GitHub integration published the exact verified file tree. The checkout now tracks the PR branch. The original local commit remains on `thehive/prd-workers-static-assets-local` as a backup; no user work was discarded.
+- October 25, 2026: PR #49 is merged; local `main` was fast-forwarded to `0b8def2`. Current branch: `thehive/prd-public-experience-polish`.
+- The public domain now serves the app and sample archives. The prior DNS failure is no longer current.
+- The Home/Viewer/Docs usability implementation is complete locally and automated checks pass. Preparing a draft review PR; these UI changes have not been deployed.
+- Browser access is disabled in Work settings. Items 44 (production launch QA) and 45 (visual acceptance) remain open.
 
 ## Completed work
 
-- Replaced Pages-only Wrangler config with Workers Static Assets and native SPA fallback. No Worker script, backend, API, or document-upload service was added.
-- Pinned Wrangler `4.152.0` and added `viewer:demo:check:cloudflare`, `viewer:demo:preview:cloudflare`, and `viewer:demo:deploy:cloudflare`. Each rebuilds root-domain assets first.
-- Removed the broad Pages `_redirects` rule. GitHub Pages retains its separate `/prd/` build and workflow-generated `404.html` fallback.
-- Added four hosting-configuration tests and updated public hosting copy/tests.
-- Updated README, hosting runbook, product docs, roadmap, and decision PRD-039. `codex/PLANS.md` now uses a portable handoff link.
-- Completed Node 22 checks, including a build/dry run after cleaning TypeScript outputs and browser checks through the local Workers runtime.
+- Bounded hero typography and copy, visible mobile navigation/open action, actual route anchors with modified-click behavior, and skip/focus targets.
+- Extracted small navigation/header components to `viewerChrome.tsx`; invalid packages no longer show the empty-workspace label. Loaded packages show their real title.
+- Native chooser button plus hidden `.prd` input replaces nested button semantics. Existing archive selection, drag/drop, parsing, validation, and eager loading remain intact.
+- Sample guidance collapses once a package is opened. Loaded content precedes rails in the narrow-screen grid; workspace anchor links expose Document, Outline, and Package details.
+- Docs now prioritizes first steps and section jump links, with hosting details in a disclosure.
+- Reduced-motion handling and graceful theme fallback when browser storage is blocked.
+- Published CLI availability is now explicit: npm latest `0.1.1` provides pack/validate/inspect; init/import are repository features awaiting their queued minor release.
+- Live HTTP checks passed for all three routes, static JS/CSS, and four downloaded archives. Each archive was unzipped and validated using the existing validator with the expected profile.
 
 ## In-progress work
 
-- Review/merge this migration, connect the Git-backed Worker to `main`, verify its assigned `workers.dev` URL, and connect `prd.eonhive.com`.
-- The saved OAuth session is Pages-only; the account owner must authorize Workers access. No broader permissions were granted automatically.
-- Local preview server was stopped after checks. No production deployment or DNS changes were made.
+- Publish a draft PR and complete code review, then browser/visual acceptance before merge or production launch sign-off.
+- Browser checks were not bypassed through another automation runtime after Work settings reported browser use disabled.
+- No hosting account, DNS, production deployment, npm publication, or permissions were changed.
 
 ## Changed files
 
-- `wrangler.toml`, `package.json`, `pnpm-lock.yaml`, `.gitignore`
-- Removed `apps/prd-viewer-web/public/_redirects`
-- `apps/prd-viewer-web/src/viewerDemoContent.ts` and `viewerDemoContent.test.ts`
-- New `scripts/viewer-hosting.test.ts`
-- `README.md`, `docs/README.md`, `docs/governance/PRD_HOSTING_RUNBOOK.md`
-- `docs/decisions/PRD_DECISIONS.md`, `docs/foundation/04_PRD/PRD_ROADMAP.md`
-- `docs/product/PRD_PRODUCT_BOUNDARIES.md`, `PRD_AUTHORING_WORKFLOW.md`, `PRD_IMPORT_EXPORT_MATRIX.md`
-- `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/PLANS.md`, `codex/SESSION_HANDOFF.md`
+- `apps/prd-viewer-web/src/App.tsx`, `styles.css`
+- `apps/prd-viewer-web/src/viewerDemoContent.ts`, `viewerDemoContent.test.ts`
+- New `apps/prd-viewer-web/src/viewerChrome.tsx`, `viewerChrome.test.ts`, `viewerExperience.test.ts`
+- `README.md`, `docs/README.md`, `packages/prd-cli/README.md`
+- `docs/governance/PRD_HOSTING_RUNBOOK.md`, `docs/product/PRD_AUTHORING_WORKFLOW.md`
+- `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/SESSION_HANDOFF.md`
 
 ## Commands run
 
-- Git status/diff, fetch `origin/main`, safety stash, and branch creation using the bundled Git wrapper.
-- Local implementation commit, attempted HTTPS push (authentication unavailable), connected-GitHub publication/PR creation, and fetch of the PR branch. Remote/local file-tree equality was verified before switching to the PR branch.
-- `pnpm install --no-frozen-lockfile`, then `pnpm install --frozen-lockfile`
-- Targeted Vitest run covering hosting config, demo asset preparation/content, archive helpers, routes, and render-mode unit/integration tests.
-- `pnpm viewer:demo:check:cloudflare`, `pnpm viewer:demo:build:github-pages`
-- `pnpm exec tsc -b --clean`, then `pnpm viewer:demo:check:cloudflare` again
-- `pnpm exec wrangler dev --local --ip 127.0.0.1 --port 8787`
-- HTTP checks for routes, built JS/CSS, four sample archives, and a missing archive.
-- `pnpm exec wrangler whoami` (read-only scope check; no credentials recorded here)
-- `pnpm typecheck`, `pnpm docs:check -- --include-root-docs`, `pnpm foundation:gate`, `git diff --check`
-- `curl -I --max-time 15 https://prd.eonhive.com/`
+- Git status, fetch `origin/main`, switch/fast-forward `main`, create the public-experience branch (bundled Git wrapper).
+- Targeted Vitest runs covering chrome, route markup, content, archive helpers, route paths, and render-mode unit/integration cases.
+- `pnpm typecheck`
+- `pnpm viewer:demo:build:github-pages`
+- `pnpm viewer:demo:check:cloudflare`
+- `pnpm docs:check -- --include-root-docs`
+- `pnpm foundation:gate`
+- `git diff --check`
+- Live HTTP/package checks using fetch, unzip, and the existing validator; no remote JavaScript was executed by this check.
+- `npm view @eonhive/prd-cli version --json` returned `0.1.1`.
+- `npm exec --yes --package=@eonhive/prd-cli@0.1.1 -- prd --help` returned usage listing pack/validate/inspect with exit 1 (the old CLI does not expose that help option). This was an availability probe, not a passing CLI smoke run.
 
 ## Tests / verification
 
-- Node `22.22.2`, pnpm `10.32.1`, Wrangler `4.152.0` used for validation.
-- Targeted suite: 28 tests passed across 7 files.
-- Foundation gate passed, including 190 tests across 21 files, build, docs, canonical example validation, and aggregate example smoke. Summary remains generated under `examples/dist/`.
-- Frozen-lockfile install, root typecheck, Cloudflare build/dry run, GitHub Pages base-path build, docs check, and diff check passed.
-- Workers HTTP checks: three routes serve the app shell; JS/CSS have correct content types; all four sample downloads match the built ZIP bytes.
-- Browser checks: Home/Viewer/Docs render locally; document/comic/storyboard samples validate/render as fully supported; Viewer/Docs direct refresh and light-theme persistence pass.
-- Production, full mobile/responsive QA, and manual upload/drop were not verified in this pass.
+- Node `22.22.2` and pnpm `10.32.1` used.
+- Targeted checks: 40 tests passed across 7 files.
+- Foundation gate: passed with 209 tests across 23 files, build, docs consistency, example validation, and aggregate example smoke.
+- Typecheck, GitHub Pages build, Cloudflare build plus Wrangler dry run, docs check, and diff check passed.
+- Production HTTP/package baseline passed for Home, Viewer, Docs, built JS/CSS, and document-basic/document-segmented-basic/comic-basic/storyboard-basic archives.
+- New UI tests cover server-rendered semantics, package labels, saved/blocked theme reads, and source layout safeguards, not actual rendered desktop/mobile layouts.
+- No browser interaction, upload/drop, visual, theme-persistence, or back/forward checks were completed in this pass.
 
 ## Known issues
 
-- Saved Cloudflare OAuth authorization lacks Workers permissions. Refresh with `pnpm exec wrangler login` on Node 22, or configure Workers Builds in the intended account. The account owner must review authorization; do not request tokens in chat.
-- `prd.eonhive.com` did not resolve from this environment. This does not establish global DNS state; verify the account/zone and domain during launch.
-- Native SPA fallback can return HTML with HTTP 200 for nonexistent archive paths. Existing samples were verified as ZIP bytes; do not treat HTTP success alone as sample validation. The viewer rejects non-package responses during parsing.
-- System Git is blocked by an unaccepted Xcode license. A bundled Git wrapper works; no license was accepted or machine configuration changed.
-- Default shell Node is 18. Use installed Node 22 for builds and Wrangler.
-- pnpm reports ignored install scripts for Wrangler's esbuild/workerd dependencies; optional platform binaries nevertheless passed local runtime/dry-run checks. No broad build-script permission was enabled.
+- Enable browser use in Work settings or perform manual QA to finish desktop/mobile, refresh/history, keyboard, theme persistence, and file-picker/drop acceptance.
+- CLI authoring release is a separate public-product blocker. Three CLI-only minor changesets are queued; preflight currently insists all public package versions match. Resolve that policy/implementation conflict intentionally before versioning.
+- System Git remains subject to the Xcode license restriction; use the bundled Git wrapper without accepting the license automatically. HTTPS push previously lacked credentials; use the authorized GitHub connector if still unavailable.
+- Do not infer the active Cloudflare deployment's account/pipeline configuration merely from successful HTTP responses.
+- Native SPA fallback can return HTML for missing archive URLs. Current hosted samples were validated as packages, not just HTTP successes.
 
 ## Next recommended task
 
-- Review CI and merge PR #49. Configure Workers Builds: repository root, `main`, Node 22, Worker name `prd-worker`, build `pnpm viewer:demo:build:cloudflare`, deploy `pnpm exec wrangler deploy`.
-- Verify the assigned `workers.dev` URL before domain cutover. Resolve any previous Pages domain assignment/CNAME intentionally, then attach `prd.eonhive.com`.
-- Complete the hosting-runbook launch checklist, including mobile, theme persistence, route refresh, all sample profiles, and manual upload/drop. Only then close item 44; retain GitHub Pages fallback.
+- Review the draft UI PR and complete visual/browser QA against its deployed revision; retain GitHub Pages fallback and leave items 44/45 open until verified.
+- Then take item 46 as a separate release slice: reconcile preflight/version policy, version/publish the queued authoring CLI changes through CI, and verify a clean npm consumer's init/import/validate/inspect/pack flow.
+- Update repository-vs-published availability notes only after the release is verified live.
 
 ## Important decisions
 
-- PRD-039: Workers Static Assets replaces the Pages production target; the app is still static and package parsing stays in-browser.
-- Production uses `/`; GitHub Pages uses `/prd/`. New local operator commands rebuild production assets first.
-- Do not claim deployment success based on a dry run, local checks, or historical release checks.
-- No changeset: private app copy, hosting/operator config, tests, and docs only.
-- Keep Codex docs tracked/sanitized but out of public navigation.
+- No manifest, schema, capability, runtime support-state, archive parsing, structured renderer, public npm API, or release automation changes.
+- One static app still serves Home, Viewer, and Docs. No Studio, Cloud authoring, accounts, AI, PRDc, payments, crypto, or broad conversion.
+- No changeset for this private-app/documentation slice; existing CLI changesets remain untouched.
+- Passing markup/style assertions or HTTP checks is not visual/browser launch acceptance.
+- Keep Codex docs tracked, sanitized, and out of public navigation.
 
 ## Do not redo
 
-- Do not redo npm publishing, deprecation, registry audit, or consumer smoke recovery.
-- Do not recreate merged PR #48 or revert the preserved `prd-worker` name.
-- Do not change PRD format/manifest/schema/validator/CLI/runtime semantics to solve hosting.
-- Do not add a backend, Studio, Cloud authoring, accounts, AI, PRDc, payments, crypto, rights, or broad conversion.
-- Do not remove GitHub Pages fallback or mark production QA complete before live verification.
+- Do not redo the merged Workers migration or old npm publish/deprecation recovery.
+- Do not claim these UI changes are deployed before review/merge.
+- Do not mark launch QA complete or broaden browser permissions automatically.
+- Do not fold CLI release/preflight changes into this UI PR.

@@ -4,7 +4,7 @@
  * Purpose: Keep public site, docs, and viewer demo copy stable and testable.
  * Author: Stan Nesi
  * Created: June 2, 2026
- * Updated: June 7, 2026
+ * Updated: October 25, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -58,19 +58,22 @@ export interface ViewerDemoExampleArchive {
 
 export const viewerLandingHero = {
   eyebrow: "Portable Responsive Document",
-  title: "Create, package, and open responsive documents.",
+  title: "Create documents. Keep them portable.",
   description:
-    "Portable Responsive Document is a structured, profile-based format for portable reading experiences beyond static PDFs. This hosted reference demo shows the real public loop: initialize or import content, validate the package, pack it, then open the .prd archive in the browser.",
+    "Portable Responsive Document brings structured text, comics, and storyboards into one packaged format. Create or import with the CLI, validate and inspect, pack a .prd archive, then open it in the reference viewer.",
   primaryAction: "Open Viewer",
   secondaryAction: "Load Sample PRD",
   tertiaryAction: "View CLI Flow"
 };
 
+export const viewerAuthoringAvailabilityNote =
+  "Authoring commands are available in the repository build. Published npm CLI 0.1.1 provides pack, validate, and inspect; init and import await the next CLI release.";
+
 export const viewerPublicDocsIntro = {
   eyebrow: "Public docs",
-  title: "Start with the product path, then go deeper into canon.",
+  title: "Start here. Make your first PRD.",
   description:
-    "This docs page is a public navigation layer over the canonical repository docs. It keeps users oriented around Home, authoring, CLI tooling, format basics, profiles, examples, the viewer, conformance, and release/operator notes without exposing internal Codex workflow docs as product documentation."
+    "Try a sample, follow the authoring workflow, or explore the format. These guides link to the canonical repository documentation, with release and hosting notes kept in their own section."
 };
 
 export const viewerPublicDocsSections: ViewerPublicDocsSection[] = [
@@ -182,7 +185,7 @@ export const viewerPublicHostingNotes: ViewerPublicHostingNote[] = [
     label: "Production",
     value: "Cloudflare Workers Static Assets",
     description:
-      "`prd.eonhive.com` is the intended production host after custom-domain setup and launch QA."
+      "The public demo is reachable at `prd.eonhive.com`. Live browser launch QA remains separate from HTTP and build checks."
   },
   {
     label: "Staging/fallback",

@@ -45,6 +45,7 @@ import {
 } from "./viewerRenderMode.js";
 import {
   type ViewerDemoExampleArchive,
+  viewerAuthoringAvailabilityNote,
   viewerDemoExampleArchives,
   viewerDemoFlowSteps,
   viewerDemoPreparationCommands,
@@ -70,6 +71,11 @@ import {
   getViewerAppRoutePath,
   type ViewerAppRoute
 } from "./viewerRoutes.js";
+import {
+  ViewerSiteNavigation,
+  ViewerWorkspaceHeader,
+  type ViewerTheme
+} from "./viewerChrome.js";
 
 type AssetUrlMap = Record<string, string>;
 type AttachmentUrlMap = Record<string, string>;
@@ -100,7 +106,6 @@ type ViewerRenderMode =
   | "structured-json-rendered"
   | "html-fallback-rendered"
   | "unsupported-entry-mode";
-type ViewerTheme = "dark" | "light";
 
 interface PackageFacts {
   fileCount: number;
@@ -578,8 +583,12 @@ function getInitialViewerTheme(): ViewerTheme {
     return "dark";
   }
 
-  const storedTheme = window.localStorage.getItem(viewerThemeStorageKey);
-  return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
+  try {
+    const storedTheme = window.localStorage.getItem(viewerThemeStorageKey);
+    return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
+  } catch {
+    return "dark";
+  }
 }
 
 function parseLocalizedDocumentOverridesRoot(
@@ -2145,83 +2154,6 @@ function PackageFactsView({
   );
 }
 
-function ThemeToggle({
-  theme,
-  onToggle
-}: {
-  theme: ViewerTheme;
-  onToggle: () => void;
-}) {
-  return (
-    <button type="button" className="theme-toggle" onClick={onToggle}>
-      <span aria-hidden="true">{theme === "dark" ? "Dark" : "Light"}</span>
-      <strong>{theme === "dark" ? "Switch to light" : "Switch to dark"}</strong>
-    </button>
-  );
-}
-
-function AppNavigation({
-  route,
-  theme,
-  onNavigate,
-  onToggleTheme,
-  onOpenArchive
-}: {
-  route: ViewerAppRoute;
-  theme: ViewerTheme;
-  onNavigate: (route: ViewerAppRoute, hash?: string) => void;
-  onToggleTheme: () => void;
-  onOpenArchive: () => void;
-}) {
-  return (
-    <header className="site-nav">
-      <button
-        type="button"
-        className="brand-lockup"
-        onClick={() => onNavigate("home")}
-        aria-label="PRD Home"
-      >
-        <span className="brand-mark">P</span>
-        <span>
-          <strong>PRD</strong>
-          <small>Portable Responsive Document</small>
-        </span>
-      </button>
-      <nav className="site-nav-links" aria-label="Demo navigation">
-        <button
-          type="button"
-          className={route === "home" ? "is-active" : undefined}
-          onClick={() => onNavigate("home")}
-        >
-          Home
-        </button>
-        <button
-          type="button"
-          className={route === "viewer" ? "is-active" : undefined}
-          onClick={() => onNavigate("viewer")}
-        >
-          Viewer
-        </button>
-        <button
-          type="button"
-          className={route === "docs" ? "is-active" : undefined}
-          onClick={() => onNavigate("docs")}
-        >
-          Docs
-        </button>
-        <button type="button" onClick={() => onNavigate("home", "cli-flow")}>
-          CLI Flow
-        </button>
-      </nav>
-      <div className="site-nav-actions">
-        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-        <button type="button" className="nav-open-button" onClick={onOpenArchive}>
-          Open .prd
-        </button>
-      </div>
-    </header>
-  );
-}
 
 function HomeSurface({
   onOpenViewer,
@@ -2235,10 +2167,10 @@ function HomeSurface({
   onLoadArchive: (example: ViewerDemoExampleArchive) => void;
 }) {
   return (
-    <main className="landing-surface" aria-label="PRD Home">
+    <main id="main-content" tabIndex={-1} className="landing-surface" aria-label="PRD Home">
       <section className="landing-hero">
         <div className="landing-hero-copy">
-          <span className="release-pill">0.1.1 public preview</span>
+          <span className="release-pill">Public reference preview</span>
           <p className="eyebrow">{viewerLandingHero.eyebrow}</p>
           <h1>{viewerLandingHero.title}</h1>
           <p className="subhead">{viewerLandingHero.description}</p>
@@ -2361,6 +2293,12 @@ function ViewerDemoFlowView() {
           </li>
         ))}
       </ol>
+      <p className="cli-availability-note">
+        {viewerAuthoringAvailabilityNote}{" "}
+        <a href={getPublicDocsLinkHref("packages/prd-cli/README.md")} target="_blank" rel="noreferrer">
+          Repository CLI guide
+        </a>
+      </p>
     </section>
   );
 }
@@ -2427,7 +2365,7 @@ function PublicDocsSurface({
   onNavigate: (route: ViewerAppRoute, hash?: string) => void;
 }) {
   return (
-    <main className="docs-surface" aria-label="PRD public docs">
+    <main id="main-content" tabIndex={-1} className="docs-surface" aria-label="PRD public docs">
       <section className="docs-hero">
         <div>
           <p className="eyebrow">{viewerPublicDocsIntro.eyebrow}</p>
@@ -2450,26 +2388,26 @@ function PublicDocsSurface({
             </button>
           </div>
         </div>
-        <aside className="docs-hosting-card" aria-label="Hosting direction">
-          <p className="eyebrow">Hosting path</p>
-          <h2>Cloudflare production, GitHub Pages staging.</h2>
-          <dl>
-            {viewerPublicHostingNotes.map((note) => (
-              <div key={note.label}>
-                <dt>{note.label}</dt>
-                <dd>
-                  <strong>{note.value}</strong>
-                  <span>{note.description}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
+        <aside className="docs-start-card" aria-label="First steps">
+          <p className="eyebrow">New to PRD?</p>
+          <h2>Start with a real document.</h2>
+          <p>Open a sample in the Viewer. Explore its content, package facts, and validation result before creating your own.</p>
+          <button type="button" className="secondary-action" onClick={() => onNavigate("viewer")}>
+            Try the Viewer
+          </button>
+          <DocsLink link={{ label: "Read the authoring guide", href: "docs/product/PRD_AUTHORING_WORKFLOW.md" }} onNavigate={onNavigate} />
         </aside>
       </section>
 
+      <nav className="docs-section-nav" aria-label="Documentation sections">
+        {viewerPublicDocsSections.map((section) => (
+          <a key={section.id} href={`#docs-${section.id}`}>{section.title}</a>
+        ))}
+      </nav>
+
       <section className="docs-grid" aria-label="Public docs navigation">
         {viewerPublicDocsSections.map((section) => (
-          <article key={section.id} className="docs-card">
+          <article key={section.id} id={`docs-${section.id}`} className="docs-card">
             <p className="card-proof">{section.id}</p>
             <h2>{section.title}</h2>
             <p>{section.summary}</p>
@@ -2489,14 +2427,21 @@ function PublicDocsSurface({
         ))}
       </section>
 
-      <section className="docs-operator-note" aria-label="Public documentation boundary">
+      <details className="docs-hosting-card">
+        <summary>Hosting and operator notes</summary>
+        <dl>
+          {viewerPublicHostingNotes.map((note) => (
+            <div key={note.label}>
+              <dt>{note.label}</dt>
+              <dd><strong>{note.value}</strong><span>{note.description}</span></dd>
+            </div>
+          ))}
+        </dl>
         <p>
-          Canonical docs remain in the repository under <code>docs/</code>. This
-          page is the public docs index for users and implementers; Codex
-          planning and session handoff files stay tracked for workflow
-          continuity, but they are not linked from public navigation.
+          The guides above open canonical repository sources. Release and
+          deployment instructions are grouped under Release/Operator Notes.
         </p>
-      </section>
+      </details>
     </main>
   );
 }
@@ -2558,7 +2503,7 @@ function ViewerDocumentOutlineView({
   items: ViewerDocumentOutlineItem[];
 }) {
   return (
-    <section className="viewer-outline-card" aria-label="Document outline">
+    <section id="document-outline" tabIndex={-1} className="viewer-outline-card" aria-label="Document outline">
       <div className="panel-heading-row">
         <p className="eyebrow">Outline</p>
         <span>{items.length > 0 ? `${items.length} items` : "empty"}</span>
@@ -2594,8 +2539,7 @@ function UploadDropzoneView({
   onArchiveFiles,
   onDrop,
   onDragOver,
-  onDragLeave,
-  onKeyDown
+  onDragLeave
 }: {
   fileInputRef: RefObject<HTMLInputElement | null>;
   dragActive: boolean;
@@ -2603,15 +2547,11 @@ function UploadDropzoneView({
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
-  onKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
 }) {
   return (
     <div
       className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
-      role="button"
-      tabIndex={0}
-      onClick={() => fileInputRef.current?.click()}
-      onKeyDown={onKeyDown}
+      role="region"
       onDrop={onDrop}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -2625,8 +2565,14 @@ function UploadDropzoneView({
         Source folders must be packed first. If you drop multiple files, the
         first <code>.prd</code> archive is opened.
       </span>
+      <button type="button" className="secondary-action upload-open-button"
+        onClick={() => fileInputRef.current?.click()}>
+        Choose .prd file
+      </button>
       <input
         ref={fileInputRef}
+        hidden
+        aria-label="Open PRD archive"
         type="file"
         accept=".prd"
         onChange={(event) => {
@@ -2738,7 +2684,6 @@ function ViewerWorkspaceView({
   onDrop,
   onDragOver,
   onDragLeave,
-  onUploadKeyDown,
   onLoadSample,
   onLocaleChange
 }: {
@@ -2766,27 +2711,18 @@ function ViewerWorkspaceView({
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
-  onUploadKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void;
   onLoadSample: (example: ViewerDemoExampleArchive) => void;
   onLocaleChange: (locale: string) => void;
 }) {
   return (
-    <main className="viewer-route" aria-label="PRD web viewer workspace">
-      <section className="viewer-dashboard">
-        <div className="viewer-dashboard-topbar">
-          <div>
-            <p className="eyebrow">PRD Web Viewer</p>
-            <h1>Open, validate, and inspect portable documents.</h1>
-          </div>
-          <div className="viewer-dashboard-status">
-            <span className={viewerState?.validation.valid ? "status-pill valid" : "status-pill"}>
-              {viewerState?.validation.valid ? "Valid package" : "No package loaded"}
-            </span>
-            <span className="status-pill muted">
-              {formatReferenceLoadMode(referenceViewerLoadMode)}
-            </span>
-          </div>
-        </div>
+    <main id="main-content" tabIndex={-1} className="viewer-route" aria-label="PRD web viewer workspace">
+      <section className={`viewer-dashboard${viewerState ? " has-package" : ""}`} aria-busy={loading || sampleLoadingId !== null}>
+        <ViewerWorkspaceHeader
+          validation={viewerState?.validation ?? null}
+          packageTitle={activeEntryDocument?.title ?? activeComicDocument?.title ?? activeStoryboardDocument?.title ?? viewerState?.opened?.manifest.title}
+          loading={loading || sampleLoadingId !== null}
+          loadMode={formatReferenceLoadMode(referenceViewerLoadMode)}
+        />
 
         <div className="viewer-shell-grid">
           <aside className="viewer-left-rail">
@@ -2797,19 +2733,21 @@ function ViewerWorkspaceView({
               onDrop={onDrop}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
-              onKeyDown={onUploadKeyDown}
             />
             <ViewerDocumentOutlineView items={documentOutline} />
-            <ViewerExampleGuideView
-              onLoadSample={onLoadSample}
-              sampleLoadingId={sampleLoadingId}
-              compact
-            />
+            <details className="viewer-sample-picker" open={!viewerState}>
+              <summary>Try a sample package</summary>
+              <ViewerExampleGuideView
+                onLoadSample={onLoadSample}
+                sampleLoadingId={sampleLoadingId}
+                compact
+              />
+            </details>
           </aside>
 
-          <section className="viewer-stage-column" aria-label="Viewer stage">
-            {loading && <p className="status">Loading package...</p>}
-            {error && <p className="status error">{error}</p>}
+          <section id="document-stage" tabIndex={-1} className="viewer-stage-column" aria-label="Viewer stage">
+            {loading && <p className="status" role="status">Loading package...</p>}
+            {error && <p className="status error" role="alert">{error}</p>}
 
             {!viewerState && !loading && (
               <section className="empty-viewer-state" aria-label="No package loaded">
@@ -2898,7 +2836,7 @@ function ViewerWorkspaceView({
             )}
           </section>
 
-          <aside className="viewer-right-rail">
+          <aside id="package-details" tabIndex={-1} className="viewer-right-rail" aria-label="Package details">
             {viewerState ? (
               <>
                 <PackageStatusPanel
@@ -3023,7 +2961,11 @@ export function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem(viewerThemeStorageKey, theme);
+    try {
+      window.localStorage.setItem(viewerThemeStorageKey, theme);
+    } catch {
+      // The theme remains usable for this session when browser storage is blocked.
+    }
   }, [theme]);
 
   const profileLabel = useMemo(() => {
@@ -3155,15 +3097,18 @@ export function App() {
     setRoute(nextRoute);
 
     window.setTimeout(() => {
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth";
       if (hash) {
         document.getElementById(hash)?.scrollIntoView({
-          behavior: "smooth",
+          behavior,
           block: "start"
         });
         return;
       }
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior });
     }, 0);
   }
 
@@ -3311,19 +3256,12 @@ export function App() {
     setDragActive(false);
   }
 
-  function handleUploadKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "Enter" && event.key !== " ") {
-      return;
-    }
-
-    event.preventDefault();
-    fileInputRef.current?.click();
-  }
-
   return (
     <div className={`app-shell app-route-${route}`} data-route={route}>
-      <AppNavigation
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <ViewerSiteNavigation
         route={route}
+        basePath={viewerAppBasePath}
         theme={theme}
         onNavigate={navigateToRoute}
         onToggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
@@ -3373,7 +3311,6 @@ export function App() {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onUploadKeyDown={handleUploadKeyDown}
           onLoadSample={(example) => void handleSampleArchive(example)}
           onLocaleChange={setSelectedLocale}
         />
