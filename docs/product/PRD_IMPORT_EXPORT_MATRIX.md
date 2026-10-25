@@ -113,7 +113,7 @@ init/import -> validate -> inspect -> pack -> open in the reference viewer
 
 That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` Home, `/viewer/` workspace, and `/docs/` public docs navigation. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
 
-The next public-product lane should launch-QA the hosted demo, verify the Cloudflare Pages production path at `prd.eonhive.com`, keep GitHub Pages as staging/fallback until that passes, and then choose the next viewer/product polish step.
+The next public-product lane should deploy and launch-QA the hosted demo through Cloudflare Workers Static Assets at `prd.eonhive.com`, keep GitHub Pages as staging/fallback until that passes, and then choose the next viewer/product polish step. Hosting does not add a server-side conversion or upload lane.
 
 ---
 

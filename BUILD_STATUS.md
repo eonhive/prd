@@ -1,5 +1,14 @@
 # BUILD STATUS
 
+## 2026-10-25
+
+- Migrated the public Home/Docs/Web Viewer deployment configuration from Cloudflare Pages to Workers Static Assets (PRD-039), preserving the existing `prd-worker` name and GitHub Pages staging/fallback.
+- Pinned Wrangler and added production rebuild plus dry-run, local preview, and authenticated deploy commands. Native Workers SPA fallback replaces the Pages `_redirects` catch-all; no backend Worker script or document-upload service was added.
+- Updated public hosting copy, the hosting runbook, product/roadmap docs, and active backlog. Deployment and launch QA remain open; local validation is not a production launch claim.
+- Node 22 verification passed: frozen-lockfile install, 28 targeted tests, root typecheck, docs consistency, Cloudflare build/deployment dry run (also after cleaning TypeScript outputs), GitHub Pages `/prd/` build, and `foundation:gate` with 190 tests across 21 test files.
+- Local Workers HTTP checks confirmed Home/Viewer/Docs navigation, JavaScript/CSS responses, and byte-identical ZIP responses for all four hosted sample archives. Browser checks confirmed document/comic/storyboard samples render as fully supported, Viewer/Docs refresh, and light-theme persistence. Production/mobile/manual-upload launch QA is still pending.
+- Deployment blocker: the saved Cloudflare OAuth login has Pages permissions but lacks Workers permissions; the account owner must refresh authorization or connect Workers Builds. `prd.eonhive.com` did not resolve from this environment. No production deployment or DNS changes were made.
+
 ## 2026-06-07
 
 - Merged PR `#46` (`[stannesi] separate hosted landing and viewer routes`) into `main` before starting the public site/docs/hosting polish slice.

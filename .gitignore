@@ -6,4 +6,7 @@ coverage
 examples/dist
 apps/prd-viewer-web/public/examples
 *.tsbuildinfo
+.wrangler
+.dev.vars
+.dev.vars.*
 .DS_Store

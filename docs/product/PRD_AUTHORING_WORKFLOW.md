@@ -175,4 +175,6 @@ Those remain future product or extension lanes.
 
 After `prd import markdown` and `prd import images`, the current executable public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It demonstrates the real create/import, validate, inspect, pack, and open flow with light and premium dark modes, using `/` for Home, `/viewer/` for the actual package-opening workspace, and `/docs/` for the public docs navigation layer over canonical repo docs.
 
+Production hosting targets Cloudflare Workers Static Assets, with GitHub Pages retained as fallback until custom-domain launch QA passes. This is static web hosting, not server-side authoring or package processing. See the [hosting runbook](../governance/PRD_HOSTING_RUNBOOK.md).
+
 Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import remain deferred.

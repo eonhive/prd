@@ -22,6 +22,9 @@
     "viewer:demo:assets": "pnpm examples:pack && node ./scripts/prepare-viewer-demo-assets.mjs",
     "viewer:demo:build": "pnpm viewer:demo:assets && pnpm --filter @eonhive/prd-web-viewer build",
     "viewer:demo:build:cloudflare": "PRD_VIEWER_BASE_PATH=/ pnpm viewer:demo:build",
+    "viewer:demo:check:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler deploy --dry-run",
+    "viewer:demo:preview:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler dev --local",
+    "viewer:demo:deploy:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler deploy",
     "viewer:demo:build:github-pages": "PRD_VIEWER_BASE_PATH=/prd/ pnpm viewer:demo:build",
     "viewer:demo:dev": "pnpm viewer:demo:assets && pnpm --filter @eonhive/prd-web-viewer dev",
     "preexamples:pack": "pnpm --filter @eonhive/prd-cli build",
@@ -61,6 +64,7 @@
     "typescript": "^5.8.0",
     "vite": "^5.4.19",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "wrangler": "4.152.0"
   }
 }

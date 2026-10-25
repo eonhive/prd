@@ -21,7 +21,9 @@ Temporary staging/fallback target:
 
 ## Hosting Policy
 
-Cloudflare Pages is the intended production host for `prd.eonhive.com`.
+Cloudflare Workers Static Assets is the intended production host for `prd.eonhive.com` (PRD-039). The same Vite app serves Home, Docs, the Web Viewer, and generated sample archives. It needs no Worker script, API, database, or document-upload service.
+
+This replaces the earlier Cloudflare Pages configuration. Do not deploy this repository with `wrangler pages deploy` or configure it as a new Pages project.
 
 GitHub Pages remains a staging and fallback host until the Cloudflare custom-domain path is live, route refresh works, hosted samples load, theme persistence works, and mobile QA passes.
 
@@ -37,42 +39,74 @@ Current build surfaces:
 pnpm viewer:demo:assets
 pnpm viewer:demo:build
 pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:check:cloudflare
+pnpm viewer:demo:preview:cloudflare
+pnpm viewer:demo:deploy:cloudflare
 pnpm viewer:demo:build:github-pages
 pnpm viewer:demo:dev
 ```
 
 `viewer:demo:assets` packs canonical examples and copies selected generated `.prd` archives into the ignored `apps/prd-viewer-web/public/examples/` directory.
 
-`viewer:demo:build:cloudflare` is the production Cloudflare Pages build. It uses root-domain base path `/`.
+`viewer:demo:build:cloudflare` builds production assets with root-domain base path `/`.
+
+`viewer:demo:check:cloudflare` rebuilds production assets and runs `wrangler deploy --dry-run`. It validates the deployment configuration without publishing or requiring Cloudflare login.
+
+`viewer:demo:preview:cloudflare` rebuilds and serves those assets through the local Workers runtime, rather than Vite's development server.
+
+`viewer:demo:deploy:cloudflare` rebuilds and deploys the production assets. It requires authorized Cloudflare credentials. It is not an npm release command.
 
 `viewer:demo:build:github-pages` is the staging/fallback GitHub Pages build. It uses base path `/prd/`.
 
 Hosted sample archives are demo assets only. They do not define a PRD network-loading guarantee and do not change the reference viewer truth: eager whole-package in-memory loading.
 
-The Vite public directory includes `_redirects` so Cloudflare Pages serves the SPA entry for `/viewer/` and `/docs/` refreshes. The GitHub Pages workflow copies `index.html` to `404.html` after build for the same staging/fallback route behavior.
+The root `wrangler.toml` declares `assets.directory = "./apps/prd-viewer-web/dist"` and `assets.not_found_handling = "single-page-application"`. Workers serves existing static files directly and handles SPA navigation to `/viewer/` and `/docs/`. The former Pages `_redirects` catch-all is removed so it does not override native asset routing. The GitHub Pages workflow still copies `index.html` to `404.html` for fallback route refreshes.
 
-## Cloudflare Setup Checklist
+## Workers Builds Setup
 
-1. Create or select the Cloudflare Pages project for `apps/prd-viewer-web`.
-2. Configure production domain `prd.eonhive.com`.
-3. Use the repository root as the Cloudflare project root.
-4. Use build command `pnpm viewer:demo:build:cloudflare`.
-5. Use build output directory `apps/prd-viewer-web/dist`.
-6. Build with a root-domain base path, not the GitHub Pages `/prd/` base path.
-7. Ensure generated demo assets are prepared before the Vite build.
-8. Verify direct refresh for `/`, `/viewer/`, and `/docs/`.
-9. Verify hosted sample archives open through the same viewer path as manual `.prd` uploads.
-10. Verify dark/light theme persistence on production.
-11. Verify desktop and mobile layouts.
+Use Cloudflare's Git-connected Workers Builds for production publication from `main`:
+
+| Setting | Value |
+| --- | --- |
+| Project type | Worker, not Pages |
+| Worker name | `prd-worker` (must match `wrangler.toml`) |
+| Repository | `eonhive/prd` |
+| Production branch | `main` |
+| Root directory | Repository root |
+| Node version | Node 22 (`NODE_VERSION=22`) |
+| Package manager | `pnpm@10.32.1`, as pinned in `package.json` |
+| Build command | `pnpm viewer:demo:build:cloudflare` |
+| Deploy command | `pnpm exec wrangler deploy` |
+| Assets output | `apps/prd-viewer-web/dist`, configured in `wrangler.toml` |
+
+Let the build environment install dependencies using `pnpm install --frozen-lockfile`. Wrangler is pinned in the root dev dependencies; do not rely on an unpinned global CLI. Workers has no Pages-style dashboard build-output field.
 
 Do not set the Cloudflare project root to `apps/prd-viewer-web`. The production build needs the repository root so it can build the CLI, pack example archives, copy hosted demo assets, and then build the Vite app.
 
-The root `wrangler.toml` declares `pages_build_output_dir = "apps/prd-viewer-web/dist"` for Cloudflare Pages.
+If a failed Pages project already exists, leave its domain configuration alone until the Worker is verified on its assigned `workers.dev` URL. Do not configure both hosts to publish the same production hostname.
+
+For an authorized manual deployment, run `pnpm exec wrangler whoami` to confirm the account, then `pnpm viewer:demo:deploy:cloudflare`. Use `pnpm exec wrangler login` when interactive authentication is needed or an old Pages-only login lacks Workers permissions. Have the account owner review and authorize the requested scopes. Never commit credentials or paste API tokens into chat. Workers Builds can manage its own deployment token; an external CI runner needs a secret `CLOUDFLARE_API_TOKEN` and the intended `CLOUDFLARE_ACCOUNT_ID`.
+
+## Custom Domain And Launch QA
+
+1. Verify the Worker on its assigned `workers.dev` URL first.
+2. Confirm `eonhive.com` is an active zone in the intended Cloudflare account.
+3. In the Worker's Settings, Domains & Routes, add Custom Domain `prd.eonhive.com`. If an old Pages assignment or CNAME conflicts, resolve that assignment deliberately before cutover; do not delete unrelated DNS records.
+4. Verify HTTPS on `https://prd.eonhive.com/`, then direct navigation and hard refresh at `/viewer/` and `/docs/`.
+5. Open `document-basic.prd`, `comic-basic.prd`, and `storyboard-basic.prd` through the hosted sample buttons. Confirm archive responses contain the actual package bytes, not the HTML shell.
+6. Verify manual `.prd` upload/drop, package status/facts, attachments/localization where declared, and structured rendering.
+7. Verify dark/light theme persistence after reload, browser back/forward, and single-column mobile layouts.
+8. Check archive response bytes, not just HTTP success: native SPA fallback can return `index.html` with HTTP 200 for a missing archive URL. The existing viewer rejects that response during package parsing; a successful response alone is not proof that a sample exists.
+9. Keep GitHub Pages as fallback and leave `NEXT_STEPS.md` item 44 open until production QA passes. A local build or dry run does not prove that the public domain is live.
+
+When diagnosing a failed Cloudflare build, capture the first failing command and error after dependency installation. A successful install log alone does not establish the deployment failure.
 
 Reference docs:
 
-- Cloudflare Pages custom domains: `https://developers.cloudflare.com/pages/configuration/custom-domains/`
-- Cloudflare Pages direct upload: `https://developers.cloudflare.com/pages/get-started/direct-upload/`
+- [Workers Static Assets migration from Pages](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)
+- [Workers SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)
+- [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
+- [Workers custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
 ## GitHub Pages Fallback
 

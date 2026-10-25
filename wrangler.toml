@@ -1,10 +1,15 @@
 # Company: EonHive Inc.
-# Title: PRD Cloudflare Pages Config
-# Purpose: Declare the public PRD site build output for Cloudflare Pages.
+# Title: PRD Cloudflare Workers Config
+# Purpose: Serve the public PRD site with Workers Static Assets.
 # Author: Stan Nesi
 # Created: June 9, 2026
-# Updated: June 9, 2026
+# Updated: October 25, 2026
 # Notes: Vibe coded with Codex.
 
 name = "prd-worker"
-pages_build_output_dir = "apps/prd-viewer-web/dist"
+compatibility_date = "2026-10-25"
+workers_dev = true
+
+[assets]
+directory = "./apps/prd-viewer-web/dist"
+not_found_handling = "single-page-application"

@@ -166,7 +166,9 @@ Current public demo surface:
 * `../apps/prd-viewer-web/` (one deployable app with `/` Home, `/viewer/` reference Web Viewer workspace, and `/docs/` public docs index)
 * `governance/PRD_HOSTING_RUNBOOK.md` (Cloudflare production and GitHub Pages fallback/staging path)
 * `../.github/workflows/viewer-demo-pages.yml` (temporary GitHub Pages staging/fallback deployment)
-* `../wrangler.toml` (Cloudflare Pages output-directory config)
+* `../wrangler.toml` (Cloudflare Workers Static Assets output and SPA routing config)
+* `pnpm viewer:demo:check:cloudflare` (production build and unauthenticated deployment dry run)
+* `pnpm viewer:demo:preview:cloudflare` (production build served through the local Workers runtime)
 
 The public `/docs/` route is a navigation layer over canonical repo docs. It is not a replacement for this directory, and it intentionally does not link `../codex/` operational planning files.
 

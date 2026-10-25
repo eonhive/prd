@@ -180,7 +180,7 @@ export const viewerPublicDocsSections: ViewerPublicDocsSection[] = [
 export const viewerPublicHostingNotes: ViewerPublicHostingNote[] = [
   {
     label: "Production",
-    value: "Cloudflare Pages",
+    value: "Cloudflare Workers Static Assets",
     description:
       "`prd.eonhive.com` is the intended production host after custom-domain setup and launch QA."
   },
