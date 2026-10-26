@@ -2,6 +2,14 @@
 
 ## 2026-10-26
 
+### Living Homepage Package Inspection And Handoff
+
+- Continued from merged PR #52 on `thehive/prd-package-handoff`. Chapter 03 now inspects real sample manifest, entry, resource, and profile declarations. Demo asset preparation reuses `inspectPrdArchive`, rejects invalid archives, and emits small ignored inspection JSON assets alongside all four hosted `.prd` archives. This app-only metadata does not change PRD format, CLI, validator, viewer-core, or uRK public APIs.
+- The inspector, profile studies, and outer Viewer toolbar share the selected canonical example. Added the segmented document to the toolbar. Final download and full-workspace links retain that selection under both hosting bases. Layout studies remain illustrative, and opening a local file inside the Viewer does not turn it into a hosted download.
+- Metadata loads near the structure chapter; the controls remain mounted without relying on uRK. Requests cancel on selection changes and unmount. Missing JSON, including the HTTP 200 HTML fallback, shows retry feedback while retaining Viewer access. Browser checks confirmed missing-metadata recovery, real segmented rendering, toolbar-to-inspector selection, iframe Escape/focus restoration, and a final-CTA storyboard download that passes CLI validation.
+- Mobile browser review found the fixed sheet offset could overlap the expanded inspector. The existing runtime now caches chapter copy ends on resize and positions the shared sheet below them; no second scheduler or per-scroll measurement was added. Checks at 390px and 320px confirmed separation and no horizontal overflow. Keyboard disclosure activation, dark/light presentation, and motion-off idle suspension passed; no browser console warnings/errors were observed.
+- Validation passed on Node 22: typecheck, the foundation gate with **273 tests across 28 files**, canonical example validation/smoke, root-inclusive docs consistency, both hosting builds, and the Wrangler dry run. Updated implementation notes, hosting runbook, and active backlog. Physical touch, actual screen-reader use, lower-end hardware profiling, and production launch acceptance remain open. No production deployment or npm release was performed.
+
 ### Living Homepage Launch-Readiness Review
 
 - Moved the accumulated homepage work onto `thehive/prd-living-homepage`, based on current `main` after the outline corrections merged in PR #51. No earlier review patch is duplicated in the new feature diff.

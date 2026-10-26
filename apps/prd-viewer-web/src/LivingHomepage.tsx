@@ -19,7 +19,9 @@ import type { ViewerTheme } from "./viewerChrome.js";
 import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
 import "./livingHomepage.css";
 import { LivingViewer, type LivingViewerHandle } from "./LivingViewer.js";
-import { viewerLandingHero } from "./viewerDemoContent.js";
+import { viewerDemoExampleArchives, viewerLandingHero } from "./viewerDemoContent.js";
+import type { DocumentLayer } from "./livingPackageInspection.js";
+import { LivingPackageInspector } from "./LivingPackageInspector.js";
 
 const layerDescriptions = {
   content: {
@@ -47,7 +49,6 @@ const layerDescriptions = {
       "The canonical manifest identifies the package, its version, profile, content entry, and declared resources. A viewer starts here.",
   },
 } as const;
-type DocumentLayer = keyof typeof layerDescriptions;
 
 const profileDescriptions: Record<DemoProfile, string> = {
   document:
@@ -181,12 +182,29 @@ export function LivingHomepage({
   const [audioMessage, setAudioMessage] = useState("");
   const [focused, setFocused] = useState(false);
   const [viewerReady, setViewerReady] = useState(false);
+  const [inspectorReady, setInspectorReady] = useState(false);
   const [sample, setSample] = useState("document-basic");
   const [runtimeMessage, setRuntimeMessage] = useState("");
   const currentOptions = useRef({ motion, quality, focused, device });
   currentOptions.current = { motion, quality, focused, device };
   const routeHref = (route: ViewerAppRoute) =>
     getViewerAppRoutePath(route, basePath);
+  const selectedExample =
+    viewerDemoExampleArchives.find((example) => example.id === sample) ??
+    viewerDemoExampleArchives[0]!;
+  const selectedViewerHref = `${routeHref("viewer")}?sample=${selectedExample.id}`;
+  const selectedDownloadHref = `${basePath.endsWith("/") ? basePath : `${basePath}/`}${selectedExample.hostedPath}`;
+
+  function selectSample(nextSample: string) {
+    const example = viewerDemoExampleArchives.find((item) => item.id === nextSample);
+    if (!example) return;
+    setSample(example.id);
+    setProfile(
+      example.profile === "comic" || example.profile === "storyboard"
+        ? example.profile
+        : "document",
+    );
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -242,24 +260,28 @@ export function LivingHomepage({
     };
   }, [focused]);
 
-  // The real viewer is only mounted as the visitor approaches its chapter.
+  // Load each package surface near its chapter, independently of motion availability.
   useEffect(() => {
-    const target = document.getElementById("viewer");
-    if (!target) return;
     if (typeof IntersectionObserver === "undefined") {
       setViewerReady(true);
+      setInspectorReady(true);
       return;
     }
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setViewerReady(true);
-          observer.disconnect();
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          if (entry.target.id === "viewer") setViewerReady(true);
+          if (entry.target.id === "structure") setInspectorReady(true);
+          observer.unobserve(entry.target);
         }
       },
       { rootMargin: "500px" },
     );
-    observer.observe(target);
+    for (const id of ["structure", "viewer"]) {
+      const target = document.getElementById(id);
+      if (target) observer.observe(target);
+    }
     return () => observer.disconnect();
   }, []);
 
@@ -355,7 +377,7 @@ export function LivingHomepage({
           <span className="living-live-dot">
             {livingChapters[chapter]!.word}
           </span>
-          <span>EXAMPLE_001.PRD</span>
+          <span>{selectedExample.id.toUpperCase()}.PRD</span>
         </div>
         <div
           className="living-document-object"
@@ -375,7 +397,7 @@ export function LivingHomepage({
                 aria-pressed={layer === item}
                 onClick={() => setLayer(item)}
               >
-                <span>{layerDescriptions[item].path}</span>
+                <span>{item === "profile" ? `profile: ${selectedExample.profile}` : layerDescriptions[item].path}</span>
               </button>
             ),
           )}
@@ -448,7 +470,7 @@ export function LivingHomepage({
               ready={viewerReady}
               sample={sample}
               viewerPath={routeHref("viewer")}
-              onSampleChange={setSample}
+              onSampleChange={selectSample}
               onFocusChange={setFocused}
             />
           </article>
@@ -584,10 +606,18 @@ export function LivingHomepage({
             role="status"
             aria-live="polite"
           >
-            <code>{layerDescriptions[layer].path}</code>
+            <code>{layer === "profile" ? `profile: ${selectedExample.profile}` : layerDescriptions[layer].path}</code>
             <h3>{layerDescriptions[layer].title}</h3>
             <p>{layerDescriptions[layer].description}</p>
           </div>
+          <LivingPackageInspector
+            active={inspectorReady}
+            sample={sample}
+            layer={layer}
+            basePath={basePath}
+            onSampleChange={selectSample}
+            onOpenViewer={enterViewer}
+          />
         </Chapter>
         <Chapter
           index={3}
@@ -664,7 +694,7 @@ export function LivingHomepage({
             <button className="living-primary" onClick={enterViewer}>
               Enter the Viewer <Arrow />
             </button>
-            <a className="living-text-link" href={routeHref("viewer")}>
+            <a className="living-text-link" href={selectedViewerHref}>
               Open full workspace ↗
             </a>
           </div>
@@ -701,18 +731,22 @@ export function LivingHomepage({
             next reader.
           </p>
           <div className="living-actions">
-            <a className="living-primary" href={routeHref("viewer")}>
-              Open Viewer <Arrow />
+            <a className="living-primary" href={selectedDownloadHref} download>
+              Download this PRD <Arrow down />
             </a>
-            <a className="living-text-link" href={routeHref("docs")}>
-              Explore the format ↗
+            <a className="living-text-link" href={selectedViewerHref}>
+              Open this example ↗
             </a>
           </div>
+          <p className="living-small-note">
+            {selectedExample.label} · {selectedExample.profile}
+            <br />One package. Ready for your next reader.
+          </p>
           <a
             className="living-example-link"
-            href={`${routeHref("viewer")}?sample=document-basic`}
+            href={routeHref("docs")}
           >
-            View example packages <Arrow />
+            Explore the format <Arrow />
           </a>
           <div className="living-boundary">
             <span>THE EXPERIENCE</span>

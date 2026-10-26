@@ -7,6 +7,7 @@
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { isLivingViewerExitRequest } from "./livingViewerMessages.js";
+import { viewerDemoExampleArchives } from "./viewerDemoContent.js";
 
 export interface LivingViewerHandle {
   openFocus(): void;
@@ -126,9 +127,9 @@ export const LivingViewer = forwardRef<LivingViewerHandle, LivingViewerProps>(
               value={sample}
               onChange={(event) => onSampleChange(event.target.value)}
             >
-              <option value="document-basic">Document</option>
-              <option value="comic-basic">Comic</option>
-              <option value="storyboard-basic">Storyboard</option>
+              {viewerDemoExampleArchives.map((example) => (
+                <option key={example.id} value={example.id}>{example.label}</option>
+              ))}
             </select>
           </label>
           <span className="living-live-dot">Real PRD Viewer</span>

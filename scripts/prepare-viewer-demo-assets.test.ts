@@ -12,6 +12,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
+import { packDirectoryToBuffer } from "../packages/prd-packager/src/index.js";
 import {
   createViewerDemoAssetPlan,
   prepareViewerDemoAssets
@@ -55,7 +56,8 @@ describe("prepare viewer demo assets", () => {
     const sourcePath = join(repoRoot, entries[0]!.source);
 
     await mkdir(dirname(sourcePath), { recursive: true });
-    await writeFile(sourcePath, "fake-prd-archive", { encoding: "utf8" });
+    const archive = await packDirectoryToBuffer(join(process.cwd(), "examples/document-basic"));
+    await writeFile(sourcePath, archive);
 
     const summary = await prepareViewerDemoAssets({ repoRoot, entries });
     const copiedPath = join(repoRoot, entries[0]!.target);
@@ -67,10 +69,27 @@ describe("prepare viewer demo assets", () => {
         source: "examples/dist/sample.prd",
         target: "apps/prd-viewer-web/public/examples/sample.prd",
         publicPath: "examples/sample.prd",
-        bytes: "fake-prd-archive".length
+        bytes: archive.length
       }
     ]);
-    await expect(readFile(copiedPath, "utf8")).resolves.toBe("fake-prd-archive");
+    expect(new Uint8Array(await readFile(copiedPath))).toEqual(archive);
+    const inspection = JSON.parse(await readFile(`${copiedPath}.inspection.json`, "utf8"));
+    expect(inspection).toMatchObject({
+      contractVersion: "prd-home-sample-v0.1",
+      sampleId: "sample",
+      archiveBytes: archive.length,
+      manifest: { id: "urn:prd:example:document-basic", entry: "content/root.json", profile: "general-document" }
+    });
+    expect(inspection.fileCount).toBeGreaterThan(1);
+    expect(inspection.totalBytes).toBeGreaterThan(0);
+  });
+
+  it("refuses to publish inspection facts for invalid archive bytes", async () => {
+    const repoRoot = await createTempRepoRoot();
+    await mkdir(join(repoRoot, "examples/dist"), { recursive: true });
+    await writeFile(join(repoRoot, "examples/dist/broken.prd"), "not an archive");
+    await expect(prepareViewerDemoAssets({ repoRoot, entries: [{ id: "broken", source: "examples/dist/broken.prd", target: "apps/prd-viewer-web/public/examples/broken.prd" }] })).rejects.toThrow("Cannot publish invalid demo archive broken");
+    await expect(readFile(join(repoRoot, "apps/prd-viewer-web/public/examples/broken.prd.inspection.json"))).rejects.toThrow();
   });
 
   it("fails with action text when a generated archive is missing", async () => {

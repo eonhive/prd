@@ -49,6 +49,9 @@ export async function createLivingExperienceRuntime(
   const chapters = [
     ...root.querySelectorAll<HTMLElement>("[data-living-chapter]"),
   ];
+  const chapterCopies = chapters.map((chapter) =>
+    chapter.querySelector<HTMLElement>(".living-chapter-copy"),
+  );
   const scroll = {
     y: window.scrollY,
     starts: [] as number[],
@@ -102,10 +105,18 @@ export async function createLivingExperienceRuntime(
     scroll.starts = chapters.map(
       (chapter) => chapter.getBoundingClientRect().top + window.scrollY,
     );
+    // Mobile places the shared sheet after the actual text, including open disclosures.
+    const stageStarts = chapterCopies.map((copy) =>
+      copy ? copy.getBoundingClientRect().bottom + window.scrollY + 70 : undefined,
+    );
     scroll.end = (scroll.starts[5] ?? 0) + (chapters[5]?.offsetHeight ?? 0);
     scroll.starts.forEach((start, index) =>
       root.style.setProperty(`--chapter-start-${index}`, `${start}px`),
     );
+    stageStarts.forEach((start, index) => {
+      if (start !== undefined)
+        root.style.setProperty(`--chapter-stage-${index}`, `${start}px`);
+    });
     requestUpdate();
   }
 
@@ -236,6 +247,9 @@ export async function createLivingExperienceRuntime(
       ? undefined
       : new ResizeObserver(measure);
   chapters.forEach((chapter) => resizeObserver?.observe(chapter));
+  chapterCopies.forEach((copy) => {
+    if (copy) resizeObserver?.observe(copy);
+  });
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("resize", measure);
   window.addEventListener("pointermove", handlePointer, { passive: true });

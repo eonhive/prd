@@ -48,6 +48,15 @@ pnpm viewer:demo:dev
 
 `viewer:demo:assets` packs canonical examples and copies selected generated `.prd` archives into the ignored `apps/prd-viewer-web/public/examples/` directory.
 
+It also inspects each archive using the existing validator and emits an adjacent
+`.prd.inspection.json` file for the Home structure inspector. Invalid archives
+fail asset preparation. Deploy these metadata files with the matching archives;
+verify their sample IDs, manifest profile/entry, and archive byte counts as well
+as the actual `.prd` bytes. A missing JSON asset may receive the SPA HTML shell
+with HTTP 200; the inspector rejects it and offers retry while retaining access
+to the reference Viewer. These files are app demo assets, not package members or
+new PRD format contracts.
+
 `viewer:demo:build:cloudflare` builds production assets with root-domain base path `/`.
 
 `viewer:demo:check:cloudflare` rebuilds production assets and runs `wrangler deploy --dry-run`. It validates the deployment configuration without publishing or requiring Cloudflare login.
@@ -130,9 +139,10 @@ Reference docs:
 
 ### Living Homepage Review: October 26, 2026
 
-The Living Homepage is a local, review-stage change on
-`thehive/prd-living-homepage`, based on `main` after PR #51 merged. It is not a
-production launch verification. Keep backlog items 44 and 48 open.
+The initial Living Homepage review was prepared on
+`thehive/prd-living-homepage`, based on `main` after PR #51 merged, and subsequently
+merged in PR #52. That local review is not a production launch verification.
+Keep backlog items 44 and 48 open.
 
 | Acceptance area | Evidence | Remaining check |
 | --- | --- | --- |
@@ -140,12 +150,25 @@ production launch verification. Keep backlog items 44 and 48 open.
 | Embedded reference Viewer | Earlier local browser checks opened valid document/comic/storyboard packages and retained locale/panel selections across focus changes. | Recheck public samples and Escape inside the iframe after deployment. |
 | Scheduler/performance boundaries | Automated tests cover input coalescing, cached geometry, offscreen/finished-story pointer suspension, reduced motion, visibility, and cleanup. | Physical lower-end hardware and long-session profiling. |
 | Accessibility | Semantic markup, browser accessibility-tree inspection, focus restoration, and iframe Escape were checked locally. | Physical touch and actual screen-reader announcement/navigation checks. |
-| Current interactive QA access | Local browser automation became disabled in Work settings during launch-readiness review. | Re-enable browser access before claiming a fresh browser pass; previous checks are historical evidence. |
+| Interactive QA access at initial review | Local browser automation became disabled in Work settings during launch-readiness review. | Access returned for the package handoff follow-up recorded below; physical checks still remain. |
 
 Builds and dry runs validate source and deployment configuration only. Review
 the pinned uRK provenance in `apps/prd-viewer-web/vendor/README.md`, then deploy
 through the existing `main`/Cloudflare path after review. This work does not
 change hosting credentials, account access, DNS, or release automation.
+
+The package handoff follow-up on `thehive/prd-package-handoff` adds actual
+archive-derived inspection and selection-preserving download/workspace links.
+Fresh local browser checks cover metadata disclosures, document/comic/segmented
+sample selection, the real segmented renderer, Viewer-toolbar selection,
+iframe Escape/focus restoration, missing-metadata retry recovery, dark/light
+themes, and 390px/320px layouts. Mobile review found a fixed stage offset could
+overlap the inspector; the shared runtime now caches copy-end measurements on
+resize and places the sheet below the content, including open disclosures.
+Keyboard disclosure activation and motion-off idle suspension passed. A
+storyboard downloaded using the final CTA passed CLI validation. These are
+local browser checks, not physical touch, screen-reader, lower-end hardware,
+or production launch sign-off.
 
 ## GitHub Pages Fallback
 

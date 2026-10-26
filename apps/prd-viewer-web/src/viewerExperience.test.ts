@@ -13,6 +13,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
+import { LivingHomepage } from "./LivingHomepage.js";
 import { viewerLandingHero, viewerPublicDocsSections } from "./viewerDemoContent.js";
 
 afterEach(() => vi.unstubAllGlobals());
@@ -52,6 +53,17 @@ describe("public experience markup", () => {
     expect(html).toContain('aria-label="Enable ambient sound"');
     expect(html).not.toContain('title="Embedded PRD reference viewer"');
     expect(html).not.toContain("Paginated");
+  });
+
+  it.each(["/", "/prd/"])("keeps the download and example handoff under hosting base %s", (basePath) => {
+    const html = renderToStaticMarkup(createElement(LivingHomepage, {
+      basePath, theme: "dark", onToggleTheme() {}, children: null,
+    }));
+    expect(html).toContain(`href="${basePath}examples/document-basic.prd" download=""`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=document-basic"`);
+    expect(html).toContain('aria-label="Example package inspector"');
+    expect(html).toContain("Package details load as you reach this chapter.");
+    expect(html).not.toContain("validated when the demo was built");
   });
 
   it("still renders when browser storage is blocked", () => {
