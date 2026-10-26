@@ -4,7 +4,7 @@
 
 - October 25, 2026: PR #50 is merged at `a9d77d9`; local `main` was fast-forwarded before creating `thehive/prd-viewer-outline-qa`.
 - Browser access is enabled. The public site shows PR #50's Home/Viewer/Docs usability pass; the earlier browser-disabled note is historical.
-- This branch contains the narrow corrective viewer changes found during live launch QA. It has not been merged or deployed.
+- [PR #51](https://github.com/eonhive/prd/pull/51) is ready for review with the narrow corrective viewer changes found during live launch QA. It has not been merged or deployed.
 - Item 45's visual review is complete. Launch item 44 remains open for deployed correction checks, real drag/drop, and production pipeline confirmation. CLI release item 46 remains a separate slice.
 
 ## Completed work
@@ -20,7 +20,7 @@
 
 ## In-progress work
 
-- Publish/review this corrective branch, then recheck the deployed revision on the public domain.
+- Review PR #51, then recheck the deployed revision on the public domain after merge/deployment.
 - Finish actual OS file drag/drop. Confirm Cloudflare account/Workers Builds settings with the owner before launch sign-off.
 - No hosting account, credentials, permissions, DNS, npm release, or production deployment changes were made.
 
@@ -35,6 +35,7 @@
 ## Commands run
 
 - Bundled Git: status, fetch, fast-forward main, create corrective branch, diff review/check. System Git's Xcode license restriction was not bypassed or accepted.
+- Published the verified staged tree through the authorized GitHub connector because local HTTPS push credentials are unavailable; remote tree SHA matched the local index. Opened ready PR #51, with no merge or production deployment performed.
 - Targeted Vitest: outline, chrome, experience, and render-mode unit/integration tests.
 - `pnpm foundation:gate`
 - `pnpm typecheck`
