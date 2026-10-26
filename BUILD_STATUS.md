@@ -1,5 +1,33 @@
 # BUILD STATUS
 
+## 2026-10-26
+
+### Living Homepage Launch-Readiness Review
+
+- Moved the accumulated homepage work onto `thehive/prd-living-homepage`, based on current `main` after the outline corrections merged in PR #51. No earlier review patch is duplicated in the new feature diff.
+- Fixed a performance gap where pointer movement could still request paints after the document presentation was offscreen or the visitor had passed the story. Runtime coverage now checks those boundaries, work resumption, and reuse of cached chapter geometry during scroll/pointer bursts.
+- Current local browser automation is disabled in Work settings. Earlier browser checks remain recorded as historical evidence; no fresh physical-device, screen-reader, or lower-end hardware pass is claimed. Updated the hosting runbook's acceptance table and kept launch items 44 and 48 open.
+- Validation passed: typecheck, the foundation gate with all 254 tests across 27 files, canonical example validation/smoke, docs consistency, both hosting builds, and the Wrangler deployment dry run. Pinned uRK archive SHA-256 hashes match their provenance record. The app bundle is about 99.5 kB gzip, with the uRK coordinator loaded separately at about 12.3 kB gzip; these transfer sizes are not a hardware performance profile.
+
+### Living Viewer Continuity Follow-Up
+
+- Replaced the separate inline and modal iframes with one persistent `LivingViewer` component. The native dialog changes presentation without reparenting or remounting the reference workspace. Inline opening does not move keyboard focus during native scrolling; locale and panel/frame state remain in the real Viewer.
+- Browser QA confirmed French content and the same attachment blob URL survive closing, reopening, and promoting the inline workspace. The package renderer, manifest, validation, and viewer-core contracts remain unchanged.
+- Found that Escape pressed inside the iframe did not reach the parent native dialog in this browser. Added an app-only keyboard message, accepted only from the current iframe window and exact origin, plus focused boundary tests. Packaged media pauses when its workspace becomes hidden.
+- Confirmed the iframe Escape fix with the actual comic Next control focused. The second and third panels remain selected through inline/modal round trips, and focus returns to the inline action or header button that opened the workspace. Inline chapter entry retains focus on the chapter rather than taking it into the Viewer.
+- Final validation passed: typecheck, 85 app tests, all 251 repository tests across 27 files, the production app build, docs consistency including root docs, and a Wrangler deployment dry run. No production deployment was performed. Physical touch-device, screen-reader, and lower-end hardware launch checks remain open.
+- Restored local preview through the Vite server. Source `index.html` must be served over HTTP for module imports, routes, and generated sample fetches; opening it through `file://` does not launch the app.
+
+### Living Homepage
+
+- Implemented the six-chapter public Home in the existing Vite app: one persistent document presentation, native reversible scroll sampling, device width tweens, layer explanations, six labeled layout studies, the real embedded Viewer, and package reassembly with Viewer/docs/example actions. Home retains the repository CLI flow and its published-command availability note.
+- Audited clean upstream `eonhive/urk` main at `8fb03fbb9e09b2cdb432fe51da3f72cda67476ff`. Pinned unmodified `@urk/core` and `@urk/adapters` build archives in the private web app because matching public motion/audio exports are not yet published. The dirty sibling checkout is not a dependency. Provenance, hashes, and upgrade instructions are in `apps/prd-viewer-web/vendor/README.md`.
+- Reused uRK's auto-demand kernel, scoped numeric motion, lifecycle cleanup, audio transport, and optional spectrum analysis. Main lacks seekable timelines and a standalone scene-flow API; small app-owned interpolation coordinates the chapters. CSS perspective provides document depth without WebGL. Format, schemas, validator, CLI, packager, and viewer-core APIs are unchanged; no public-package changeset is required.
+- Added opt-in audio, full/subtle/off motion, automatic/high/low quality, live layer feedback, native dialog focus containment and Escape, focus restoration, system reduced-motion handling, lazy viewer/audio modules, cached chapter geometry, coalesced input paints, and bounded ambient wake-ups. Motion off leaves the browser's instrumented frame counter unchanged while idle.
+- Browser QA covered desktop dark/light, 390px and 320px iframe viewports, stacked mobile document layout, device switching, layer selection, profile switching, real document/comic/storyboard package opens, viewer focus/exit, sound start/mute, and motion/quality controls. No browser warnings/errors were observed in these checks. Physical touch devices, assistive technologies, and low-end hardware profiling remain unverified.
+- The foundation gate passed with 237 tests across 25 files, including build, docs consistency, example validation, and aggregate example smoke. After adding observer-fallback and embed-markup coverage, final typecheck, all 239 tests across 25 files, and docs consistency passed. Both final hosting builds (`/` and `/prd/`) and the Wrangler deployment dry run passed. The runtime is lazy-loaded at approximately 12.25 kB gzip; audio code loads only after opt-in. No production deployment was performed.
+- Added `docs/product/PRD_LIVING_HOMEPAGE.md` and aligned README, docs index, and product boundaries. Pagination is unavailable in the renderer and is not offered. Layout studies remain illustrative. The initial slice reset Viewer state between presentations; the continuity follow-up above removes that limitation. Existing launch QA and CLI release backlog items remain open.
+
 ## 2026-10-25
 
 ### Launch QA And Viewer Corrections

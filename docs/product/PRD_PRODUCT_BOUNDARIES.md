@@ -54,6 +54,8 @@ The web viewer and viewer-core packages are present in the repository as referen
 
 The hosted PRD Web Viewer demo is a public reference-stack demo surface. It lives in `apps/prd-viewer-web`, deploys as one static app, and separates Home (`/`), the actual reference Web Viewer workspace (`/viewer/`), and the public docs index (`/docs/`). Cloudflare Workers Static Assets is the intended production host for `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path under `/prd/`. Workers hosts static files only: it does not introduce Cloud authoring, server-side document parsing, or an upload service. It may include generated sample `.prd` archives for demonstration. Those hosted samples are demo assets only; they do not add a PRD network-loading guarantee or change the package validity model.
 
+The Living Homepage uses uRK only as an app-level presentation dependency. Its chapter transforms, audio, quality controls, and illustrative layout studies do not redefine package validity or promote document kinds to profile families. The embedded Viewer keeps the same validation and rendering pipeline; see [PRD_LIVING_HOMEPAGE.md](PRD_LIVING_HOMEPAGE.md) for supported behavior and the capability audit.
+
 Codex operational files under `codex/` may remain tracked for implementation continuity, but they are not part of the public product docs, public site navigation, or canonical format documentation.
 
 ---

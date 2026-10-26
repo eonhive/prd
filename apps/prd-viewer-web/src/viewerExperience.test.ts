@@ -45,6 +45,13 @@ describe("public experience markup", () => {
     expect(html).toContain("Open Viewer");
     expect(html).toContain("init and import await the next CLI release");
     expect(html).not.toContain("0.1.1 public preview");
+    expect(html.match(/data-living-chapter=/g)).toHaveLength(6);
+    expect(html).toContain('aria-label="Story chapters"');
+    expect(html).toContain('aria-label="Document viewport"');
+    expect(html).toContain('aria-label="Document structure layers"');
+    expect(html).toContain('aria-label="Enable ambient sound"');
+    expect(html).not.toContain('title="Embedded PRD reference viewer"');
+    expect(html).not.toContain("Paginated");
   });
 
   it("still renders when browser storage is blocked", () => {
@@ -77,6 +84,20 @@ describe("public experience markup", () => {
       expect(html).toContain(`id="${id}" tabindex="-1"`);
     }
     expect(html).toContain('<details class="viewer-sample-picker" open="">');
+  });
+
+  it("embeds the real viewer workspace without nesting site navigation", () => {
+    vi.stubGlobal("window", {
+      location: { pathname: "/viewer/", search: "?embed=1&sample=document-basic" },
+      localStorage: { getItem: () => null }
+    });
+    const html = renderToStaticMarkup(createElement(App));
+    expect(html).toContain("is-embedded");
+    expect(html).toContain('aria-label="PRD web viewer workspace"');
+    expect(html).toContain('id="document-stage"');
+    expect(html).toContain('id="package-details"');
+    expect(html).not.toContain('aria-label="Main navigation"');
+    expect(html).not.toContain("living-experience");
   });
 
   it("prioritizes first-use docs and keeps hosting details in a disclosure", () => {

@@ -1,4 +1,6 @@
 import { unzipSync, strFromU8 } from "fflate";
+import { LivingHomepage } from "./LivingHomepage.js";
+import { livingViewerExitFocusMessage } from "./livingViewerMessages.js";
 import {
   type DragEvent as ReactDragEvent,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -49,10 +51,6 @@ import {
   viewerDemoExampleArchives,
   viewerDemoFlowSteps,
   viewerDemoPreparationCommands,
-  viewerFutureLanes,
-  viewerLandingCapabilities,
-  viewerLandingHero,
-  viewerLandingProfiles,
   viewerPublicDocsIntro,
   viewerPublicDocsSections,
   viewerPublicHostingNotes
@@ -2165,118 +2163,6 @@ function PackageFactsView({
 }
 
 
-function HomeSurface({
-  onOpenViewer,
-  onLoadSample,
-  sampleLoadingId,
-  onLoadArchive
-}: {
-  onOpenViewer: () => void;
-  onLoadSample: () => void;
-  sampleLoadingId: string | null;
-  onLoadArchive: (example: ViewerDemoExampleArchive) => void;
-}) {
-  return (
-    <main id="main-content" tabIndex={-1} className="landing-surface" aria-label="PRD Home">
-      <section className="landing-hero">
-        <div className="landing-hero-copy">
-          <span className="release-pill">Public reference preview</span>
-          <p className="eyebrow">{viewerLandingHero.eyebrow}</p>
-          <h1>{viewerLandingHero.title}</h1>
-          <p className="subhead">{viewerLandingHero.description}</p>
-          <div className="landing-actions">
-            <button type="button" className="primary-action" onClick={onOpenViewer}>
-              {viewerLandingHero.primaryAction}
-            </button>
-            <button
-              type="button"
-              className="secondary-action"
-              onClick={onLoadSample}
-              disabled={sampleLoadingId !== null}
-            >
-              {sampleLoadingId ? "Loading sample..." : viewerLandingHero.secondaryAction}
-            </button>
-            <a className="text-action" href="#cli-flow">
-              {viewerLandingHero.tertiaryAction}
-            </a>
-          </div>
-          <div className="hero-badges" aria-label="Current public truths">
-            <span>No account required</span>
-            <span>Packaged-first</span>
-            <span>Offline-first core</span>
-          </div>
-        </div>
-
-        <div className="landing-preview-card" aria-label="Reference viewer preview">
-          <div className="preview-window-bar">
-            <span />
-            <span />
-            <span />
-            <strong>PRD Web Viewer</strong>
-          </div>
-          <div className="preview-reader">
-            <div className="preview-sidebar">
-              <span className="is-active">Table of contents</span>
-              <span>Manifest</span>
-              <span>Package facts</span>
-              <span>Assets</span>
-              <span>Localization</span>
-            </div>
-            <div className="preview-document">
-              <p className="preview-kicker">Reference package</p>
-              <h2>Responsive document, packed and portable.</h2>
-              <p>
-                Validates first. Opens locally. Reports the actual loading profile.
-              </p>
-              <div className="preview-status-row">
-                <span>Valid</span>
-                <span>Structured JSON</span>
-                <span>Offline package</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-capabilities" aria-label="Current PRD capabilities">
-        {viewerLandingCapabilities.map((capability) => (
-          <article key={capability.title} className="landing-card">
-            <p className="card-proof">{capability.proof}</p>
-            <h2>{capability.title}</h2>
-            <p>{capability.description}</p>
-          </article>
-        ))}
-      </section>
-
-      <ViewerDemoFlowView />
-
-      <section className="landing-profile-grid" aria-label="First-class PRD profiles">
-        {viewerLandingProfiles.map((profile) => (
-          <article key={profile.id} className="profile-card">
-            <span className="profile-orb" aria-hidden="true" />
-            <p className="card-proof">{profile.id}</p>
-            <h2>{profile.title}</h2>
-            <p>{profile.description}</p>
-            <code>{profile.command}</code>
-          </article>
-        ))}
-      </section>
-
-      <ViewerExampleGuideView
-        onLoadSample={onLoadArchive}
-        sampleLoadingId={sampleLoadingId}
-        compact={false}
-      />
-
-      <div className="future-lanes-note">
-        <strong>Future lanes stay future:</strong>{" "}
-        {viewerFutureLanes.join(", ")} are not shipped by this demo and do not
-        change what counts as a valid PRD package.
-      </div>
-    </main>
-  );
-}
-
 function ViewerDemoFlowView() {
   return (
     <section id="cli-flow" className="demo-flow" aria-label="PRD public product flow">
@@ -2953,6 +2839,10 @@ interface ViewerState {
 }
 
 export function App() {
+  const query = new URLSearchParams(window.location.search);
+  const embeddedViewer = query.get("embed") === "1";
+  const requestedSample = query.get("sample");
+  const initialSampleLoaded = useRef(false);
   const objectUrlsRef = useRef<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [route, setRoute] = useState<ViewerAppRoute>(() =>
@@ -2965,6 +2855,16 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!embeddedViewer || window.parent === window) return;
+    function handleEmbeddedEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      window.parent.postMessage({ type: livingViewerExitFocusMessage }, window.location.origin);
+    }
+    window.addEventListener("keydown", handleEmbeddedEscape);
+    return () => window.removeEventListener("keydown", handleEmbeddedEscape);
+  }, [embeddedViewer]);
 
   useEffect(() => {
     return () => {
@@ -3235,7 +3135,7 @@ export function App() {
   }
 
   async function handleSampleArchive(example: ViewerDemoExampleArchive) {
-    navigateToRoute("viewer");
+    if (!embeddedViewer) navigateToRoute("viewer");
     setSampleLoadingId(example.id);
     setError(null);
 
@@ -3265,6 +3165,16 @@ export function App() {
     }
   }
 
+  useEffect(() => {
+    if (route !== "viewer" || !requestedSample || initialSampleLoaded.current) {
+      return;
+    }
+    const example = viewerDemoExampleArchives.find((item) => item.id === requestedSample);
+    if (!example) return;
+    initialSampleLoaded.current = true;
+    void handleSampleArchive(example);
+  }, [route, requestedSample]);
+
   function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
     event.preventDefault();
     setDragActive(false);
@@ -3282,32 +3192,33 @@ export function App() {
   }
 
   return (
-    <div className={`app-shell app-route-${route}`} data-route={route}>
+    <div
+      className={`app-shell app-route-${route}${embeddedViewer ? " is-embedded" : ""}`}
+      data-route={route}
+    >
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <ViewerSiteNavigation
-        route={route}
-        basePath={viewerAppBasePath}
-        theme={theme}
-        onNavigate={navigateToRoute}
-        onToggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
-        onOpenArchive={() => {
-          navigateToRoute("viewer");
-          window.setTimeout(() => fileInputRef.current?.click(), 0);
-        }}
-      />
+      {route !== "home" && !embeddedViewer && (
+        <ViewerSiteNavigation
+          route={route}
+          basePath={viewerAppBasePath}
+          theme={theme}
+          onNavigate={navigateToRoute}
+          onToggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+          onOpenArchive={() => {
+            navigateToRoute("viewer");
+            window.setTimeout(() => fileInputRef.current?.click(), 0);
+          }}
+        />
+      )}
 
       {route === "home" ? (
-        <HomeSurface
-          onOpenViewer={() => navigateToRoute("viewer")}
-          onLoadSample={() => {
-            const firstSample = viewerDemoExampleArchives[0];
-            if (firstSample) {
-              void handleSampleArchive(firstSample);
-            }
-          }}
-          onLoadArchive={(example) => void handleSampleArchive(example)}
-          sampleLoadingId={sampleLoadingId}
-        />
+        <LivingHomepage
+          basePath={viewerAppBasePath}
+          theme={theme}
+          onToggleTheme={() => setTheme((current) => current === "dark" ? "light" : "dark")}
+        >
+          <ViewerDemoFlowView />
+        </LivingHomepage>
       ) : route === "docs" ? (
         <PublicDocsSurface onNavigate={navigateToRoute} />
       ) : (

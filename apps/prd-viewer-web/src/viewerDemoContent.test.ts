@@ -31,7 +31,7 @@ describe("viewer demo content", () => {
   });
 
   it("describes the Home page without inventing unavailable product behavior", () => {
-    expect(viewerLandingHero.title).toContain("Create");
+    expect(viewerLandingHero.title).toContain("Documents");
     expect(viewerLandingHero.description).toContain("Portable Responsive Document");
     expect(viewerLandingHero.primaryAction).toBe("Open Viewer");
     expect(viewerLandingHero.secondaryAction).toBe("Load Sample PRD");
