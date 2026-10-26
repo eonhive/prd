@@ -4,7 +4,7 @@
  * Purpose: Derive real viewer navigation rows from opened structured PRD content.
  * Author: Stan Nesi
  * Created: June 5, 2026
- * Updated: June 5, 2026
+ * Updated: October 25, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -49,9 +49,9 @@ function pushGeneralDocumentNodeOutline(
     return;
   }
 
-  if (node.type === "heading") {
+  if (node.type === "heading" && node.id) {
     items.push({
-      id: node.id ?? `heading-${items.length + 1}`,
+      id: node.id,
       label: node.text,
       kind: "heading",
       depth: Math.max(depth, node.level - 1)
@@ -116,4 +116,21 @@ export function createViewerDocumentOutline({
   }
 
   return [];
+}
+
+export function resolveViewerVisualOutlineSelection(
+  item: ViewerDocumentOutlineItem,
+  { comicDocument, storyboardDocument }: ViewerDocumentOutlineInput
+): { kind: "panel" | "frame"; index: number } | undefined {
+  if (item.kind !== "panel" && item.kind !== "frame") {
+    return undefined;
+  }
+
+  const items = item.kind === "panel" ? comicDocument?.panels : storyboardDocument?.frames;
+  const index = items?.findIndex((candidate) => candidate.id === item.id);
+  if (index === undefined || index < 0) {
+    return undefined;
+  }
+
+  return { kind: item.kind, index };
 }
