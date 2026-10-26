@@ -1,16 +1,17 @@
 /**
  * Company: EonHive Inc.
  * Title: PRD Viewer Demo Asset Preparation
- * Purpose: Copy generated example PRD archives into the web viewer public demo asset directory.
+ * Purpose: Publish generated demo archives and inspection data from their validated bytes.
  * Author: Stan Nesi
  * Created: June 5, 2026
- * Updated: June 5, 2026
+ * Updated: October 26, 2026
  * Notes: Vibe coded with Codex.
  */
 
-import { copyFile, mkdir, rm, stat } from "node:fs/promises";
+import { copyFile, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
+import { inspectPrdArchive } from "../packages/prd-validator/dist/node.js";
 
 export const viewerDemoArchiveEntries = [
   {
@@ -70,10 +71,26 @@ export async function prepareViewerDemoAssets({
       );
     }
 
+    const inspection = await inspectPrdArchive(item.sourcePath);
+    if (!inspection.valid || !inspection.manifest) {
+      throw new Error(
+        `Cannot publish invalid demo archive ${item.id}: ${inspection.errors.map((issue) => issue.code).join(", ")}`
+      );
+    }
+
     await mkdir(dirname(item.targetPath), { recursive: true });
     await copyFile(item.sourcePath, item.targetPath);
 
     const copiedStat = await stat(item.targetPath);
+    // Inspect the archive, not its source directory, so facts describe the downloadable package.
+    await writeFile(`${item.targetPath}.inspection.json`, JSON.stringify({
+      contractVersion: "prd-home-sample-v0.1",
+      sampleId: item.id,
+      archiveBytes: copiedStat.size,
+      fileCount: inspection.fileCount,
+      totalBytes: inspection.totalBytes,
+      manifest: inspection.manifest
+    }, null, 2) + "\n");
     copied.push({
       id: item.id,
       source: relative(repoRoot, item.sourcePath),

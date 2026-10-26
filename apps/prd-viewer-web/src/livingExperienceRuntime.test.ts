@@ -34,11 +34,15 @@ function browserFixture(reduced = false) {
   let frameId = 0;
   const frames = new Map<number, FrameRequestCallback>();
   const style = () => ({ setProperty: vi.fn(), transform: "" });
+  const chapterCopies = Array.from({ length: 6 }, (_, index) => ({
+    getBoundingClientRect: vi.fn(() => ({ bottom: index * 800 + 600 - browser.scrollY })),
+  }));
   const chapters = Array.from({ length: 6 }, (_, index) => ({
     offsetHeight: 800,
     getBoundingClientRect: vi.fn(() => ({
       top: index * 800 - browser.scrollY,
     })),
+    querySelector: () => chapterCopies[index],
   }));
   const root = {
     dataset: {} as Record<string, string>,
@@ -48,9 +52,16 @@ function browserFixture(reduced = false) {
   const stage = { style: style() };
   const sheet = { style: style() };
   let setIntersection: ((visible: boolean) => void) | undefined;
+  let measureResize: (() => void) | undefined;
   class Observer {
     observe() {}
     disconnect() {}
+  }
+  class ResizeObserverMock extends Observer {
+    constructor(callback: ResizeObserverCallback) {
+      super();
+      measureResize = () => callback([], this as unknown as ResizeObserver);
+    }
   }
   class IntersectionObserverMock extends Observer {
     constructor(callback: IntersectionObserverCallback) {
@@ -66,7 +77,7 @@ function browserFixture(reduced = false) {
   vi.stubGlobal("document", document);
   vi.stubGlobal("navigator", { hardwareConcurrency: 8 });
   vi.stubGlobal("IntersectionObserver", IntersectionObserverMock);
-  vi.stubGlobal("ResizeObserver", Observer);
+  vi.stubGlobal("ResizeObserver", ResizeObserverMock);
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
     frames.set(++frameId, callback);
     return frameId;
@@ -88,6 +99,8 @@ function browserFixture(reduced = false) {
     paint,
     setVisible: (visible: boolean) => setIntersection?.(visible),
     chapters,
+    chapterCopies,
+    measureResize: () => measureResize?.(),
   };
 }
 
@@ -118,9 +131,20 @@ describe("uRK homepage frame ownership", () => {
     fixture.paint(200);
     for (const chapter of fixture.chapters)
       expect(chapter.getBoundingClientRect).toHaveBeenCalledTimes(1);
+    for (const copy of fixture.chapterCopies)
+      expect(copy.getBoundingClientRect).toHaveBeenCalledTimes(1);
     fixture.browser.dispatchEvent(new Event("resize"));
     for (const chapter of fixture.chapters)
       expect(chapter.getBoundingClientRect).toHaveBeenCalledTimes(2);
+  });
+
+  it("positions the mobile sheet after expanded content and remeasures on content resize", async () => {
+    const fixture = browserFixture();
+    await start(fixture);
+    expect(fixture.root.style.setProperty).toHaveBeenCalledWith("--chapter-stage-2", "2270px");
+    fixture.chapterCopies[2]!.getBoundingClientRect.mockReturnValue({ bottom: 2600 });
+    fixture.measureResize();
+    expect(fixture.root.style.setProperty).toHaveBeenCalledWith("--chapter-stage-2", "2670px");
   });
 
   it("ignores pointer work beyond the story and resumes when the visitor returns", async () => {

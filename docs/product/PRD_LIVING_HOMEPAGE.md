@@ -49,7 +49,10 @@ used as a dependency. See the app's `vendor/README.md` for archive provenance.
 - Experience state holds motion intensity, quality choice, and viewer focus.
 - Document state holds the selected device, layout study, layer, and sample.
 
-Chapter geometry is measured on resize, not on each scroll event. Scroll and
+Chapter geometry and the ends of chapter copy are measured on resize, not on
+each scroll event. Mobile uses the measured copy ends to place the shared sheet
+after the content, so an expanded package disclosure cannot overlap it. The
+existing ResizeObserver watches chapter copy as well as chapter sections. Scroll and
 pointer input coalesce into a single pending kernel paint. Ambient float wakes
 at approximately 12.5 Hz in high quality and 7 Hz in low quality; there is no
 permanent 60 Hz ambient loop. Motion off and the system reduced-motion preference
@@ -86,6 +89,36 @@ the story position and invoking control. Locale, selected comic/storyboard item,
 and the existing reading workspace survive presentation changes and chapter exits.
 Selecting a different example deliberately loads a different package.
 
+Chapter 03 now includes an actual example-package inspector. The demo asset
+build uses the existing Node `inspectPrdArchive` API on each generated `.prd`
+archive, rejects invalid packages, and writes an adjacent
+`.prd.inspection.json` asset containing the validated manifest, archive size,
+uncompressed size, and file count. These generated assets remain ignored with
+the demo archives. `prd-home-sample-v0.1` is an app-only metadata contract, not
+a PRD format, manifest, CLI, or runtime contract.
+
+The inspector fetches these small metadata assets when its chapter approaches;
+it does not unzip or render another copy of the document. It checks the selected
+allowlisted sample, contract, numeric facts, canonical manifest validity, and
+expected profile. Missing assets, including an HTTP 200 HTML fallback, show
+retry feedback and retain Viewer access. Selection changes cancel stale
+requests. The inspector shell remains mounted during backward scrolling and
+does not depend on uRK initializing successfully.
+
+Its layer disclosures show the actual manifest or the content entry, resources,
+and profile declarations drawn from that manifest. They do not pretend to render
+the content entry or implement format validation in the UI. Inspection is
+explicitly identified as build-time evidence; the real Viewer validates the
+archive again when it opens.
+
+The inspector, profile studies, and outer Viewer toolbar share the homepage's
+selected example. All four hosted samples, including the segmented document,
+are available in the inspector and toolbar. Chapter 06 downloads that selected
+archive and links to the same example in the full workspace, under either `/`
+or `/prd/`. Downloading does not convert a layout study into a newly authored
+package. A local file opened inside the Viewer remains local to that workspace;
+the homepage's sample download continues to name its selected canonical example.
+
 Escape pressed inside the iframe is forwarded by the embedded web app using the
 app-only `prd-viewer:exit-focus` message. The parent accepts that request only
 from its current iframe window and its own exact origin. This UI message does not
@@ -115,6 +148,9 @@ New app sources under `apps/prd-viewer-web/src/`:
 
 - `LivingHomepage.tsx`
 - `LivingViewer.tsx`
+- `LivingPackageInspector.tsx`
+- `livingPackageInspection.ts`
+- `livingPackageInspection.test.ts`
 - `LivingViewer.test.ts`
 - `livingViewerMessages.ts`
 - `livingViewerMessages.test.ts`
@@ -134,6 +170,11 @@ Updated app files:
 - `apps/prd-viewer-web/index.html`
 - `apps/prd-viewer-web/package.json`
 - `pnpm-lock.yaml`
+
+The package handoff follow-up also updates
+`scripts/prepare-viewer-demo-assets.mjs`, its tests, and
+`apps/prd-viewer-web/src/viewerExperience.test.ts`. It reuses existing validator
+inspection APIs without changing uRK, format, or viewer-core public interfaces.
 
 New pinned dependencies and provenance:
 
