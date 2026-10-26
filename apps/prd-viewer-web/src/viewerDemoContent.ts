@@ -58,7 +58,7 @@ export interface ViewerDemoExampleArchive {
 
 export const viewerLandingHero = {
   eyebrow: "Portable Responsive Document",
-  title: "Create documents. Keep them portable.",
+  title: "Documents were never meant to stand still.",
   description:
     "Portable Responsive Document brings structured text, comics, and storyboards into one packaged format. Create or import with the CLI, validate and inspect, pack a .prd archive, then open it in the reference viewer.",
   primaryAction: "Open Viewer",

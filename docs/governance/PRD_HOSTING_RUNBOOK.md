@@ -128,6 +128,25 @@ Reference docs:
 - [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
 - [Workers custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 
+### Living Homepage Review: October 26, 2026
+
+The Living Homepage is a local, review-stage change on
+`thehive/prd-living-homepage`, based on `main` after PR #51 merged. It is not a
+production launch verification. Keep backlog items 44 and 48 open.
+
+| Acceptance area | Evidence | Remaining check |
+| --- | --- | --- |
+| Six chapters and controls | Earlier local browser checks covered desktop dark/light, narrow layouts, devices, layers, and layout studies. | Repeat interactive checks on the reviewed production build. |
+| Embedded reference Viewer | Earlier local browser checks opened valid document/comic/storyboard packages and retained locale/panel selections across focus changes. | Recheck public samples and Escape inside the iframe after deployment. |
+| Scheduler/performance boundaries | Automated tests cover input coalescing, cached geometry, offscreen/finished-story pointer suspension, reduced motion, visibility, and cleanup. | Physical lower-end hardware and long-session profiling. |
+| Accessibility | Semantic markup, browser accessibility-tree inspection, focus restoration, and iframe Escape were checked locally. | Physical touch and actual screen-reader announcement/navigation checks. |
+| Current interactive QA access | Local browser automation became disabled in Work settings during launch-readiness review. | Re-enable browser access before claiming a fresh browser pass; previous checks are historical evidence. |
+
+Builds and dry runs validate source and deployment configuration only. Review
+the pinned uRK provenance in `apps/prd-viewer-web/vendor/README.md`, then deploy
+through the existing `main`/Cloudflare path after review. This work does not
+change hosting credentials, account access, DNS, or release automation.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

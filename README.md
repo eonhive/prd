@@ -519,7 +519,7 @@ The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/wo
 
 1. Run `pnpm codex:check`
 2. Run `pnpm viewer:demo:dev`
-3. Open PRD Home at `/` and use either light or premium dark mode
+3. Open PRD Home at `/` for the six-chapter Living Document experience, with light/dark, motion, quality, and opt-in sound controls
 4. Open the viewer workspace at `/viewer/`, then load a hosted sample archive or choose/drag a `.prd` archive into the viewer drop zone
 5. Open the public docs index at `/docs/`
 6. Confirm package status, package facts, manifest metadata, localization/attachments, and rendered content in the reference viewer
@@ -543,6 +543,8 @@ Across packages, PRD now also uses a lean collection/series relationship model i
 ---
 
 ## Architecture boundary
+
+The [Living Homepage implementation](docs/product/PRD_LIVING_HOMEPAGE.md) uses a pinned uRK runtime only in the web app. Native scrolling transforms one persistent document presentation, and Chapter 05 embeds the existing reference Viewer with valid example packages. The format and viewer-core packages do not depend on uRK. See the app's [runtime provenance](apps/prd-viewer-web/vendor/README.md) before updating the pinned dependency snapshots.
 
 This monorepo preserves the PRD boundary between format and viewer:
 
