@@ -103,11 +103,23 @@ When diagnosing a failed Cloudflare build, capture the first failing command and
 
 ### Verification Record: October 25, 2026
 
-PR #49 is merged and `https://prd.eonhive.com/` now serves the public app. Live HTTP checks passed for `/`, `/viewer/`, `/docs/`, and the referenced JavaScript/CSS assets. All four downloaded sample archives (`document-basic`, `document-segmented-basic`, `comic-basic`, `storyboard-basic`) were unzipped and validated with the existing validator, including expected profiles.
+PR #50 is merged at `a9d77d9`, and `https://prd.eonhive.com/` shows the merged usability pass. Browser access is now enabled. Earlier live HTTP checks passed for all three routes, JavaScript/CSS, and four downloaded sample archives; the archives were unzipped and validated with the existing validator and expected profiles.
 
-This verifies the deployed baseline's HTTP/package surface, not browser interactions or the subsequent UI changes. Browser access was disabled in Work settings during the follow-up implementation. Direct refresh, history navigation, upload/drop, keyboard behavior, dark/light persistence, and desktop/mobile visual QA remain unverified on production. Dashboard ownership/deployment settings were not independently rechecked. Keep backlog item 44 open and GitHub Pages available until the full launch checklist passes.
+| Check | Verified surface | Result / remaining work |
+| --- | --- | --- |
+| Home/Docs/Viewer presentation | Production browser | Desktop dark/light Home and mobile Home/Docs/Viewer reviewed; mobile document stage precedes rails without horizontal overflow. |
+| Routes/history | Production browser | Home to Docs, back/forward, and direct Viewer/Docs navigation and refresh passed. |
+| Theme persistence | Production browser | Saved light theme survived a Home reload. |
+| Sample rendering | Production browser | Document Basic, Comic Basic, and Storyboard Basic opened as fully supported with real package facts. |
+| Localization/attachments | Production browser | Document Basic exposed its attachment and French locale; changing locale changed both text and the inline image resource. |
+| Native archive selection | Production browser | The header Open action selected a local canonical comic archive and opened it successfully. |
+| Outline/keyboard corrections | Local Workers preview | Outline selects panel/frame 3, focus continues on the active stage, Left returns to item 2, and repeated selection works. Same-file reopen resets to item 1. Authored document/heading anchors resolve, with root targets clear of the sticky header. |
+| Invalid-package correction | Local Workers preview | A ZIP missing required `entry` shows `entry-required` and a validation-failure message, not an unsupported runtime entry-mode message. Reopening a valid archive recovers. |
+| Mobile corrections | Local Workers preview | Dark/light comic layout and exact theme-toggle accessible labels passed at a 390px viewport; no horizontal overflow. |
+| Actual file drag/drop | Not exercised | Native chooser checks and file-helper unit tests are not proof of OS drag/drop. |
+| Deployment ownership/configuration | Not independently confirmed | A reachable app does not prove the intended Cloudflare account, Worker name, build command, or deployment branch is configured. |
 
-The first usability pass adds real route anchors, mobile navigation/open access, native file-picker button semantics, correct invalid-package labels, document-first narrow-screen layout, and reduced-motion handling. Test these on the new deployed revision after review; server-rendered markup and stylesheet assertions alone do not prove visual correctness.
+The corrective outline/feedback changes are not yet a production verification claim. After review and deployment, repeat those local regression checks on the public domain, finish real drag/drop, and confirm Workers Builds settings with the account owner. Keep backlog item 44 open and GitHub Pages available until those checks pass. No hosting credentials, permissions, DNS, or production deployment were changed during this QA pass.
 
 Reference docs:
 

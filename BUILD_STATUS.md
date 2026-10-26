@@ -2,6 +2,15 @@
 
 ## 2026-10-25
 
+### Launch QA And Viewer Corrections
+
+- PR #50 is merged at `a9d77d9`. Browser access is now enabled, and the production app shows the merged Home/Viewer/Docs usability pass.
+- Production browser checks covered desktop dark/light Home, mobile Home/Docs/Viewer, Docs refresh, back/forward navigation, saved light-theme reload, hosted document/comic/storyboard samples, native archive selection, package facts, attachments, and localization. Switching Document Basic to French changed both its text and inline image resource.
+- QA found that comic/storyboard outline links did not activate panels/frames, root links lacked rendered targets, and synthetic heading anchors could point nowhere. The corrective branch now shares visual selection state with the outline, focuses the active stage for keyboard navigation, and links only to real authored document targets with sticky-header clearance.
+- Added a precise accessible theme-toggle label and separated invalid-package feedback from valid-package runtime support messages. No validator, runtime support-state, parsing, package format, CLI, or release behavior changed; no changeset is needed.
+- Local browser regression checks passed for panel/frame selection, keyboard continuation, repeated selection, same-file reopen/reset, authored document anchors, mobile dark/light layout, and invalid-package feedback. Node 22 foundation gate passed with 224 tests across 23 files; final hosting/typecheck checks are recorded in the session handoff.
+- Launch item 44 remains open: the corrective patch must be deployed and rechecked, real OS file drag/drop has not been exercised, and production account/build settings have not been independently confirmed. GitHub Pages remains fallback. CLI authoring release item 46 stays separate.
+
 ### Public Experience Follow-Up
 
 - Synced `main` after PR #49 merged and started the focused public-experience branch. The production domain now serves Home, Viewer, Docs, and all four sample archives; downloaded samples passed existing validator checks with their expected profiles.

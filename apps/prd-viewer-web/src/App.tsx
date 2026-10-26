@@ -64,6 +64,7 @@ import {
 } from "./viewerArchiveFiles.js";
 import {
   createViewerDocumentOutline,
+  resolveViewerVisualOutlineSelection,
   type ViewerDocumentOutlineItem
 } from "./viewerDocumentOutline.js";
 import {
@@ -73,7 +74,9 @@ import {
 } from "./viewerRoutes.js";
 import {
   ViewerSiteNavigation,
+  ViewerDocumentOutline,
   ViewerWorkspaceHeader,
+  ViewerStageStatus,
   type ViewerTheme
 } from "./viewerChrome.js";
 
@@ -1353,7 +1356,7 @@ function StructuredDocumentView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <article className="structured-document" lang={document.lang}>
+    <article id={document.id} className="structured-document" lang={document.lang}>
       <header className="structured-document-header">
         <p className="structured-kicker">Structured {getProfileDisplayLabel(document.profile)}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1420,7 +1423,7 @@ function ResumeDocumentView({
   const hasOverview = leadVisual || leadParagraph || resumeProfile.notes;
 
   return (
-    <article className="structured-document resume-document" lang={document.lang}>
+    <article id={document.id} className="structured-document resume-document" lang={document.lang}>
       <header className="structured-document-header resume-document-header">
         <p className="structured-kicker">{resumeProfile.label ?? "Resume variant"}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1498,7 +1501,7 @@ function ComicPanelStripView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section className="comic-panel-strip" aria-label="Comic panel strip">
+    <section id={comicDocument.id} className="comic-panel-strip" aria-label="Comic panel strip">
       <div className="comic-panel-strip-header">
         <p className="structured-kicker">Structured comic root</p>
         <h3>Panel Strip</h3>
@@ -1511,7 +1514,7 @@ function ComicPanelStripView({
 
       <ol className="comic-panel-strip-list">
         {comicDocument.panels.map((panel) => (
-          <li key={panel.id} className="comic-panel-card">
+          <li key={panel.id} id={panel.id} className="comic-panel-card">
             {assetUrls[panel.asset] ? (
               <img
                 src={assetUrls[panel.asset]}
@@ -1539,19 +1542,20 @@ const COMIC_SWIPE_THRESHOLD_PX = 48;
 
 function ComicPanelNavigationView({
   comicDocument,
-  assetUrls
+  assetUrls,
+  activePanelIndex,
+  onPanelChange,
+  stageRef
 }: {
   comicDocument: PrdComicRoot;
   assetUrls: AssetUrlMap;
+  activePanelIndex: number;
+  onPanelChange: (index: number) => void;
+  stageRef: RefObject<HTMLDivElement | null>;
 }) {
-  const [activePanelIndex, setActivePanelIndex] = useState(0);
   const swipeStartX = useRef<number | null>(null);
   const swipePointerId = useRef<number | null>(null);
   const lastPanelIndex = comicDocument.panels.length - 1;
-
-  useEffect(() => {
-    setActivePanelIndex(0);
-  }, [comicDocument.id, comicDocument.panels.length]);
 
   const currentPanel =
     comicDocument.panels[Math.min(activePanelIndex, lastPanelIndex)] ??
@@ -1562,7 +1566,7 @@ function ComicPanelNavigationView({
   }
 
   function moveToPanel(nextIndex: number) {
-    setActivePanelIndex(Math.min(Math.max(nextIndex, 0), lastPanelIndex));
+    onPanelChange(Math.min(Math.max(nextIndex, 0), lastPanelIndex));
   }
 
   function handleKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
@@ -1625,6 +1629,7 @@ function ComicPanelNavigationView({
 
   return (
     <section
+      id={comicDocument.id}
       className="comic-panel-strip comic-panel-navigation"
       aria-label="Comic panel navigation"
     >
@@ -1639,6 +1644,8 @@ function ComicPanelNavigationView({
       </div>
 
       <div
+        id={currentPanel.id}
+        ref={stageRef}
         className="comic-panel-stage comic-panel-stage--swipeable"
         tabIndex={0}
         onKeyDown={handleKeyDown}
@@ -1734,7 +1741,7 @@ function StoryboardFrameGridView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section className="storyboard-frame-grid" aria-label="Storyboard frame grid">
+    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard frame grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Structured storyboard root</p>
         <h3>Frame Grid</h3>
@@ -1747,7 +1754,7 @@ function StoryboardFrameGridView({
 
       <ol className="storyboard-frame-grid-list">
         {storyboardDocument.frames.map((frame) => (
-          <li key={frame.id} className="storyboard-frame-card">
+          <li key={frame.id} id={frame.id} className="storyboard-frame-card">
             {assetUrls[frame.asset] ? (
               <img
                 src={assetUrls[frame.asset]}
@@ -1773,27 +1780,28 @@ function StoryboardFrameGridView({
 
 function StoryboardReviewGridView({
   storyboardDocument,
-  assetUrls
+  assetUrls,
+  activeFrameIndex,
+  onFrameChange,
+  stageRef
 }: {
   storyboardDocument: PrdStoryboardRoot;
   assetUrls: AssetUrlMap;
+  activeFrameIndex: number;
+  onFrameChange: (index: number) => void;
+  stageRef: RefObject<HTMLDivElement | null>;
 }) {
-  const [activeFrameIndex, setActiveFrameIndex] = useState(0);
   const lastFrameIndex = storyboardDocument.frames.length - 1;
   const currentFrame =
     storyboardDocument.frames[Math.min(activeFrameIndex, lastFrameIndex)] ??
     storyboardDocument.frames[0];
-
-  useEffect(() => {
-    setActiveFrameIndex(0);
-  }, [storyboardDocument.id, storyboardDocument.frames.length]);
 
   if (!currentFrame) {
     return null;
   }
 
   function moveToFrame(nextIndex: number) {
-    setActiveFrameIndex(Math.min(Math.max(nextIndex, 0), lastFrameIndex));
+    onFrameChange(Math.min(Math.max(nextIndex, 0), lastFrameIndex));
   }
 
   function handleKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
@@ -1809,7 +1817,7 @@ function StoryboardReviewGridView({
   }
 
   return (
-    <section className="storyboard-frame-grid" aria-label="Storyboard review grid">
+    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard review grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Structured storyboard root</p>
         <h3>Review Grid</h3>
@@ -1821,6 +1829,8 @@ function StoryboardReviewGridView({
       </div>
 
       <div
+        id={currentFrame.id}
+        ref={stageRef}
         className="storyboard-review-stage"
         tabIndex={0}
         onKeyDown={handleKeyDown}
@@ -2497,42 +2507,6 @@ function DocsLink({
   );
 }
 
-function ViewerDocumentOutlineView({
-  items
-}: {
-  items: ViewerDocumentOutlineItem[];
-}) {
-  return (
-    <section id="document-outline" tabIndex={-1} className="viewer-outline-card" aria-label="Document outline">
-      <div className="panel-heading-row">
-        <p className="eyebrow">Outline</p>
-        <span>{items.length > 0 ? `${items.length} items` : "empty"}</span>
-      </div>
-      {items.length > 0 ? (
-        <ol className="viewer-outline-list">
-          {items.map((item) => (
-            <li key={`${item.kind}-${item.id}`}>
-              <a
-                href={`#${item.id}`}
-                className="viewer-outline-link"
-                style={{ "--outline-depth": item.depth } as React.CSSProperties}
-              >
-                <span>{item.kind}</span>
-                <strong>{item.label}</strong>
-              </a>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p className="viewer-panel-empty">
-          Load a structured package to show document sections, comic panels, or
-          storyboard frames.
-        </p>
-      )}
-    </section>
-  );
-}
-
 function UploadDropzoneView({
   fileInputRef,
   dragActive,
@@ -2714,6 +2688,44 @@ function ViewerWorkspaceView({
   onLoadSample: (example: ViewerDemoExampleArchive) => void;
   onLocaleChange: (locale: string) => void;
 }) {
+  const [activePanelIndex, setActivePanelIndex] = useState(0);
+  const [activeFrameIndex, setActiveFrameIndex] = useState(0);
+  const visualStageRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setActivePanelIndex(0);
+    setActiveFrameIndex(0);
+  }, [
+    viewerState,
+    activeComicDocument?.id,
+    activeComicDocument?.panels.length,
+    activeStoryboardDocument?.id,
+    activeStoryboardDocument?.frames.length
+  ]);
+
+  function selectVisualOutlineItem(item: ViewerDocumentOutlineItem) {
+    const selection = resolveViewerVisualOutlineSelection(item, {
+      comicDocument: activeComicDocument,
+      storyboardDocument: activeStoryboardDocument
+    });
+    if (!selection) {
+      return;
+    }
+
+    if (selection.kind === "panel") {
+      setActivePanelIndex(selection.index);
+    } else {
+      setActiveFrameIndex(selection.index);
+    }
+
+    // Continue keyboard navigation on the active visual stage, not the sidebar.
+    visualStageRef.current?.focus({ preventScroll: true });
+    document.getElementById("document-stage")?.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+    });
+  }
+
   return (
     <main id="main-content" tabIndex={-1} className="viewer-route" aria-label="PRD web viewer workspace">
       <section className={`viewer-dashboard${viewerState ? " has-package" : ""}`} aria-busy={loading || sampleLoadingId !== null}>
@@ -2734,7 +2746,14 @@ function ViewerWorkspaceView({
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
             />
-            <ViewerDocumentOutlineView items={documentOutline} />
+            <ViewerDocumentOutline
+              items={documentOutline}
+              visualSelectionKind={comicPanelNavigationEnabled ? "panel" : storyboardReviewGridEnabled ? "frame" : undefined}
+              activeItemId={comicPanelNavigationEnabled
+                ? activeComicDocument?.panels[activePanelIndex]?.id
+                : activeStoryboardDocument?.frames[activeFrameIndex]?.id}
+              onSelectVisualItem={selectVisualOutlineItem}
+            />
             <details className="viewer-sample-picker" open={!viewerState}>
               <summary>Try a sample package</summary>
               <ViewerExampleGuideView
@@ -2763,10 +2782,10 @@ function ViewerWorkspaceView({
 
             {viewerState && (
               <section className="panel viewer-panel">
-                <div className="panel-heading-row">
-                  <h2>Render Stage</h2>
-                  <span>{getViewerRenderModeMessage(viewerRenderMode)}</span>
-                </div>
+                <ViewerStageStatus
+                  valid={viewerState.validation.valid}
+                  renderModeMessage={getViewerRenderModeMessage(viewerRenderMode)}
+                />
 
                 {viewerState.opened?.supportState === "reserved-profile" && (
                   <div className="reserved">
@@ -2787,6 +2806,9 @@ function ViewerWorkspaceView({
                     <ComicPanelNavigationView
                       comicDocument={activeComicDocument}
                       assetUrls={viewerState.assetUrls ?? {}}
+                      activePanelIndex={activePanelIndex}
+                      onPanelChange={setActivePanelIndex}
+                      stageRef={visualStageRef}
                     />
                   ) : (
                     <ComicPanelStripView
@@ -2800,6 +2822,9 @@ function ViewerWorkspaceView({
                     <StoryboardReviewGridView
                       storyboardDocument={activeStoryboardDocument}
                       assetUrls={viewerState.assetUrls ?? {}}
+                      activeFrameIndex={activeFrameIndex}
+                      onFrameChange={setActiveFrameIndex}
+                      stageRef={visualStageRef}
                     />
                   ) : (
                     <StoryboardFrameGridView

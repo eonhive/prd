@@ -2,87 +2,81 @@
 
 ## Current status
 
-- October 25, 2026: PR #49 is merged; local `main` was fast-forwarded to `0b8def2`. Current branch: `thehive/prd-public-experience-polish`.
-- The public domain now serves the app and sample archives. The prior DNS failure is no longer current.
-- The Home/Viewer/Docs usability implementation is in [draft PR #50](https://github.com/eonhive/prd/pull/50), with automated checks passing locally. These UI changes have not been deployed.
-- Browser access is disabled in Work settings. Items 44 (production launch QA) and 45 (visual acceptance) remain open.
+- October 25, 2026: PR #50 is merged at `a9d77d9`; local `main` was fast-forwarded before creating `thehive/prd-viewer-outline-qa`.
+- Browser access is enabled. The public site shows PR #50's Home/Viewer/Docs usability pass; the earlier browser-disabled note is historical.
+- [PR #51](https://github.com/eonhive/prd/pull/51) is ready for review with the narrow corrective viewer changes found during live launch QA. It has not been merged or deployed.
+- Item 45's visual review is complete. Launch item 44 remains open for deployed correction checks, real drag/drop, and production pipeline confirmation. CLI release item 46 remains a separate slice.
 
 ## Completed work
 
-- Bounded hero typography and copy, visible mobile navigation/open action, actual route anchors with modified-click behavior, and skip/focus targets.
-- Extracted small navigation/header components to `viewerChrome.tsx`; invalid packages no longer show the empty-workspace label. Loaded packages show their real title.
-- Native chooser button plus hidden `.prd` input replaces nested button semantics. Existing archive selection, drag/drop, parsing, validation, and eager loading remain intact.
-- Sample guidance collapses once a package is opened. Loaded content precedes rails in the narrow-screen grid; workspace anchor links expose Document, Outline, and Package details.
-- Docs now prioritizes first steps and section jump links, with hosting details in a disclosure.
-- Reduced-motion handling and graceful theme fallback when browser storage is blocked.
-- Published CLI availability is now explicit: npm latest `0.1.1` provides pack/validate/inspect; init/import are repository features awaiting their queued minor release.
-- Live HTTP checks passed for all three routes, static JS/CSS, and four downloaded archives. Each archive was unzipped and validated using the existing validator with the expected profile.
+- Reviewed production Home on desktop in dark/light mode and Home/Docs/Viewer on mobile. Hero/navigation and document-first narrow-screen presentation were readable without horizontal overflow.
+- Verified production Viewer/Docs direct navigation and refresh, Home/Docs back/forward, and saved light theme after Home reload.
+- Opened hosted document/comic/storyboard samples as fully supported; inspected package facts, attachments, and localization. French Document Basic changed both text and its inline image resource.
+- Selected a local canonical comic archive through the production header's native file chooser.
+- Fixed comic/storyboard outline selection by sharing active visual state with the outline. Outline buttons now activate the real panel/frame and focus its viewing stage for keyboard continuation.
+- Added rendered authored root/static visual IDs, stopped inventing heading anchors without IDs, and added scroll clearance below the sticky header.
+- Added an exact accessible name to the mobile theme toggle. Invalid archives now show validation failure rather than a misleading unsupported runtime entry-mode message.
+- Added regression helper/markup tests; no new dependency or changeset.
 
 ## In-progress work
 
-- Complete code review and browser/visual acceptance of draft PR #50 before merge or production launch sign-off.
-- Browser checks were not bypassed through another automation runtime after Work settings reported browser use disabled.
-- No hosting account, DNS, production deployment, npm publication, or permissions were changed.
+- Review PR #51, then recheck the deployed revision on the public domain after merge/deployment.
+- Finish actual OS file drag/drop. Confirm Cloudflare account/Workers Builds settings with the owner before launch sign-off.
+- No hosting account, credentials, permissions, DNS, npm release, or production deployment changes were made.
 
 ## Changed files
 
 - `apps/prd-viewer-web/src/App.tsx`, `styles.css`
-- `apps/prd-viewer-web/src/viewerDemoContent.ts`, `viewerDemoContent.test.ts`
-- New `apps/prd-viewer-web/src/viewerChrome.tsx`, `viewerChrome.test.ts`, `viewerExperience.test.ts`
-- `README.md`, `docs/README.md`, `packages/prd-cli/README.md`
-- `docs/governance/PRD_HOSTING_RUNBOOK.md`, `docs/product/PRD_AUTHORING_WORKFLOW.md`
-- `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/SESSION_HANDOFF.md`
+- `apps/prd-viewer-web/src/viewerChrome.tsx`, `viewerChrome.test.ts`
+- `apps/prd-viewer-web/src/viewerDocumentOutline.ts`, `viewerDocumentOutline.test.ts`
+- `README.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`
+- `docs/governance/PRD_HOSTING_RUNBOOK.md`, `codex/SESSION_HANDOFF.md`
 
 ## Commands run
 
-- Git status, fetch `origin/main`, switch/fast-forward `main`, create the public-experience branch (bundled Git wrapper).
-- Published the verified staged tree through the authorized GitHub connector because local HTTPS push credentials were unavailable. PR #50 is deliberately a draft; no merge was requested or performed.
-- Targeted Vitest runs covering chrome, route markup, content, archive helpers, route paths, and render-mode unit/integration cases.
+- Bundled Git: status, fetch, fast-forward main, create corrective branch, diff review/check. System Git's Xcode license restriction was not bypassed or accepted.
+- Published the verified staged tree through the authorized GitHub connector because local HTTPS push credentials are unavailable; remote tree SHA matched the local index. Opened ready PR #51, with no merge or production deployment performed.
+- Targeted Vitest: outline, chrome, experience, and render-mode unit/integration tests.
+- `pnpm foundation:gate`
 - `pnpm typecheck`
 - `pnpm viewer:demo:build:github-pages`
 - `pnpm viewer:demo:check:cloudflare`
 - `pnpm docs:check -- --include-root-docs`
-- `pnpm foundation:gate`
-- `git diff --check`
-- Live HTTP/package checks using fetch, unzip, and the existing validator; no remote JavaScript was executed by this check.
-- `npm view @eonhive/prd-cli version --json` returned `0.1.1`.
-- `npm exec --yes --package=@eonhive/prd-cli@0.1.1 -- prd --help` returned usage listing pack/validate/inspect with exit 1 (the old CLI does not expose that help option). This was an availability probe, not a passing CLI smoke run.
+- `pnpm exec wrangler dev --local` for real browser checks against the production build.
+- Browser QA used the supported browser tools; screenshots/builds and a temporary invalid archive remain generated test artifacts, not canonical source fixtures.
 
 ## Tests / verification
 
 - Node `22.22.2` and pnpm `10.32.1` used.
-- Targeted checks: 40 tests passed across 7 files.
-- Foundation gate: passed with 209 tests across 23 files, build, docs consistency, example validation, and aggregate example smoke.
-- Typecheck, GitHub Pages build, Cloudflare build plus Wrangler dry run, docs check, and diff check passed.
-- Production HTTP/package baseline passed for Home, Viewer, Docs, built JS/CSS, and document-basic/document-segmented-basic/comic-basic/storyboard-basic archives.
-- New UI tests cover server-rendered semantics, package labels, saved/blocked theme reads, and source layout safeguards, not actual rendered desktop/mobile layouts.
-- No browser interaction, upload/drop, visual, theme-persistence, or back/forward checks were completed in this pass.
+- Targeted tests: 43 passed across 5 files. Foundation gate: 224 tests across 23 files, workspace build, docs consistency, canonical example validation, and aggregate example smoke passed.
+- Root typecheck, GitHub Pages fallback build, Cloudflare production build plus Wrangler dry run, docs consistency (including root docs), and diff check passed.
+- Local browser checks: panel/frame selection, keyboard Left continuation, repeated selection, root/heading anchors, mobile dark/light comic layout, invalid archive feedback/recovery, and same-file reopen/reset passed. Local browser console check reported no warnings/errors.
+- Production vs local verification is separated in the hosting runbook matrix. Do not treat local fixes as already deployed.
 
 ## Known issues
 
-- Enable browser use in Work settings or perform manual QA to finish desktop/mobile, refresh/history, keyboard, theme persistence, and file-picker/drop acceptance.
-- CLI authoring release is a separate public-product blocker. Three CLI-only minor changesets are queued; preflight currently insists all public package versions match. Resolve that policy/implementation conflict intentionally before versioning.
-- System Git remains subject to the Xcode license restriction; use the bundled Git wrapper without accepting the license automatically. HTTPS push previously lacked credentials; use the authorized GitHub connector if still unavailable.
-- Do not infer the active Cloudflare deployment's account/pipeline configuration merely from successful HTTP responses.
-- Native SPA fallback can return HTML for missing archive URLs. Current hosted samples were validated as packages, not just HTTP successes.
+- Actual OS file drag/drop is still unverified. Native chooser and helper unit tests do not replace this check.
+- Deployment-owner/build settings confirmation remains open. Do not infer account/pipeline configuration from HTTP success.
+- npm latest CLI was last verified at `0.1.1` (pack/validate/inspect). Three CLI-only minor authoring changesets are queued, while preflight currently requires matching public package versions. Resolve that conflict deliberately in item 46 before versioning.
+- System Git needs an unaccepted Xcode license; use bundled Git. Local HTTPS push lacks credentials; use the authorized GitHub connector if needed.
+- SPA fallback can return HTML for missing archive URLs. Validate actual package bytes, not only HTTP status.
 
 ## Next recommended task
 
-- Review draft PR #50 and complete visual/browser QA before marking it ready, then verify the deployed revision; retain GitHub Pages fallback and leave items 44/45 open until verified.
-- Then take item 46 as a separate release slice: reconcile preflight/version policy, version/publish the queued authoring CLI changes through CI, and verify a clean npm consumer's init/import/validate/inspect/pack flow.
-- Update repository-vs-published availability notes only after the release is verified live.
+- Review/merge this corrective PR, verify the deployed fixes, complete drag/drop, and confirm the production Workers Builds settings. Keep GitHub Pages fallback until item 44 is accepted.
+- Then take item 46 separately: reconcile preflight/version policy, ship queued authoring CLI changes through existing CI, and verify an external npm consumer's init/import/validate/inspect/pack flow.
+- Change repository-vs-published availability notes only after that release is verified live.
 
 ## Important decisions
 
-- No manifest, schema, capability, runtime support-state, archive parsing, structured renderer, public npm API, or release automation changes.
-- One static app still serves Home, Viewer, and Docs. No Studio, Cloud authoring, accounts, AI, PRDc, payments, crypto, or broad conversion.
-- No changeset for this private-app/documentation slice; existing CLI changesets remain untouched.
-- Passing markup/style assertions or HTTP checks is not visual/browser launch acceptance.
-- Keep Codex docs tracked, sanitized, and out of public navigation.
+- This is a private-app launch correction, not a new feature lane or format change.
+- No manifest, schema, validator, capability, runtime support-state, archive parsing, public npm API, CLI implementation, or release automation changes.
+- Eager whole-package in-memory loading remains unchanged. No Studio, Cloud authoring, accounts, AI, PRDc, payment, crypto, or conversion expansion.
+- Keep Codex docs tracked, sanitized, and out of public navigation. Generated QA screenshots are ignored artifacts.
 
 ## Do not redo
 
-- Do not redo the merged Workers migration or old npm publish/deprecation recovery.
-- Do not claim these UI changes are deployed before review/merge.
-- Do not mark launch QA complete or broaden browser permissions automatically.
-- Do not fold CLI release/preflight changes into this UI PR.
+- Do not redo merged PR #50, Workers migration, or resolved npm 0.1.0/0.1.1 recovery.
+- Do not claim this branch's corrections are deployed or mark item 44 complete without the remaining real checks.
+- Do not broaden browser permissions or modify production credentials/DNS to finish QA.
+- Do not mix CLI release/preflight changes into this UI PR.

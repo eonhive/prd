@@ -1975,6 +1975,18 @@ body {
   min-width: 0;
 }
 
+.structured-document[id],
+.structured-heading[id],
+.structured-section[id],
+.comic-panel-strip[id],
+.comic-panel-stage[id],
+.comic-panel-card[id],
+.storyboard-frame-grid[id],
+.storyboard-review-stage[id],
+.storyboard-frame-card[id] {
+  scroll-margin-top: calc(var(--nav-height) + 2rem);
+}
+
 .docs-hosting-card summary,
 .viewer-sample-picker summary {
   padding: 0.65rem;
@@ -2235,6 +2247,9 @@ body {
 
 .viewer-outline-link {
   display: grid;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
   gap: 0.2rem;
   padding: 0.68rem 0.72rem 0.68rem calc(0.72rem + (var(--outline-depth, 0) * 0.85rem));
   border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
@@ -2247,6 +2262,11 @@ body {
 .viewer-outline-link:hover,
 .viewer-outline-link:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.viewer-outline-link[aria-current="true"] {
+  border-color: var(--accent-cyan);
+  background: var(--panel-soft);
 }
 
 .viewer-outline-link span {

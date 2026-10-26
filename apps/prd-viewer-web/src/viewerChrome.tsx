@@ -8,7 +8,8 @@
  * Notes: Vibe coded with Codex.
  */
 
-import type { MouseEvent } from "react";
+import type { CSSProperties, MouseEvent } from "react";
+import type { ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
 import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
 
 export type ViewerTheme = "dark" | "light";
@@ -77,7 +78,12 @@ export function ViewerSiteNavigation({
         </a>
       </nav>
       <div className="site-nav-actions">
-        <button type="button" className="theme-toggle" onClick={onToggleTheme}>
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={onToggleTheme}
+          aria-label={theme === "dark" ? "Switch to light" : "Switch to dark"}
+        >
           <span aria-hidden="true">{theme === "dark" ? "Dark" : "Light"}</span>
           <strong>{theme === "dark" ? "Switch to light" : "Switch to dark"}</strong>
         </button>
@@ -86,6 +92,59 @@ export function ViewerSiteNavigation({
         </button>
       </div>
     </header>
+  );
+}
+
+export function ViewerDocumentOutline({
+  items,
+  visualSelectionKind,
+  activeItemId,
+  onSelectVisualItem
+}: {
+  items: ViewerDocumentOutlineItem[];
+  visualSelectionKind?: "panel" | "frame";
+  activeItemId?: string;
+  onSelectVisualItem: (item: ViewerDocumentOutlineItem) => void;
+}) {
+  return (
+    <section id="document-outline" tabIndex={-1} className="viewer-outline-card" aria-label="Document outline">
+      <div className="panel-heading-row">
+        <p className="eyebrow">Outline</p>
+        <span>{items.length > 0 ? `${items.length} items` : "empty"}</span>
+      </div>
+      {items.length > 0 ? (
+        <ol className="viewer-outline-list">
+          {items.map((item) => {
+            const style = { "--outline-depth": item.depth } as CSSProperties;
+            const label = <><span>{item.kind}</span><strong>{item.label}</strong></>;
+            return (
+              <li key={`${item.kind}-${item.id}`}>
+                {item.kind === visualSelectionKind ? (
+                  <button
+                    type="button"
+                    className="viewer-outline-link"
+                    style={style}
+                    aria-controls="document-stage"
+                    aria-current={item.id === activeItemId ? "true" : undefined}
+                    onClick={() => onSelectVisualItem(item)}
+                  >
+                    {label}
+                  </button>
+                ) : (
+                  <a href={`#${encodeURIComponent(item.id)}`} className="viewer-outline-link" style={style}>
+                    {label}
+                  </a>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p className="viewer-panel-empty">
+          Load a structured package to show document sections, comic panels, or storyboard frames.
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -129,5 +188,28 @@ export function ViewerWorkspaceHeader({
         )}
       </div>
     </div>
+  );
+}
+
+export function ViewerStageStatus({
+  valid,
+  renderModeMessage
+}: {
+  valid: boolean;
+  renderModeMessage: string;
+}) {
+  return (
+    <>
+      <div className="panel-heading-row">
+        <h2>{valid ? "Render Stage" : "Package validation failed"}</h2>
+        {valid && <span>{renderModeMessage}</span>}
+      </div>
+      {!valid && (
+        <p className="viewer-message" role="alert">
+          This archive failed package validation, so no content was rendered.{" "}
+          <a href="#package-details">Review package errors</a> before opening it again.
+        </p>
+      )}
+    </>
   );
 }

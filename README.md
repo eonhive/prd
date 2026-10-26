@@ -324,6 +324,8 @@ pnpm viewer:demo:dev
 
 The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Workers Static Assets at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in [the hosting runbook](docs/governance/PRD_HOSTING_RUNBOOK.md).
 
+The viewer outline links to authored document/section/heading IDs. In panel-navigation or storyboard review-grid mode, selecting an outline item activates that panel/frame and moves keyboard focus to its viewing stage. Invalid packages show validation errors rather than being described as an unsupported runtime entry mode.
+
 The public `/docs/` route is a user-friendly navigation layer over canonical repo docs. It does not replace `docs/`, and it intentionally does not link the tracked `codex/` operational planning files.
 
 The public demo is reachable at [prd.eonhive.com](https://prd.eonhive.com/). Home uses bounded, wrapping hero copy; navigation and the open action remain available on narrow screens. The Viewer identifies the opened package, distinguishes invalid packages from an empty workspace, and puts loaded content ahead of its rails on narrow screens. Docs provides section jump links and keeps hosting notes in a disclosure. These changes do not alter package parsing or eager in-memory loading.
@@ -509,7 +511,7 @@ The repo also now includes [`.github/workflows/codex-ci.yml`](/Users/nappy.cat/L
 
 For release automation, the repo also includes [`.github/workflows/release.yml`](/Users/nappy.cat/Labs/eonHive.lab/prd.lab/prd/.github/workflows/release.yml), which gates npm publication through Changesets and CI on `main`.
 
-The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/workflows/viewer-demo-pages.yml). The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, and `/prd/docs/` as the public docs index. Production targets Cloudflare Workers Static Assets at `prd.eonhive.com`, pending authenticated deployment and launch QA. Workers uses native SPA fallback; the GitHub Pages workflow separately copies `index.html` to `404.html` for route refresh support.
+The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/workflows/viewer-demo-pages.yml). The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, and `/prd/docs/` as the public docs index. The public app is reachable at `prd.eonhive.com`; production pipeline confirmation and remaining launch QA are tracked in the hosting runbook. Workers uses native SPA fallback; the GitHub Pages workflow separately copies `index.html` to `404.html` for route refresh support.
 
 ---
 
