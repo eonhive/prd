@@ -1,6 +1,14 @@
 import { unzipSync, strFromU8 } from "fflate";
 import { LivingHomepage } from "./LivingHomepage.js";
-import { livingViewerExitFocusMessage } from "./livingViewerMessages.js";
+import {
+  livingViewerExitFocusMessage,
+  livingViewerLocalFileMessage,
+  livingViewerReadyMessage,
+  livingViewerSampleSelectedMessage,
+  livingViewerSelectSampleMessage,
+  readLivingViewerMessage,
+  type LivingViewerMessage,
+} from "./livingViewerMessages.js";
 import {
   type DragEvent as ReactDragEvent,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -2850,6 +2858,10 @@ export function App() {
   const embeddedViewer = query.get("embed") === "1";
   const requestedSample = query.get("sample");
   const initialSampleLoaded = useRef(false);
+  // File reads and hosted fetches can overlap; only the newest selection may commit.
+  const sampleFetchRef = useRef<AbortController | undefined>(undefined);
+  const loadGenerationRef = useRef(0);
+  const currentSampleRef = useRef<string | null>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [route, setRoute] = useState<ViewerAppRoute>(() =>
@@ -2863,21 +2875,43 @@ export function App() {
   const [dragActive, setDragActive] = useState(false);
   const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
 
+  function notifyHomepage(message: LivingViewerMessage) {
+    if (!embeddedViewer || window.parent === window) return;
+    window.parent.postMessage(message, window.location.origin);
+  }
+
   useEffect(() => {
     if (!embeddedViewer || window.parent === window) return;
     function handleEmbeddedEscape(event: KeyboardEvent) {
       if (event.key !== "Escape" || event.defaultPrevented) return;
       window.parent.postMessage({ type: livingViewerExitFocusMessage }, window.location.origin);
     }
+    function handleHomepageMessage(event: MessageEvent<unknown>) {
+      const message = readLivingViewerMessage(event, window.parent, window.location.origin);
+      if (message?.type !== livingViewerSelectSampleMessage) return;
+      if (message.sampleId === currentSampleRef.current) return;
+      const example = viewerDemoExampleArchives.find((item) => item.id === message.sampleId);
+      if (example) void handleSampleArchive(example);
+    }
     window.addEventListener("keydown", handleEmbeddedEscape);
-    return () => window.removeEventListener("keydown", handleEmbeddedEscape);
+    window.addEventListener("message", handleHomepageMessage);
+    notifyHomepage({ type: livingViewerReadyMessage });
+    return () => {
+      window.removeEventListener("keydown", handleEmbeddedEscape);
+      window.removeEventListener("message", handleHomepageMessage);
+    };
   }, [embeddedViewer]);
 
   useEffect(() => {
     return () => {
+      loadGenerationRef.current++;
+      sampleFetchRef.current?.abort();
+      currentSampleRef.current = null;
+      initialSampleLoaded.current = false;
       for (const url of objectUrlsRef.current) {
         URL.revokeObjectURL(url);
       }
+      objectUrlsRef.current = [];
     };
   }, []);
 
@@ -3044,7 +3078,7 @@ export function App() {
     }, 0);
   }
 
-  async function handleFile(file: File) {
+  async function handleFile(file: File, generation = ++loadGenerationRef.current) {
     setLoading(true);
     setError(null);
     setSelectedLocale(undefined);
@@ -3055,16 +3089,19 @@ export function App() {
 
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
+      if (generation !== loadGenerationRef.current) return;
       const files = unzipSync(bytes) as PrdFileMap;
       const validation = validatePackageFiles(files);
 
       if (!validation.valid || !validation.manifest) {
+        currentSampleRef.current = null;
         setViewerState({ validation });
         setLoading(false);
         return;
       }
 
       const opened = await openPrdDocument(createPackageReader(files));
+      if (generation !== loadGenerationRef.current) return;
       const packageFacts = createPackageFacts(files, opened);
       const normalizedOpened =
         opened.entryDocument !== undefined
@@ -3120,11 +3157,13 @@ export function App() {
         packageFacts
       });
     } catch (caught) {
+      if (generation !== loadGenerationRef.current) return;
+      currentSampleRef.current = null;
       setError(caught instanceof Error ? caught.message : "Failed to open PRD file.");
       setViewerState(null);
       setSelectedLocale(undefined);
     } finally {
-      setLoading(false);
+      if (generation === loadGenerationRef.current) setLoading(false);
     }
   }
 
@@ -3137,19 +3176,32 @@ export function App() {
 
     const archive = findFirstPrdArchive(files ?? []);
     if (archive) {
+      sampleFetchRef.current?.abort();
+      currentSampleRef.current = null;
+      setSampleLoadingId(null);
+      notifyHomepage({ type: livingViewerLocalFileMessage });
       void handleFile(archive);
     }
   }
 
-  async function handleSampleArchive(example: ViewerDemoExampleArchive) {
+  async function handleSampleArchive(example: ViewerDemoExampleArchive, userSelected = false) {
     if (!embeddedViewer) navigateToRoute("viewer");
+    const generation = ++loadGenerationRef.current;
+    sampleFetchRef.current?.abort();
+    const controller = new AbortController();
+    sampleFetchRef.current = controller;
+    currentSampleRef.current = example.id;
+    if (userSelected) {
+      notifyHomepage({ type: livingViewerSampleSelectedMessage, sampleId: example.id });
+    }
+    setLoading(false);
     setSampleLoadingId(example.id);
     setError(null);
 
     try {
       const demoBaseUrl = new URL(viewerAppBasePath, window.location.origin).toString();
       const url = getViewerDemoSampleArchiveUrl(example.hostedPath, demoBaseUrl);
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) {
         throw new Error(
           `Could not load hosted sample ${example.hostedPath}. Run \`pnpm viewer:demo:assets\` locally or check the deployed demo assets.`
@@ -3160,15 +3212,21 @@ export function App() {
       const archive = new File([await response.arrayBuffer()], archiveName, {
         type: "application/zip"
       });
-      await handleFile(archive);
+      if (generation !== loadGenerationRef.current) return;
+      await handleFile(archive, generation);
     } catch (caught) {
+      if (generation !== loadGenerationRef.current) return;
+      currentSampleRef.current = null;
       setError(
         caught instanceof Error
           ? caught.message
           : "Failed to load the hosted sample PRD archive."
       );
     } finally {
-      setSampleLoadingId(null);
+      if (generation === loadGenerationRef.current) {
+        sampleFetchRef.current = undefined;
+        setSampleLoadingId(null);
+      }
     }
   }
 
@@ -3254,7 +3312,7 @@ export function App() {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onLoadSample={(example) => void handleSampleArchive(example)}
+          onLoadSample={(example) => void handleSampleArchive(example, true)}
           onLocaleChange={setSelectedLocale}
         />
       )}

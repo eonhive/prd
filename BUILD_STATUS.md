@@ -2,6 +2,15 @@
 
 ## 2026-10-27
 
+### Living Homepage — Embedded Sample Continuity
+
+- Continued from merged main `9075994` in the isolated `thehive/prd-viewer-continuity` worktree. Independent unfinished Viewer, container and signing changes in the shared checkout were left untouched and are not part of this slice's validation count.
+- Kept one stable iframe source after its initial mount. Home selections now use a bounded ready/select message bridge; sample choices made through the embedded Viewer's own controls update the inspector, profile study and final download. Commands matching the current or in-flight sample do not reload it, preserving locale and resource URLs.
+- Authenticated each message against the expected window and exact origin and accepted only allowlisted sample IDs. Local file opens send only a state marker, without filename or content; the selector can explicitly return to the same canonical example. No PRD format, viewer-core, uRK, CLI or public npm API changed, and no animation scheduler was added.
+- Added abort/generation guards across hosted fetches, archive file reads, document opening and disposal. Older results, errors and cleanup cannot replace the latest package. Tests also protect failed-load recovery and initial query loading through React Strict Mode cleanup/replay.
+- Added a pinned test-only `jsdom` environment and two React DOM integration suites. Typecheck and the full foundation gate passed on Node 22: **305 tests across 31 files**, workspace build, docs consistency, canonical example validation and aggregate smoke. Both hosting builds and the Wrangler dry run passed. Implementation notes, hosting guidance and the active backlog were updated.
+- Local browser use is disabled in Work settings. Message/authentication, persistent-node identity, French locale/resource continuity, interrupted fetch/file reads and local-file privacy were verified in DOM tests; no fresh visual, native-dialog, touch, screen-reader or production interaction pass is claimed. Launch acceptance items 44/48 remain open. No production deployment or npm release was performed.
+
 ### Viewer DOM Target Collision Fix
 
 - Addressed the review finding from merged PR #51 without changing package-authored IDs or validator rules. A private-app helper now generates disjoint document/node/panel/frame target IDs using lossless encoding, preventing authored IDs from shadowing fixed viewer controls or one another across root/visual scopes.

@@ -9,7 +9,13 @@ import { describe, expect, it } from "vitest";
 import {
   isLivingViewerExitRequest,
   livingViewerExitFocusMessage,
+  livingViewerLocalFileMessage,
+  livingViewerReadyMessage,
+  livingViewerSelectSampleMessage,
+  livingViewerSampleSelectedMessage,
+  readLivingViewerMessage,
 } from "./livingViewerMessages.js";
+import { viewerDemoExampleArchives } from "./viewerDemoContent.js";
 
 describe("embedded Viewer Escape boundary", () => {
   const frameWindow = {} as Window;
@@ -55,5 +61,49 @@ describe("embedded Viewer Escape boundary", () => {
     expect(
       isLivingViewerExitRequest({ ...request, data }, frameWindow, origin),
     ).toBe(false);
+  });
+});
+
+describe("embedded Viewer selection boundary", () => {
+  const source = {} as Window;
+  const origin = "https://prd.eonhive.com";
+  const event = (data: unknown) => ({ data, source, origin });
+
+  it.each([livingViewerSelectSampleMessage, livingViewerSampleSelectedMessage])(
+    "accepts every hosted example for %s",
+    (type) => {
+      for (const example of viewerDemoExampleArchives) {
+        const message = { type, sampleId: example.id };
+        expect(readLivingViewerMessage(event(message), source, origin)).toEqual(message);
+      }
+    },
+  );
+
+  it.each([
+    "https://other.example/document.prd", "../private.prd", "resume", "", null, {},
+  ])("rejects unknown sample identities: %j", (sampleId) => {
+    for (const type of [livingViewerSelectSampleMessage, livingViewerSampleSelectedMessage]) {
+      expect(readLivingViewerMessage(event({ type, sampleId }), source, origin)).toBeUndefined();
+    }
+  });
+
+  it.each([livingViewerReadyMessage, livingViewerLocalFileMessage])(
+    "normalizes %s without forwarding any file details",
+    (type) => {
+      const data = { type, fileName: "private.prd", content: "private content" };
+      expect(readLivingViewerMessage(event(data), source, origin)).toEqual({ type });
+    },
+  );
+
+  it("rejects sample commands from another origin or browsing context", () => {
+    const request = event({ type: livingViewerSelectSampleMessage, sampleId: "comic-basic" });
+    expect(readLivingViewerMessage({ ...request, origin: "https://other.example" }, source, origin)).toBeUndefined();
+    expect(readLivingViewerMessage({ ...request, source: {} as Window }, source, origin)).toBeUndefined();
+    expect(readLivingViewerMessage(request, null, origin)).toBeUndefined();
+  });
+
+  it("does not treat selection or readiness as a focus-exit request", () => {
+    expect(isLivingViewerExitRequest(event({ type: livingViewerReadyMessage }), source, origin)).toBe(false);
+    expect(isLivingViewerExitRequest(event({ type: livingViewerSampleSelectedMessage, sampleId: "comic-basic" }), source, origin)).toBe(false);
   });
 });
