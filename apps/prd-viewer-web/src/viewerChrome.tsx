@@ -4,12 +4,12 @@
  * Purpose: Provide accessible public navigation and truthful package status without renderer coupling.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 25, 2026
+ * Updated: October 26, 2026
  * Notes: Vibe coded with Codex.
  */
 
 import type { CSSProperties, MouseEvent } from "react";
-import type { ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
+import { getViewerOutlineTargetId, type ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
 import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
 
 export type ViewerTheme = "dark" | "light";
@@ -131,7 +131,7 @@ export function ViewerDocumentOutline({
                     {label}
                   </button>
                 ) : (
-                  <a href={`#${encodeURIComponent(item.id)}`} className="viewer-outline-link" style={style}>
+                  <a href={`#${getViewerOutlineTargetId(item)}`} className="viewer-outline-link" style={style}>
                     {label}
                   </a>
                 )}

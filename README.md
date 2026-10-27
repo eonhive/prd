@@ -324,7 +324,7 @@ pnpm viewer:demo:dev
 
 The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Workers Static Assets at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in [the hosting runbook](docs/governance/PRD_HOSTING_RUNBOOK.md).
 
-The viewer outline links to authored document/section/heading IDs. In panel-navigation or storyboard review-grid mode, selecting an outline item activates that panel/frame and moves keyboard focus to its viewing stage. Invalid packages show validation errors rather than being described as an unsupported runtime entry mode.
+The viewer translates authored IDs and same-document fragment links into namespaced, viewer-local DOM targets. Document, content-node, panel, and frame targets stay separate from viewer controls, even when a package uses IDs such as `document-stage` or `package-details`. These generated targets are an app detail, not a package-ID requirement. In panel-navigation or storyboard review-grid mode, selecting an outline item activates that panel/frame and moves keyboard focus to its viewing stage. Invalid packages show validation errors rather than being described as an unsupported runtime entry mode.
 
 The public `/docs/` route is a user-friendly navigation layer over canonical repo docs. It does not replace `docs/`, and it intentionally does not link the tracked `codex/` operational planning files.
 

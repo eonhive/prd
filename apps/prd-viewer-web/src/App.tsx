@@ -65,6 +65,7 @@ import {
   resolveViewerVisualOutlineSelection,
   type ViewerDocumentOutlineItem
 } from "./viewerDocumentOutline.js";
+import { getViewerContentLinkHref, getViewerContentTargetId } from "./viewerDocumentTargets.js";
 import {
   getViewerAppRouteFromPath,
   getViewerAppRoutePath,
@@ -1056,7 +1057,7 @@ function formatSeriesSequence(identity: PrdIdentity | undefined): string | undef
   return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
-function getStructuredLinkAnchorProps(href: string): {
+function getStructuredLinkAnchorProps(href: string, documentId: string): {
   href: string;
   target?: "_blank";
   rel?: "noreferrer";
@@ -1069,7 +1070,7 @@ function getStructuredLinkAnchorProps(href: string): {
     };
   }
 
-  return { href };
+  return { href: getViewerContentLinkHref(href, documentId) };
 }
 
 function getTableAlignClass(align?: "left" | "center" | "right"): string {
@@ -1129,17 +1130,19 @@ function renderHeading(
 function renderGeneralDocumentNode(
   node: PrdGeneralDocumentNode,
   assetUrls: AssetUrlMap,
-  key: string
+  key: string,
+  documentId: string
 ): ReactNode {
+  const targetId = node.id ? getViewerContentTargetId("node", node.id) : undefined;
   switch (node.type) {
     case "section":
       return (
-        <section key={key} id={node.id} className="structured-section">
+        <section key={key} id={targetId} className="structured-section">
           <h2 className="structured-section-title">{node.title}</h2>
           <div className="structured-section-body">
             {hasInlineSectionChildren(node)
               ? node.children.map((child, index) =>
-                  renderGeneralDocumentNode(child, assetUrls, `${key}-${index}`)
+                  renderGeneralDocumentNode(child, assetUrls, `${key}-${index}`, documentId)
                 )
               : null}
           </div>
@@ -1147,24 +1150,24 @@ function renderGeneralDocumentNode(
       );
 
     case "heading":
-      return renderHeading(node.level, node.text, key, node.id);
+      return renderHeading(node.level, node.text, key, targetId);
 
     case "paragraph":
       return (
-        <p key={key} id={node.id} className="structured-paragraph">
+        <p key={key} id={targetId} className="structured-paragraph">
           {node.text}
         </p>
       );
 
     case "list":
       return node.style === "ordered" ? (
-        <ol key={key} id={node.id} className="structured-list">
+        <ol key={key} id={targetId} className="structured-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>{item}</li>
           ))}
         </ol>
       ) : (
-        <ul key={key} id={node.id} className="structured-list">
+        <ul key={key} id={targetId} className="structured-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>{item}</li>
           ))}
@@ -1173,12 +1176,12 @@ function renderGeneralDocumentNode(
 
     case "links":
       return node.style === "list" ? (
-        <ul key={key} id={node.id} className="structured-links structured-links-list">
+        <ul key={key} id={targetId} className="structured-links structured-links-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>
               <a
                 className="structured-link"
-                {...getStructuredLinkAnchorProps(item.href)}
+                {...getStructuredLinkAnchorProps(item.href, documentId)}
               >
                 {item.label}
               </a>
@@ -1186,12 +1189,12 @@ function renderGeneralDocumentNode(
           ))}
         </ul>
       ) : (
-        <p key={key} id={node.id} className="structured-links structured-links-inline">
+        <p key={key} id={targetId} className="structured-links structured-links-inline">
           {node.items.map((item, index) => (
             <a
               key={`${key}-${index}`}
               className="structured-link"
-              {...getStructuredLinkAnchorProps(item.href)}
+              {...getStructuredLinkAnchorProps(item.href, documentId)}
             >
               {item.label}
             </a>
@@ -1201,7 +1204,7 @@ function renderGeneralDocumentNode(
 
     case "table":
       return (
-        <div key={key} id={node.id} className="structured-table-wrap">
+        <div key={key} id={targetId} className="structured-table-wrap">
           <table className="structured-table">
             {node.caption && <caption>{node.caption}</caption>}
             <thead>
@@ -1240,7 +1243,7 @@ function renderGeneralDocumentNode(
         Math.max(0, ...node.series.flatMap((series) => series.values)) || 1;
 
       return (
-        <figure key={key} id={node.id} className="structured-chart">
+        <figure key={key} id={targetId} className="structured-chart">
           {(node.title || node.caption) && (
             <figcaption className="structured-chart-header">
               {node.title && <strong>{node.title}</strong>}
@@ -1297,7 +1300,7 @@ function renderGeneralDocumentNode(
       const posterUrl = node.poster ? assetUrls[node.poster] : undefined;
 
       return (
-        <figure key={key} id={node.id} className="structured-media">
+        <figure key={key} id={targetId} className="structured-media">
           {src ? (
             node.mediaType === "audio" ? (
               <audio className="structured-media-player" controls preload="metadata" src={src} />
@@ -1323,7 +1326,7 @@ function renderGeneralDocumentNode(
     case "image": {
       const src = assetUrls[node.asset];
       return (
-        <figure key={key} id={node.id} className="structured-figure">
+        <figure key={key} id={targetId} className="structured-figure">
           {src ? (
             <img src={src} alt={node.alt} />
           ) : (
@@ -1338,7 +1341,7 @@ function renderGeneralDocumentNode(
 
     case "quote":
       return (
-        <blockquote key={key} id={node.id} className="structured-quote">
+        <blockquote key={key} id={targetId} className="structured-quote">
           <p>{node.text}</p>
           {node.attribution && <footer>{node.attribution}</footer>}
         </blockquote>
@@ -1346,7 +1349,7 @@ function renderGeneralDocumentNode(
   }
 }
 
-function StructuredDocumentView({
+export function StructuredDocumentView({
   document,
   assetUrls
 }: {
@@ -1354,7 +1357,7 @@ function StructuredDocumentView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <article id={document.id} className="structured-document" lang={document.lang}>
+    <article id={getViewerContentTargetId("document", document.id)} className="structured-document" lang={document.lang}>
       <header className="structured-document-header">
         <p className="structured-kicker">Structured {getProfileDisplayLabel(document.profile)}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1368,14 +1371,14 @@ function StructuredDocumentView({
 
       <div className="structured-document-body">
         {document.children.map((node, index) =>
-          renderGeneralDocumentNode(node, assetUrls, `root-${index}`)
+          renderGeneralDocumentNode(node, assetUrls, `root-${index}`, document.id)
         )}
       </div>
     </article>
   );
 }
 
-function ResumeDocumentView({
+export function ResumeDocumentView({
   document,
   assetUrls,
   resumeProfile
@@ -1421,7 +1424,7 @@ function ResumeDocumentView({
   const hasOverview = leadVisual || leadParagraph || resumeProfile.notes;
 
   return (
-    <article id={document.id} className="structured-document resume-document" lang={document.lang}>
+    <article id={getViewerContentTargetId("document", document.id)} className="structured-document resume-document" lang={document.lang}>
       <header className="structured-document-header resume-document-header">
         <p className="structured-kicker">{resumeProfile.label ?? "Resume variant"}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1440,7 +1443,8 @@ function ResumeDocumentView({
               renderGeneralDocumentNode(
                 leadVisual,
                 assetUrls,
-                `${document.id}-resume-lead-visual`
+                `${document.id}-resume-lead-visual`,
+                document.id
               )}
             <div className="resume-overview-body">
               {resumeProfile.notes && (
@@ -1450,7 +1454,8 @@ function ResumeDocumentView({
                 renderGeneralDocumentNode(
                   leadParagraph,
                   assetUrls,
-                  `${document.id}-resume-lead-paragraph`
+                  `${document.id}-resume-lead-paragraph`,
+                  document.id
                 )}
             </div>
           </aside>
@@ -1459,14 +1464,15 @@ function ResumeDocumentView({
         {sectionEntries.length > 0 && (
           <div className="resume-section-grid">
             {sectionEntries.map(({ node, index }) => (
-              <section key={`${document.id}-resume-section-${index}`} id={node.id} className="resume-section-card">
+              <section key={`${document.id}-resume-section-${index}`} id={getViewerContentTargetId("node", node.id)} className="resume-section-card">
                 <h2 className="resume-section-title">{node.title}</h2>
                 <div className="structured-section-body">
                   {node.children.map((child, childIndex) =>
                     renderGeneralDocumentNode(
                       child,
                       assetUrls,
-                      `${document.id}-resume-section-${index}-${childIndex}`
+                      `${document.id}-resume-section-${index}-${childIndex}`,
+                      document.id
                     )
                   )}
                 </div>
@@ -1482,7 +1488,8 @@ function ResumeDocumentView({
             renderGeneralDocumentNode(
               node,
               assetUrls,
-              `${document.id}-resume-support-${index}`
+              `${document.id}-resume-support-${index}`,
+              document.id
             )
           )}
         </div>
@@ -1491,7 +1498,7 @@ function ResumeDocumentView({
   );
 }
 
-function ComicPanelStripView({
+export function ComicPanelStripView({
   comicDocument,
   assetUrls
 }: {
@@ -1499,7 +1506,7 @@ function ComicPanelStripView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section id={comicDocument.id} className="comic-panel-strip" aria-label="Comic panel strip">
+    <section id={getViewerContentTargetId("document", comicDocument.id)} className="comic-panel-strip" aria-label="Comic panel strip">
       <div className="comic-panel-strip-header">
         <p className="structured-kicker">Structured comic root</p>
         <h3>Panel Strip</h3>
@@ -1512,7 +1519,7 @@ function ComicPanelStripView({
 
       <ol className="comic-panel-strip-list">
         {comicDocument.panels.map((panel) => (
-          <li key={panel.id} id={panel.id} className="comic-panel-card">
+          <li key={panel.id} id={getViewerContentTargetId("panel", panel.id)} className="comic-panel-card">
             {assetUrls[panel.asset] ? (
               <img
                 src={assetUrls[panel.asset]}
@@ -1538,7 +1545,7 @@ function ComicPanelStripView({
 
 const COMIC_SWIPE_THRESHOLD_PX = 48;
 
-function ComicPanelNavigationView({
+export function ComicPanelNavigationView({
   comicDocument,
   assetUrls,
   activePanelIndex,
@@ -1627,7 +1634,7 @@ function ComicPanelNavigationView({
 
   return (
     <section
-      id={comicDocument.id}
+      id={getViewerContentTargetId("document", comicDocument.id)}
       className="comic-panel-strip comic-panel-navigation"
       aria-label="Comic panel navigation"
     >
@@ -1642,7 +1649,7 @@ function ComicPanelNavigationView({
       </div>
 
       <div
-        id={currentPanel.id}
+        id={getViewerContentTargetId("panel", currentPanel.id)}
         ref={stageRef}
         className="comic-panel-stage comic-panel-stage--swipeable"
         tabIndex={0}
@@ -1731,7 +1738,7 @@ function ComicPanelNavigationView({
   );
 }
 
-function StoryboardFrameGridView({
+export function StoryboardFrameGridView({
   storyboardDocument,
   assetUrls
 }: {
@@ -1739,7 +1746,7 @@ function StoryboardFrameGridView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard frame grid">
+    <section id={getViewerContentTargetId("document", storyboardDocument.id)} className="storyboard-frame-grid" aria-label="Storyboard frame grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Structured storyboard root</p>
         <h3>Frame Grid</h3>
@@ -1752,7 +1759,7 @@ function StoryboardFrameGridView({
 
       <ol className="storyboard-frame-grid-list">
         {storyboardDocument.frames.map((frame) => (
-          <li key={frame.id} id={frame.id} className="storyboard-frame-card">
+          <li key={frame.id} id={getViewerContentTargetId("frame", frame.id)} className="storyboard-frame-card">
             {assetUrls[frame.asset] ? (
               <img
                 src={assetUrls[frame.asset]}
@@ -1776,7 +1783,7 @@ function StoryboardFrameGridView({
   );
 }
 
-function StoryboardReviewGridView({
+export function StoryboardReviewGridView({
   storyboardDocument,
   assetUrls,
   activeFrameIndex,
@@ -1815,7 +1822,7 @@ function StoryboardReviewGridView({
   }
 
   return (
-    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard review grid">
+    <section id={getViewerContentTargetId("document", storyboardDocument.id)} className="storyboard-frame-grid" aria-label="Storyboard review grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Structured storyboard root</p>
         <h3>Review Grid</h3>
@@ -1827,7 +1834,7 @@ function StoryboardReviewGridView({
       </div>
 
       <div
-        id={currentFrame.id}
+        id={getViewerContentTargetId("frame", currentFrame.id)}
         ref={stageRef}
         className="storyboard-review-stage"
         tabIndex={0}

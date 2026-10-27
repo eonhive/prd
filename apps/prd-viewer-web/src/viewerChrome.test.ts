@@ -4,7 +4,7 @@
  * Purpose: Lock real route links, accessible navigation, and empty/loading/valid/invalid package labels.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 25, 2026
+ * Updated: October 26, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -13,6 +13,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ViewerDocumentOutline, ViewerSiteNavigation, ViewerStageStatus, ViewerWorkspaceHeader } from "./viewerChrome.js";
 import type { ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
+import { getViewerContentTargetId } from "./viewerDocumentTargets.js";
 
 describe("viewer chrome", () => {
   it("keeps package validity failures separate from runtime support messages", () => {
@@ -59,19 +60,19 @@ describe("viewer chrome", () => {
     const html = renderToStaticMarkup(createElement(ViewerDocumentOutline, {
       items, visualSelectionKind: kind, activeItemId: "two", onSelectVisualItem() {}
     }));
-    expect(html).toContain('href="#document"');
-    expect(html).not.toContain('href="#one"');
+    expect(html).toContain(`href="#${getViewerContentTargetId("document", "document")}"`);
+    expect(html).not.toContain(`href="#${getViewerContentTargetId(kind, "one")}"`);
     expect(html).toContain('aria-controls="document-stage"');
     expect(html.match(/<button /g)).toHaveLength(2);
     expect(html.match(/aria-current="true"/g)).toHaveLength(1);
   });
 
-  it("keeps static outline entries as encoded native links", () => {
+  it("maps static outline entries to namespaced native links", () => {
     const html = renderToStaticMarkup(createElement(ViewerDocumentOutline, {
       items: [{ id: "panel:one", kind: "panel", label: "One", depth: 1 }],
       onSelectVisualItem() {}
     }));
-    expect(html).toContain('href="#panel%3Aone"');
+    expect(html).toContain(`href="#${getViewerContentTargetId("panel", "panel:one")}"`);
     expect(html).not.toContain("<button");
   });
 

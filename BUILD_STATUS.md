@@ -1,5 +1,15 @@
 # BUILD STATUS
 
+## 2026-10-27
+
+### Viewer DOM Target Collision Fix
+
+- Addressed the review finding from merged PR #51 without changing package-authored IDs or validator rules. A private-app helper now generates disjoint document/node/panel/frame target IDs using lossless encoding, preventing authored IDs from shadowing fixed viewer controls or one another across root/visual scopes.
+- Applied the mapping to structured/resume content, static comic/storyboard cards, active visual stages, outline anchors, and same-document content links. External links and authored-ID-based panel/frame selection remain unchanged. No published API, capability, loading, format, or release behavior changed; no changeset is needed.
+- Added rendered-markup regression tests using validator-valid packages with shell-ID collisions and shared root/panel/frame IDs, plus punctuation/Unicode and fragment-link cases. All 281 repository tests across 29 files passed through the foundation gate; root typecheck and the production app build also passed.
+- Local browser checks opened generated valid static collision archives, confirmed unique DOM IDs and keyboard activation of the intended panel/frame/root targets, and verified the existing document rationale link and interactive panel selection/focus/Left navigation. No browser console warnings/errors were observed. Production deployment/launch acceptance remains open.
+- Work was isolated from the primary checkout's unrelated architecture edits. The hosting runbook and session handoff record the follow-up verification path.
+
 ## 2026-10-26
 
 ### Living Homepage Package Inspection And Handoff
