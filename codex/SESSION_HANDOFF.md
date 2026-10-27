@@ -5,6 +5,7 @@
 - October 27, 2026: PR #55 is merged at `a50de8e`; main also includes the embedded Viewer continuity follow-up in PR #56 (`4e7710d`).
 - Reused isolated checkout `prd-viewer-dom-targets` and created `thehive/prd-independent-release-gates` from `4e7710d`. The primary checkout's substantial unfinished format/security/UI/architecture edits remain untouched.
 - This branch fixes item 46's repo-side release-gate mismatch: stable post-preview public package versions may differ, in line with the existing Changesets configuration.
+- Ready review PR: [#57](https://github.com/eonhive/prd/pull/57), `[stannesi] allow independent public package release versions`. Published through the connected GitHub API after its tree matched the verified local index exactly.
 - Package versions, dependency ranges, lockfile, changesets, release workflow, and published availability were not changed. No versioning or npm publication was performed.
 - Browser/production launch acceptance remains separate under items 44/48. This is not another UI or format slice.
 
@@ -21,7 +22,7 @@
 
 ## In-progress work
 
-- Publish/review the focused release-gate PR, then separately review the intended version PR and CI publication.
+- Review/merge PR #57, then separately review the intended version PR and CI publication. Local verification does not imply GitHub CI has passed.
 - Item 46 remains open until actual authoring publication and external init/Markdown/image import verification. Existing post-publish smoke covers pack/validate/inspect, not all new authoring commands.
 - No real-token/auth/org preflight was run locally; those checks were exercised with mocks. CI remains the publisher/auth authority.
 
@@ -45,6 +46,7 @@
 - `pnpm release:audit:registry` (public registry metadata only)
 - `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
+- Published the verified tree to the isolated PR branch through the GitHub connector; attached PR #57 and recorded this handoff before stopping.
 
 ## Tests / verification
 
@@ -67,7 +69,7 @@
 
 ## Next recommended task
 
-- Review/merge the gate patch, confirm `release:status` again on intended main, then review or recover a separate Changesets version PR for the authoring release.
+- Review/merge PR #57, confirm `release:status` again on intended main, then review or recover a separate Changesets version PR for the authoring release.
 - Validate exact versions/dependency ranges and publish only through the existing main/CI path. Do not consume changesets in this gate-only PR.
 - Require successful per-package registry audit and clean npm-installed init/import/validate/inspect/pack verification before updating public availability or marking item 46 complete.
 - Coordinate unfinished primary-checkout work separately and preserve pending launch acceptance.
