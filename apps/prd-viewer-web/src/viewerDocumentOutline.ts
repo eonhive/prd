@@ -4,7 +4,7 @@
  * Purpose: Derive real viewer navigation rows from opened structured PRD content.
  * Author: Stan Nesi
  * Created: June 5, 2026
- * Updated: October 25, 2026
+ * Updated: October 26, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -14,6 +14,7 @@ import type {
   PrdGeneralDocumentRoot,
   PrdStoryboardRoot
 } from "@eonhive/prd-types";
+import { getViewerContentTargetId } from "./viewerDocumentTargets.js";
 
 export interface ViewerDocumentOutlineItem {
   id: string;
@@ -26,6 +27,11 @@ export interface ViewerDocumentOutlineInput {
   entryDocument?: PrdGeneralDocumentRoot;
   comicDocument?: PrdComicRoot;
   storyboardDocument?: PrdStoryboardRoot;
+}
+
+export function getViewerOutlineTargetId(item: ViewerDocumentOutlineItem): string {
+  const scope = item.kind === "section" || item.kind === "heading" ? "node" : item.kind;
+  return getViewerContentTargetId(scope, item.id);
 }
 
 function pushGeneralDocumentNodeOutline(

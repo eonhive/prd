@@ -130,6 +130,12 @@ PR #50 is merged at `a9d77d9`, and `https://prd.eonhive.com/` shows the merged u
 
 The corrective outline/feedback changes are not yet a production verification claim. After review and deployment, repeat those local regression checks on the public domain, finish real drag/drop, and confirm Workers Builds settings with the account owner. Keep backlog item 44 open and GitHub Pages available until those checks pass. No hosting credentials, permissions, DNS, or production deployment were changed during this QA pass.
 
+### Viewer Target Follow-Up: October 27, 2026
+
+PR #51 is merged. Its review identified that a valid authored panel/frame/root ID could duplicate a viewer-shell ID such as `document-stage`, `main-content`, or `package-details`. The follow-up maps document, content-node, panel, and frame IDs into separate viewer-local DOM namespaces and maps outline/content fragment links to the same targets. Package IDs and validator validity rules are unchanged.
+
+Local production-build browser checks opened validator-valid static comic/storyboard collision archives and confirmed no duplicate DOM IDs. Keyboard activation resolved outline links to the intended cards and root, not shell controls. Document Basic's in-content rationale link and interactive comic selection/focus/Left navigation also passed. Rendered-markup tests cover both static and active visual views, structured/resume nodes, shared root/visual IDs, and escaped fragments. These checks are not a production deployment claim or a substitute for real drag/drop, physical-device, or assistive-technology acceptance. Recheck the namespaced targets after deployment and retain the fallback host.
+
 Reference docs:
 
 - [Workers Static Assets migration from Pages](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)
