@@ -486,6 +486,8 @@ For Codex-driven work, use the repo-local run actions instead of manually piecin
   Builds the hosted viewer demo for the root-domain Cloudflare Workers production path.
 * `pnpm viewer:demo:check:cloudflare`
   Rebuilds production assets and validates the Workers deployment with an unauthenticated dry run.
+* `pnpm viewer:demo:check:hosted`
+  Checks the public demo's HTTP routes, entry assets, sample archive validity, and matching inspection JSON. Writes `examples/dist/viewer-hosted-smoke-summary.json`; use `-- --url https://your-host/base/` for a preview or staging deployment. This is not browser or launch acceptance.
 * `pnpm viewer:demo:preview:cloudflare`
   Rebuilds production assets and serves them through the local Workers runtime.
 * `pnpm viewer:demo:deploy:cloudflare`
