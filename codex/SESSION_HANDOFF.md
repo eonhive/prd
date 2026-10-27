@@ -5,7 +5,7 @@
 - October 27, 2026: PR #51 is merged (`718d4ce`), and current main also includes the Living Homepage and package handoff work from PRs #52/#53.
 - Branch `thehive/prd-viewer-dom-targets` starts from main `53314f4` and addresses PR #51 review comment `4373744421`: package-authored IDs must not shadow viewer shell DOM IDs.
 - Work is isolated in the sibling checkout `prd-viewer-dom-targets`. The primary checkout's package-handoff branch and unrelated untracked architecture files were left untouched.
-- This follow-up is not merged or deployed. Existing launch items 44/48 and the separate authoring CLI release item 46 remain open.
+- [PR #54](https://github.com/eonhive/prd/pull/54) is ready for review; this follow-up is not merged or deployed. Existing launch items 44/48 and the separate authoring CLI release item 46 remain open.
 
 ## Completed work
 
@@ -18,7 +18,7 @@
 
 ## In-progress work
 
-- Publish and review the focused follow-up PR, then verify the deployed targets before launch sign-off.
+- Review PR #54, then verify the deployed targets after merge/deployment before launch sign-off. Replied to the original PR #51 review thread with the follow-up link and verification evidence.
 - No production deployment, account/DNS/permission change, or npm release was performed.
 
 ## Changed files
@@ -33,6 +33,7 @@
 ## Commands run
 
 - Bundled Git: status, fetch main, create isolated worktree/branch, diff review/check.
+- Published the verified staged tree through the authorized GitHub connector; the remote tree SHA matched the local index. Opened PR #54 without merging or deploying.
 - Managed worktree creation reported Git unavailable; the bundled Git fallback created the isolated checkout without changing the primary branch or accepting the Xcode license.
 - `pnpm install --frozen-lockfile` under Node 22; no lockfile change.
 - Targeted Vitest: document targets, document outline, viewer chrome, public experience.
