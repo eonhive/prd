@@ -15,6 +15,7 @@ import {
   type MotionIntensity,
   type RenderingQuality,
   type DemoDevice,
+  type DemoProfile,
 } from "./livingExperienceModel.js";
 
 export interface LivingRuntimeOptions {
@@ -26,6 +27,7 @@ export interface LivingRuntimeOptions {
 export interface LivingExperienceRuntime {
   update(options: LivingRuntimeOptions): void;
   setDevice(device: DemoDevice): void;
+  setProfile(profile: DemoProfile): void;
   toggleAudio(): Promise<boolean>;
   dispose(): void;
 }
@@ -75,6 +77,8 @@ export async function createLivingExperienceRuntime(
   let audioLoading = false;
   const deviceSize = { width: 420 };
   let selectedDevice: DemoDevice = "desktop";
+  let selectedProfile: DemoProfile = "document";
+  const profileReveal = { progress: 1 };
   let renderedFrames = 0;
   let slowFrames = 0;
   let previousFrameTime = 0;
@@ -99,6 +103,25 @@ export async function createLivingExperienceRuntime(
   function cancelAmbient() {
     clearTimeout(ambientTimer);
     ambientTimer = undefined;
+  }
+
+  function finishProfileReveal() {
+    motion.cancel(profileReveal);
+    profileReveal.progress = 1;
+    sheet.style.setProperty("--profile-reveal", "1");
+  }
+
+  function settleMotion() {
+    motion.cancel();
+    deviceSize.width = { desktop: 420, tablet: 340, mobile: 236 }[selectedDevice];
+    sheet.style.setProperty("--document-width", `${deviceSize.width}px`);
+    finishProfileReveal();
+  }
+
+  function handleMotionPreference() {
+    cancelAmbient();
+    if (reduced()) settleMotion();
+    requestUpdate();
   }
 
   function measure() {
@@ -136,6 +159,7 @@ export async function createLivingExperienceRuntime(
       root.dataset.chapter = String(chapter);
       onChapter(chapter);
     }
+    if (chapter !== 3 && profileReveal.progress < 1) finishProfileReveal();
     const pose = sampleDocumentPose(scroll.position);
     const strength =
       (options.motion === "subtle" ? 0.24 : 1) *
@@ -224,6 +248,7 @@ export async function createLivingExperienceRuntime(
   function handleVisibility() {
     cancelAmbient();
     if (document.hidden) {
+      finishProfileReveal();
       audio?.pause();
       onAudio(false);
       kernel.pause();
@@ -239,7 +264,10 @@ export async function createLivingExperienceRuntime(
       : new IntersectionObserver(([entry]) => {
           visible = entry?.isIntersecting ?? false;
           if (visible) requestUpdate();
-          else cancelAmbient();
+          else {
+            cancelAmbient();
+            finishProfileReveal();
+          }
         });
   observer?.observe(root);
   const resizeObserver =
@@ -253,7 +281,7 @@ export async function createLivingExperienceRuntime(
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("resize", measure);
   window.addEventListener("pointermove", handlePointer, { passive: true });
-  preference.addEventListener("change", requestUpdate);
+  preference.addEventListener("change", handleMotionPreference);
   document.addEventListener("visibilitychange", handleVisibility);
   measure();
 
@@ -262,12 +290,9 @@ export async function createLivingExperienceRuntime(
       options = next;
       cancelAmbient();
       if (reduced()) {
-        motion.cancel();
-        deviceSize.width = { desktop: 420, tablet: 340, mobile: 236 }[
-          selectedDevice
-        ];
-        sheet.style.setProperty("--document-width", `${deviceSize.width}px`);
+        settleMotion();
       }
+      if (options.focused) finishProfileReveal();
       requestUpdate();
     },
     setDevice(device) {
@@ -296,6 +321,19 @@ export async function createLivingExperienceRuntime(
             ),
         },
       );
+    },
+    setProfile(profile) {
+      if (disposed || selectedProfile === profile) return;
+      selectedProfile = profile;
+      finishProfileReveal();
+      if (reduced() || !visible || document.hidden || options.focused || lastChapter !== 3) return;
+      profileReveal.progress = 0;
+      sheet.style.setProperty("--profile-reveal", "0");
+      motion.tween(profileReveal, { progress: 1 }, {
+        durationMs: options.motion === "subtle" ? 160 : 420,
+        easing: "ease-out",
+        onUpdate: () => sheet.style.setProperty("--profile-reveal", String(profileReveal.progress)),
+      });
     },
     async toggleAudio() {
       if (disposed || audioLoading) return false;
@@ -349,7 +387,7 @@ export async function createLivingExperienceRuntime(
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", measure);
       window.removeEventListener("pointermove", handlePointer);
-      preference.removeEventListener("change", requestUpdate);
+      preference.removeEventListener("change", handleMotionPreference);
       document.removeEventListener("visibilitychange", handleVisibility);
       void kernel.shutdown().finally(() => {
         if (audioUrl) URL.revokeObjectURL(audioUrl);

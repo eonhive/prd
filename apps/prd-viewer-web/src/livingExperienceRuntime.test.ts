@@ -117,6 +117,50 @@ async function start(fixture: ReturnType<typeof browserFixture>) {
 }
 
 describe("uRK homepage frame ownership", () => {
+  it("runs a finite profile reveal on the existing kernel", async () => {
+    const fixture = browserFixture();
+    const { runtime } = await start(fixture);
+    fixture.browser.scrollY = 2400;
+    fixture.browser.dispatchEvent(new Event("scroll"));
+    fixture.paint(100);
+    runtime.setProfile("comic");
+    expect(fixture.sheet.style.setProperty).toHaveBeenCalledWith("--profile-reveal", "0");
+    for (let time = 116; time <= 900; time += 16) fixture.paint(time);
+    expect(fixture.sheet.style.setProperty).toHaveBeenLastCalledWith("--profile-reveal", "1");
+    expect(fixture.frames.size).toBe(0);
+  });
+
+  it("settles an interrupted profile reveal when reduced motion is requested", async () => {
+    const fixture = browserFixture();
+    const { runtime } = await start(fixture);
+    fixture.browser.scrollY = 2400;
+    fixture.browser.dispatchEvent(new Event("scroll"));
+    fixture.paint(100);
+    runtime.setProfile("comic");
+    fixture.preference.matches = true;
+    fixture.preference.dispatchEvent(new Event("change"));
+    fixture.paint(200);
+    vi.advanceTimersByTime(1000);
+    expect(fixture.sheet.style.setProperty).toHaveBeenCalledWith("--profile-reveal", "1");
+    expect(fixture.frames.size).toBe(0);
+  });
+
+  it("does not animate profiles outside their visible chapter or after disposal", async () => {
+    const fixture = browserFixture();
+    const { runtime } = await start(fixture);
+    fixture.paint();
+    runtime.setProfile("comic");
+    expect(fixture.frames.size).toBe(0);
+    fixture.setVisible(false);
+    runtime.setProfile("resume");
+    vi.advanceTimersByTime(1000);
+    expect(fixture.frames.size).toBe(0);
+    runtime.dispose();
+    active = undefined;
+    runtime.setProfile("magazine");
+    expect(fixture.frames.size).toBe(0);
+  });
+
   it("reuses measured chapter geometry during scroll and pointer bursts", async () => {
     const fixture = browserFixture();
     await start(fixture);

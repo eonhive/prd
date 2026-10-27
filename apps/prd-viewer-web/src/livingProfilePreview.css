@@ -1,0 +1,427 @@
+/*
+ * Company: EonHive Inc. | Title: Living Profile Presentation Styles
+ * Purpose: Give six bounded profile compositions one document surface and accessible reading copy.
+ * Author: Stan Nesi | Created: October 27, 2026 | Updated: October 27, 2026
+ * Notes: Vibe coded with Codex.
+ */
+
+.living-profile-viewport {
+  container: living-profile / inline-size;
+}
+.living-profile-viewport[hidden] {
+  display: none;
+}
+.living-profile-artwork {
+  --profile-ink: #20203f;
+  --profile-muted: #65708a;
+  --profile-accent: #713df1;
+  box-sizing: border-box;
+  height: 500px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--profile-ink);
+  background: #fff;
+  border-radius: inherit;
+  opacity: calc(.65 + var(--profile-reveal, 1) * .35);
+  transform: translateY(calc((1 - var(--profile-reveal, 1)) * 12px));
+  overflow: hidden;
+}
+.living-profile-artwork > header,
+.living-profile-artwork > footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font: 10px/1.4 ui-monospace, monospace;
+}
+.living-profile-artwork > header {
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e4e6f1;
+}
+.living-profile-artwork > header span:last-child {
+  color: var(--profile-accent);
+}
+.living-profile-artwork h3 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  font-weight: 500;
+}
+.living-profile-artwork p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.living-profile-artwork > footer {
+  margin-top: auto;
+  border-top: 1px solid #e4e6f1;
+  padding-top: 10px;
+  color: var(--profile-muted);
+  overflow-wrap: anywhere;
+}
+.profile-study-intro {
+  color: var(--profile-muted);
+}
+.profile-study-art {
+  position: relative;
+  min-height: 54px;
+  flex: 1;
+  max-height: 100px;
+  background: #f7f8fd;
+  overflow: hidden;
+}
+.profile-study-art i {
+  position: absolute;
+  width: 55%;
+  height: 145%;
+  transform: rotate(35deg);
+  background: linear-gradient(140deg, #fff, #a57bff);
+  left: 5%;
+  top: -40%;
+  border: 1px solid #e4e6f1;
+}
+.profile-study-art i:nth-child(2) {
+  left: 35%;
+  top: 0;
+  transform: rotate(-35deg);
+}
+.profile-study-art i:nth-child(3) {
+  left: 65%;
+  top: -65%;
+  transform: rotate(35deg);
+}
+.profile-study-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.profile-study-sections h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.profile-study-sections p {
+  color: var(--profile-muted, inherit);
+}
+.living-profile-artwork .profile-study-sections p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.profile-study-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.profile-study-facts dt {
+  color: var(--profile-muted, inherit);
+}
+.profile-study-facts dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.living-profile-artwork[data-layout="report"] h3 {
+  font-family: Georgia, serif;
+  font-size: 34px;
+}
+.living-profile-artwork[data-layout="report"] .profile-study-art {
+  max-height: 48px;
+  min-height: 32px;
+}
+.living-profile-artwork[data-layout="report"] .profile-study-sections {
+  grid-template-columns: 1fr;
+}
+.living-profile-artwork[data-layout="report"] .profile-study-sections section {
+  border-left: 2px solid var(--profile-accent);
+  padding-left: 12px;
+}
+.living-profile-artwork[data-layout="resume"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  grid-template-rows: auto auto auto 1fr auto;
+}
+.living-profile-artwork[data-layout="resume"] > header,
+.living-profile-artwork[data-layout="resume"] > footer {
+  grid-column: 1 / -1;
+}
+.living-profile-artwork[data-layout="resume"] h3,
+.living-profile-artwork[data-layout="resume"] .profile-study-intro {
+  grid-column: 1;
+}
+.living-profile-artwork[data-layout="resume"] h3 {
+  font-size: 25px;
+}
+.living-profile-artwork[data-layout="resume"] .profile-study-art {
+  display: none;
+}
+.living-profile-artwork[data-layout="resume"] .profile-study-sections {
+  grid-column: 1;
+  grid-template-columns: 1fr;
+  align-content: start;
+}
+.living-profile-artwork[data-layout="resume"] .profile-study-facts {
+  grid-column: 2;
+  grid-row: 2 / 5;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 24px;
+  border-left: 1px solid #e4e6f1;
+  padding-left: 12px;
+}
+.living-profile-artwork[data-layout="magazine"] h3 {
+  font-family: Georgia, serif;
+  font-size: 38px;
+  font-style: italic;
+}
+.living-profile-artwork[data-layout="magazine"] .profile-study-art {
+  order: -1;
+  max-height: 130px;
+  min-height: 85px;
+  margin: -24px -24px 0;
+}
+.living-profile-artwork[data-layout="magazine"] > header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.profile-media-sequence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+.profile-media-sequence li,
+.profile-media-sequence figure {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+}
+.profile-media-sequence figure {
+  height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+.profile-media-image {
+  min-height: 0;
+  position: relative;
+  background: #f7f8fd;
+  border: 1px solid #e4e6f1;
+}
+.profile-media-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.profile-media-image > span {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: #20203f;
+  color: #fff;
+  padding: 3px 5px;
+  font: 10px ui-monospace, monospace;
+}
+.profile-media-sequence figcaption {
+  font-size: 12px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.living-profile-artwork[data-layout="comic"] .profile-media-sequence {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+.living-profile-artwork[data-layout="comic"] figure {
+  gap: 4px;
+}
+.living-profile-artwork[data-layout="comic"] figcaption {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+.living-profile-artwork[data-layout="storyboard"] .profile-media-sequence {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+.living-profile-artwork[data-layout="storyboard"] figure {
+  grid-template-columns: 42% minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  align-items: center;
+}
+.living-profile-artwork[data-layout="storyboard"] .profile-media-image {
+  height: 100%;
+}
+.profile-media-placeholder {
+  grid-column: 1 / -1;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  background: #f7f8fd;
+  color: var(--profile-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.living-profile-panel {
+  max-width: 390px;
+  border-top: 1px solid var(--living-line);
+  margin-top: 22px;
+  padding-top: 14px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.living-profile-source {
+  margin: 0 0 12px;
+  color: var(--living-muted);
+  text-transform: capitalize;
+}
+.living-profile-panel summary {
+  cursor: pointer;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 0;
+}
+.living-profile-panel > button {
+  border: 0;
+  background: transparent;
+  color: var(--living-accent);
+  padding: 12px 0;
+  font-size: 12px;
+  min-height: 44px;
+}
+.living-profile-panel .living-text-link {
+  font-size: 12px;
+}
+.living-profile-panel details ol {
+  padding-left: 20px;
+}
+.living-profile-panel details li {
+  margin-bottom: 14px;
+}
+.living-profile-panel details p {
+  margin: 6px 0;
+}
+.living-profile-disclosure {
+  font-size: 12px;
+  color: var(--living-muted);
+  margin: 0;
+}
+.living-profile-reading-copy .profile-study-art {
+  display: none;
+}
+.living-profile-reading-copy .profile-study-sections,
+.living-profile-reading-copy .profile-study-facts {
+  display: block;
+}
+.living-profile-reading-copy h3 {
+  font-size: 16px;
+}
+.living-profile-reading-copy section,
+.living-profile-reading-copy dl > div {
+  margin: 12px 0;
+}
+.living-profile-controls [role="tab"] {
+  font-size: 12px;
+  min-height: 44px;
+}
+.living-profile-controls [aria-selected="true"] {
+  color: var(--living-accent);
+  border-color: currentColor;
+  background: var(--living-panel);
+}
+@media (max-width: 759px) {
+  .living-profile-artwork {
+    height: 435px;
+    padding: 18px;
+    gap: 10px;
+  }
+  .living-profile-artwork h3 {
+    font-size: 27px;
+  }
+  .living-profile-artwork[data-layout="magazine"] h3 {
+    font-size: 30px;
+  }
+  .living-profile-artwork[data-layout="magazine"] .profile-study-art {
+    margin: -18px -18px 0;
+    min-height: 70px;
+  }
+  .living-profile-artwork[data-layout="resume"] {
+    grid-template-columns: minmax(0, 1fr) 74px;
+  }
+  .living-profile-artwork[data-layout="resume"] h3 {
+    font-size: 23px;
+  }
+  .profile-study-sections {
+    gap: 10px;
+  }
+}
+@container living-profile (max-width: 330px) {
+  .living-profile-artwork {
+    height: 435px;
+    padding: 14px;
+    gap: 6px;
+  }
+  .living-profile-artwork h3,
+  .living-profile-artwork[data-layout="report"] h3,
+  .living-profile-artwork[data-layout="magazine"] h3 {
+    font-size: 24px;
+  }
+  .living-profile-artwork > header {
+    padding-bottom: 10px;
+  }
+  .living-profile-artwork .profile-study-intro {
+    display: none;
+  }
+  .living-profile-artwork .profile-study-art {
+    min-height: 32px;
+    max-height: 70px;
+  }
+  .living-profile-artwork[data-layout="report"] .profile-study-art {
+    display: none;
+  }
+  .living-profile-artwork[data-layout="magazine"] .profile-study-art {
+    min-height: 50px;
+    margin: -14px -14px 0;
+  }
+  .living-profile-artwork[data-layout="resume"] {
+    display: flex;
+  }
+  .living-profile-artwork[data-layout="resume"] .profile-study-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 0;
+    padding: 0;
+    gap: 8px;
+  }
+  .living-profile-artwork[data-layout="resume"] .profile-study-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .living-profile-artwork .profile-study-sections {
+    gap: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .living-profile-artwork {
+    transform: none;
+    opacity: 1;
+  }
+}
+.living-experience[data-motion="off"] .living-profile-artwork {
+  transform: none;
+  opacity: 1;
+}

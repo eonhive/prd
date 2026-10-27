@@ -16,6 +16,7 @@ import { isDeepStrictEqual } from "node:util";
 import { pathToFileURL } from "node:url";
 import { inspectPrdArchive } from "../packages/prd-validator/dist/node.js";
 import { createViewerDemoAssetPlan } from "./prepare-viewer-demo-assets.mjs";
+import { buildLivingProfilePreview } from "../apps/prd-viewer-web/scripts/prepare-profile-previews.mjs";
 
 export const hostedSmokeSummaryPath = "examples/dist/viewer-hosted-smoke-summary.json";
 const profiles = {
@@ -152,6 +153,7 @@ export async function runHostedDemoSmoke({
       });
     }
     for (const sample of createViewerDemoAssetPlan({ repoRoot })) {
+      let visualPreview;
       const archive = await check(`archive:${sample.id}`, new URL(sample.publicPath, base), async (bytes) => {
         const path = join(temp, `${sample.id}.prd`);
         await writeFile(path, bytes);
@@ -159,6 +161,7 @@ export async function runHostedDemoSmoke({
         if (!inspection.valid || inspection.manifest?.profile !== profiles[sample.id]) {
           throw new Error(`Invalid or wrong-profile demo archive: ${inspection.errors.map((issue) => issue.code).join(", ") || "profile mismatch"}. Check for an HTML fallback or stale sample.`);
         }
+        visualPreview = buildLivingProfilePreview(bytes, inspection.manifest, sample.id);
         return {
           sha256: createHash("sha256").update(bytes).digest("hex"),
           archiveBytes: bytes.length,
@@ -178,6 +181,24 @@ export async function runHostedDemoSmoke({
         }
         return {};
       });
+      if (sample.id === "comic-basic" || sample.id === "storyboard-basic") {
+        await check(`preview:${sample.id}`, new URL(`${sample.publicPath}.preview.json`, base), (bytes) => {
+          if (!visualPreview) throw new Error("Cannot verify a media preview without its valid source archive.");
+          let data;
+          try { data = JSON.parse(bytes.toString("utf8")); }
+          catch { throw new Error("Expected profile preview JSON, not an HTML fallback."); }
+          if (!isDeepStrictEqual(data, visualPreview.metadata)) throw new Error("Media preview does not match its source archive.");
+          return {};
+        });
+        for (const [index, asset] of (visualPreview?.assets ?? []).entries()) {
+          await check(`preview-image:${sample.id}:${index + 1}`, new URL(asset.publicPath, base), (bytes, type) => {
+            if (type.split(";")[0].trim().toLowerCase() !== asset.type || !bytes.equals(Buffer.from(asset.bytes))) {
+              throw new Error("Preview image bytes/type differ from the declared source artwork.");
+            }
+            return {};
+          });
+        }
+      }
     }
   } finally {
     await rm(temp, { recursive: true, force: true });

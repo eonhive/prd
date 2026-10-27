@@ -28,7 +28,7 @@ used as a dependency. See the app's `vendor/README.md` for archive provenance.
 | Capability in inspected main | Homepage use or limit |
 | --- | --- |
 | Kernel, `frameMode: "auto"`, scoped frame work, lifecycle cleanup | One kernel owns presentation work. Each requested paint releases its frame demand. |
-| `@urk/adapters/motion` scoped numeric tweens and finite DOM motion | Device widths tween through the kernel; interrupted motion is canceled by scope. |
+| `@urk/adapters/motion` scoped numeric tweens and finite DOM motion | Device widths and profile reveals tween through the same kernel; interrupted motion is canceled by scope or target. |
 | Seekable motion timelines | Absent on inspected main. Pure progress sampling interpolates chapter poses without allocating animations per scroll event. |
 | Standalone scene-flow API | Absent on inspected main. A small application coordinator selects the six chapters; no second scene framework is added. |
 | Three adapter, render invalidation, context handling | Available; this implementation uses CSS perspective and semantic HTML instead. WebGL is never required. |
@@ -67,8 +67,45 @@ Runtime tests cover those boundaries and verify scroll/pointer bursts reuse
 cached chapter geometry until a resize requires a new measurement.
 
 Device transforms, layer separation, and reassembly change presentation only.
-The small document object is explicitly illustrative. Canonical package content
-is rendered by the real reference viewer in Chapter 05.
+The general-document studies are explicitly illustrative. Canonical package
+content is rendered by the real reference viewer in Chapter 05.
+
+## Profile presentations
+
+Chapter 04 keeps the same paper element while selecting six compositions.
+Document, report, resume, and magazine rearrange one shared study's headings,
+sections, and facts without changing their DOM reading order. These are layout
+studies within `general-document`, not additional canonical profiles or converted
+packages. The real authored example remains available through the Viewer.
+
+Comic and storyboard show the first three source images from their canonical
+packages. After archive validation, the demo build resolves the ordered content
+items against manifest-declared assets and copies the original image bytes.
+Adjacent `.prd.preview.json` files identify the sample, profile, entry, images,
+authored alt text, and captions/notes. `prd-home-profile-preview-v0.1` is a private
+homepage asset contract, not a package member, profile renderer, format extension,
+or public API. The real Viewer still opens and validates the original `.prd`.
+
+Metadata loads as the chapter approaches. Image elements mount only while the
+profile presentation is active and the Viewer is not focused. The client accepts
+only known visual samples, bounded metadata, and exact sample-local image paths
+under the hosting base. Interrupted requests cannot replace a newer selection.
+Missing metadata, HTML fallbacks, and image failures retain Viewer access and
+offer retry; retry remounts failed image elements.
+
+The floating artwork is decorative. A labeled tab panel follows the controls in
+the chapter's semantic reading order and exposes the complete shared study or
+source image descriptions through a native disclosure. Arrow keys wrap through
+the tabs; Home/End select the endpoints; Tab and vertical scrolling retain native
+behavior. All six controls have targets at least 44px high.
+
+Profile selection uses one finite opacity/translation reveal on the existing
+scoped uRK motion adapter: 420ms in full mode, 160ms in subtle mode, immediate
+settlement with motion off or the system reduced-motion preference. New choices
+cancel the previous reveal; chapter exit, hidden/offscreen state, Viewer focus,
+and dynamic reduced-motion changes settle it. No extra render loop, scene
+manager, layout-morph API, or animation dependency is introduced. Sample selection
+continues to drive the inspector, persistent Viewer, and final download.
 
 ## Viewer integration
 
@@ -166,8 +203,8 @@ and limits its perspective effects through the conservative quality default.
 
 Before public deployment, verify with assistive technologies and physical touch
 devices, profile long-session and low-end device performance, and complete the
-existing hosting launch checklist. Richer animated profile transitions and
-WebGL-specific polish remain bounded follow-ups. Upstream timelines or scene
+existing hosting launch checklist. WebGL-specific polish remains a bounded
+follow-up. Upstream timelines or scene
 flow should be adopted only after their actual public contracts exist.
 
 ## Changed files
@@ -190,6 +227,11 @@ New app sources under `apps/prd-viewer-web/src/`:
 - `livingHomepage.css`
 - `livingExperienceModel.test.ts`
 - `livingExperienceRuntime.test.ts`
+- `LivingProfilePreview.tsx`
+- `livingProfileMedia.ts`
+- `livingProfilePreview.css`
+- `livingProfileMedia.test.ts`
+- `LivingHomepage.profiles.integration.test.ts`
 
 Updated app files:
 
@@ -206,6 +248,10 @@ The package handoff follow-up also updates
 `scripts/prepare-viewer-demo-assets.mjs`, its tests, and
 `apps/prd-viewer-web/src/viewerExperience.test.ts`. It reuses existing validator
 inspection APIs without changing uRK, format, or viewer-core public interfaces.
+The profile follow-up also adds
+`apps/prd-viewer-web/scripts/prepare-profile-previews.mjs` and extends the hosted
+smoke script/tests to compare preview metadata and copied artwork with the
+validated archive.
 
 New pinned dependencies and provenance:
 

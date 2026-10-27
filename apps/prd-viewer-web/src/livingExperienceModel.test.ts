@@ -7,11 +7,25 @@
 
 import { describe, expect, it } from "vitest";
 import {
+  getProfileForKey,
   getChapterPosition,
   sampleDocumentPose,
   resolveRenderingQuality,
   getCanonicalDemoProfile,
 } from "./livingExperienceModel.js";
+
+describe("profile keyboard order", () => {
+  it.each([
+    ["document", "ArrowLeft", "magazine"], ["magazine", "ArrowRight", "document"],
+    ["comic", "Home", "document"], ["report", "End", "magazine"],
+    ["resume", "ArrowRight", "comic"],
+  ] as const)("moves from %s with %s to %s", (profile, key, expected) => {
+    expect(getProfileForKey(profile, key)).toBe(expected);
+  });
+  it.each(["Tab", "ArrowDown", "ArrowUp", "Escape", " "])("leaves %s to native browser behavior", (key) => {
+    expect(getProfileForKey("document", key)).toBeUndefined();
+  });
+});
 
 describe("native scroll chapter sampling", () => {
   it("handles unequal section heights and clamps both ends", () => {

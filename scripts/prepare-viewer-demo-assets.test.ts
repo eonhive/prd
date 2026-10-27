@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it } from "vitest";
 import { packDirectoryToBuffer } from "../packages/prd-packager/src/index.js";
+import { parseLivingVisualPreview } from "../apps/prd-viewer-web/src/livingProfileMedia.js";
 import {
   createViewerDemoAssetPlan,
   prepareViewerDemoAssets
@@ -82,6 +83,26 @@ describe("prepare viewer demo assets", () => {
     });
     expect(inspection.fileCount).toBeGreaterThan(1);
     expect(inspection.totalBytes).toBeGreaterThan(0);
+    await expect(readFile(`${copiedPath}.preview.json`)).rejects.toThrow();
+  });
+
+  it.each(["comic-basic", "storyboard-basic"])("publishes actual declared artwork and readable metadata for %s", async (id) => {
+    const repoRoot = await createTempRepoRoot();
+    const entry = { id, source: `examples/dist/${id}.prd`, target: `apps/prd-viewer-web/public/examples/${id}.prd` };
+    await mkdir(join(repoRoot, "examples/dist"), { recursive: true });
+    await writeFile(join(repoRoot, entry.source), await packDirectoryToBuffer(join(process.cwd(), "examples", id)));
+    await prepareViewerDemoAssets({ repoRoot, entries: [entry] });
+    const metadata = JSON.parse(await readFile(join(repoRoot, `${entry.target}.preview.json`), "utf8"));
+    const preview = parseLivingVisualPreview(metadata, id);
+    expect(preview.items).toHaveLength(3);
+    const manifest = JSON.parse(await readFile(join(process.cwd(), "examples", id, "manifest.json"), "utf8"));
+    for (let index = 0; index < preview.items.length; index++) {
+      const image = preview.items[index]!;
+      const actual = await readFile(join(repoRoot, "apps/prd-viewer-web/public", image.imagePath));
+      const expected = await readFile(join(process.cwd(), "examples", id, manifest.assets[index].href));
+      expect(actual.equals(expected)).toBe(true);
+      expect(image.alt.length).toBeGreaterThan(0);
+    }
   });
 
   it("refuses to publish inspection facts for invalid archive bytes", async () => {

@@ -5,10 +5,12 @@
  * Notes: Vibe coded with Codex.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import {
   livingChapters,
   getCanonicalDemoProfile,
+  getProfileForKey,
+  livingProfileOrder,
   type DemoDevice,
   type DemoProfile,
   type MotionIntensity,
@@ -22,6 +24,7 @@ import { LivingViewer, type LivingViewerHandle } from "./LivingViewer.js";
 import { viewerDemoExampleArchives, viewerLandingHero } from "./viewerDemoContent.js";
 import type { DocumentLayer } from "./livingPackageInspection.js";
 import { LivingPackageInspector } from "./LivingPackageInspector.js";
+import { LivingProfileArtwork, LivingProfilePanel, useLivingProfilePreview } from "./LivingProfilePreview.js";
 
 const layerDescriptions = {
   content: {
@@ -56,7 +59,7 @@ const profileDescriptions: Record<DemoProfile, string> = {
   report:
     "An editorial hierarchy for ideas, evidence, and a clear path through the details.",
   resume:
-    "A scan-friendly composition for experience, skills, and the next opportunity.",
+    "A compact header and a clear side rail make the same content easy to scan.",
   comic:
     "Panel-led storytelling, with its own reading rhythm and real panel navigation.",
   storyboard:
@@ -183,10 +186,12 @@ export function LivingHomepage({
   const [focused, setFocused] = useState(false);
   const [viewerReady, setViewerReady] = useState(false);
   const [inspectorReady, setInspectorReady] = useState(false);
+  const [profilesReady, setProfilesReady] = useState(false);
   const [sample, setSample] = useState("document-basic");
   const [runtimeMessage, setRuntimeMessage] = useState("");
-  const currentOptions = useRef({ motion, quality, focused, device });
-  currentOptions.current = { motion, quality, focused, device };
+  const currentOptions = useRef({ motion, quality, focused, device, profile });
+  currentOptions.current = { motion, quality, focused, device, profile };
+  const profilePreview = useLivingProfilePreview(profile, sample, basePath, profilesReady);
   const routeHref = (route: ViewerAppRoute) =>
     getViewerAppRoutePath(route, basePath);
   const selectedExample =
@@ -204,6 +209,20 @@ export function LivingHomepage({
         ? example.profile
         : "document",
     );
+  }
+
+  function selectProfile(nextProfile: DemoProfile) {
+    setProfile(nextProfile);
+    setSample(nextProfile === "comic" || nextProfile === "storyboard" ? `${nextProfile}-basic` : "document-basic");
+  }
+
+  function handleProfileKey(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    const next = getProfileForKey(profile, event.key);
+    if (!next) return;
+    event.preventDefault();
+    selectProfile(next);
+    event.currentTarget.querySelector<HTMLButtonElement>(`#living-profile-tab-${next}`)?.focus();
   }
 
   useEffect(() => {
@@ -230,6 +249,7 @@ export function LivingHomepage({
           runtimeRef.current = runtime;
           runtime.update(currentOptions.current);
           runtime.setDevice(currentOptions.current.device);
+          runtime.setProfile(currentOptions.current.profile);
         }
       })
       .catch(() =>
@@ -250,6 +270,9 @@ export function LivingHomepage({
   useEffect(() => {
     runtimeRef.current?.setDevice(device);
   }, [device]);
+  useEffect(() => {
+    runtimeRef.current?.setProfile(profile);
+  }, [profile]);
 
   useEffect(() => {
     if (!focused) return;
@@ -265,6 +288,7 @@ export function LivingHomepage({
     if (typeof IntersectionObserver === "undefined") {
       setViewerReady(true);
       setInspectorReady(true);
+      setProfilesReady(true);
       return;
     }
     const observer = new IntersectionObserver(
@@ -273,12 +297,13 @@ export function LivingHomepage({
           if (!entry.isIntersecting) continue;
           if (entry.target.id === "viewer") setViewerReady(true);
           if (entry.target.id === "structure") setInspectorReady(true);
+          if (entry.target.id === "profiles") setProfilesReady(true);
           observer.unobserve(entry.target);
         }
       },
       { rootMargin: "500px" },
     );
-    for (const id of ["structure", "viewer"]) {
+    for (const id of ["structure", "profiles", "viewer"]) {
       const target = document.getElementById(id);
       if (target) observer.observe(target);
     }
@@ -404,9 +429,9 @@ export function LivingHomepage({
           <article
             className="living-paper"
             aria-hidden={chapter !== 4 && !focused}
-            aria-label="Illustrative layout of the PRD document example"
+            aria-label="PRD document presentation and reference Viewer"
           >
-            <div className="living-paper-content" hidden={chapter === 4}>
+            <div className="living-paper-content" hidden={chapter === 3 || chapter === 4}>
               <div className="living-paper-top">
                 <span>
                   <i /> PRD / EXAMPLE 001
@@ -447,16 +472,6 @@ export function LivingHomepage({
                   </p>
                 </div>
               </div>
-              {(profile === "comic" || profile === "storyboard") && (
-                <div
-                  className="living-panel-study"
-                  aria-label={`${profile} illustrative layout`}
-                >
-                  <span>01 / Establish</span>
-                  <span>02 / Explore</span>
-                  <span>03 / Continue</span>
-                </div>
-              )}
               <footer>
                 <span>{getCanonicalDemoProfile(profile)}</span>
                 <span>
@@ -464,6 +479,7 @@ export function LivingHomepage({
                 </span>
               </footer>
             </div>
+            <LivingProfileArtwork profile={profile} preview={profilePreview} basePath={basePath} active={chapter === 3 && !focused} />
             <LivingViewer
               ref={viewerRef}
               active={chapter === 4}
@@ -489,7 +505,7 @@ export function LivingHomepage({
                 : chapter === 2
                   ? "STRUCTURED FROM WITHIN."
                   : chapter === 3
-                    ? `${profile.toUpperCase()} / LAYOUT STUDY.`
+                    ? `${profile.toUpperCase()} / ${profile === "comic" || profile === "storyboard" ? "PACKAGE EXCERPT" : "LAYOUT STUDY"}.`
                     : chapter === 4
                       ? "OPEN. READ. EXPLORE."
                       : "READY TO GO ANYWHERE."}
@@ -637,28 +653,19 @@ export function LivingHomepage({
           </p>
           <div
             className="living-profile-controls"
-            role="group"
-            aria-label="Document layout studies"
+            role="tablist"
+            aria-label="Document profile presentations"
+            onKeyDown={handleProfileKey}
           >
-            {(
-              [
-                "document",
-                "report",
-                "resume",
-                "comic",
-                "storyboard",
-                "magazine",
-              ] as const
-            ).map((item) => (
+            {livingProfileOrder.map((item) => (
               <button
                 key={item}
-                aria-pressed={profile === item}
-                onClick={() => {
-                  setProfile(item);
-                  if (item === "comic" || item === "storyboard")
-                    setSample(`${item}-basic`);
-                  else setSample("document-basic");
-                }}
+                id={`living-profile-tab-${item}`}
+                role="tab"
+                aria-selected={profile === item}
+                aria-controls="living-profile-panel"
+                tabIndex={profile === item ? 0 : -1}
+                onClick={() => selectProfile(item)}
               >
                 {item}
               </button>
@@ -667,12 +674,7 @@ export function LivingHomepage({
           <p className="living-profile-description" aria-live="polite">
             {profileDescriptions[profile]}
           </p>
-          <p className="living-small-note">
-            Illustrative layouts.{" "}
-            <code>{getCanonicalDemoProfile(profile)}</code> profile family.
-            <br />
-            Comic and storyboard open their own example packages in the Viewer.
-          </p>
+          <LivingProfilePanel profile={profile} preview={profilePreview} onOpenViewer={enterViewer} />
         </Chapter>
         <Chapter
           index={4}

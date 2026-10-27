@@ -58,6 +58,13 @@ with HTTP 200; the inspector rejects it and offers retry while retaining access
 to the reference Viewer. These files are app demo assets, not package members or
 new PRD format contracts.
 
+For comic/storyboard examples, preparation also writes adjacent
+`.prd.preview.json` and `examples/previews/<sample-id>/` images for Chapter 04.
+Deploy those alongside their archives. The excerpts contain the first three
+ordered source images, copied byte-for-byte from manifest-declared resources,
+plus authored alt text and captions/notes. They are private homepage assets;
+the embedded reference Viewer continues to open the original valid archive.
+
 `viewer:demo:build:cloudflare` builds production assets with root-domain base path `/`.
 
 `viewer:demo:check:cloudflare` rebuilds production assets and runs `wrangler deploy --dry-run`. It validates the deployment configuration without publishing or requiring Cloudflare login.
@@ -85,6 +92,12 @@ pnpm viewer:demo:check:hosted -- --url https://eonhive.github.io/prd/
 The command builds the existing validator and defaults to `https://prd.eonhive.com/`. Run it against a demo deployment you own, without credentials, query strings, or fragments in its base URL. It never publishes, uploads a user document, changes hosting settings, or executes the downloaded JavaScript.
 
 The check verifies Home/Viewer/Docs HTML shells, their same-origin/base-path module and CSS entry assets, all four canonical hosted sample archives, and their adjacent inspection JSON. Archives pass the existing validator with their expected profiles. Inspection metadata must match the downloaded archive's manifest, archive bytes, logical file count, and logical byte total. This catches stale/missing JSON and HTTP 200 SPA fallbacks rather than trusting a successful HTTP status.
+
+The profile follow-up adds preview metadata and exact image-byte/MIME checks
+against each validated visual archive. A healthy deployment now reports 21
+checks (the earlier 13 plus two preview JSON files and six source images).
+Older deployments without these assets are expected to fail the new checks.
+This verifies source correspondence, not browser decoding or visual acceptance.
 
 Diagnostics are written to ignored `examples/dist/viewer-hosted-smoke-summary.json` using contract `prd-hosted-demo-smoke-v0.1`: generation time, normalized base URL, overall status, and individual URL/check results. Successful archive results include a SHA-256 diagnostic digest; it is not a signature or authenticity claim. Ordinary check failures retain the artifact and exit nonzero. Each response has a 15-second timeout and a 16 MiB smoke-download safety budget; these are operator guardrails for the fixed demo assets, not PRD validity limits. Temporary downloads are removed after inspection. Redirects and out-of-base/origin entry assets are rejected.
 
@@ -208,6 +221,27 @@ these tests are not a new visual, touch, screen-reader or production interaction
 pass. After review/deployment, select a different example inside the iframe,
 confirm the Home inspector/download follow it, return to the same example after
 a local open, and confirm Escape/focus and mobile layout still work.
+
+
+### Profile Presentation Follow-Up: October 27, 2026
+
+Browser access returned for the Chapter 04 profile follow-up. Local production-
+build checks covered six compositions at desktop width, stacked 390px/320px
+layouts, the 236px document surface, keyboard wrapping/Home/End, 44px tab targets,
+actual comic/storyboard image decoding, and expanded descriptions remaining above
+the shared sheet. The real comic Viewer opened valid bytes and retained panel 2
+through close/reopen. No browser console warnings/errors were observed. DOM/runtime
+tests additionally cover stale requests, metadata/image retry, persistent nodes,
+finite tween completion, dynamic reduced-motion cancellation, and offscreen work.
+
+Local HTTP/package smoke passed all 21 checks under both hosting bases. Browser
+use was disabled again before final hosted-preview review, so no fresh hosted
+browser acceptance is claimed. After review and
+deployment, rerun it against the new preview/public build; older production builds
+lack these new media assets. Recheck profile selection, source descriptions,
+Viewer/inspector/download continuity, and motion-off behavior on that build.
+Physical touch, assistive technologies, lower-end hardware, deployment ownership,
+and production launch acceptance remain open under items 44/48.
 
 ## GitHub Pages Fallback
 
