@@ -28,17 +28,16 @@ pnpm release:audit:registry
 - npm auth works for the token
 - the token owner is visible in the `eonhive` npm org
 - the repo is still targeting the expected `@eonhive/prd-*` package set
-- release mode is correct for the current unified package version:
-  - `0.1.0` may use first-preview bootstrap
-  - later unified versions such as `0.1.1` use normal Changesets release mode
+- release mode is correct for the package-specific versions: all four at `0.1.0` may use historical first-preview bootstrap; stable versions above `0.1.0`, including unequal versions, use normal Changesets mode
+- malformed versions, unconfigured prerelease/build-label channels, or mixed `0.1.0`/post-preview sets fail closed
 
 It emits `examples/dist/release-publish-preflight-summary.json`.
 
 `pnpm release:audit:registry` is the post-publish registry metadata gate. It verifies:
 
 - each public package resolves on npm
-- the expected version is published
-- npm `latest` resolves to that expected version
+- each package's own expected version is published
+- each package's npm `latest` resolves to its own expected version; versions need not match across packages
 - published dependencies contain no `workspace:*` values
 - internal `@eonhive/prd-*` dependency edges resolve to concrete semver ranges
 
@@ -76,6 +75,10 @@ pnpm changeset
 4. review and merge that version PR
 5. let the Release workflow publish the packages from `main`
 
+Review `pnpm release:status` before versioning. Keep CLI-only changesets CLI-only unless real dependency changes require coordinated bumps. The version PR may legitimately contain different public versions; `release:preflight` must not require version equality. On an independent release, leave `PRD_NPM_VERSION` unset for post-publish consumer smoke so it installs each package's `latest`. That optional single-version override is for deliberate coordinated-version checks only.
+
+The gate fix alone does not ship queued features. After its merge, review the version PR's exact packages, versions, and dependency ranges; run `release:check`; publish only through the existing `main` workflow; and require per-package registry audit plus clean external-consumer verification before updating availability claims. Do not version or publish unfinished primary-checkout changes as part of a gate-only patch.
+
 Do not publish manually from a workstation unless the release workflow is unavailable and the repo owner explicitly approves that exception.
 
 ---
@@ -92,7 +95,7 @@ That means:
 - any still-unpublished preview packages are published directly in dependency order
 - future releases should use normal Changesets version PR flow
 
-For later unified unpublished versions such as `0.1.1`, `pnpm release:preflight` should pass in normal versioned-release mode and `pnpm release:bootstrap --publish` should no-op because the workspace versions are no longer `0.1.0`.
+For stable unpublished post-preview versions, whether unified or package-specific, `pnpm release:preflight` should pass in normal Changesets mode (with auth/org checks satisfied) and `pnpm release:bootstrap --publish` should no-op. Only an all-`0.1.0` workspace is bootstrap-eligible.
 
 The publish set for the first preview is:
 

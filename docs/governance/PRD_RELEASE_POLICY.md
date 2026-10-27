@@ -55,6 +55,10 @@ Internal dependency order remains:
 
 Changesets is the release source of truth for version planning and publish orchestration.
 
+After the coordinated first-preview/corrective baseline, public package versions are independent. The current Changesets configuration has no fixed or linked release group. For example, a CLI-only minor release can target `@eonhive/prd-cli@0.2.0` while unchanged libraries remain at `0.1.1`; this is an illustrative version plan, not a statement that the release is published. Do not bump unrelated packages solely to satisfy a gate's former one-version assumption.
+
+Preflight and registry audit retain the exact four-package boundary. They accept stable post-preview versions per package, reject malformed/unconfigured prerelease versions and mixed first-preview/post-preview sets, and keep npm auth/org and consumer-safe metadata requirements unchanged. Registry audit verifies each expected version and each package's own `latest` tag, not one shared toolchain version. Changesets and declared dependency ranges determine necessary dependent updates; external consumer smoke still proves the installed combination works.
+
 ---
 
 ## 3. Release Source Of Truth

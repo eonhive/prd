@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Independent Public Package Release Gates
+
+- Reconciled preflight and registry audit with the existing independent Changesets configuration. Normal stable post-preview versions may differ across the four public packages; only an all-`0.1.0` set enters historical bootstrap. Invalid versions, mixed bootstrap/post-preview sets, and package-name drift remain gated.
+- Retained npm token/auth/org checks and per-package publication/`latest`/consumer-safe dependency checks. Added a shared version-mode helper and targeted regression cases without adding a dependency or changing workflow order, package versions, dependency ranges, or changesets.
+- Read-only `release:status` on main's queued changesets confirms one minor release: `@eonhive/prd-cli@0.2.0`, with no library/patch/major bumps. This is a plan, not a published release. Updated the release policy, runbook, versioning policy, and PRD-033 clarification without allocating decision IDs used by unrelated in-progress work.
+- Validation passed on Node 22: 41 targeted tests, full `release:check` (351 tests across 32 files, build/typecheck, examples, and tarball consumer smoke), root-inclusive docs consistency, and live registry audit of the unchanged `0.1.1` baseline. Refreshed the isolated install from the existing frozen lockfile for PR #56's already-declared `jsdom`; no dependency/lockfile edits were needed.
+- The authoring release remains incomplete under item 46: merge the gate fix, review/version the intended changesets separately, publish through CI, and verify registry metadata plus real npm-installed authoring commands. No versioning, npm publication, token access, or production deployment was performed in this gate-only pass.
+
 ### Living Homepage — Embedded Sample Continuity
 
 - Began from merged main `9075994` in the isolated `thehive/prd-viewer-continuity` worktree and incorporated `a50de8e`'s hosted diagnostics from PR #55. Independent unfinished Viewer, container and signing changes in the shared checkout were left untouched and are not part of this slice's validation count.
