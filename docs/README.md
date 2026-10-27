@@ -40,6 +40,7 @@ Primary paths:
   * `product/PRD_AUTHORING_WORKFLOW.md`
   * `product/PRD_IMPORT_EXPORT_MATRIX.md`
 * `product/PRD_LIVING_HOMEPAGE.md` (six-chapter public experience, uRK capability audit, and real Viewer integration)
+* `product/PRD_VISUAL_IDENTITY.md` (shared Home/Viewer/Docs branding, assets, and acceptance)
 * prompt packs
   * `prompts/PRD_MASTER_PROMPTS.md`
 

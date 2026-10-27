@@ -1,0 +1,14 @@
+<!--
+  Company: EonHive Inc. | Title: PRD Document Mark
+  Purpose: Identify PRD browser tabs with the shared folded-document symbol.
+  Author: Stan Nesi | Created: October 27, 2026 | Updated: October 27, 2026
+  Notes: Vibe coded with Codex.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 52" fill="none">
+  <defs><linearGradient id="paper" x1="8" y1="3" x2="39" y2="48" gradientUnits="userSpaceOnUse"><stop stop-color="#DCBAFF"/><stop offset=".45" stop-color="#9548FF"/><stop offset="1" stop-color="#3D16B5"/></linearGradient></defs>
+  <path d="M8 3h24l11 12v32H8z" fill="url(#paper)" stroke="#B99BFF" stroke-width=".6"/>
+  <path d="M4 31C13 21 30 24 43 15v14C30 39 13 35 4 46z" fill="#6024DC"/>
+  <path d="M4 31C13 21 30 24 43 15M4 46c9-11 26-7 39-17" stroke="#ECDFFF"/>
+  <path d="M32 3v12h11" fill="#F9F4FF"/>
+  <path d="M8 47h35" stroke="#A46BFF"/>
+</svg>

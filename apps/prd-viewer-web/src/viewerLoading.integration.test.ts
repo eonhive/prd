@@ -14,6 +14,7 @@ import { act, createElement, StrictMode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
+import { getViewerContentTargetId } from "./viewerDocumentTargets.js";
 import {
   livingViewerLocalFileMessage,
   livingViewerSampleSelectedMessage,
@@ -160,11 +161,66 @@ describe("embedded archive loading", () => {
 
   it("reports a sample explicitly selected inside the Viewer", async () => {
     await mount();
-    const sample = [...container.querySelectorAll<HTMLLIElement>(".example-archive-list li")]
-      .find((item) => item.textContent?.includes("Comic Basic"))!;
-    await act(async () => sample.querySelector("button")!.click());
+    const examples = [...container.querySelectorAll<HTMLButtonElement>(".viewer-panel-switcher button")]
+      .find((button) => button.textContent?.includes("Examples"))!;
+    await act(async () => examples.click());
+    const sample = [...container.querySelectorAll<HTMLButtonElement>(".viewer-example-shortcuts button")]
+      .find((button) => button.textContent?.includes("Comic Basic"))!;
+    await act(async () => sample.click());
     expect(parentPost).toHaveBeenCalledWith({ type: livingViewerSampleSelectedMessage, sampleId: "comic-basic" }, window.location.origin);
     expect(title()).toBe("PRD Comic Fixture");
+  });
+
+  it("receives a theme change without reloading localized content or echoing storage writes", async () => {
+    window.localStorage.setItem("prd-viewer-theme", "dark");
+    await mount();
+    await request("document-basic");
+    const locale = container.querySelector<HTMLSelectElement>("#viewer-locale-select")!;
+    await act(async () => {
+      locale.value = "fr-FR";
+      locale.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    const image = container.querySelector("#document-stage img")!;
+    const source = image.getAttribute("src");
+    const requests = fetcher.mock.calls.length;
+    const write = vi.spyOn(Storage.prototype, "setItem");
+
+    await act(async () => window.dispatchEvent(new StorageEvent("storage", {
+      key: "prd-viewer-theme", newValue: "light"
+    })));
+
+    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(locale.value).toBe("fr-FR");
+    expect(container.querySelector("#document-stage img")).toBe(image);
+    expect(image.getAttribute("src")).toBe(source);
+    expect(fetcher).toHaveBeenCalledTimes(requests);
+    expect(write).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["comic-basic", "panel"], ["storyboard-basic", "frame"]
+  ] as const)("closes the mobile outline and focuses the namespaced %s selection", async (sample, scope) => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query === "(max-width: 1000px)", addEventListener() {}, removeEventListener() {}
+    }));
+    await mount();
+    await request(sample);
+    const dialog = container.querySelector<HTMLDialogElement>("#viewer-navigation")!;
+    // jsdom has no native dialog top layer; browser QA covers its real focus containment.
+    dialog.showModal = function () { this.open = true; };
+    dialog.close = function () { this.open = false; };
+    const visual = document.getElementById(getViewerContentTargetId(scope, `${scope}-1`))!;
+    visual.scrollIntoView = vi.fn();
+    await act(async () => container.querySelector<HTMLButtonElement>('[aria-controls="viewer-navigation"]')!.click());
+    expect(dialog.open).toBe(true);
+    const selection = container.querySelectorAll<HTMLButtonElement>("#document-outline button")[1]!;
+    await act(async () => selection.click());
+    expect(dialog.open).toBe(false);
+    expect(document.activeElement?.id).toBe(getViewerContentTargetId(scope, `${scope}-2`));
+    await act(async () => document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "ArrowRight", bubbles: true
+    })));
+    expect(document.activeElement?.id).toBe(getViewerContentTargetId(scope, `${scope}-3`));
   });
 
   it("announces a local open without sending its filename or content", async () => {

@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Public PRD Rebrand — Isolated Review Branch
+
+- Ported the owner's purple folded-document rebrand from the primary checkout onto current main `c8e5935` in `thehive/prd-brand-refresh`. Preserved the merged namespaced document targets, bidirectional embedded sample bridge, six profile presentations and source-artwork previews. The primary checkout's independent converter, container, signature, core and release work is untouched and excluded from this PR.
+- Added shared light/dark tokens and public header/footer, original optimized hero artwork and favicon, Home profile/example journeys and Docs guidebook styling. The Viewer has a compact reading toolbar, searchable outline, desktop panels/mobile native drawers, Info/Files views, reading width and focus controls. Existing validation, renderer, profiles, loading and resource behavior are preserved; no dependency or package contract changed.
+- Theme changes synchronize open same-origin pages and the persistent Viewer without echo writes or a document reload. Public route/section navigation moves keyboard focus to real targets. Mobile visual selection uses the existing namespaced target map, closes the drawer and retains arrow-key continuation. Production browser review found reading controls under the sticky site header after scroll; toolbar, desktop-panel and content-target spacing now reserves that header and removes the offset in embeds.
+- Validation: root typecheck and the foundation gate passed with **408 tests across 34 files**, including **191 web-app tests**. The gate includes workspace builds, canonical example validation, aggregate smoke and docs consistency. Both `/` and `/prd/` builds, Workers dry run, 21 local production-preview HTTP/package checks, root-inclusive docs consistency and whitespace checks pass. No dependency/lockfile, public package, workflow or changeset edit is needed for this private-app change.
+- Fresh browser review used the built preview at `127.0.0.1:4174`: desktop light/dark Home and Docs, decoded canonical comic excerpts, cross-page theme synchronization retaining French Viewer content and image URL, 390px/320px layouts, authored/visual outline focus, keyboard continuation, example switching and Docs section focus. The checked layouts have no horizontal overflow; the 320px Home artwork remains below its copy. No console warnings/errors were observed. Screenshots are ignored under `examples/dist/rebrand-qa/`; physical touch, screen readers, real OS drag/drop, constrained-device and deployed acceptance remain items 44/48. No production deployment or npm release was performed.
+
 ### Living Homepage — Source Profile Presentations
 
 - Continued in isolated `thehive/prd-profile-choreography` from merged PR #56 and incorporated current main `762fc37` from PR #57. The shared checkout's independent unfinished format/security/branding work remains untouched.

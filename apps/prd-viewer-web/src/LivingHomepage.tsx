@@ -17,11 +17,20 @@ import {
   type RenderingQuality,
 } from "./livingExperienceModel.js";
 import type { LivingExperienceRuntime } from "./livingExperienceRuntime.js";
-import type { ViewerTheme } from "./viewerChrome.js";
+import {
+  PrdBrandMark,
+  PrdSiteFooter,
+  ViewerIcon,
+  ViewerSiteNavigation,
+  type ViewerTheme,
+} from "./viewerChrome.js";
 import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
 import "./livingHomepage.css";
 import { LivingViewer, type LivingViewerHandle } from "./LivingViewer.js";
-import { viewerDemoExampleArchives, viewerLandingHero } from "./viewerDemoContent.js";
+import {
+  viewerDemoExampleArchives,
+  viewerLandingHero,
+} from "./viewerDemoContent.js";
 import type { DocumentLayer } from "./livingPackageInspection.js";
 import { LivingPackageInspector } from "./LivingPackageInspector.js";
 import { LivingProfileArtwork, LivingProfilePanel, useLivingProfilePreview } from "./LivingProfilePreview.js";
@@ -132,20 +141,27 @@ function Chapter({
       aria-labelledby={`${chapter.id}-title`}
     >
       <div className="living-chapter-copy">
-        <p className="living-eyebrow">
-          <span>{String(index + 1).padStart(2, "0")}</span> /{" "}
-          {index === 0
-            ? "THE BEGINNING"
-            : index === 1
-              ? "BREAK THE PAGE"
-              : index === 2
-                ? "BEYOND THE SURFACE"
-                : index === 3
-                  ? "EVERY STORY HAS A FORM"
-                  : index === 4
-                    ? "EXPERIENCE THE VIEWER"
-                    : "THE NEXT CHAPTER"}
-        </p>
+        {index === 0 ? (
+          <p className="living-hero-badge">
+            <span aria-hidden="true" />
+            Evolves with your ideas
+          </p>
+        ) : (
+          <p className="living-eyebrow">
+            <span>{String(index + 1).padStart(2, "0")}</span> /{" "}
+            {index === 0
+              ? "THE BEGINNING"
+              : index === 1
+                ? "BREAK THE PAGE"
+                : index === 2
+                  ? "BEYOND THE SURFACE"
+                  : index === 3
+                    ? "EVERY STORY HAS A FORM"
+                    : index === 4
+                      ? "EXPERIENCE THE VIEWER"
+                      : "THE NEXT CHAPTER"}
+          </p>
+        )}
         {index === 0 ? (
           <h1 id={`${chapter.id}-title`} aria-label={viewerLandingHero.title}>
             {title}
@@ -194,14 +210,18 @@ export function LivingHomepage({
   const profilePreview = useLivingProfilePreview(profile, sample, basePath, profilesReady);
   const routeHref = (route: ViewerAppRoute) =>
     getViewerAppRoutePath(route, basePath);
+  const assetBasePath = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  const artworkUrl = `${assetBasePath}brand/prd-world.webp`;
   const selectedExample =
     viewerDemoExampleArchives.find((example) => example.id === sample) ??
     viewerDemoExampleArchives[0]!;
   const selectedViewerHref = `${routeHref("viewer")}?sample=${selectedExample.id}`;
-  const selectedDownloadHref = `${basePath.endsWith("/") ? basePath : `${basePath}/`}${selectedExample.hostedPath}`;
+  const selectedDownloadHref = `${assetBasePath}${selectedExample.hostedPath}`;
 
   function selectSample(nextSample: string) {
-    const example = viewerDemoExampleArchives.find((item) => item.id === nextSample);
+    const example = viewerDemoExampleArchives.find(
+      (item) => item.id === nextSample,
+    );
     if (!example) return;
     setSample(example.id);
     setProfile(
@@ -345,36 +365,12 @@ export function LivingHomepage({
       data-focused={focused}
       aria-label="PRD Home"
     >
-      <header className="living-nav">
-        <a
-          className="living-brand"
-          href={routeHref("home")}
-          aria-label="PRD Home"
-        >
-          <span className="living-brand-mark" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          PRD
-          <span className="living-brand-caption">
-            PORTABLE RESPONSIVE DOCUMENT
-          </span>
-        </a>
-        <nav aria-label="Main navigation">
-          <a href="#responsive">Explore</a>
-          <a href={routeHref("viewer")}>Viewer</a>
-          <a href={routeHref("docs")}>Docs</a>
-        </nav>
-        <div className="living-nav-end">
-          <span className="living-chapter-count">
-            CHAPTER <b>{String(chapter + 1).padStart(2, "0")}</b> / 06
-          </span>
-          <button className="living-nav-cta" onClick={enterViewer}>
-            Open Viewer <Arrow />
-          </button>
-        </div>
-      </header>
+      <ViewerSiteNavigation
+        route="home"
+        basePath={basePath}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+      />
 
       <div className="living-atmosphere" aria-hidden="true">
         <div className="living-orbit orbit-one" />
@@ -410,6 +406,43 @@ export function LivingHomepage({
           data-device={device}
         >
           <div className="living-document-shadow" />
+          <div
+            className="living-hero-decoration living-hero-logo"
+            aria-hidden="true"
+          >
+            <PrdBrandMark />
+            <strong>PRD</strong>
+          </div>
+          <div
+            className="living-hero-decoration living-hero-preview"
+            aria-hidden="true"
+          >
+            <img src={artworkUrl} alt="" width="1536" height="1024" />
+            <span />
+            <span />
+            <span />
+          </div>
+          <span
+            className="living-hero-decoration living-format-chip format-text"
+            aria-hidden="true"
+          >
+            <ViewerIcon name="file" />
+            Text
+          </span>
+          <span
+            className="living-hero-decoration living-format-chip format-comic"
+            aria-hidden="true"
+          >
+            <ViewerIcon name="image" />
+            Comic
+          </span>
+          <span
+            className="living-hero-decoration living-format-chip format-responsive"
+            aria-hidden="true"
+          >
+            <ViewerIcon name="wide" />
+            Responsive
+          </span>
           {(["manifest", "profile", "resources"] as const).map(
             (item, index) => (
               <button
@@ -422,7 +455,11 @@ export function LivingHomepage({
                 aria-pressed={layer === item}
                 onClick={() => setLayer(item)}
               >
-                <span>{item === "profile" ? `profile: ${selectedExample.profile}` : layerDescriptions[item].path}</span>
+                <span>
+                  {item === "profile"
+                    ? `profile: ${selectedExample.profile}`
+                    : layerDescriptions[item].path}
+                </span>
               </button>
             ),
           )}
@@ -451,10 +488,8 @@ export function LivingHomepage({
                 </p>
               </div>
               <div className="living-paper-art" aria-hidden="true">
-                <div className="paper-sculpture sculpture-one" />
-                <div className="paper-sculpture sculpture-two" />
-                <div className="paper-sculpture sculpture-three" />
-                <span>MEANING, IN EVERY DIMENSION.</span>
+                <img src={artworkUrl} width="1536" height="1024" alt="" />
+                <span>A WORLD OF POSSIBILITIES.</span>
               </div>
               <div className="living-paper-columns">
                 <div>
@@ -518,26 +553,41 @@ export function LivingHomepage({
           index={0}
           title={
             <>
-              Documents were
+              Documents were never
               <br />
-              never meant to
-              <br />
-              <em>stand still.</em>
+              <em>meant to stand still.</em>
             </>
           }
         >
           <p className="living-intro">
-            Meet PRD. A Portable Responsive Document.
-            <br />
-            Structured by nature. Alive with possibility.
+            PRD is Portable Responsive Document — a structured, portable format
+            for ideas that deserve more room. Read across screens, explore rich
+            content, and take the whole document with you.
           </p>
           <div className="living-actions">
-            <a className="living-primary" href="#responsive">
-              Experience PRD <Arrow />
+            <a className="living-primary" href={routeHref("viewer")}>
+              Open Viewer <Arrow />
             </a>
-            <a className="living-text-link" href={routeHref("docs")}>
-              Explore the format ↗
+            <a className="living-secondary" href="#examples">
+              Explore Examples
             </a>
+            <a className="living-secondary" href={routeHref("docs")}>
+              Read Docs
+            </a>
+          </div>
+          <div className="living-hero-benefits" aria-label="PRD benefits">
+            <span>
+              <ViewerIcon name="file" />
+              Open a .prd file
+            </span>
+            <span>
+              <ViewerIcon name="wide" />
+              Adapts to your screen
+            </span>
+            <span>
+              <ViewerIcon name="book" />
+              Profile aware
+            </span>
           </div>
           <a className="living-scroll-cue" href="#responsive">
             <span>
@@ -622,7 +672,11 @@ export function LivingHomepage({
             role="status"
             aria-live="polite"
           >
-            <code>{layer === "profile" ? `profile: ${selectedExample.profile}` : layerDescriptions[layer].path}</code>
+            <code>
+              {layer === "profile"
+                ? `profile: ${selectedExample.profile}`
+                : layerDescriptions[layer].path}
+            </code>
             <h3>{layerDescriptions[layer].title}</h3>
             <p>{layerDescriptions[layer].description}</p>
           </div>
@@ -675,6 +729,9 @@ export function LivingHomepage({
             {profileDescriptions[profile]}
           </p>
           <LivingProfilePanel profile={profile} preview={profilePreview} onOpenViewer={enterViewer} />
+          <a className="living-text-link" href="#examples">
+            Explore the three document profiles <Arrow />
+          </a>
         </Chapter>
         <Chapter
           index={4}
@@ -742,12 +799,10 @@ export function LivingHomepage({
           </div>
           <p className="living-small-note">
             {selectedExample.label} · {selectedExample.profile}
-            <br />One package. Ready for your next reader.
+            <br />
+            One package. Ready for your next reader.
           </p>
-          <a
-            className="living-example-link"
-            href={routeHref("docs")}
-          >
+          <a className="living-example-link" href={routeHref("docs")}>
             Explore the format <Arrow />
           </a>
           <div className="living-boundary">
@@ -852,7 +907,81 @@ export function LivingHomepage({
         {audioMessage || runtimeMessage}
       </div>
       <section className="living-build-path" aria-label="Create a PRD package">
-        <div>
+        <section
+          id="examples"
+          tabIndex={-1}
+          className="prd-examples-section"
+          aria-labelledby="prd-examples-title"
+        >
+          <div className="prd-section-heading">
+            <p className="eyebrow">Made to be opened</p>
+            <h2 id="prd-examples-title">One format. Different stories.</h2>
+            <p>
+              Explore the three PRD profile families with real example packages.
+            </p>
+          </div>
+          <div className="prd-profile-grid">
+            {(
+              [
+                {
+                  id: "document-basic",
+                  title: "Document",
+                  icon: "file",
+                  description:
+                    "Structured ideas, clear reading order, and content that finds its place.",
+                },
+                {
+                  id: "comic-basic",
+                  title: "Comic",
+                  icon: "image",
+                  description:
+                    "Visual storytelling with panel navigation and its own reading rhythm.",
+                },
+                {
+                  id: "storyboard-basic",
+                  title: "Storyboard",
+                  icon: "wide",
+                  description:
+                    "A sequence of frames, notes, and ideas ready to explore.",
+                },
+              ] as const
+            ).map((item) => (
+              <a
+                key={item.id}
+                className={`prd-profile-card profile-${item.id}`}
+                href={`${routeHref("viewer")}?sample=${item.id}`}
+              >
+                <div className="prd-profile-art" aria-hidden="true">
+                  <img
+                    src={artworkUrl}
+                    alt=""
+                    loading="lazy"
+                    width="1536"
+                    height="1024"
+                  />
+                  <span />
+                  <span />
+                </div>
+                <div className="prd-profile-card-heading">
+                  <ViewerIcon name={item.icon} />
+                  <h3>{item.title}</h3>
+                  <span aria-hidden="true">↗</span>
+                </div>
+                <p>{item.description}</p>
+                <span className="prd-card-action">
+                  Open example <Arrow />
+                </span>
+              </a>
+            ))}
+          </div>
+          <a
+            className="prd-segmented-link"
+            href={`${routeHref("viewer")}?sample=document-segmented-basic`}
+          >
+            Explore a larger document with packaged sections <Arrow />
+          </a>
+        </section>
+        <div className="living-authoring-heading">
           <p className="living-eyebrow">YOUR NEXT CHAPTER</p>
           <h2>
             Make something
@@ -861,10 +990,8 @@ export function LivingHomepage({
           </h2>
         </div>
         {children}
-        <p className="living-colophon">
-          PRD · EONHIVE INC. <span>EXPERIENCE POWERED BY uRK</span>
-        </p>
       </section>
+      <PrdSiteFooter basePath={basePath} />
     </main>
   );
 }

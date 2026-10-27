@@ -34,8 +34,8 @@ describe("viewer demo content", () => {
     expect(viewerLandingHero.title).toContain("Documents");
     expect(viewerLandingHero.description).toContain("Portable Responsive Document");
     expect(viewerLandingHero.primaryAction).toBe("Open Viewer");
-    expect(viewerLandingHero.secondaryAction).toBe("Load Sample PRD");
-    expect(viewerLandingHero.tertiaryAction).toBe("View CLI Flow");
+    expect(viewerLandingHero.secondaryAction).toBe("Explore Examples");
+    expect(viewerLandingHero.tertiaryAction).toBe("Read Docs");
 
     expect(viewerLandingCapabilities.map((capability) => capability.title)).toEqual([
       "Manifest-first core",
