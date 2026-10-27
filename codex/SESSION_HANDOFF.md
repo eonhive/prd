@@ -7,6 +7,7 @@
 - The primary checkout now contains larger in-progress format/security/UI/architecture changes. Those files and its branch were not modified or staged by this task.
 - Browser use is disabled in Work settings. Post-merge pointer/anchor, drag/drop, visual/device/assistive-technology, and deployment-owner acceptance remain open under items 44/48.
 - This branch adds a repeatable HTTP/package smoke surface, not a workaround for disabled browser access or a claim of launch acceptance.
+- [PR #55](https://github.com/eonhive/prd/pull/55) is open for review. No merge was performed.
 
 ## Completed work
 
@@ -20,7 +21,7 @@
 
 ## In-progress work
 
-- Publish/review the hosted-smoke operator PR; no merge, production deployment, npm release, or hosting credential/DNS/permission change was performed.
+- Review PR #55; no merge, production deployment, npm release, or hosting credential/DNS/permission change was performed.
 - Browser use must be restored or manual QA performed before closing deployed interaction acceptance. Do not infer it from HTTP success or the earlier local browser results.
 
 ## Changed files
@@ -33,6 +34,7 @@
 ## Commands run
 
 - Bundled Git: status, fetch main, create/rename a branch in the existing isolated checkout, diff review/check.
+- Published the verified staged tree through the authorized GitHub connector (remote tree SHA matched the local index), then opened PR #55.
 - Read PR #54 metadata, review summary, CI result, and Cloudflare preview notification through the GitHub connector.
 - Attempted the supported browser entry point once; Work settings reported browser use disabled. No alternate browser runtime or permission changes were used.
 - `pnpm exec vitest run scripts/viewer-hosted-smoke.test.ts scripts/viewer-hosting.test.ts scripts/prepare-viewer-demo-assets.test.ts`
