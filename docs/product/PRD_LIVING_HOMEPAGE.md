@@ -89,6 +89,34 @@ the story position and invoking control. Locale, selected comic/storyboard item,
 and the existing reading workspace survive presentation changes and chapter exits.
 Selecting a different example deliberately loads a different package.
 
+The October 27 continuity follow-up also keeps the iframe URL fixed after its
+first mount. Parent sample changes use the app-only `prd-viewer:select-sample`
+message after `prd-viewer:ready`; the embedded app accepts requests only from
+its exact parent window and origin, and only for allowlisted example IDs. A
+command matching the current or in-flight example is a no-op, preserving locale,
+panel selection, and resource URLs. If the frame boots again, readiness requests
+the homepage's latest selection rather than relying on the original URL query.
+
+Samples explicitly chosen through the embedded Viewer's own controls send
+`prd-viewer:sample-selected`. The parent updates its inspector, profile study,
+and final package links without echoing another load command. This message reports
+selection intent; the real Viewer validation result remains authoritative.
+Bootstrap and parent-requested loads do not emit selection echoes.
+
+Opening a local file sends only `prd-viewer:local-file`, without a filename,
+manifest, resource, or file bytes. The outer selector shows that a local file is
+open and can explicitly return to the same canonical example. The homepage's
+download remains the selected public example; it never publishes the local file.
+All message parsing strips unrelated fields and authenticates both origin and
+browsing context. These messages, including Escape, are application UI contracts
+and introduce no PRD capability, extension, or runtime requirement.
+
+File reads and sample fetches share an app-owned load generation. A newer
+selection aborts the older fetch and invalidates any older file read or pending
+open. Stale success/error/finally paths cannot replace package state, change
+loading feedback, or allocate current resource URLs. Unmount cleanup invalidates
+pending work; the initial sample also survives React Strict Mode cleanup/replay.
+
 Chapter 03 now includes an actual example-package inspector. The demo asset
 build uses the existing Node `inspectPrdArchive` API on each generated `.prd`
 archive, rejects invalid packages, and writes an adjacent
@@ -152,6 +180,8 @@ New app sources under `apps/prd-viewer-web/src/`:
 - `livingPackageInspection.ts`
 - `livingPackageInspection.test.ts`
 - `LivingViewer.test.ts`
+- `LivingViewer.integration.test.ts`
+- `viewerLoading.integration.test.ts`
 - `livingViewerMessages.ts`
 - `livingViewerMessages.test.ts`
 - `livingExperienceModel.ts`
@@ -169,6 +199,7 @@ Updated app files:
 - `apps/prd-viewer-web/src/viewerExperience.test.ts`
 - `apps/prd-viewer-web/index.html`
 - `apps/prd-viewer-web/package.json`
+- `package.json` (test-only DOM environment)
 - `pnpm-lock.yaml`
 
 The package handoff follow-up also updates

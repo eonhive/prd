@@ -197,6 +197,18 @@ storyboard downloaded using the final CTA passed CLI validation. These are
 local browser checks, not physical touch, screen-reader, lower-end hardware,
 or production launch sign-off.
 
+The October 27 sample-continuity follow-up adds an authenticated application
+message bridge so sample choices inside the embedded Viewer update the Home
+inspector and final download, and Home choices load in the existing iframe.
+DOM integration tests exercise actual React updates and canonical sample bytes,
+including repeated-command locale/resource continuity, late fetch success/error,
+late file reads, local-file privacy, failed-load recovery and Strict Mode startup.
+Local browser use was disabled again in Work settings during this follow-up;
+these tests are not a new visual, touch, screen-reader or production interaction
+pass. After review/deployment, select a different example inside the iframe,
+confirm the Home inspector/download follow it, return to the same example after
+a local open, and confirm Escape/focus and mobile layout still work.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

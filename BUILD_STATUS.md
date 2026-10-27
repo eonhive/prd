@@ -2,6 +2,15 @@
 
 ## 2026-10-27
 
+### Living Homepage — Embedded Sample Continuity
+
+- Began from merged main `9075994` in the isolated `thehive/prd-viewer-continuity` worktree and incorporated `a50de8e`'s hosted diagnostics from PR #55. Independent unfinished Viewer, container and signing changes in the shared checkout were left untouched and are not part of this slice's validation count.
+- Kept one stable iframe source after its initial mount. Home selections now use a bounded ready/select message bridge; sample choices made through the embedded Viewer's own controls update the inspector, profile study and final download. Commands matching the current or in-flight sample do not reload it, preserving locale and resource URLs.
+- Authenticated each message against the expected window and exact origin and accepted only allowlisted sample IDs. Local file opens send only a state marker, without filename or content; the selector can explicitly return to the same canonical example. No PRD format, viewer-core, uRK, CLI or public npm API changed, and no animation scheduler was added.
+- Added abort/generation guards across hosted fetches, archive file reads, document opening and disposal. Older results, errors and cleanup cannot replace the latest package. Tests also protect failed-load recovery and initial query loading through React Strict Mode cleanup/replay.
+- Added a pinned test-only `jsdom` environment and two React DOM integration suites. After incorporating PR #55, the full foundation gate passed on Node 22: **321 tests across 32 files**, workspace build, docs consistency, canonical example validation and aggregate smoke. Typecheck, both hosting builds and the Wrangler dry run passed. The existing production HTTP/package check passed all 13 checks; this is separate from interaction acceptance. Implementation notes, hosting guidance and the active backlog were updated.
+- Local browser use is disabled in Work settings. Message/authentication, persistent-node identity, French locale/resource continuity, interrupted fetch/file reads and local-file privacy were verified in DOM tests; no fresh visual, native-dialog, touch, screen-reader or production interaction pass is claimed. Launch acceptance items 44/48 remain open. No production deployment or npm release was performed.
+
 ### Hosted Demo Smoke Check
 
 - Confirmed PR #54 merged at `9075994`, with successful CI and a reported Cloudflare commit-preview build. The isolated checkout was based on that main revision; the primary checkout's larger in-progress work remains untouched.

@@ -1,12 +1,19 @@
 /*
  * Company: EonHive Inc. | Title: Persistent Living Homepage Viewer
  * Purpose: Keep one reference Viewer mounted across inline and native modal presentation.
- * Author: Stan Nesi | Created: October 26, 2026 | Updated: October 26, 2026
+ * Author: Stan Nesi | Created: October 26, 2026 | Updated: October 27, 2026
  * Notes: Vibe coded with Codex.
  */
 
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
-import { isLivingViewerExitRequest } from "./livingViewerMessages.js";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  livingViewerExitFocusMessage,
+  livingViewerLocalFileMessage,
+  livingViewerReadyMessage,
+  livingViewerSampleSelectedMessage,
+  livingViewerSelectSampleMessage,
+  readLivingViewerMessage,
+} from "./livingViewerMessages.js";
 import { viewerDemoExampleArchives } from "./viewerDemoContent.js";
 
 export interface LivingViewerHandle {
@@ -32,6 +39,29 @@ export const LivingViewer = forwardRef<LivingViewerHandle, LivingViewerProps>(
     const exitRef = useRef<HTMLButtonElement>(null);
     const invokerRef = useRef<HTMLElement | null>(null);
     const focusedRef = useRef(false);
+    const connectedRef = useRef(false);
+    const initialSampleRef = useRef<string | undefined>(undefined);
+    const requestedSampleRef = useRef<string | undefined>(undefined);
+    const currentSampleRef = useRef(sample);
+    const [localFile, setLocalFile] = useState(false);
+    currentSampleRef.current = sample;
+    // The source stays stable after the first mount; commands change its package in place.
+    if (ready && initialSampleRef.current === undefined) initialSampleRef.current = sample;
+
+    function requestSample(sampleId: string) {
+      currentSampleRef.current = sampleId;
+      setLocalFile(false);
+      if (!connectedRef.current) return;
+      requestedSampleRef.current = sampleId;
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: livingViewerSelectSampleMessage, sampleId },
+        window.location.origin,
+      );
+    }
+
+    useEffect(() => {
+      if (ready && sample !== requestedSampleRef.current) requestSample(sample);
+    }, [ready, sample]);
 
     function pauseHiddenMedia() {
       iframeRef.current?.contentDocument
@@ -74,20 +104,29 @@ export const LivingViewer = forwardRef<LivingViewerHandle, LivingViewerProps>(
     }
 
     useEffect(() => {
-      function handleEmbeddedEscape(event: MessageEvent<unknown>) {
-        if (
-          isLivingViewerExitRequest(
-            event,
-            iframeRef.current?.contentWindow ?? null,
-            window.location.origin,
-          )
-        ) {
+      function handleEmbeddedMessage(event: MessageEvent<unknown>) {
+        const message = readLivingViewerMessage(
+          event,
+          iframeRef.current?.contentWindow ?? null,
+          window.location.origin,
+        );
+        if (message?.type === livingViewerExitFocusMessage) {
           exitFocus();
+        } else if (message?.type === livingViewerReadyMessage) {
+          connectedRef.current = true;
+          requestSample(currentSampleRef.current);
+        } else if (message?.type === livingViewerSampleSelectedMessage) {
+          requestedSampleRef.current = message.sampleId;
+          currentSampleRef.current = message.sampleId;
+          setLocalFile(false);
+          if (message.sampleId !== sample) onSampleChange(message.sampleId);
+        } else if (message?.type === livingViewerLocalFileMessage) {
+          setLocalFile(true);
         }
       }
-      window.addEventListener("message", handleEmbeddedEscape);
-      return () => window.removeEventListener("message", handleEmbeddedEscape);
-    }, [active, ready, onFocusChange]);
+      window.addEventListener("message", handleEmbeddedMessage);
+      return () => window.removeEventListener("message", handleEmbeddedMessage);
+    }, [active, ready, sample, onFocusChange, onSampleChange]);
 
     useImperativeHandle(ref, () => ({ openFocus }));
 
@@ -124,9 +163,13 @@ export const LivingViewer = forwardRef<LivingViewerHandle, LivingViewerProps>(
             Example{" "}
             <select
               aria-label="PRD example package"
-              value={sample}
-              onChange={(event) => onSampleChange(event.target.value)}
+              value={localFile ? "" : sample}
+              onChange={(event) => {
+                onSampleChange(event.target.value);
+                requestSample(event.target.value);
+              }}
             >
+              {localFile && <option value="" disabled>Local file open</option>}
               {viewerDemoExampleArchives.map((example) => (
                 <option key={example.id} value={example.id}>{example.label}</option>
               ))}
@@ -142,10 +185,15 @@ export const LivingViewer = forwardRef<LivingViewerHandle, LivingViewerProps>(
             ↗<span className="living-sr-only">Open full viewer</span>
           </a>
         </div>
+        {localFile && (
+          <p className="living-viewer-local-note" role="status">
+            Your local file stays in this Viewer. Choose an example to return to the demo.
+          </p>
+        )}
         {ready && (
           <iframe
             ref={iframeRef}
-            src={`${viewerPath}?embed=1&sample=${sample}`}
+            src={`${viewerPath}?embed=1&sample=${initialSampleRef.current}`}
             title="Embedded PRD reference viewer"
             loading="lazy"
           />

@@ -1264,6 +1264,12 @@
   border: 0;
   background: #11121a;
 }
+.living-viewer-local-note {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 11px;
+  line-height: 1.5;
+}
 .living-viewer-dialog > .living-viewer-toolbar {
   padding: 10px 25px;
   border-top: 1px solid #ffffff15;
