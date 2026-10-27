@@ -2,82 +2,89 @@
 
 ## Current status
 
-- October 27, 2026: PR #54 is merged at `9075994`; its CI passed, and the Cloudflare integration reported a successful commit-preview build.
-- Reused the clean isolated checkout `prd-viewer-dom-targets` and created `thehive/prd-hosted-demo-smoke` from that main revision.
-- The primary checkout now contains larger in-progress format/security/UI/architecture changes. Those files and its branch were not modified or staged by this task.
-- Browser use is disabled in Work settings. Post-merge pointer/anchor, drag/drop, visual/device/assistive-technology, and deployment-owner acceptance remain open under items 44/48.
-- This branch adds a repeatable HTTP/package smoke surface, not a workaround for disabled browser access or a claim of launch acceptance.
-- [PR #55](https://github.com/eonhive/prd/pull/55) is open for review. No merge was performed.
+- October 27, 2026: PR #55 is merged at `a50de8e`; main also includes the embedded Viewer continuity follow-up in PR #56 (`4e7710d`).
+- Reused isolated checkout `prd-viewer-dom-targets` and created `thehive/prd-independent-release-gates` from `4e7710d`. The primary checkout's substantial unfinished format/security/UI/architecture edits remain untouched.
+- This branch fixes item 46's repo-side release-gate mismatch: stable post-preview public package versions may differ, in line with the existing Changesets configuration.
+- Package versions, dependency ranges, lockfile, changesets, release workflow, and published availability were not changed. No versioning or npm publication was performed.
+- Browser/production launch acceptance remains separate under items 44/48. This is not another UI or format slice.
 
 ## Completed work
 
-- Added `pnpm viewer:demo:check:hosted`, defaulting to the public production domain and accepting `-- --url https://your-host/base/` for owned preview/staging deployments.
-- The prehook builds the existing validator. The runner verifies Home/Viewer/Docs shells, their same-origin/base-path module/CSS entry assets, four canonical sample archives with expected profiles, and adjacent inspection JSON against the actual downloaded facts.
-- Added a stable summary contract at ignored `examples/dist/viewer-hosted-smoke-summary.json`, including per-check failures, HTTP/byte facts, archive diagnostic hashes, and explicit `browserAcceptance: "not-assessed"`.
-- Ordinary failures retain diagnostics and exit nonzero. Requests reject redirects, bound time and streamed bytes, remove temporary downloads, and do not execute remote JavaScript.
-- Added tests for root/subpath hosting, missing trailing slash, HTML fallbacks, invalid/wrong-profile archives, stale metadata, HTTP/network failures, timeout/budget cancellation, out-of-base assets, safe arguments, and real CLI failure exit/artifact behavior.
-- Live production HTTP/package smoke passed all 13 checks, including all four archives and their matching inspection files.
-- Updated README, hosting runbook, build status, backlog, and this handoff. No app/renderer, format, schema, validator behavior, public npm API, capabilities, dependency, or release automation changes; no changeset.
+- Added dependency-free `scripts/release-package-versions.mjs`, shared by preflight and registry audit.
+- Preserved all-`0.1.0` historical bootstrap; normal releases accept stable per-package versions above that preview, including CLI `0.2.0` with unchanged libraries at `0.1.1`.
+- Kept invalid versions, mixed bootstrap/post-preview targets, unconfigured prerelease/build-label versions, and public package-name drift gated.
+- Preserved npm token/auth/org checks and registry per-package publication/`latest`/consumer-safe dependency checks. The existing post-publish consumer defaults already install each package's own `latest`.
+- Added positive independent-version cases, failure/regression cases, artifact checks, and an actual bootstrap-script no-op test without publishing.
+- Clarified release/versioning policies, runbook, README, and PRD-033 in place. Did not allocate IDs used by the primary checkout's unfinished container/signature decisions.
+- Read-only `release:status` confirms current main's three queued authoring changesets plan only `@eonhive/prd-cli@0.2.0`, with no patch/library/major bumps.
+- Live registry audit passes for the existing unchanged `0.1.1` baseline. The planned `0.2.0` release is not claimed live.
 
 ## In-progress work
 
-- Review PR #55; no merge, production deployment, npm release, or hosting credential/DNS/permission change was performed.
-- Browser use must be restored or manual QA performed before closing deployed interaction acceptance. Do not infer it from HTTP success or the earlier local browser results.
+- Publish/review the focused release-gate PR, then separately review the intended version PR and CI publication.
+- Item 46 remains open until actual authoring publication and external init/Markdown/image import verification. Existing post-publish smoke covers pack/validate/inspect, not all new authoring commands.
+- No real-token/auth/org preflight was run locally; those checks were exercised with mocks. CI remains the publisher/auth authority.
 
 ## Changed files
 
-- New `scripts/viewer-hosted-smoke.mjs`, `scripts/viewer-hosted-smoke.test.ts`
-- `package.json` (operator script and validator-build prehook only)
-- `README.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`
-- `docs/governance/PRD_HOSTING_RUNBOOK.md`, `codex/SESSION_HANDOFF.md`
+- New `scripts/release-package-versions.mjs`
+- `scripts/release-publish-preflight.mjs`, `release-publish-preflight.test.ts`
+- `scripts/release-registry-audit.mjs`, `release-registry-audit.test.ts`
+- `docs/governance/PRD_RELEASE_POLICY.md`, `PRD_NPM_RELEASE_RUNBOOK.md`
+- `docs/core/PRD_VERSIONING_POLICY.md`, `docs/decisions/PRD_DECISIONS.md`
+- `README.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/SESSION_HANDOFF.md`
 
 ## Commands run
 
-- Bundled Git: status, fetch main, create/rename a branch in the existing isolated checkout, diff review/check.
-- Published the verified staged tree through the authorized GitHub connector (remote tree SHA matched the local index), then opened PR #55.
-- Read PR #54 metadata, review summary, CI result, and Cloudflare preview notification through the GitHub connector.
-- Attempted the supported browser entry point once; Work settings reported browser use disabled. No alternate browser runtime or permission changes were used.
-- `pnpm exec vitest run scripts/viewer-hosted-smoke.test.ts scripts/viewer-hosting.test.ts scripts/prepare-viewer-demo-assets.test.ts`
-- `pnpm viewer:demo:check:hosted`
-- `pnpm typecheck`
-- `pnpm foundation:gate`
+- Bundled Git: status, fetch main, create isolated branch, diff review/check.
+- Read PR #55 merge/CI/preview discussion and current release scripts/policies before edits.
+- `pnpm exec vitest run scripts/release-publish-preflight.test.ts scripts/release-registry-audit.test.ts scripts/external-consumer-smoke.test.ts`
+- `pnpm release:status` (read-only; no changeset versioning)
+- `pnpm install --frozen-lockfile` under Node 22 to refresh the isolated install for main's existing jsdom dependency
+- `pnpm release:check`
+- `pnpm release:audit:registry` (public registry metadata only)
+- `pnpm docs:check -- --include-root-docs`
 - `git diff --check`
 
 ## Tests / verification
 
 - Node `22.22.2` and pnpm `10.32.1`.
-- Targeted tests: 24 passed across 3 files, including 16 new hosted-smoke cases. A loopback-only server verifies the real CLI failure path; unit tests make no public network requests.
-- Foundation gate passed: workspace build, full test suite, root-inclusive docs consistency, canonical example validation, and aggregate smoke.
-- Root typecheck and diff check passed. The new live operator command passed all 13 HTTP/package checks against production.
-- Live checks do not execute the app or prove exact deployment account/branch configuration. Browser acceptance remains explicitly not assessed.
-- No new browser, pointer, touch, screen-reader, memory/hardware, or drag/drop QA was completed.
+- 41 targeted tests across three files passed, including shared mode classification, unchanged bootstrap behavior, independently versioned publication states, auth failure, and retained metadata failure checks.
+- Full `release:check` passed: 351 tests across 32 files, typecheck, workspace build, canonical example validation, and packed-tarball consumer smoke.
+- The initial full run lacked PR #56's jsdom install; all existing dependencies were restored with the frozen lockfile and the full rerun passed. No dependency source or lockfile change.
+- Docs consistency including root docs and diff checks passed.
+- Registry audit passed against the still-published `0.1.1` package set. Independently versioned future publication was tested with mocks, not falsely reported published.
+- No live token/org verification, versioning, npm publish, production deployment, or fresh browser acceptance was performed.
 
 ## Known issues
 
-- Browser access is currently disabled in Work settings. The previously inconclusive scrolled-rail pointer behavior remains unverified; do not claim it fixed without reproducing it.
-- Launch items 44/48 still require deployed interaction checks, actual OS drag/drop, intended Workers Builds account/config confirmation, physical touch/assistive technology, and constrained-hardware profiling.
-- The queued authoring CLI release remains item 46 and must reconcile preflight/version policy separately. Larger uncommitted primary-checkout work is not part of this branch.
-- System Git remains subject to the unaccepted Xcode license. Use bundled Git without accepting it automatically. HTTPS push has lacked credentials; use the authorized GitHub connector when needed.
-- Smoke-download guardrails (15 seconds, 16 MiB per response) apply only to the fixed hosted-demo probe, not PRD validity or format limits.
+- The version/publish workflow can still need external GitHub/npm operational attention; this code change is not proof that a future workflow or version PR has succeeded.
+- Current queued authoring status is based only on reviewed main. The primary checkout has other unfinished changesets/features that must be reviewed and sequenced separately.
+- Browser acceptance under items 44/48 remains open; prior browser-disabled/pointer uncertainty is not resolved by release-gate tests.
+- System Git requires an unaccepted Xcode license; use bundled Git. Put Node 22's bin before the fallback tool directory when supplying Git through PATH, to avoid selecting the fallback pnpm runtime.
+- HTTPS push has lacked credentials; use the authorized GitHub connector when needed.
+- Keep `PRD_NPM_VERSION` unset for independent-version post-publish consumer verification; its existing single-version override is only for intentional coordinated checks.
 
 ## Next recommended task
 
-- Review/merge the hosted-smoke operator PR and run it after deployments using the summary artifact to diagnose missing/stale/HTML-fallback assets.
-- Complete deployed pointer/anchor and real drag/drop QA when browser access is available, then finish launch items 44/48 with the owner. Keep GitHub Pages fallback until acceptance.
-- Coordinate the primary checkout's format/security/UI work separately; do not silently import or revert its unfinished changes.
-- Take the CLI release-policy reconciliation and publication as a separate reviewed slice.
+- Review/merge the gate patch, confirm `release:status` again on intended main, then review or recover a separate Changesets version PR for the authoring release.
+- Validate exact versions/dependency ranges and publish only through the existing main/CI path. Do not consume changesets in this gate-only PR.
+- Require successful per-package registry audit and clean npm-installed init/import/validate/inspect/pack verification before updating public availability or marking item 46 complete.
+- Coordinate unfinished primary-checkout work separately and preserve pending launch acceptance.
 
 ## Important decisions
 
-- `scope: "http-assets-and-packages-only"` and `browserAcceptance: "not-assessed"` are explicit artifact fields so automation cannot mistake a passing download check for launch sign-off.
-- The command is separate from `foundation:gate`; offline/local conformance must not depend on a public host.
-- Authored IDs, namespaced DOM targets, eager package loading, and current public contracts remain unchanged.
-- Hashes are diagnostics, not cryptographic authenticity/signature claims.
-- Operational Codex docs stay tracked, sanitized, and out of public navigation. Generated summaries and temporary archives are not canonical source files.
+- Changesets already has no fixed/linked release group. Per-package versions are the intended normal path; whole-toolchain equality is not a release invariant.
+- First-preview bootstrap stays coordinated and separate. The current latest lane permits stable post-preview versions only; prerelease/build-label channels need explicit future policy.
+- Existing summary contracts and release-mode names remain unchanged; `versionSet` can legitimately have multiple values, and per-package versions drive audit.
+- The shared helper has no third-party dependency so the standalone Node 20 post-publish workflow still runs without an install step.
+- Public package boundaries, auth/org gates, internal semver metadata requirements, CI-only publication, format/manifest versions, and runtime support states remain unchanged.
+- No changeset is needed for root release scripts/docs. Keep Codex docs tracked, sanitized, and out of public navigation.
 
 ## Do not redo
 
-- Do not redo merged PR #54's namespace fix or the prior Workers/npm recovery work.
-- Do not bypass disabled browser access, claim fresh visual QA, or close launch acceptance from this smoke result.
-- Do not touch/stage the primary checkout's unrelated in-progress format/security/UI/architecture changes.
-- Do not add a network dependency to the foundation gate or change package validity because of this probe's download budget.
+- Do not redo merged PRs #54/#55/#56, Workers migration, or old npm recovery/deprecation work.
+- Do not bump unchanged libraries solely to align version numbers.
+- Do not run release:version/publish or access publisher tokens as part of this gate-only patch.
+- Do not modify/stage the primary checkout's unfinished changes or reuse its unreviewed decision IDs.
+- Do not claim the authoring release shipped or launch QA completed from local gate results.

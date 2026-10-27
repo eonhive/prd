@@ -4,13 +4,14 @@
  * Purpose: Verify published PRD npm metadata is consumer-safe after release.
  * Author: Stan Nesi
  * Created: 2026-04-23
- * Updated: 2026-04-23
+ * Updated: 2026-10-27
  * Notes: Vibe coded with Codex.
  */
 
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { getReleasePackageVersionMode } from "./release-package-versions.mjs";
 
 const npmRegistryUrl = "https://registry.npmjs.org";
 const expectedDistTag = "latest";
@@ -164,12 +165,12 @@ export async function runReleaseRegistryAudit(options = {}) {
 
     if (
       JSON.stringify(actualPackages) !== JSON.stringify(expectedPackages) ||
-      versionSet.length !== 1
+      getReleasePackageVersionMode(packages.map((pkg) => pkg.version)) === null
     ) {
       summary.checks.packageTargets.status = "failed";
       markFailed(
         summary,
-        "Align the public publish set and keep the released PRD toolchain on one version before rerunning registry audit."
+        "Restore the expected four public package names and stable release versions. Audit each package at its own version; do not mix first-preview bootstrap and later release versions."
       );
     } else {
       summary.checks.packageTargets.status = "passed";

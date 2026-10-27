@@ -4,7 +4,7 @@
  * Purpose: Verify npm token auth, org membership, package targets, and release mode before CI publish.
  * Author: Stan Nesi
  * Created: 2026-04-22
- * Updated: 2026-04-22
+ * Updated: 2026-10-27
  * Notes: Vibe coded with Codex.
  */
 
@@ -13,11 +13,12 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { firstPreviewVersion, getReleasePackageVersionMode } from "./release-package-versions.mjs";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npmRegistryUrl = "https://registry.npmjs.org";
 const npmOrganization = "eonhive";
-const previewVersion = "0.1.0";
+const previewVersion = firstPreviewVersion;
 
 export const releasePublishPreflightContractVersion =
   "prd-release-publish-preflight-v0.1";
@@ -318,6 +319,7 @@ export async function runReleasePublishPreflight(options = {}) {
       name
     }));
     const versionSet = [...new Set(packages.map((pkg) => pkg.version))].sort();
+    const releaseMode = getReleasePackageVersionMode(packages.map((pkg) => pkg.version));
     summary.checks.packageTargets.packages = packages;
     summary.checks.packageTargets.versionSet = versionSet;
 
@@ -327,11 +329,11 @@ export async function runReleasePublishPreflight(options = {}) {
         summary,
         "Restore the expected publish set (@eonhive/prd-types, @eonhive/prd-validator, @eonhive/prd-packager, @eonhive/prd-cli) before rerunning Release."
       );
-    } else if (versionSet.length !== 1) {
+    } else if (releaseMode === null) {
       summary.checks.packageTargets.status = "failed";
       markFailed(
         summary,
-        "Keep the public PRD package versions aligned to one release version before rerunning Release."
+        "Use stable package versions above 0.1.0 for normal Changesets releases. Only an all-0.1.0 set may use first-preview bootstrap; do not mix legacy bootstrap versions with later releases."
       );
     } else {
       summary.checks.packageTargets.status = "passed";
@@ -348,14 +350,7 @@ export async function runReleasePublishPreflight(options = {}) {
 
     const missingPackages = packageStatuses.filter((pkg) => !pkg.published);
     const publishedPackages = packageStatuses.filter((pkg) => pkg.published);
-    const previewEligible =
-      versionSet.length === 1 && versionSet[0] === previewVersion;
-    const releaseMode =
-      versionSet.length === 1
-        ? previewEligible
-          ? "bootstrap-preview"
-          : "changesets-versioned"
-        : null;
+    const previewEligible = releaseMode === "bootstrap-preview";
 
     summary.checks.bootstrapMode.missingPackages = missingPackages.map(
       ({ name, version }) => `${name}@${version}`
@@ -368,7 +363,7 @@ export async function runReleasePublishPreflight(options = {}) {
     summary.checks.bootstrapMode.bootstrapRequired =
       releaseMode === "bootstrap-preview" && missingPackages.length > 0;
 
-    if (versionSet.length !== 1) {
+    if (releaseMode === null) {
       summary.checks.bootstrapMode.status = "failed";
     } else {
       summary.checks.bootstrapMode.status = "passed";

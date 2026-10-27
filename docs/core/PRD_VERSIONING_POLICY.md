@@ -1,5 +1,5 @@
 # PRD_VERSIONING_POLICY.md
-_Last updated: May 23, 2026_
+_Last updated: October 27, 2026_
 _Status: Canonical versioning policy baseline v0.1_
 
 ## 1. Purpose
@@ -85,9 +85,12 @@ Until the public tooling reaches `1.0.0`:
 - patch releases fix bugs, metadata, docs packaging, tests, or compatible behavior
 - minor releases may add tooling features, CLI surfaces, validator coverage, or compatible library APIs
 - breaking changes may still occur before `1.0.0`, but they must be explicit in changesets, docs, and release notes
-- package versions should stay aligned across the public toolchain when internal dependency edges or consumer clarity benefit from alignment
+- public packages version independently through Changesets; a CLI-only feature can bump the CLI without artificially bumping unchanged libraries
+- coordinated bumps remain appropriate when dependency compatibility or a reviewed release plan requires them, but identical public package versions are not a release invariant
 
 Public publishable packages must not publish `workspace:*` dependency values. Internal `@eonhive/prd-*` dependency edges in published metadata must resolve to concrete semver ranges.
+
+The current `latest` release lane accepts stable `major.minor.patch` package versions above the historical `0.1.0` bootstrap. All four packages must be `0.1.0` to enter that one-time bootstrap path; mixed bootstrap/post-preview sets fail closed. Prerelease/build-label channels need an explicit follow-up policy and are not introduced by this clarification. The existing `versionSet` diagnostic can contain multiple versions; each package's own manifest version is authoritative for registry audit and its `latest` tag.
 
 The release policy and maintainer runbook define the CI-operated npm publication flow.
 
