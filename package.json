@@ -23,6 +23,8 @@
     "viewer:demo:build": "pnpm viewer:demo:assets && pnpm --filter @eonhive/prd-web-viewer build",
     "viewer:demo:build:cloudflare": "PRD_VIEWER_BASE_PATH=/ pnpm viewer:demo:build",
     "viewer:demo:check:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler deploy --dry-run",
+    "previewer:demo:check:hosted": "pnpm --filter @eonhive/prd-validator... build",
+    "viewer:demo:check:hosted": "node ./scripts/viewer-hosted-smoke.mjs",
     "viewer:demo:preview:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler dev --local",
     "viewer:demo:deploy:cloudflare": "pnpm viewer:demo:build:cloudflare && wrangler deploy",
     "viewer:demo:build:github-pages": "PRD_VIEWER_BASE_PATH=/prd/ pnpm viewer:demo:build",

@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Hosted Demo Smoke Check
+
+- Confirmed PR #54 merged at `9075994`, with successful CI and a reported Cloudflare commit-preview build. The isolated checkout was based on that main revision; the primary checkout's larger in-progress work remains untouched.
+- Added `pnpm viewer:demo:check:hosted` and a machine-readable summary for deployed HTTP/package checks. It validates routes and entry assets, downloads the four canonical archives through bounded same-origin requests, applies existing package validation/profile checks, and compares adjacent inspection JSON with the actual archive facts.
+- The live production check passed all 13 checks. No document upload, deployment, credentials, hosting permissions, format/validator behavior, public API, or release behavior changed. The command is separate from the offline foundation gate.
+- Validation passed on Node 22: 24 targeted tests (16 new smoke cases), root typecheck, the foundation gate, root-inclusive docs consistency, and diff check. Failure cases include a real CLI invocation against a loopback-only broken deployment, with nonzero exit and a retained summary artifact.
+- Browser use is disabled in Work settings during this pass. The summary explicitly records browser acceptance as not assessed; deployed pointer/anchor behavior, drag/drop, physical accessibility/device checks, and deployment-owner confirmation remain open under items 44/48.
+
 ### Viewer DOM Target Collision Fix
 
 - Addressed the review finding from merged PR #51 without changing package-authored IDs or validator rules. A private-app helper now generates disjoint document/node/panel/frame target IDs using lossless encoding, preventing authored IDs from shadowing fixed viewer controls or one another across root/visual scopes.
