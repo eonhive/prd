@@ -40,6 +40,7 @@ pnpm viewer:demo:assets
 pnpm viewer:demo:build
 pnpm viewer:demo:build:cloudflare
 pnpm viewer:demo:check:cloudflare
+pnpm viewer:demo:check:hosted
 pnpm viewer:demo:preview:cloudflare
 pnpm viewer:demo:deploy:cloudflare
 pnpm viewer:demo:build:github-pages
@@ -70,6 +71,24 @@ new PRD format contracts.
 Hosted sample archives are demo assets only. They do not define a PRD network-loading guarantee and do not change the reference viewer truth: eager whole-package in-memory loading.
 
 The root `wrangler.toml` declares `assets.directory = "./apps/prd-viewer-web/dist"` and `assets.not_found_handling = "single-page-application"`. Workers serves existing static files directly and handles SPA navigation to `/viewer/` and `/docs/`. The former Pages `_redirects` catch-all is removed so it does not override native asset routing. The GitHub Pages workflow still copies `index.html` to `404.html` for fallback route refreshes.
+
+## Hosted HTTP And Package Smoke
+
+After a deployment, run from the repository root:
+
+```bash
+pnpm viewer:demo:check:hosted
+pnpm viewer:demo:check:hosted -- --url https://your-preview.workers.dev/
+pnpm viewer:demo:check:hosted -- --url https://eonhive.github.io/prd/
+```
+
+The command builds the existing validator and defaults to `https://prd.eonhive.com/`. Run it against a demo deployment you own, without credentials, query strings, or fragments in its base URL. It never publishes, uploads a user document, changes hosting settings, or executes the downloaded JavaScript.
+
+The check verifies Home/Viewer/Docs HTML shells, their same-origin/base-path module and CSS entry assets, all four canonical hosted sample archives, and their adjacent inspection JSON. Archives pass the existing validator with their expected profiles. Inspection metadata must match the downloaded archive's manifest, archive bytes, logical file count, and logical byte total. This catches stale/missing JSON and HTTP 200 SPA fallbacks rather than trusting a successful HTTP status.
+
+Diagnostics are written to ignored `examples/dist/viewer-hosted-smoke-summary.json` using contract `prd-hosted-demo-smoke-v0.1`: generation time, normalized base URL, overall status, and individual URL/check results. Successful archive results include a SHA-256 diagnostic digest; it is not a signature or authenticity claim. Ordinary check failures retain the artifact and exit nonzero. Each response has a 15-second timeout and a 16 MiB smoke-download safety budget; these are operator guardrails for the fixed demo assets, not PRD validity limits. Temporary downloads are removed after inspection. Redirects and out-of-base/origin entry assets are rejected.
+
+The summary explicitly reports `scope: "http-assets-and-packages-only"` and `browserAcceptance: "not-assessed"`. A passing smoke check does **not** verify rendering, pointer/touch behavior, drag/drop, focus/history/theme persistence, screen readers, hardware performance, or deployment account ownership. Keep launch items 44/48 open until their real checks pass. The command stays separate from `foundation:gate` so offline/local conformance does not depend on the public host.
 
 ## Workers Builds Setup
 
@@ -133,6 +152,8 @@ The corrective outline/feedback changes are not yet a production verification cl
 ### Viewer Target Follow-Up: October 27, 2026
 
 PR #51 is merged. Its review identified that a valid authored panel/frame/root ID could duplicate a viewer-shell ID such as `document-stage`, `main-content`, or `package-details`. The follow-up maps document, content-node, panel, and frame IDs into separate viewer-local DOM namespaces and maps outline/content fragment links to the same targets. Package IDs and validator validity rules are unchanged.
+
+PR #54 is now merged at `9075994`; its CI passed and Cloudflare reported a successful commit preview. A fresh `viewer:demo:check:hosted` run passed all 13 checks against the production domain, including the four archives and matching inspection facts. Browser use is currently disabled in Work settings, so no new deployed pointer/anchor, drag/drop, or visual acceptance is claimed by this follow-up.
 
 Local production-build browser checks opened validator-valid static comic/storyboard collision archives and confirmed no duplicate DOM IDs. Keyboard activation resolved outline links to the intended cards and root, not shell controls. Document Basic's in-content rationale link and interactive comic selection/focus/Left navigation also passed. Rendered-markup tests cover both static and active visual views, structured/resume nodes, shared root/visual IDs, and escaped fragments. These checks are not a production deployment claim or a substitute for real drag/drop, physical-device, or assistive-technology acceptance. Recheck the namespaced targets after deployment and retain the fallback host.
 
