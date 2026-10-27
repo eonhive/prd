@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: May 24, 2026_
+_Last updated: October 27, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -56,6 +56,11 @@ The hosted PRD Web Viewer demo is a public reference-stack demo surface. It live
 
 The Living Homepage uses uRK only as an app-level presentation dependency. Its chapter transforms, audio, quality controls, and illustrative layout studies do not redefine package validity or promote document kinds to profile families. The embedded Viewer keeps the same validation and rendering pipeline; see [PRD_LIVING_HOMEPAGE.md](PRD_LIVING_HOMEPAGE.md) for supported behavior and the capability audit.
 
+Home, Viewer, and Docs share the purple folded-document identity described in
+[PRD_VISUAL_IDENTITY.md](PRD_VISUAL_IDENTITY.md). Public navigation and profile
+example links use the existing routes. Reference-board Studio, AI, sharing, and
+other future concepts remain separate from the implemented public surface.
+
 Codex operational files under `codex/` may remain tracked for implementation continuity, but they are not part of the public product docs, public site navigation, or canonical format documentation.
 
 ---
@@ -73,6 +78,14 @@ PRD Core is the standard-defining layer. It must stay portable, profile-aware, s
 The reference viewer demonstrates one truthful opening path for valid packages.
 
 It may expose package facts, support states, and render-mode behavior, but it does not define PRD validity. Current reference viewer loading is eager whole-package in-memory loading.
+
+The branded workspace provides a searchable outline, collapsible navigation and
+details, reading width and focus controls, and Info/Files views over the existing
+package facts and declared resources. At 1000 CSS pixels or less, the side panels
+use native modal drawers. Outline selection closes the mobile drawer and focuses
+the authored section or selected panel/frame through the existing namespaced
+target map. Reading state and prepared resources remain mounted. This is an
+application presentation change with no new package requirements or core APIs.
 
 ### 5.3 Studio
 

@@ -3,6 +3,14 @@
 Implemented locally October 26, 2026. Production deployment and launch acceptance
 remain separate from the local checks recorded in `BUILD_STATUS.md`.
 
+The October 27 public rebrand keeps this experience and its runtime ownership
+while applying the shared purple identity across Home, Viewer, and Docs. The
+header and footer are shared public components. The hero adds original
+decorative document artwork and direct Viewer/Examples/Docs actions; profile
+cards below the story open the existing example packages. Theme tokens now
+come from `prdBrand.css`; see [PRD_VISUAL_IDENTITY.md](PRD_VISUAL_IDENTITY.md)
+for assets, generation provenance, route behavior, and acceptance limits.
+
 ## Experience and boundaries
 
 The existing Vite app keeps Home (`/`), Viewer (`/viewer/`), and Docs (`/docs/`).

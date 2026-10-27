@@ -1,5 +1,13 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 27, 2026: Public Rebrand Review
+
+- Isolated branch `thehive/prd-brand-refresh` starts at current main `c8e5935` (PR #58). Ported the earlier Home/Viewer/Docs rebrand while preserving merged source-profile presentations, namespaced document targets and the sample-selection bridge. The primary checkout and its converter/container/signature work were left untouched.
+- Shared palette, folded mark/favicon, original WebP hero artwork, public navigation/footer, real example links, branded Docs and responsive Viewer panels are implemented. Theme changes preserve localized content/resource URLs. Mobile outline focus uses the namespaced target map. Corrected sticky toolbar/panel/fragment offsets after real browser testing.
+- Validation: root typecheck, foundation gate **408 tests / 34 files** (191 app tests), workspace builds, canonical examples/aggregate smoke, both hosting-base builds, Workers dry run, 21 local HTTP/package checks and docs/whitespace checks pass. Fresh browser checks used the built `127.0.0.1:4174` preview with desktop themes and 390px/320px layouts; generated screenshots are under ignored `examples/dist/rebrand-qa/`.
+- No dependency, lockfile, public package, CLI, core, release workflow or changeset changes. No npm release or production deployment. Review the focused PR before merge; launch items 44/48 still require physical touch, screen-reader, real OS drag/drop, constrained-device and deployed acceptance.
+- Earlier sections below are historical context.
+
 ## Current status
 
 - October 27, 2026: PR #55 is merged at `a50de8e`; main also includes the embedded Viewer continuity follow-up in PR #56 (`4e7710d`).

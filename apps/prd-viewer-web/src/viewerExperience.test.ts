@@ -34,6 +34,10 @@ describe("public experience markup", () => {
     expect(html).toContain('aria-label="Main navigation"');
     expect(html).toContain('href="/viewer/"');
     expect(html).toContain('href="/docs/"');
+    expect(html).toContain('href="/#profiles"');
+    expect(html).toContain('href="/#examples"');
+    expect(html.match(/aria-label="Main navigation"/g)).toHaveLength(1);
+    expect(html).toContain('class="prd-brand-symbol"');
   });
 
   it("keeps the Home message concise and preserves the authoring flow", () => {
@@ -51,6 +55,10 @@ describe("public experience markup", () => {
     expect(html).toContain('aria-label="Document viewport"');
     expect(html).toContain('aria-label="Document structure layers"');
     expect(html).toContain('aria-label="Enable ambient sound"');
+    expect(html).toContain('id="examples" tabindex="-1"');
+    expect(html).toContain('id="profiles"');
+    expect(html).toContain("Evolves with your ideas");
+    expect(html).toContain('aria-label="Footer navigation"');
     expect(html).not.toContain('title="Embedded PRD reference viewer"');
     expect(html).not.toContain("Paginated");
   });
@@ -61,6 +69,9 @@ describe("public experience markup", () => {
     }));
     expect(html).toContain(`href="${basePath}examples/document-basic.prd" download=""`);
     expect(html).toContain(`href="${basePath}viewer/?sample=document-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=comic-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=storyboard-basic"`);
+    expect(html).toContain(`src="${basePath}brand/prd-world.webp"`);
     expect(html).toContain('aria-label="Example package inspector"');
     expect(html).toContain("Package details load as you reach this chapter.");
     expect(html).not.toContain("validated when the demo was built");
@@ -95,7 +106,10 @@ describe("public experience markup", () => {
     for (const id of ["document-stage", "document-outline", "package-details"]) {
       expect(html).toContain(`id="${id}" tabindex="-1"`);
     }
-    expect(html).toContain('<details class="viewer-sample-picker" open="">');
+    expect(html).toContain('aria-label="Reading controls"');
+    expect(html).toContain('aria-label="Search document outline"');
+    expect(html).toContain('class="viewer-welcome-examples"');
+    expect(html).toContain("Document Basic");
   });
 
   it("embeds the real viewer workspace without nesting site navigation", () => {
@@ -118,7 +132,7 @@ describe("public experience markup", () => {
     expect(html).toContain('aria-label="Documentation sections"');
     for (const section of viewerPublicDocsSections) {
       expect(html).toContain(`href="#docs-${section.id}"`);
-      expect(html).toContain(`id="docs-${section.id}"`);
+      expect(html).toContain(`id="docs-${section.id}" tabindex="-1"`);
     }
     expect(html).toContain('<details class="docs-hosting-card">');
     expect(html).not.toContain("SESSION_HANDOFF");
@@ -127,15 +141,18 @@ describe("public experience markup", () => {
 });
 
 describe("layout source safeguards", () => {
-  const css = readFileSync(new URL("./styles.css", import.meta.url), "utf8");
+  const css = readFileSync(new URL("./styles.css", import.meta.url), "utf8") + readFileSync(new URL("./prdBrand.css", import.meta.url), "utf8") + readFileSync(new URL("./viewerWorkspace.css", import.meta.url), "utf8");
 
   it("does not hide mobile navigation or the open action", () => {
     expect(css).not.toMatch(/\.site-nav-links[^{}]*\{[^}]*display:\s*none/);
     expect(css).not.toMatch(/\.nav-open-button[^{}]*\{[^}]*display:\s*none/);
   });
 
-  it("keeps the loaded document ahead of rails on narrow screens", () => {
-    expect(css).toMatch(/\.has-package \.viewer-shell-grid\s*\{\s*grid-template-areas: "document" "navigation" "details";/);
+  it("gives narrow screens one document column with modal side panels", () => {
+    expect(css).toContain('@media (max-width: 1000px)');
+    expect(css).toContain('grid-template-areas: "document";');
+    expect(css).toContain('dialog.viewer-side-panel:not([open])');
+    expect(css).toContain('.viewer-side-panel::backdrop');
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });
 });
