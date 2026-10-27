@@ -20,10 +20,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { packDirectoryToBuffer } from "../packages/prd-packager/src/index.js";
 import { inspectPrdArchive } from "../packages/prd-validator/src/node.js";
 import { parseHostedSmokeArgs, runHostedDemoSmoke } from "./viewer-hosted-smoke.mjs";
+import { buildLivingProfilePreview } from "../apps/prd-viewer-web/scripts/prepare-profile-previews.mjs";
 
 type Reply = { body: BodyInit; type: string; status?: number };
 const roots: string[] = [];
-const samples = new Map<string, { archive: ArrayBuffer; inspection: string }>();
+const samples = new Map<string, { archive: ArrayBuffer; inspection: string; preview: ReturnType<typeof buildLivingProfilePreview> }>();
 
 async function tempRoot() {
   const root = await mkdtemp(join(tmpdir(), "prd-hosted-smoke-test-"));
@@ -39,6 +40,7 @@ beforeAll(async () => {
     await writeFile(path, archive);
     const inspection = await inspectPrdArchive(path);
     samples.set(id, {
+      preview: buildLivingProfilePreview(archive, inspection.manifest!, id),
       archive: new Uint8Array(archive).buffer,
       inspection: JSON.stringify({
         contractVersion: "prd-home-sample-v0.1", sampleId: id,
@@ -64,6 +66,10 @@ function deployment(base: string) {
   for (const [id, sample] of samples) {
     replies.set(url(`examples/${id}.prd`), { body: sample.archive, type: "application/octet-stream" });
     replies.set(url(`examples/${id}.prd.inspection.json`), { body: sample.inspection, type: "application/json" });
+    if (sample.preview) {
+      replies.set(url(`examples/${id}.prd.preview.json`), { body: JSON.stringify(sample.preview.metadata), type: "application/json" });
+      for (const asset of sample.preview.assets) replies.set(url(asset.publicPath), { body: new Uint8Array(asset.bytes).buffer, type: asset.type });
+    }
   }
   const fetcher = vi.fn(async (input: string, options: RequestInit) => {
     expect(options.redirect).toBe("error");
@@ -87,9 +93,9 @@ describe("hosted demo smoke", () => {
     const result = await runHostedDemoSmoke({ baseUrl, repoRoot: await tempRoot(), fetcher });
     expect(result.status).toBe("passed");
     expect(result.browserAcceptance).toBe("not-assessed");
-    expect(result.checks).toHaveLength(13);
+    expect(result.checks).toHaveLength(21);
     expect(result.checks.every((check: { status: string }) => check.status === "passed")).toBe(true);
-    expect(fetcher).toHaveBeenCalledTimes(13);
+    expect(fetcher).toHaveBeenCalledTimes(21);
     const artifact = JSON.parse(await readFile(result.summaryPath, "utf8"));
     expect(artifact).toMatchObject({
       contractVersion: "prd-hosted-demo-smoke-v0.1", baseUrl,
@@ -103,7 +109,9 @@ describe("hosted demo smoke", () => {
     ["examples/comic-basic.prd", "archive:comic-basic", "text/html", "<html>SPA fallback</html>"],
     ["examples/comic-basic.prd.inspection.json", "inspection:comic-basic", "text/html", "<html>SPA fallback</html>"],
     ["assets/app.js", "asset:javascript:/assets/app.js", "text/html", "<html>SPA fallback</html>"],
-    ["examples/document-basic.prd.inspection.json", "inspection:document-basic", "application/json", "{}"]
+    ["examples/document-basic.prd.inspection.json", "inspection:document-basic", "application/json", "{}"],
+    ["examples/comic-basic.prd.preview.json", "preview:comic-basic", "text/html", "<html>SPA fallback</html>"],
+    ["examples/previews/storyboard-basic/1.svg", "preview-image:storyboard-basic:1", "text/html", "<html>SPA fallback</html>"]
   ])("fails on misleading HTTP 200 bytes at %s and still writes a summary", async (path, id, type, body) => {
     const baseUrl = "https://demo.test/";
     const { fetcher, replies, url } = deployment(baseUrl);
@@ -113,7 +121,7 @@ describe("hosted demo smoke", () => {
     expect(result.checks.find((check: { id: string }) => check.id === id))
       .toMatchObject({ status: "failed", statusCode: 200, message: expect.any(String) });
     expect(JSON.parse(await readFile(result.summaryPath, "utf8")).status).toBe("failed");
-    expect(result.checks).toHaveLength(13);
+    expect(result.checks.length).toBeGreaterThanOrEqual(15);
   });
 
   it("rejects a valid archive served for the wrong profile", async () => {

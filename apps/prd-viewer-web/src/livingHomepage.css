@@ -802,55 +802,6 @@
   color: var(--living-accent);
   background: transparent;
 }
-.living-experience[data-profile="report"] .living-paper-art {
-  height: 110px;
-}
-.living-experience[data-profile="report"] .living-paper-title h3 {
-  font-family: Georgia, serif;
-}
-.living-experience[data-profile="resume"] .living-paper-art {
-  height: 65px;
-  width: 65px;
-  float: right;
-  border-radius: 50%;
-  margin-left: 15px;
-}
-.living-experience[data-profile="resume"] .living-paper-columns {
-  grid-template-columns: 1fr;
-}
-.living-experience[data-profile="magazine"] .living-paper-title h3 {
-  text-transform: uppercase;
-  font-size: 38px;
-}
-.living-experience[data-profile="magazine"] .living-paper-art {
-  height: 190px;
-}
-.living-panel-study {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin: 0 0 15px;
-}
-.living-panel-study span {
-  background: #d9dbe7;
-  padding: 26px 4px 7px;
-  font:
-    6px ui-monospace,
-    monospace;
-  border: 1px solid #b9bbce;
-}
-.living-experience[data-profile="comic"] .living-paper-art {
-  height: 110px;
-}
-.living-experience[data-profile="storyboard"] .living-paper-art {
-  height: 80px;
-}
-.living-experience[data-profile="storyboard"] .living-panel-study {
-  grid-template-columns: 1fr;
-}
-.living-experience[data-profile="storyboard"] .living-panel-study span {
-  padding: 14px 8px;
-}
 .living-proof-list {
   display: grid;
   gap: 12px;

@@ -2,6 +2,15 @@
 
 ## 2026-10-27
 
+### Living Homepage — Source Profile Presentations
+
+- Continued in isolated `thehive/prd-profile-choreography` from merged PR #56 and incorporated current main `762fc37` from PR #57. The shared checkout's independent unfinished format/security/branding work remains untouched.
+- Chapter 04 now presents document, report, resume, comic, storyboard, and magazine compositions on the same paper element. The four general-document presentations share one study and reading order; comic/storyboard show actual ordered artwork, alt text, and captions/notes copied from manifest-declared resources in validated canonical archives. They remain excerpts and layout studies, with the original authored packages available in the real Viewer.
+- Reused the existing uRK kernel and scoped motion adapter for finite profile reveals, canceled on replacement, chapter exit, hidden/offscreen state, Viewer focus, or reduced-motion changes. No second scheduler, animation dependency, canonical profile, format behavior, or public API was added. Missing upstream seekable timelines/scene flow remain documented limitations.
+- Added keyboard tab navigation, a semantic chapter panel with complete reading copy/descriptions, lazy source-media loading, stale-request cancellation, and metadata/image failure retry. Selection continues through the existing inspector, persistent Viewer, and final download. The build emits ignored app-only preview JSON and exact copied images; hosted smoke now checks all 21 route/asset/package/metadata/image results against the original archives.
+- Validation on Node 22 passed: root typecheck, foundation gate with **399 tests across 34 files**, workspace build, root-inclusive docs checks, canonical validation and aggregate smoke, both hosting builds, and Wrangler dry run. Local HTTP/package smoke passed all 21 checks under both `/` and `/prd/`. The app entry is about 104 kB gzip and the lazy runtime about 12.5 kB gzip; these are transfer sizes, not hardware benchmarks.
+- Browser review covered all six compositions on desktop, 390px/320px stacked layouts, the 236px document viewport, 44px tab targets, arrow/Home/End selection, full source-image decoding, expanded-description separation, and real comic Viewer handoff/retained panel selection after reopen. Mobile review improved comic excerpts into horizontal strips. No browser console warnings/errors were observed during those checks. Browser use was disabled again before the final hosted-preview review; no hosted browser acceptance is claimed. Physical touch, actual screen-reader use, low-end/long-session profiling, and production launch acceptance remain open under items 44/48. Updated implementation notes, hosting guidance, and backlog; no production deployment or npm release was performed.
+
 ### Independent Public Package Release Gates
 
 - Reconciled preflight and registry audit with the existing independent Changesets configuration. Normal stable post-preview versions may differ across the four public packages; only an all-`0.1.0` set enters historical bootstrap. Invalid versions, mixed bootstrap/post-preview sets, and package-name drift remain gated.

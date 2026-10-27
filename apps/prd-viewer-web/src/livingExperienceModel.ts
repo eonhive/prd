@@ -17,13 +17,17 @@ export const livingChapters = [
 export type MotionIntensity = "full" | "subtle" | "off";
 export type RenderingQuality = "auto" | "high" | "low";
 export type DemoDevice = "desktop" | "tablet" | "mobile";
-export type DemoProfile =
-  | "document"
-  | "report"
-  | "resume"
-  | "comic"
-  | "storyboard"
-  | "magazine";
+export const livingProfileOrder = ["document", "report", "resume", "comic", "storyboard", "magazine"] as const;
+export type DemoProfile = typeof livingProfileOrder[number];
+
+export function getProfileForKey(profile: DemoProfile, key: string): DemoProfile | undefined {
+  if (key === "Home") return livingProfileOrder[0];
+  if (key === "End") return livingProfileOrder[livingProfileOrder.length - 1];
+  if (key !== "ArrowLeft" && key !== "ArrowRight") return undefined;
+  const direction = key === "ArrowRight" ? 1 : -1;
+  const index = livingProfileOrder.indexOf(profile);
+  return livingProfileOrder[(index + direction + livingProfileOrder.length) % livingProfileOrder.length];
+}
 
 export interface DocumentPose {
   rotateX: number;
