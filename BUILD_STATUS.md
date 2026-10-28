@@ -2,6 +2,14 @@
 
 ## 2026-10-28
 
+### Authoring Consumer Release Verification
+
+- Continued from merged main `2cf4980` in isolated `thehive/prd-authoring-consumer-smoke`. The pending release plan remains CLI `0.2.0` only from the three existing authoring changesets; package versions, dependency ranges and release workflows are unchanged. The original checkout's independent unfinished work remains untouched.
+- Added shared consumer authoring checks for three profile starters, Markdown with a local image, and comic/storyboard image imports. Each scenario validates and inspects its directory and packed archive. Checks assert profiles, JSON success/source facts, preserved import bytes and natural image order; missing commands and incorrect successful output fail with the precise step. Preparation failures now retain a failed summary and nonzero CLI exit rather than a misleading passing summary.
+- The existing release tarball smoke now runs all 42 consumer steps against installed local tarballs with authoring required. Post-publish smoke enables authoring automatically when the checked-out CLI targets stable `0.2.0` or later; legacy `0.1.x` retains the original six checks. The additive summary field `authoringRequired` records which mode ran. No help-text inference, optional failing-command skip, new dependency or public CLI/format contract change.
+- Validation passed: 29 targeted tests, full `release:check` with **451 tests across 34 files**, typecheck/build/canonical validation and tarball smoke, including all 42 installed authoring consumer steps. Live registry audit and clean npm consumer smoke pass for the unchanged public `0.1.1` baseline (six checks, authoring not claimed). Updated release policy, maintainer runbook, README, backlog and handoff.
+- Publication remains incomplete under item 46. The separate release diagnostics PR #64 reports an empty Actions `NPM_TOKEN`; a maintainer must repair the intended CI credential configuration before the normal version-PR/publication path can proceed. Keep command availability notes unchanged until the expected release, registry audit and 42-step npm authoring flow pass. No local versioning, token access, workflow rerun, npm publication or production deployment was performed. Physical/browser launch items 44/48 remain separate.
+
 ### Merged Viewer And Homepage Verification
 
 - PR #61's homepage motion hardening and PR #62's file-drop feedback are merged on main `317c365`. The combined foundation gate passes **429 tests across 34 files**, workspace build, root-inclusive docs consistency, canonical validation and aggregate smoke. Root typecheck also passes. PR #62's final head `97b7adc` has successful GitHub validation and a successful Cloudflare preview build.

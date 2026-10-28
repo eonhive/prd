@@ -9,10 +9,11 @@
  */
 
 import { spawn } from "node:child_process";
-import { cp, mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createAuthoringSmokeSteps, requiresAuthoringSmoke } from "./consumer-authoring-smoke.mjs";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
@@ -36,23 +37,26 @@ function runCommand(command, args, options = {}) {
   const {
     cwd = process.cwd(),
     env,
-    stdio = "inherit"
+    stdio = "inherit",
+    capture = false
   } = options;
 
   return new Promise((resolvePromise, reject) => {
+    const stdout = [];
     const child = spawn(command, args, {
       cwd,
       env: {
         ...process.env,
         ...env
       },
-      stdio
+      stdio: capture ? ["ignore", "pipe", "inherit"] : stdio
     });
 
+    child.stdout?.on("data", (chunk) => stdout.push(String(chunk)));
     child.on("error", reject);
-    child.on("exit", (code, signal) => {
+    child.on("close", (code, signal) => {
       if (code === 0) {
-        resolvePromise(undefined);
+        resolvePromise(stdout.join(""));
         return;
       }
 
@@ -140,12 +144,20 @@ export async function runExternalConsumerSmoke(options = {}) {
     consumerProjectDir,
     fixtureSourcePath,
     packageSpecs,
+    authoringRequired: false,
     steps: []
   };
 
   await mkdir(dirname(summaryPath), { recursive: true });
 
+  const preparationStartedAt = Date.now();
   try {
+    if (options.authoring != null) {
+      summary.authoringRequired = options.authoring;
+    } else {
+      const manifest = JSON.parse(await readFile(join(repoRoot, "packages/prd-cli/package.json"), "utf8"));
+      summary.authoringRequired = requiresAuthoringSmoke(manifest.version);
+    }
     await mkdir(consumerProjectDir, { recursive: true });
     await mkdir(join(consumerProjectDir, "fixtures"), { recursive: true });
     await mkdir(join(consumerProjectDir, "artifacts"), { recursive: true });
@@ -165,19 +177,26 @@ export async function runExternalConsumerSmoke(options = {}) {
     );
     await cp(fixtureSourcePath, fixturePath, { recursive: true });
 
-    for (const step of buildConsumerSteps(
+    const steps = buildConsumerSteps(
       fixturePath,
       archivePath,
       packageSpecs,
       npmCacheDir
-    )) {
+    );
+    if (summary.authoringRequired) {
+      steps.push(...await createAuthoringSmokeSteps(consumerProjectDir));
+    }
+
+    for (const step of steps) {
       const startedAt = Date.now();
 
       try {
-        await commandRunner(step.command, step.args, {
+        const output = await commandRunner(step.command, step.args, {
           cwd: consumerProjectDir,
-          env: step.env
+          env: step.env,
+          capture: step.capture
         });
+        await step.verify?.(output);
         summary.steps.push({
           title: step.title,
           command: formatCommand(step.command, step.args),
@@ -196,6 +215,15 @@ export async function runExternalConsumerSmoke(options = {}) {
         break;
       }
     }
+  } catch (error) {
+    summary.status = "failed";
+    summary.steps.push({
+      title: "Prepare consumer smoke inputs",
+      command: "prepare consumer smoke inputs",
+      durationMs: Date.now() - preparationStartedAt,
+      status: "failed",
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
   } finally {
     await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, "utf8");
 
