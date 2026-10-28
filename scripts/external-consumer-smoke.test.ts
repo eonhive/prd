@@ -8,10 +8,15 @@
  * Notes: Vibe coded with Codex.
  */
 
+import { execFile } from "node:child_process";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { runCli } from "../packages/prd-cli/src/index.js";
+import { requiresAuthoringSmoke } from "./consumer-authoring-smoke.mjs";
 import {
   buildPublishedPackageSpecs,
   externalConsumerSmokeContractVersion,
@@ -19,8 +24,10 @@ import {
 } from "./external-consumer-smoke.mjs";
 
 const tempDirs = [];
+const execFileAsync = promisify(execFile);
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   await Promise.all(tempDirs.map((path) => rm(path, { recursive: true, force: true })));
   tempDirs.length = 0;
 });
@@ -32,6 +39,9 @@ async function createTempDir(prefix) {
 }
 
 async function createFixtureRoot(repoRoot) {
+  const cliDirectory = join(repoRoot, "packages", "prd-cli");
+  await mkdir(cliDirectory, { recursive: true });
+  await writeFile(join(cliDirectory, "package.json"), JSON.stringify({ version: "0.1.1" }));
   const fixtureSource = join(repoRoot, "examples", "document-basic");
   await mkdir(join(fixtureSource, "content"), { recursive: true });
   await writeFile(
@@ -58,13 +68,43 @@ async function createFixtureRoot(repoRoot) {
         type: "document",
         id: "doc",
         title: "Consumer Smoke",
-        children: []
+        children: [{ type: "paragraph", text: "Consumer smoke." }]
       },
       null,
       2
     )
   );
 }
+
+function sourceCliRunner() {
+  let lines = [];
+  vi.spyOn(console, "log").mockImplementation((line) => lines.push(String(line)));
+  return async (_command, args) => {
+    if (args[0] === "install") {
+      return "";
+    }
+    lines = [];
+    const code = await runCli(args.slice(2));
+    if (code !== 0) {
+      throw new Error(`CLI exited ${code}`);
+    }
+    return lines.join("\n");
+  };
+}
+
+describe("requiresAuthoringSmoke", () => {
+  it.each(["0.1.0", "0.1.1", "0.1.12"])("retains legacy checks for CLI %s", (version) => {
+    expect(requiresAuthoringSmoke(version)).toBe(false);
+  });
+
+  it.each(["0.2.0", "0.2.1", "0.10.0", "1.0.0"])("requires authoring checks for CLI %s", (version) => {
+    expect(requiresAuthoringSmoke(version)).toBe(true);
+  });
+
+  it.each([undefined, "", "0.2", "0.2.0-rc.1", "0.2.0+build", "01.2.0"])("rejects ambiguous version %s", (version) => {
+    expect(() => requiresAuthoringSmoke(version)).toThrow(/stable CLI version/);
+  });
+});
 
 describe("buildPublishedPackageSpecs", () => {
   it("builds npm specs from a dist tag by default", () => {
@@ -111,6 +151,7 @@ describe("runExternalConsumerSmoke", () => {
     expect(result.status).toBe("passed");
     expect(writtenSummary.contractVersion).toBe(externalConsumerSmokeContractVersion);
     expect(writtenSummary.status).toBe("passed");
+    expect(writtenSummary.authoringRequired).toBe(false);
     expect(writtenSummary.steps).toHaveLength(6);
     expect(recordedCommands).toHaveLength(6);
     expect(recordedCommands[0].args).toContain("@eonhive/prd-cli@0.1.0");
@@ -142,5 +183,154 @@ describe("runExternalConsumerSmoke", () => {
     expect(result.status).toBe("failed");
     expect(writtenSummary.status).toBe("failed");
     expect(writtenSummary.steps.some((step) => step.status === "failed")).toBe(true);
+  });
+
+  it("automatically verifies all six authoring round trips for the planned CLI release", async () => {
+    const repoRoot = await createTempDir("prd-consumer-authoring-");
+    await createFixtureRoot(repoRoot);
+    await writeFile(join(repoRoot, "packages/prd-cli/package.json"), JSON.stringify({ version: "0.2.0" }));
+
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      commandRunner: sourceCliRunner()
+    });
+
+    expect(result.status, JSON.stringify(result.steps.filter((step) => step.status === "failed"))).toBe("passed");
+    expect(result.authoringRequired).toBe(true);
+    expect(result.steps).toHaveLength(42);
+    expect(result.steps.filter((step) => step.title.endsWith("inspect archive"))).toHaveLength(6);
+    await expect(readFile(join(result.consumerProjectDir, "package.json"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("requires authoring from current-version tarballs when explicitly requested", async () => {
+    const repoRoot = await createTempDir("prd-consumer-authoring-tarballs-");
+    await createFixtureRoot(repoRoot);
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      authoring: true,
+      commandRunner: sourceCliRunner()
+    });
+    expect(result.status, JSON.stringify(result.steps.filter((step) => step.status === "failed"))).toBe("passed");
+    expect(result.authoringRequired).toBe(true);
+    expect(result.steps).toHaveLength(42);
+  });
+
+  it("rejects a successful command that reports the wrong archive profile", async () => {
+    const repoRoot = await createTempDir("prd-consumer-wrong-profile-");
+    await createFixtureRoot(repoRoot);
+    const runner = sourceCliRunner();
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      authoring: true,
+      commandRunner: async (command, args) => {
+        const output = await runner(command, args);
+        if (args.includes("inspect") && args.some((arg) => arg.endsWith("init-general-document.prd"))) {
+          const payload = JSON.parse(output);
+          payload.manifest.profile = "comic";
+          return JSON.stringify(payload);
+        }
+        return output;
+      }
+    });
+    expect(result.status).toBe("failed");
+    expect(result.steps.at(-1)).toMatchObject({
+      title: "init general-document: inspect archive", status: "failed",
+      errorMessage: expect.stringContaining("Consumer profile must match")
+    });
+    expect(result.steps).toHaveLength(12);
+  });
+
+  it("detects changed image bytes before accepting an imported package", async () => {
+    const repoRoot = await createTempDir("prd-consumer-corrupt-image-");
+    await createFixtureRoot(repoRoot);
+    const runner = sourceCliRunner();
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      authoring: true,
+      commandRunner: async (command, args) => {
+        const output = await runner(command, args);
+        if (args.includes("images") && args.includes("comic")) {
+          const directory = args[args.indexOf("--out") + 1];
+          const manifest = JSON.parse(await readFile(join(directory, "manifest.json"), "utf8"));
+          await writeFile(join(directory, manifest.assets[0].href), "changed");
+        }
+        return output;
+      }
+    });
+    expect(result.status).toBe("failed");
+    expect(result.steps.at(-1)).toMatchObject({
+      title: "import images comic: create package", status: "failed",
+      errorMessage: expect.stringContaining("Source bytes and order must survive")
+    });
+  });
+
+  it.each(["invalid JSON", "wrong source kind"])("rejects %s despite a successful inspect exit", async (fault) => {
+    const repoRoot = await createTempDir("prd-consumer-invalid-inspection-");
+    await createFixtureRoot(repoRoot);
+    const runner = sourceCliRunner();
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      authoring: true,
+      commandRunner: async (command, args) => {
+        const output = await runner(command, args);
+        if (args.includes("inspect") && args.some((arg) => arg.endsWith("init-general-document.prd"))) {
+          if (fault === "invalid JSON") {
+            return "not JSON";
+          }
+          const payload = JSON.parse(output);
+          payload.inspection.sourceKind = "directory";
+          return JSON.stringify(payload);
+        }
+        return output;
+      }
+    });
+    expect(result.status).toBe("failed");
+    expect(result.steps.at(-1)).toMatchObject({ title: "init general-document: inspect archive", status: "failed" });
+  });
+
+  it("fails at the first unavailable authoring command instead of skipping it", async () => {
+    const repoRoot = await createTempDir("prd-consumer-missing-init-");
+    await createFixtureRoot(repoRoot);
+    const runner = sourceCliRunner();
+    const result = await runExternalConsumerSmoke({
+      repoRoot,
+      authoring: true,
+      commandRunner: async (command, args) => {
+        if (args.includes("init")) {
+          throw new Error("installed CLI has no init command");
+        }
+        return runner(command, args);
+      }
+    });
+    expect(result.status).toBe("failed");
+    expect(result.steps).toHaveLength(7);
+    expect(result.steps.at(-1)).toMatchObject({ title: "init general-document: create package", status: "failed" });
+    await expect(readFile(join(result.consumerProjectDir, "package.json"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("writes a failed summary when the expected CLI version is invalid", async () => {
+    const repoRoot = await createTempDir("prd-consumer-invalid-version-");
+    await createFixtureRoot(repoRoot);
+    await writeFile(join(repoRoot, "packages/prd-cli/package.json"), JSON.stringify({ version: "unknown" }));
+    const commandRunner = vi.fn();
+    const result = await runExternalConsumerSmoke({ repoRoot, commandRunner });
+    const writtenSummary = JSON.parse(await readFile(result.summaryPath, "utf8"));
+    expect(writtenSummary.status).toBe("failed");
+    expect(writtenSummary.steps.at(-1)).toMatchObject({
+      title: "Prepare consumer smoke inputs", errorMessage: expect.stringContaining("stable CLI version")
+    });
+    expect(commandRunner).not.toHaveBeenCalled();
+  });
+
+  it("exits nonzero and retains a failed summary for a real setup failure", async () => {
+    const repoRoot = await createTempDir("prd-consumer-cli-failure-");
+    const script = fileURLToPath(new URL("./external-consumer-smoke.mjs", import.meta.url));
+    await expect(execFileAsync(process.execPath, [script], { cwd: repoRoot })).rejects.toMatchObject({
+      code: 1,
+      stdout: expect.stringContaining("EXTERNAL_CONSUMER_SMOKE_SUMMARY_FILE:")
+    });
+    const summary = JSON.parse(await readFile(join(repoRoot, "examples/dist/external-consumer-smoke-summary.json"), "utf8"));
+    expect(summary.status).toBe("failed");
+    expect(summary.steps.at(-1)).toMatchObject({ title: "Prepare consumer smoke inputs", status: "failed" });
   });
 });

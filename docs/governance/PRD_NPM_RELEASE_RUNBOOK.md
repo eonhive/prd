@@ -104,7 +104,16 @@ The publish set for the first preview is:
 - `@eonhive/prd-packager`
 - `@eonhive/prd-cli`
 
-After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
+After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking. Once the checked-out CLI version targets stable `0.2.0` or later, authoring checks are also required automatically: three profile starters, Markdown with a local image, and comic/storyboard image imports, with directory/archive validation and inspection for each. Missing commands, incorrect JSON/profile/source facts and changed import bytes/order fail the run; they are not treated as optional capabilities.
+
+Before publication, `release:check` runs the same authoring flow against installed
+local tarballs even while the repository version is still `0.1.1`. Its retained
+summary is `examples/dist/release-authoring-consumer-smoke-summary.json` (42 steps:
+six baseline checks plus six checks for each authoring scenario). The npm summary
+includes `authoringRequired`; a passing legacy six-step `0.1.x` run does not prove
+the new authoring commands shipped. Preparation failures also fail the summary
+and CLI exit. Keep availability notes unchanged until the expected CLI release,
+per-package audit and 42-step npm authoring run are verified.
 
 ## 4. Corrective 0.1.1 Release
 
