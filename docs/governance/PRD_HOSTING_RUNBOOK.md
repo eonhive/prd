@@ -264,6 +264,25 @@ no dependency, upload service, package rule or runtime capability. Generated
 screenshots and acceptance notes belong under ignored
 `examples/dist/reader-accessibility/`.
 
+### October 27 Reader Deployment And File-Drop Follow-Up
+
+[PR #60](https://github.com/eonhive/prd/pull/60) merged at `2367123`. A fresh
+production HTTP/package run passed all 21 checks. The served JavaScript and CSS
+also matched the reviewed build byte-for-byte; diagnostic SHA-256 values are
+retained under ignored `examples/dist/production-acceptance/reviewed-assets.json`.
+This confirms deployed assets, not execution or screen-reader speech. Local
+browser use reported disabled in Work settings, so fresh production interactions
+were not exercised and the remaining launch matrix stays open.
+
+The file-drop follow-up is app-only: file drags retain their highlight across
+nested controls, clear on exit/drop and show a copy cursor; text drags do not
+cause archive-open errors. DOM tests dispatch the real React event handlers with
+explicit transfer fixtures and actual canonical archive bytes, covering absent
+related targets, privacy markers, unsupported-file rejection and recovery.
+Selection and the validator/renderer path are unchanged. After review/deployment,
+exercise real OS file drags into the named drop area, across its children, out
+of the region, and through valid/invalid/recovery opens. Keep items 44/48 open
+until those and the physical assistive/device checks pass.
 ### Motion Lifecycle Follow-Up: October 27, 2026
 
 The motion hardening slice settles in-flight device widths as well as profile

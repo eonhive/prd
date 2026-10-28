@@ -2,6 +2,12 @@
 
 ## 2026-10-27
 
+### File-Drop Feedback And Deployed Reader Assets
+
+- Continued from merged reader-accessibility main `2367123` in isolated `thehive/prd-file-drop-feedback`; the original checkout remains untouched. Fresh production HTTP/package checks passed all 21 cases, and served JavaScript/CSS matched the reviewed PR #60 build byte-for-byte. Diagnostic hashes are under ignored `examples/dist/production-acceptance/reviewed-assets.json`. This is static deployment evidence; browser use was disabled in Work settings and no new interactive acceptance is claimed.
+- Source/DOM review reproduced child-to-child drag-leave clearing the file highlight and plain-text drops causing archive errors. The named drop area now identifies file drags through their protected-phase type, counts nested targets even without `relatedTarget`, uses a copy cursor and clears feedback on real exit/drop. Text drags retain normal browser handling. Existing archive selection, opening, validation, rendering and private local-file notifications are preserved; no global drop interception, dependency or package/API change.
+- Added five integration cases: nested events with/without related targets, ignored text retaining French content/resource URLs, valid local drops with privacy markers, and unsupported-file rejection/recovery. Initial tests reproduced both faults; an added missing-related-target case also failed before the nested-entry fix. Final checks pass: root typecheck, foundation gate **417 tests / 34 files** (200 app tests), workspace build, canonical validation/aggregate smoke, both hosting builds, Workers dry run, root-inclusive docs consistency and whitespace checks.
+- Updated the brand guide, hosting acceptance ledger, backlog and handoff. Real OS drag/drop, fresh browser interactions, actual screen-reader speech, physical touch, constrained-device profiling and deployment-owner acceptance remain in launch items 44/48. No manual production deployment or npm release was performed.
 ### Living Homepage — Motion Lifecycle Hardening
 
 - Continued from merged reader-accessibility main `2367123` in the isolated `thehive/prd-motion-lifecycle` branch. The purple rebrand, reader controls, persistent Viewer, canonical content and package semantics are preserved; the shared checkout's independent unfinished work remains untouched.
