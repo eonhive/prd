@@ -97,6 +97,34 @@ Device transforms, layer separation, and reassembly change presentation only.
 The general-document studies are explicitly illustrative. Canonical package
 content is rendered by the real reference viewer in Chapter 05.
 
+## Optional audio lifecycle
+
+Sound remains opt-in and lazy. A private request generation now guards startup
+across module loading, adapter registration, native playback and optional Web
+Audio analysis. Hiding the page invalidates the request, pauses the existing uRK
+transport and disables analysis. Returning to the page does not revive an older
+request or announce paused audio as playing; a fresh visible opt-in is required.
+Hidden pages cannot initiate startup through a runtime command.
+
+Explicit mute and disposal also invalidate the request and immediately clear the
+audio visual level, including with motion off. Toggling while startup is pending
+cancels that opt-in. Cancellation resolves quietly as false; genuine playback
+failures from a current request still reach the existing sound feedback.
+Unavailable analysis retains ordinary playback. One shared initialization reuses
+the adapter, track and generated WAV URL. A fresh opt-in can proceed while an
+older cancelled native promise is pending; older completions cannot clear the
+new request's loading state, pause it or publish stale feedback. In-flight
+registration may finish a reusable track setup after visibility changes, but it
+cannot play that track until a fresh request. Disposal revokes the URL after the
+existing kernel cleanup, with no late playing callback.
+
+Runtime tests use the actual pinned uRK audio adapter with deterministic native
+media/Web Audio substitutes. They cover hide-and-return at startup, track setup,
+playback and analysis; immediate cancellation/retry; unavailable analysis; real playback
+errors; mute level reset; and disposal/URL cleanup. These are transport/lifecycle
+checks, not audible browser, autoplay-policy or physical-device acceptance.
+No audio API, format rule, dependency, or animation scheduler is introduced.
+
 ## Profile presentations
 
 Chapter 04 keeps the same paper element while selecting six compositions.

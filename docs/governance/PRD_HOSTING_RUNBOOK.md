@@ -313,6 +313,27 @@ in Work settings. Repeat the deployed focus/search, file-drop and motion
 interaction checks when browser access is available, and complete the real
 OS/assistive/device and deployment-owner checks before closing items 44/48.
 
+### Optional Audio Lifecycle Follow-Up: October 28, 2026
+
+Homepage startup now invalidates delayed audio requests when the page is hidden,
+muted or disposed. Returning to view requires a fresh opt-in; stale playback or
+analysis completion cannot announce playing or produce a playback-error message.
+Fresh opt-in can proceed before a cancelled native promise settles; a second
+toggle can cancel a pending opt-in. Current playback errors retain feedback,
+missing Web Audio retains plain sound, and mute clears the spectrum level
+immediately. Existing uRK transport pause,
+analysis disable and kernel cleanup own the resources; no runtime dependency or
+package semantics change.
+
+Deterministic tests exercise the real audio adapter using substituted native
+media/context APIs, including source URL cleanup and reuse after cancellation.
+Browser automation is disabled for this follow-up. After review/deployment, test
+sound opt-in followed quickly by tab hide/return during a throttled first load;
+verify sound stays off, then enable it explicitly. Check mute and the visual level
+with motion off, ordinary playback without analysis, and genuine playback-error
+feedback/retry. Audible/browser autoplay, physical devices, accessibility and
+production sign-off remain under items 44/48.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.
