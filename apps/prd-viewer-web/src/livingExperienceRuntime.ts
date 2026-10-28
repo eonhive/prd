@@ -85,6 +85,12 @@ export async function createLivingExperienceRuntime(
   let adaptiveLow = false;
   const reduced = () => preference.matches || options.motion === "off";
   const isStoryComplete = () => scroll.y > scroll.end - 160;
+  const canAnimate = () =>
+    !reduced() &&
+    visible &&
+    !document.hidden &&
+    !options.focused &&
+    !isStoryComplete();
   const effectiveQuality = () => {
     const browser = navigator as Navigator & {
       deviceMemory?: number;
@@ -105,6 +111,12 @@ export async function createLivingExperienceRuntime(
     ambientTimer = undefined;
   }
 
+  function releasePendingPaint() {
+    const release = releaseFrame;
+    releaseFrame = undefined;
+    release?.();
+  }
+
   function finishProfileReveal() {
     motion.cancel(profileReveal);
     profileReveal.progress = 1;
@@ -120,11 +132,19 @@ export async function createLivingExperienceRuntime(
 
   function handleMotionPreference() {
     cancelAmbient();
-    if (reduced()) settleMotion();
+    if (!canAnimate()) settleMotion();
     requestUpdate();
   }
 
+  function suspendPresentation() {
+    cancelAmbient();
+    // Resume at the selected layout without replaying motion that happened out of view.
+    settleMotion();
+    releasePendingPaint();
+  }
+
   function measure() {
+    if (disposed) return;
     scroll.starts = chapters.map(
       (chapter) => chapter.getBoundingClientRect().top + window.scrollY,
     );
@@ -154,6 +174,8 @@ export async function createLivingExperienceRuntime(
       5,
       Math.max(0, Math.floor(scroll.position + 0.08)),
     );
+    const storyComplete = isStoryComplete();
+    if (storyComplete) settleMotion();
     if (chapter !== lastChapter) {
       lastChapter = chapter;
       root.dataset.chapter = String(chapter);
@@ -187,7 +209,6 @@ export async function createLivingExperienceRuntime(
     root.dataset.reduced = String(reduced());
     root.dataset.frames = String(++renderedFrames);
     root.dataset.scheduler = "urk-auto";
-    const storyComplete = isStoryComplete();
     root.dataset.storyComplete = String(storyComplete);
 
     // Adapt only during active, closely spaced work; tab throttling is not device load.
@@ -201,14 +222,8 @@ export async function createLivingExperienceRuntime(
       slowFrames = Math.max(0, slowFrames - 1);
     }
     previousFrameTime = timeMs;
-    if (
-      !reduced() &&
-      visible &&
-      !storyComplete &&
-      !options.focused &&
-      !document.hidden
-    ) {
-      cancelAmbient();
+    cancelAmbient();
+    if (canAnimate()) {
       ambientTimer = setTimeout(
         requestUpdate,
         effectiveQuality() === "low" ? 140 : 80,
@@ -217,11 +232,9 @@ export async function createLivingExperienceRuntime(
   }
 
   function requestUpdate() {
-    if (disposed || document.hidden || releaseFrame) return;
+    if (disposed || !visible || document.hidden || releaseFrame) return;
     releaseFrame = context.registerFrameWork(({ timeMs }) => {
-      const release = releaseFrame;
-      releaseFrame = undefined;
-      release?.();
+      releasePendingPaint();
       paint(timeMs);
     });
   }
@@ -246,9 +259,8 @@ export async function createLivingExperienceRuntime(
   }
 
   function handleVisibility() {
-    cancelAmbient();
     if (document.hidden) {
-      finishProfileReveal();
+      suspendPresentation();
       audio?.pause();
       onAudio(false);
       kernel.pause();
@@ -262,12 +274,10 @@ export async function createLivingExperienceRuntime(
     typeof IntersectionObserver === "undefined"
       ? undefined
       : new IntersectionObserver(([entry]) => {
+          if (disposed) return;
           visible = entry?.isIntersecting ?? false;
           if (visible) requestUpdate();
-          else {
-            cancelAmbient();
-            finishProfileReveal();
-          }
+          else suspendPresentation();
         });
   observer?.observe(root);
   const resizeObserver =
@@ -287,15 +297,14 @@ export async function createLivingExperienceRuntime(
 
   return {
     update(next) {
+      if (disposed) return;
       options = next;
       cancelAmbient();
-      if (reduced()) {
-        settleMotion();
-      }
-      if (options.focused) finishProfileReveal();
+      if (!canAnimate()) settleMotion();
       requestUpdate();
     },
     setDevice(device) {
+      if (disposed) return;
       selectedDevice = device;
       const width = { desktop: 420, tablet: 340, mobile: 236 }[device];
       motion.cancel(deviceSize);
@@ -303,7 +312,7 @@ export async function createLivingExperienceRuntime(
         sheet.style.setProperty("--document-width", `${width}px`);
         return;
       }
-      if (reduced()) {
+      if (!canAnimate()) {
         deviceSize.width = width;
         sheet.style.setProperty("--document-width", `${width}px`);
         return;
@@ -326,7 +335,7 @@ export async function createLivingExperienceRuntime(
       if (disposed || selectedProfile === profile) return;
       selectedProfile = profile;
       finishProfileReveal();
-      if (reduced() || !visible || document.hidden || options.focused || lastChapter !== 3) return;
+      if (!canAnimate() || lastChapter !== 3) return;
       profileReveal.progress = 0;
       sheet.style.setProperty("--profile-reveal", "0");
       motion.tween(profileReveal, { progress: 1 }, {
@@ -379,9 +388,11 @@ export async function createLivingExperienceRuntime(
       }
     },
     dispose() {
+      if (disposed) return;
       disposed = true;
       cancelAmbient();
-      releaseFrame?.();
+      motion.cancel();
+      releasePendingPaint();
       observer?.disconnect();
       resizeObserver?.disconnect();
       window.removeEventListener("scroll", handleScroll);

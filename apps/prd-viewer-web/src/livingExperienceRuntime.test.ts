@@ -117,6 +117,134 @@ async function start(fixture: ReturnType<typeof browserFixture>) {
 }
 
 describe("uRK homepage frame ownership", () => {
+  it.each(["focus", "offscreen", "hidden", "finished"])(
+    "settles device motion and releases frame work when %s suspends the presentation",
+    async (boundary) => {
+      const fixture = browserFixture();
+      const { runtime } = await start(fixture);
+      fixture.paint(100);
+      runtime.setDevice("mobile");
+      fixture.paint(116);
+      expect(fixture.frames.size).toBe(1);
+
+      if (boundary === "focus") runtime.update({ motion: "full", quality: "auto", focused: true });
+      if (boundary === "offscreen") fixture.setVisible(false);
+      if (boundary === "hidden") {
+        fixture.document.hidden = true;
+        fixture.document.dispatchEvent(new Event("visibilitychange"));
+      }
+      if (boundary === "finished") {
+        fixture.browser.scrollY = 5000;
+        fixture.browser.dispatchEvent(new Event("scroll"));
+      }
+      fixture.paint(132);
+      expect(fixture.sheet.style.setProperty).toHaveBeenCalledWith("--document-width", "236px");
+      const writes = fixture.sheet.style.setProperty.mock.calls.length;
+      vi.advanceTimersByTime(3000);
+      expect(fixture.frames.size).toBe(0);
+      fixture.paint(3200);
+      expect(fixture.sheet.style.setProperty).toHaveBeenCalledTimes(writes);
+    },
+  );
+
+  it("settles offscreen selections, then returns with the latest device and scroll position", async () => {
+    const fixture = browserFixture();
+    const { runtime, onChapter } = await start(fixture);
+    fixture.paint();
+    fixture.setVisible(false);
+    runtime.setDevice("mobile");
+    runtime.setProfile("comic");
+    fixture.browser.scrollY = 2400;
+    for (let index = 0; index < 30; index++) {
+      fixture.browser.dispatchEvent(new Event("scroll"));
+      fixture.browser.dispatchEvent(new Event("resize"));
+    }
+    vi.advanceTimersByTime(1000);
+    expect(fixture.frames.size).toBe(0);
+    expect(fixture.sheet.style.setProperty).toHaveBeenCalledWith("--document-width", "236px");
+    fixture.setVisible(true);
+    expect(fixture.frames.size).toBe(1);
+    fixture.paint(1200);
+    expect(onChapter).toHaveBeenLastCalledWith(3);
+    expect(fixture.sheet.style.setProperty).toHaveBeenCalledWith("--profile-reveal", "1");
+    runtime.setDevice("tablet");
+    for (let time = 1216; time <= 2000; time += 16) fixture.paint(time);
+    expect(fixture.sheet.style.setProperty).toHaveBeenLastCalledWith("--document-width", "340px");
+  });
+
+  it.each(["focus", "offscreen", "hidden", "finished"])(
+    "applies new device selections without frame demand while %s suspends the presentation",
+    async (boundary) => {
+      const fixture = browserFixture();
+      const { runtime } = await start(fixture);
+      fixture.paint();
+      if (boundary === "focus") runtime.update({ motion: "full", quality: "auto", focused: true });
+      if (boundary === "offscreen") fixture.setVisible(false);
+      if (boundary === "hidden") {
+        fixture.document.hidden = true;
+        fixture.document.dispatchEvent(new Event("visibilitychange"));
+      }
+      if (boundary === "finished") {
+        fixture.browser.scrollY = 5000;
+        fixture.browser.dispatchEvent(new Event("scroll"));
+      }
+      fixture.paint(200);
+      runtime.setDevice("mobile");
+      expect(fixture.sheet.style.setProperty).toHaveBeenLastCalledWith("--document-width", "236px");
+      vi.advanceTimersByTime(3000);
+      expect(fixture.frames.size).toBe(0);
+    },
+  );
+
+  it("releases pending ambient paints immediately when the story leaves view", async () => {
+    const fixture = browserFixture();
+    await start(fixture);
+    fixture.paint();
+    vi.advanceTimersByTime(80);
+    expect(fixture.frames.size).toBe(1);
+    fixture.setVisible(false);
+    expect(fixture.frames.size).toBe(0);
+    vi.advanceTimersByTime(3000);
+    expect(fixture.frames.size).toBe(0);
+  });
+
+  it("ignores all runtime commands after disposal and tolerates repeated cleanup", async () => {
+    const fixture = browserFixture();
+    const { runtime } = await start(fixture);
+    fixture.paint();
+    runtime.setDevice("mobile");
+    runtime.dispose();
+    const writes = fixture.sheet.style.setProperty.mock.calls.length;
+    runtime.update({ motion: "off", quality: "low", focused: false });
+    runtime.setDevice("tablet");
+    runtime.setProfile("comic");
+    expect(await runtime.toggleAudio()).toBe(false);
+    runtime.dispose();
+    active = undefined;
+    vi.advanceTimersByTime(3000);
+    expect(fixture.frames.size).toBe(0);
+    expect(fixture.sheet.style.setProperty).toHaveBeenCalledTimes(writes);
+  });
+
+  it("retains no frame or timer work across repeated mount/dispose cycles", async () => {
+    const fixture = browserFixture();
+    for (let cycle = 0; cycle < 30; cycle++) {
+      const { runtime } = await start(fixture);
+      fixture.paint(cycle * 1000);
+      runtime.setDevice("mobile");
+      runtime.dispose();
+      expect(fixture.frames.size).toBe(0);
+      expect(vi.getTimerCount()).toBe(0);
+    }
+    active = undefined;
+    fixture.browser.dispatchEvent(new Event("scroll"));
+    fixture.measureResize();
+    fixture.setVisible(true);
+    vi.advanceTimersByTime(3000);
+    expect(fixture.frames.size).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it("runs a finite profile reveal on the existing kernel", async () => {
     const fixture = browserFixture();
     const { runtime } = await start(fixture);
