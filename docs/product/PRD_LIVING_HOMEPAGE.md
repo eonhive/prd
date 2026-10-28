@@ -74,6 +74,25 @@ visitor has passed the story. Returning to the story resumes input-driven work.
 Runtime tests cover those boundaries and verify scroll/pointer bursts reuse
 cached chapter geometry until a resize requires a new measurement.
 
+Device width and profile reveals now share the same suspension rules. Viewer
+focus, leaving the visible story, hiding the page, reaching the story end, or
+requesting reduced motion settles the selected layout and cancels finite motion.
+Hidden/offscreen suspension also releases a pending presentation paint. Every
+paint clears the previous ambient wake-up before deciding whether to schedule
+another, so reaching the story end cannot leave a stale timer behind.
+
+Selections made during suspension apply immediately. Scroll position and resize
+measurements stay current while offscreen, with no presentation frame request;
+returning to view paints the latest position and resumes eligible ambient work.
+Disposal cancels motion, timers, and pending paints before kernel shutdown; repeated
+cleanup, late observer callbacks, and later runtime commands are harmless.
+
+These boundaries are exercised against the real pinned uRK scheduler using
+deterministic browser frame/timer fixtures. Tests include interrupted device
+motion, selections during suspension, return-to-view interaction, and 30 repeated
+mount/dispose cycles with no retained frame/timer work. This is scheduler ownership
+evidence, not a browser frame-rate, heap-memory, GPU, or physical-device benchmark.
+
 Device transforms, layer separation, and reassembly change presentation only.
 The general-document studies are explicitly illustrative. Canonical package
 content is rendered by the real reference viewer in Chapter 05.

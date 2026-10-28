@@ -264,6 +264,22 @@ no dependency, upload service, package rule or runtime capability. Generated
 screenshots and acceptance notes belong under ignored
 `examples/dist/reader-accessibility/`.
 
+### Motion Lifecycle Follow-Up: October 27, 2026
+
+The motion hardening slice settles in-flight device widths as well as profile
+reveals when the Viewer takes focus, the story is offscreen/finished, the page
+is hidden, or reduced motion is requested. Pending offscreen paints and stale
+ambient wake-ups are released. New suspended selections apply immediately;
+return-to-view uses the latest native scroll state, and repeated disposal is safe.
+
+Runtime regressions exercise the actual uRK scheduler with deterministic frame
+fixtures, including 30 mount/dispose cycles without retained frame/timer work.
+Browser automation is disabled for this follow-up. After deployment, repeat a
+device switch followed immediately by Viewer entry, story exit/return, and tab
+hide/return; verify the final device width, selection, and normal interaction.
+Measure real frame time and heap behavior on constrained hardware separately.
+These tests do not close physical/accessibility/production launch items 44/48.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

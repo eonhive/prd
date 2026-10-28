@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Living Homepage — Motion Lifecycle Hardening
+
+- Continued from merged reader-accessibility main `2367123` in the isolated `thehive/prd-motion-lifecycle` branch. The purple rebrand, reader controls, persistent Viewer, canonical content and package semantics are preserved; the shared checkout's independent unfinished work remains untouched.
+- Regression tests first reproduced seven scheduler failures: device-width tweens outlived Viewer focus/offscreen/hidden/finished boundaries, offscreen selections/input retained frame demand, a queued ambient paint survived story exit, and commands after disposal still wrote styles. The story-end case also exposed a stale ambient timer.
+- Device widths and profile reveals now share eligibility checks and settle to their selected endpoints during suspension. Offscreen/hidden transitions release pending paints; every paint clears its old ambient wake-up before scheduling another. Offscreen native scroll/resize state remains current, return-to-view resumes eligible interaction, and disposal cancels motion/frame/timer ownership before kernel shutdown. Repeated cleanup and late callbacks/commands are harmless. No uRK, format, core, dependency, public API or release behavior changes, and no second scheduler is added.
+- Reused the existing pinned uRK scope cancellation and frame-work release APIs. Upstream main remains `8fb03fbb9e09b2cdb432fe51da3f72cda67476ff`; no vendor change is needed. The 24 runtime tests include 12 new cases for active/suspended selection, return-to-view motion, pending work, disposal and 30 repeated mount/dispose cycles without retained frame/timer work.
+- Validation passed on Node 22: root typecheck, the foundation gate with **424 tests across 34 files**, workspace build, root-inclusive docs consistency, canonical example validation/aggregate smoke, both hosting builds and the Wrangler dry run. Updated implementation notes, hosting guidance and backlog. Browser automation remains disabled; deterministic scheduler ownership checks are not frame-time/heap measurements or physical-device/accessibility/production acceptance. Items 44/48 remain open. No production deployment or npm release was performed.
+
 ### Reader Keyboard Focus And Status Feedback
 
 - Continued from merged rebrand main `8438760` on isolated `thehive/prd-reader-accessibility`. PR #59's automatic rollout was observed on the public site and all 21 production HTTP/package checks passed. The primary checkout and its independent format/security/converter work remain untouched.
