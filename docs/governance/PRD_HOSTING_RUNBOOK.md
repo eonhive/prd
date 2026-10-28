@@ -299,6 +299,20 @@ hide/return; verify the final device width, selection, and normal interaction.
 Measure real frame time and heap behavior on constrained hardware separately.
 These tests do not close physical/accessibility/production launch items 44/48.
 
+### October 28 Merged Deployment Verification
+
+PR #61 and PR #62 are merged through main `317c365`. The combined foundation
+gate passes 429 tests across 34 files, and PR #62's final head `97b7adc` has
+successful GitHub validation and Cloudflare build checks. Fresh production
+HTTP/package checks pass all 21 cases. Served entry JS/CSS match the tested
+integrated build byte-for-byte; diagnostic hashes are retained under ignored
+`examples/dist/production-acceptance/merged-file-drop-assets.json`.
+
+This is static deployment and package evidence. Browser use remains disabled
+in Work settings. Repeat the deployed focus/search, file-drop and motion
+interaction checks when browser access is available, and complete the real
+OS/assistive/device and deployment-owner checks before closing items 44/48.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.
