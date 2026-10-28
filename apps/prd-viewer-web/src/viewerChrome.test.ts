@@ -4,7 +4,7 @@
  * Purpose: Lock real route links, accessible navigation, and empty/loading/valid/invalid package labels.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 26, 2026
+ * Updated: October 27, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -147,6 +147,7 @@ describe("viewer chrome", () => {
       );
       expect(html).toContain(`>${label}</span>`);
       expect(html).toContain('role="status" aria-live="polite"');
+      expect(html).toContain('aria-atomic="true"');
       expect(html).toContain("eager whole-package in-memory");
       if (validation?.valid === false && !loading) {
         expect(html).not.toContain("No package loaded");

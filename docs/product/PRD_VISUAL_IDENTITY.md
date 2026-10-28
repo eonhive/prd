@@ -125,8 +125,29 @@ Fresh screenshots are local generated evidence under ignored
 `examples/dist/rebrand-qa/`. The foundation gate passes 408 tests across 34 files,
 including 191 web-app tests; root typecheck, both hosting-base builds, a Workers
 dry run and 21 local HTTP/package checks pass. These results apply to the
-isolated review branch. Physical
-touch, real OS drag/drop, screen-reader acceptance, constrained-device profiling,
-deployment and production route checks remain in launch items 44/48. This review
-branch excludes the separate converter, container, and signature work in the
-primary checkout.
+isolated rebrand review branch. PR #59 subsequently merged at `8438760`; the
+automatic rollout was observed on `prd.eonhive.com`, and its 21 production
+HTTP/package checks passed. Physical touch, real OS drag/drop, actual
+screen-reader acceptance, constrained-device profiling and the remaining launch
+matrix remain in items 44/48. The separate converter, container and signature
+work in the primary checkout is excluded.
+
+## Reader keyboard and status feedback
+
+The next local follow-up fixes a deployed desktop keyboard issue: closing a
+side panel now focuses its matching Navigate or Details toolbar button before
+the panel becomes hidden. This leaves the document, locale and resource URLs
+mounted. Mobile drawers keep the browser's native opener restoration and
+content selection keeps its existing namespaced target focus.
+
+Outline search describes its current result count through a polite, atomic
+status: total items when clear, matching/total items when filtered, and zero
+matches when empty. A successful package status includes the active document
+title for assistive technologies without expanding the visible status badge.
+The existing busy-state and package-validity distinctions are retained.
+
+DOM regression tests and a real built-browser keyboard pass cover this
+follow-up. Accessibility-tree inspection and live-region attributes are evidence
+of semantic behavior; they do not establish actual screen-reader speech or
+physical-device acceptance. Recheck this correction on its deployed revision
+before closing launch items 44/48.

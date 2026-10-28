@@ -102,6 +102,73 @@ function title() {
 }
 
 describe("embedded archive loading", () => {
+  it.each([
+    ["viewer-navigation", "Close document navigation"],
+    ["package-details", "Close package details"]
+  ])("returns keyboard focus from the closed desktop %s panel without reloading", async (panelId, label) => {
+    await mount();
+    await request("document-basic");
+    const locale = container.querySelector<HTMLSelectElement>("#viewer-locale-select")!;
+    await act(async () => {
+      locale.value = "fr-FR";
+      locale.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    const image = container.querySelector("#document-stage img")!;
+    const source = image.getAttribute("src");
+    const requests = fetcher.mock.calls.length;
+    const close = container.querySelector<HTMLButtonElement>(`[aria-label="${label}"]`)!;
+    close.focus();
+    await act(async () => close.click());
+    const trigger = container.querySelector<HTMLButtonElement>(`[aria-controls="${panelId}"]`)!;
+    expect(document.activeElement).toBe(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(container.querySelector(`#${panelId}`)?.hasAttribute("hidden")).toBe(true);
+    expect(locale.value).toBe("fr-FR");
+    expect(container.querySelector("#document-stage img")).toBe(image);
+    expect(image.getAttribute("src")).toBe(source);
+    expect(fetcher).toHaveBeenCalledTimes(requests);
+  });
+
+  it("reports filtered, empty and restored outline counts beside the search field", async () => {
+    await mount();
+    await request("document-basic");
+    const search = container.querySelector<HTMLInputElement>('input[type="search"]')!;
+    const results = document.getElementById(search.getAttribute("aria-describedby")!)!;
+    expect(results).not.toBeNull();
+    expect(results.getAttribute("role")).toBe("status");
+    expect(results.textContent).toBe("3 items");
+    async function filter(value: string) {
+      await act(async () => {
+        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(search, value);
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+    }
+    await filter("why");
+    expect(results.textContent).toBe("1 of 3 items");
+    expect(container.querySelectorAll(".viewer-outline-list li")).toHaveLength(1);
+    await filter("no matching section");
+    expect(results.textContent).toBe("0 of 3 items");
+    expect(container.querySelector(".viewer-outline-list")).toBeNull();
+    await filter("  ");
+    expect(results.textContent).toBe("3 items");
+    expect(container.querySelectorAll(".viewer-outline-list li")).toHaveLength(3);
+  });
+
+  it("announces the newly opened package title after its busy state ends", async () => {
+    let finish!: (value: Response) => void;
+    fetcher.mockReturnValue(new Promise<Response>((resolvePromise) => { finish = resolvePromise; }));
+    await mount();
+    await request("comic-basic");
+    const dashboard = container.querySelector(".viewer-dashboard")!;
+    const status = container.querySelector('.viewer-dashboard-status [role="status"]')!;
+    expect(dashboard.getAttribute("aria-busy")).toBe("true");
+    expect(status.textContent).toBe("Opening package...");
+    await act(async () => finish(response("comic-basic")));
+    expect(dashboard.getAttribute("aria-busy")).toBe("false");
+    expect(status.getAttribute("aria-atomic")).toBe("true");
+    expect(status.textContent).toBe("Valid package: PRD Comic Fixture");
+  });
+
   it.each(["resolve", "reject"])("keeps a superseded fetch from changing a newer package when it later %s", async (outcome) => {
     let finishComic!: (value: Response) => void;
     let failComic!: (error: Error) => void;

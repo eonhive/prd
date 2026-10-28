@@ -243,6 +243,27 @@ Viewer/inspector/download continuity, and motion-off behavior on that build.
 Physical touch, assistive technologies, lower-end hardware, deployment ownership,
 and production launch acceptance remain open under items 44/48.
 
+### October 27 Rebrand Rollout And Reader Keyboard Follow-Up
+
+[PR #59](https://github.com/eonhive/prd/pull/59) merged at `8438760`. Its GitHub
+validation and Workers preview build passed. The automatic production rollout
+was then observed on `prd.eonhive.com`; the served app contains the reviewed
+purple rebrand, and all 21 production HTTP/asset/package checks passed. This
+updates the earlier browser-disabled records without replacing their history.
+
+| Check | Evidence and remaining work |
+| --- | --- |
+| Hosted rebrand | Home artwork decoded; preview theme persistence, Docs/Viewer hard refresh and a rendered Document Basic example passed. Production Home showed the new brand and the 21-check HTTP/package gate passed. |
+| Desktop keyboard correction | Production closing of either side panel dropped focus to the body. The local built correction restores Navigate/Details focus, with Tab continuation and retained French content/image URL. Recheck the correction after deployment. |
+| Search and completion feedback | Local browser accessibility state exposes matching/total and zero-result counts plus the active package title. DOM tests cover dynamic counts, busy transitions and retained document state. Actual screen-reader speech remains unverified. |
+| Mobile drawers | Local 390px browser checks retain native Escape/close focus restoration and have no horizontal overflow. This is viewport testing, not physical touch acceptance. |
+| Launch sign-off | Real OS file drag/drop, physical touch, actual screen readers, constrained-device profiling and deployment-owner confirmation remain open under items 44/48. |
+
+The keyboard/status follow-up changes only private app chrome and tests. It adds
+no dependency, upload service, package rule or runtime capability. Generated
+screenshots and acceptance notes belong under ignored
+`examples/dist/reader-accessibility/`.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.
