@@ -1,5 +1,14 @@
 # BUILD STATUS
 
+## 2026-10-28
+
+### Release Preflight Diagnosis And CI Reporting
+
+- Continued from merged main `317c365` in isolated `thehive/prd-release-preflight-diagnostics`. Downloaded the failed Release run `40704420548`'s preflight artifact `12823406512` and verified its recorded SHA-256. Package targets and Changesets mode passed; the workflow received an empty `NPM_TOKEN`, so authentication/org checks were skipped and publication/version steps never ran. This is a credential-availability blocker, not a package-version or authenticated-account failure.
+- The preflight CLI now prints known check states and required recovery actions, and appends the same report to `GITHUB_STEP_SUMMARY` when present. It preserves the JSON contract/artifact marker and exit status; advisory step-summary write errors do not alter the publish gate. Reports exclude raw npm command errors and credential fields. No token/auth/org check, workflow permission, package/version/dependency, Changesets plan, format/viewer behavior, or publication policy changed.
+- Three new regression cases first failed, then passed: real missing-token CLI behavior with/without an Actions summary, append preservation, unchanged JSON/failing exit, and a passing report that excludes private raw-error fields. Validation on Node 22 passed: root typecheck, all 28 preflight tests, the **432-test / 34-file foundation gate**, workspace build, canonical example validation/aggregate smoke, docs consistency, and whitespace checks. Live read-only preflight with an intentionally empty token also prints the exact remediation and fails as required; auth/org success was exercised with test doubles, not real publisher credentials.
+- Updated the npm release runbook and active release backlog with the confirmed evidence and maintainer recovery. Read-only Changesets status still plans only CLI `0.2.0` from the three queued authoring changesets, with no library bump. Release remains blocked until a maintainer makes `NPM_TOKEN` available to the existing main-branch job. No secret/access setting was changed, no version bump or workflow rerun was performed, and no package was published.
+
 ## 2026-10-27
 
 ### File-Drop Feedback And Deployed Reader Assets
