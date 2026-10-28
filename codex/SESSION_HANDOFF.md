@@ -1,5 +1,13 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 27, 2026: File-Drop Feedback
+
+- Reused the clean isolated checkout and branched `thehive/prd-file-drop-feedback` from main `2367123` (merged PR #60). The original checkout and its independent work remain untouched. All 21 production HTTP/package checks pass; served JS/CSS exactly match the reviewed reader build. Evidence is ignored at `examples/dist/production-acceptance/reviewed-assets.json`.
+- Browser use is disabled in Work settings. Source/DOM tests reproduced file-highlight loss when crossing nested controls and false archive errors for text drops. Fixed these in the existing named drop area with file-type filtering, nested enter/leave tracking and a copy cursor. Existing mixed-file selection, local opening, validation/rendering and private parent notifications are preserved.
+- Added five DOM cases, including missing related targets, text/French-resource retention, valid archive/private marker and unsupported/recovery opens. Final checks: root typecheck, foundation gate **417 tests / 34 files** (200 app tests), workspace build, examples/smoke, both hosting builds, Workers dry run and docs/whitespace checks pass. No dependency, public package or changeset edit.
+- Prepare a focused review PR. This is not fresh browser or real OS drag/drop acceptance. Items 44/48 retain actual screen-reader, physical touch, OS drag/drop, constrained-device and deployment-owner checks. No manual production deployment or npm release was performed.
+- Earlier sections below are historical.
+
 ## Latest continuation — October 27, 2026: Reader Accessibility
 
 - Reused the clean isolated checkout and branched `thehive/prd-reader-accessibility` from merged main `8438760`. PR #59 is merged and its automatic rebrand rollout was observed on production with all 21 HTTP/package checks passing. The original checkout's unrelated work remains untouched.

@@ -2404,6 +2404,7 @@ function UploadDropzoneView({
   dragActive,
   onArchiveFiles,
   onDrop,
+  onDragEnter,
   onDragOver,
   onDragLeave
 }: {
@@ -2411,6 +2412,7 @@ function UploadDropzoneView({
   dragActive: boolean;
   onArchiveFiles: (files: FileList | File[] | null) => void;
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragEnter: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
 }) {
@@ -2419,6 +2421,7 @@ function UploadDropzoneView({
       className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
       role="region"
       onDrop={onDrop}
+      onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       aria-label="Choose or drop a PRD archive"
@@ -2547,6 +2550,7 @@ function ViewerWorkspaceView({
   resumePresentationEnabled,
   onArchiveFiles,
   onDrop,
+  onDragEnter,
   onDragOver,
   onDragLeave,
   onLoadSample,
@@ -2574,6 +2578,7 @@ function ViewerWorkspaceView({
   resumePresentationEnabled: boolean;
   onArchiveFiles: (files: FileList | File[] | null) => void;
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragEnter: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
   onLoadSample: (example: ViewerDemoExampleArchive) => void;
@@ -2860,6 +2865,7 @@ function ViewerWorkspaceView({
               dragActive={dragActive}
               onArchiveFiles={onArchiveFiles}
               onDrop={onDrop}
+              onDragEnter={onDragEnter}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
             />
@@ -3264,6 +3270,7 @@ export function App() {
   const currentSampleRef = useRef<string | null>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileDragDepthRef = useRef(0);
   const [route, setRoute] = useState<ViewerAppRoute>(() =>
     getViewerAppRouteFromPath(window.location.pathname, viewerAppBasePath)
   );
@@ -3676,19 +3683,33 @@ export function App() {
   }, [route, requestedSample]);
 
   function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
+    const { files, types } = event.dataTransfer;
+    if (files.length === 0 && !Array.from(types).includes("Files")) return;
     event.preventDefault();
+    fileDragDepthRef.current = 0;
     setDragActive(false);
-    handleArchiveFiles(event.dataTransfer.files);
+    handleArchiveFiles(files);
+  }
+
+  function handleDragEnter(event: ReactDragEvent<HTMLDivElement>) {
+    if (!Array.from(event.dataTransfer.types).includes("Files")) return;
+    event.preventDefault();
+    fileDragDepthRef.current += 1;
+    setDragActive(true);
   }
 
   function handleDragOver(event: ReactDragEvent<HTMLDivElement>) {
+    // File lists are protected during dragover; use the Files type until drop.
+    if (!Array.from(event.dataTransfer.types).includes("Files")) return;
     event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
     setDragActive(true);
   }
 
   function handleDragLeave(event: ReactDragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setDragActive(false);
+    // The next descendant enters before the previous one leaves, even without relatedTarget.
+    fileDragDepthRef.current = Math.max(0, fileDragDepthRef.current - 1);
+    if (fileDragDepthRef.current === 0) setDragActive(false);
   }
 
   return (
@@ -3742,6 +3763,7 @@ export function App() {
           resumePresentationEnabled={resumePresentationEnabled}
           onArchiveFiles={handleArchiveFiles}
           onDrop={handleDrop}
+          onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onLoadSample={(example) => void handleSampleArchive(example, true)}

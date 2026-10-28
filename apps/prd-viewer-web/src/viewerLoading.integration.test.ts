@@ -101,7 +101,96 @@ function title() {
   return container.querySelector(".viewer-document-heading h1")?.textContent;
 }
 
+async function dispatchViewerDrag(
+  target: Element,
+  type: string,
+  transfer: { types: string[]; files: NodeFile[]; dropEffect: string },
+  relatedTarget: EventTarget | null = null
+) {
+  // jsdom supplies mouse events; the transfer fixture exercises React's real drag handlers.
+  const event = new MouseEvent(type, { bubbles: true, cancelable: type !== "dragleave", relatedTarget });
+  Object.defineProperty(event, "dataTransfer", { value: transfer });
+  await act(async () => { target.dispatchEvent(event); });
+  return event;
+}
+
 describe("embedded archive loading", () => {
+  it.each([true, false])("keeps nested file feedback active with related target available: %s", async (hasRelatedTarget) => {
+    await mount();
+    const zone = container.querySelector(".upload-dropzone")!;
+    const heading = zone.querySelector("strong")!;
+    const button = zone.querySelector("button")!;
+    const transfer = { types: ["Files"], files: [], dropEffect: "none" };
+    await dispatchViewerDrag(heading, "dragenter", transfer);
+    const over = await dispatchViewerDrag(heading, "dragover", transfer);
+    expect(over.defaultPrevented).toBe(true);
+    expect(zone.classList.contains("upload-dropzone-active")).toBe(true);
+    await dispatchViewerDrag(button, "dragenter", transfer);
+    await dispatchViewerDrag(heading, "dragleave", transfer, hasRelatedTarget ? button : null);
+    expect(zone.classList.contains("upload-dropzone-active")).toBe(true);
+    expect(transfer.dropEffect).toBe("copy");
+    await dispatchViewerDrag(button, "dragleave", transfer, container);
+    expect(zone.classList.contains("upload-dropzone-active")).toBe(false);
+  });
+
+  it("ignores text drags without showing an archive error or changing localized content", async () => {
+    await mount();
+    await request("document-basic");
+    const locale = container.querySelector<HTMLSelectElement>("#viewer-locale-select")!;
+    await act(async () => {
+      locale.value = "fr-FR";
+      locale.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    const image = container.querySelector("#document-stage img")!;
+    const source = image.getAttribute("src");
+    const requests = fetcher.mock.calls.length;
+    const zone = container.querySelector(".upload-dropzone")!;
+    const transfer = { types: ["text/plain"], files: [], dropEffect: "none" };
+    const over = await dispatchViewerDrag(zone, "dragover", transfer);
+    const drop = await dispatchViewerDrag(zone, "drop", transfer);
+    expect(container.querySelector(".status.error")).toBeNull();
+    expect(over.defaultPrevented).toBe(false);
+    expect(drop.defaultPrevented).toBe(false);
+    expect(zone.classList.contains("upload-dropzone-active")).toBe(false);
+    expect(locale.value).toBe("fr-FR");
+    expect(container.querySelector("#document-stage img")).toBe(image);
+    expect(image.getAttribute("src")).toBe(source);
+    expect(fetcher).toHaveBeenCalledTimes(requests);
+  });
+
+  it("opens a dropped archive through the existing local-file path and clears its highlight", async () => {
+    await mount();
+    const zone = container.querySelector(".upload-dropzone")!;
+    const transfer = {
+      types: ["Files"], dropEffect: "none",
+      files: [new NodeFile([Uint8Array.from(archives.get("storyboard-basic")!)], "private-project.PRD")]
+    };
+    await dispatchViewerDrag(zone, "dragover", transfer);
+    const drop = await dispatchViewerDrag(zone, "drop", transfer);
+    expect(drop.defaultPrevented).toBe(true);
+    expect(zone.classList.contains("upload-dropzone-active")).toBe(false);
+    expect(title()).toBe("PRD Storyboard Fixture");
+    expect(parentPost).toHaveBeenCalledWith({ type: livingViewerLocalFileMessage }, window.location.origin);
+    expect(JSON.stringify(parentPost.mock.calls)).not.toContain("private-project");
+  });
+
+  it("retains the current document after an unsupported file drop and recovers on a valid drop", async () => {
+    await mount();
+    await request("document-basic");
+    const zone = container.querySelector(".upload-dropzone")!;
+    const unsupported = { types: ["Files"], files: [new NodeFile(["source"], "source.md")], dropEffect: "none" };
+    await dispatchViewerDrag(zone, "drop", unsupported);
+    expect(container.querySelector(".status.error")?.textContent).toContain("No .prd archive found");
+    expect(title()).toBe("PRD Document Example");
+    const valid = {
+      types: ["Files"], dropEffect: "none",
+      files: [new NodeFile([Uint8Array.from(archives.get("comic-basic")!)], "comic.prd")]
+    };
+    await dispatchViewerDrag(zone, "drop", valid);
+    expect(container.querySelector(".status.error")).toBeNull();
+    expect(title()).toBe("PRD Comic Fixture");
+  });
+
   it.each([
     ["viewer-navigation", "Close document navigation"],
     ["package-details", "Close package details"]

@@ -151,3 +151,23 @@ follow-up. Accessibility-tree inspection and live-region attributes are evidence
 of semantic behavior; they do not establish actual screen-reader speech or
 physical-device acceptance. Recheck this correction on its deployed revision
 before closing launch items 44/48.
+
+## File-drop feedback
+
+The existing named archive drop area responds to file drags only. It uses the
+transfer's `Files` type during the protected drag phase and keeps a nested entry
+count so moving between its icon, copy and button does not clear the highlight,
+including when `relatedTarget` is absent. A real exit or file drop clears the
+feedback; file drags use a copy cursor. This follows the
+[HTML drag-and-drop processing model](https://html.spec.whatwg.org/multipage/dnd.html#drag-and-drop-processing-model).
+
+Text drags keep their normal browser behavior and do not create an archive
+error. Actual file drops continue through the existing selection, local-open,
+validation and rendering path, including unsupported-file feedback and recovery.
+The existing first-PRD selection rule and embedded local-file privacy marker are
+preserved. No document upload service or page-wide drop interception is added.
+
+Five DOM regression cases cover nested transitions with/without a related
+target, ignored text, successful archive opening and invalid-file recovery.
+Fresh browser/OS drag testing remains pending while local browser use is disabled
+in Work settings. These tests do not establish physical drag/drop acceptance.
