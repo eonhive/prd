@@ -1,5 +1,13 @@
 # BUILD STATUS
 
+## 2026-10-28
+
+### Merged Viewer And Homepage Verification
+
+- PR #61's homepage motion hardening and PR #62's file-drop feedback are merged on main `317c365`. The combined foundation gate passes **429 tests across 34 files**, workspace build, root-inclusive docs consistency, canonical validation and aggregate smoke. Root typecheck also passes. PR #62's final head `97b7adc` has successful GitHub validation and a successful Cloudflare preview build.
+- Fresh production HTTP/package checks pass all 21 cases. Served entry JavaScript and CSS match the tested integrated build byte-for-byte; ignored diagnostic hashes are in `examples/dist/production-acceptance/merged-file-drop-assets.json`. This confirms static asset rollout, not browser interaction or actual assistive-technology behavior.
+- Reconciled duplicate backlog entries: reader feedback remains item 66, file-drop feedback item 67, and motion lifecycle item 68. Updated hosting evidence and handoff without changing source, dependencies, package contracts or release behavior. Browser access remains disabled in Work settings; launch items 44/48 retain fresh interactions, real OS drag/drop, actual screen-reader speech, physical touch, constrained-device profiling and deployment-owner sign-off. No manual production deployment or npm publication was performed.
+
 ## 2026-10-27
 
 ### File-Drop Feedback And Deployed Reader Assets

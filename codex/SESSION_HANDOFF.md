@@ -1,5 +1,13 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 28, 2026: Merged Launch Verification
+
+- PR #61 and PR #62 are merged; reviewed main is `317c365`. Reused the isolated checkout on `thehive/prd-launch-verification` for this documentation follow-up. The original checkout's independent work remains untouched. The file-drop change retains nested feedback, ignores text drags, and preserves the archive/validation/rendering and privacy paths.
+- The combined foundation gate passes **429 tests / 34 files**, workspace build, canonical validation/aggregate smoke and root-inclusive docs consistency. Root typecheck passes. GitHub validation and Cloudflare build are successful on PR #62's final head `97b7adc`.
+- All 21 fresh production HTTP/package checks pass. Entry JS/CSS match the tested integrated build byte-for-byte; ignored evidence is in `examples/dist/production-acceptance/merged-file-drop-assets.json`. The earlier branch preview also passed all 21 HTTP/package checks. These are static/package checks, not fresh browser acceptance.
+- Removed duplicate backlog records and retained distinct items 66/67/68 for reader, file-drop and motion fixes. Launch items 44/48 stay open while browser use is disabled: fresh deployed interactions, real OS drag/drop, actual screen-reader speech, physical touch, constrained-device profiling and intended deployment-owner sign-off remain. No manual deployment or npm publication was performed.
+- Earlier sections below are historical.
+
 ## Latest continuation — October 27, 2026: File-Drop Feedback
 
 - Reused the clean isolated checkout and branched `thehive/prd-file-drop-feedback` from main `2367123` (merged PR #60). The original checkout and its independent work remain untouched. All 21 production HTTP/package checks pass; served JS/CSS exactly match the reviewed reader build. Evidence is ignored at `examples/dist/production-acceptance/reviewed-assets.json`.
