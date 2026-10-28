@@ -2591,6 +2591,8 @@ function ViewerWorkspaceView({
   );
   const [detailsView, setDetailsView] = useState<"info" | "files">("info");
   const visualStageRef = useRef<HTMLDivElement | null>(null);
+  const navigationButtonRef = useRef<HTMLButtonElement | null>(null);
+  const detailsButtonRef = useRef<HTMLButtonElement | null>(null);
   const pendingOutlineTargetRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -2631,6 +2633,17 @@ function ViewerWorkspaceView({
     setFocusMode(false);
     setNavigationOpen(focusMode || !navigationOpen);
     if (mobile) setDetailsOpen(false);
+  }
+
+  function closeNavigation() {
+    setNavigationOpen(false);
+    // Focus must leave the desktop panel before it is hidden. Native dialogs restore their opener.
+    if (!mobile) navigationButtonRef.current?.focus({ preventScroll: true });
+  }
+
+  function closeDetails() {
+    setDetailsOpen(false);
+    if (!mobile) detailsButtonRef.current?.focus({ preventScroll: true });
   }
 
   function toggleDetails() {
@@ -2718,6 +2731,8 @@ function ViewerWorkspaceView({
         />
 
         <ViewerWorkspaceToolbar
+          navigationButtonRef={navigationButtonRef}
+          detailsButtonRef={detailsButtonRef}
           navigationOpen={navigationOpen && !focusMode}
           detailsOpen={detailsOpen && !focusMode}
           focusMode={focusMode}
@@ -2746,7 +2761,7 @@ function ViewerWorkspaceView({
             title="Document navigation"
             open={navigationOpen && !focusMode}
             mobile={mobile}
-            onClose={() => setNavigationOpen(false)}
+            onClose={closeNavigation}
           >
             <div
               className="viewer-panel-switcher"
@@ -3042,7 +3057,7 @@ function ViewerWorkspaceView({
             title="Package details"
             open={detailsOpen && !focusMode}
             mobile={mobile}
-            onClose={() => setDetailsOpen(false)}
+            onClose={closeDetails}
           >
             <div
               className="viewer-panel-switcher"

@@ -1,5 +1,13 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 27, 2026: Reader Accessibility
+
+- Reused the clean isolated checkout and branched `thehive/prd-reader-accessibility` from merged main `8438760`. PR #59 is merged and its automatic rebrand rollout was observed on production with all 21 HTTP/package checks passing. The original checkout's unrelated work remains untouched.
+- Reproduced desktop panel-close focus loss on the public Viewer and fixed it with stable toolbar refs. Added polite/atomic outline result counts and active-title completion feedback. Locale, resource URLs, native mobile dialogs, namespaced outline targets and package/runtime boundaries are preserved. No dependency or changeset.
+- Four new DOM cases failed before implementation and pass afterward. Final checks pass: root typecheck, foundation gate **412 tests / 34 files** (195 app tests), workspace build, canonical validation/smoke, both hosting builds, Workers dry run, docs and whitespace checks. Real local built-browser review covers close/Tab continuation, search counts, French title/image continuity and 390px native dialog dismissal.
+- Generated evidence is ignored under `examples/dist/reader-accessibility/`. Physical-device, actual screen-reader, OS drag/drop, constrained-device and production correction acceptance remain launch items 44/48. Prepare a focused review PR for this correction; no manual production deployment or npm release was performed.
+- Earlier sections below are historical.
+
 ## Latest continuation — October 27, 2026: Public Rebrand Review
 
 - Isolated branch `thehive/prd-brand-refresh` starts at current main `c8e5935` (PR #58). Ported the earlier Home/Viewer/Docs rebrand while preserving merged source-profile presentations, namespaced document targets and the sample-selection bridge. The primary checkout and its converter/container/signature work were left untouched.

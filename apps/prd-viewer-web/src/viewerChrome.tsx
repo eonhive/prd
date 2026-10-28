@@ -4,7 +4,7 @@
  * Purpose: Provide accessible public navigation and truthful package status without renderer coupling.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 26, 2026
+ * Updated: October 27, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -16,6 +16,7 @@ import {
   type CSSProperties,
   type MouseEvent,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { getViewerOutlineTargetId, type ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
 import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
@@ -236,6 +237,8 @@ export function ViewerSidePanel({
 }
 
 export function ViewerWorkspaceToolbar({
+  navigationButtonRef,
+  detailsButtonRef,
   navigationOpen,
   detailsOpen,
   focusMode,
@@ -246,6 +249,8 @@ export function ViewerWorkspaceToolbar({
   onToggleWidth,
   onOpenArchive,
 }: {
+  navigationButtonRef?: RefObject<HTMLButtonElement | null>;
+  detailsButtonRef?: RefObject<HTMLButtonElement | null>;
   navigationOpen: boolean;
   detailsOpen: boolean;
   focusMode: boolean;
@@ -268,6 +273,7 @@ export function ViewerWorkspaceToolbar({
           className="viewer-tool-button"
           aria-expanded={navigationOpen}
           aria-controls="viewer-navigation"
+          ref={navigationButtonRef}
           onClick={onToggleNavigation}
         >
           <ViewerIcon name="outline" />
@@ -310,6 +316,7 @@ export function ViewerWorkspaceToolbar({
           className="viewer-tool-button"
           aria-expanded={detailsOpen}
           aria-controls="package-details"
+          ref={detailsButtonRef}
           onClick={onToggleDetails}
         >
           <ViewerIcon name="info" />
@@ -468,9 +475,14 @@ export function ViewerDocumentOutline({
   onSelectVisualItem: (item: ViewerDocumentOutlineItem) => void;
 }) {
   const [query, setQuery] = useState("");
+  const resultsId = useId();
+  const search = query.trim().toLocaleLowerCase();
   const filteredItems = items.filter((item) =>
-    item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+    item.label.toLocaleLowerCase().includes(search),
   );
+  const resultCount = search
+    ? `${filteredItems.length} of ${items.length} items`
+    : items.length > 0 ? `${items.length} items` : "No outline items";
   return (
     <section
       id="document-outline"
@@ -480,13 +492,16 @@ export function ViewerDocumentOutline({
     >
       <div className="panel-heading-row">
         <p className="eyebrow">Outline</p>
-        <span>{items.length > 0 ? `${items.length} items` : "empty"}</span>
+        <span id={resultsId} role="status" aria-live="polite" aria-atomic="true">
+          {resultCount}
+        </span>
       </div>
       <label className="viewer-outline-search">
         <ViewerIcon name="search" />
         <input
           type="search"
           aria-label="Search document outline"
+          aria-describedby={resultsId}
           placeholder="Find a section…"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -578,8 +593,11 @@ export function ViewerWorkspaceHeader({
         )}
       </div>
       <div className="viewer-dashboard-status">
-        <span role="status" aria-live="polite" className={statusClassName}>
+        <span role="status" aria-live="polite" aria-atomic="true" className={statusClassName}>
           {status}
+          {!loading && validation?.valid && packageTitle && (
+            <span className="visually-hidden">{`: ${packageTitle}`}</span>
+          )}
         </span>
         <span
           className="viewer-local-note"

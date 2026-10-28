@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Reader Keyboard Focus And Status Feedback
+
+- Continued from merged rebrand main `8438760` on isolated `thehive/prd-reader-accessibility`. PR #59's automatic rollout was observed on the public site and all 21 production HTTP/package checks passed. The primary checkout and its independent format/security/converter work remain untouched.
+- Reproduced a real desktop keyboard bug in production: activating either side-panel close button left focus on the body. The correction uses toolbar button refs to restore Navigate/Details focus before hiding the panel, preserving locale, image URLs and the mounted document. Native mobile opener restoration and visual outline target focus remain intact.
+- Outline search now links to a polite, atomic result count that updates for filtered/empty/cleared queries. The package-completion status includes the active document title for assistive technologies; its visible badge and validity/busy-state distinctions are retained. No dependency, package contract, core or runtime change.
+- Regression tests first reproduced all four missing behaviors, then passed. Final validation: root typecheck, the foundation gate with **412 tests across 34 files** (195 web-app tests), workspace build, canonical examples/aggregate smoke, root-inclusive docs consistency, both hosting builds, Workers dry run and whitespace checks pass.
+- Local built-browser checks confirmed desktop close/Tab continuation, filtered/zero counts, French status text and retained image URL, plus native Escape/close restoration at 390px without horizontal overflow. Screenshots are ignored under `examples/dist/reader-accessibility/`. These checks do not claim actual screen-reader speech, physical touch, OS drag/drop or constrained-device profiling; launch items 44/48 remain open. The new correction still requires review and deployed verification.
+
 ### Public PRD Rebrand — Isolated Review Branch
 
 - Ported the owner's purple folded-document rebrand from the primary checkout onto current main `c8e5935` in `thehive/prd-brand-refresh`. Preserved the merged namespaced document targets, bidirectional embedded sample bridge, six profile presentations and source-artwork previews. The primary checkout's independent converter, container, signature, core and release work is untouched and excluded from this PR.
