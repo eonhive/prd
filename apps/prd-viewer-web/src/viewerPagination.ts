@@ -122,12 +122,15 @@ export function createViewerPagination(
       return;
     }
 
+    const flowBounds = flow.getBoundingClientRect();
+    if (flowBounds.width <= 0) return;
     const gap = parseFloat(getComputedStyle(flow).columnGap) || 0;
-    const metrics = getPaginationMetrics(viewport.clientWidth, viewport.scrollWidth, gap);
+    // clientWidth rounds each column to an integer; that drift can invent a final page.
+    const metrics = getPaginationMetrics(flowBounds.width, viewport.scrollWidth, gap);
     stride = metrics.stride;
     state = { ...state, pageCount: metrics.pageCount, measured: true };
     pageAnchors = [];
-    const origin = flow.getBoundingClientRect().left;
+    const origin = flowBounds.left;
     nodes.forEach((node, index) => {
       const rects = [...node.getClientRects()];
       rects.forEach((rect, fragment) => {

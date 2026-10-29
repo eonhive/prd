@@ -387,6 +387,29 @@ Repeat with reduced motion and a real screen reader, retaining continuous mode
 as the default. Launch items 44/48 remain open until this and the existing
 device, performance and deployment-owner acceptance are complete.
 
+### October 29 Fractional Column Bounds
+
+Browser access returned after PR #69 merged at `55ca353`. Production Document
+Basic showed seven pages for six rendered columns: a 606.296875px column was
+treated as integer `clientWidth` 606. Rounding accumulated across columns, so
+End could report page 6 of 7, while Next could relabel the same final content as
+page 7 of 7. The correction uses the fractional rendered flow width for both
+page count and navigation stride. Three regressions cover widths rounded in
+either direction, native scroll clamping and final/previous-page navigation.
+
+The corrected local reader passed real-browser boundary checks at 1280px desktop
+and 390/320px viewport widths. Document Basic reports six actual pages, End
+reaches the last page with Next unavailable, and no page-wide horizontal overflow
+occurs. Initial browser review also checked the segmented sample, French content
+and embedded Viewer close/reopen. Screenshots are retained under ignored
+`examples/dist/pagination-acceptance/`. The concurrent mobile-outline handoff
+edits were preserved in their original checkout and are separate from this fix.
+
+Recheck the reviewed preview/production revision. Viewport checks do not establish
+physical touch, actual screen-reader speech or constrained-hardware performance;
+the remaining long-content/media and deployment-owner acceptance stay open under
+launch items 44/48. No format, package, public API, CSS or scheduler changes.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.
