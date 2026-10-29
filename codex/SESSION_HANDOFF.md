@@ -1,5 +1,16 @@
 # SESSION_HANDOFF.md
 
+## Latest Continuation - October 29, 2026: CLI 0.2.0 Version PR
+
+- Main `4ac480d` includes merged PRs #64/#65/#66/#67. Reused the clean isolated checkout on `thehive/prd-cli-0-2-0-version-pr`; original-checkout work and other worktrees remain untouched.
+- Before versioning, read-only `release:status` confirmed exactly CLI `0.2.0` from `.changeset/prd-init-scaffold.md`, `.changeset/prd-markdown-import.md`, and `.changeset/prd-image-import.md`. Ran the existing `release:version` command once. Only the CLI package version changed and those three changesets were consumed; library versions/internal ranges stay `0.1.1`/`^0.1.1`, with no lockfile diff after its refresh.
+- Added an explicitly unreleased CLI changelog entry. Updated build status and consolidated only the duplicate active item 46 introduced by the merged release docs; other unrelated backlog numbering is outside this version PR.
+- Latest main Release run [40932175825](https://github.com/eonhive/prd/actions/runs/40932175825) passed release checks, then failed preflight with an empty `NPM_TOKEN`. Auth/org checks did not succeed and version/publish was skipped. npm still reports CLI `0.1.1`. No credential was accessed or changed, no workflow was rerun, and no package was published.
+- Release-candidate validation passed on Node 22: full `release:check` (476 tests / 35 files), typecheck/build/canonical validation and real installed-tarball smoke with all 42 authoring steps; aggregate example smoke, root-inclusive docs consistency, and whitespace checks also pass. Explicit assertions confirm only CLI `0.2.0`, unchanged library versions and internal ranges. Bootstrap correctly no-ops.
+- The optional post-version `release:status` invocation exited 1 because the intended changesets are now consumed while the CLI manifest differs from main. The pre-version plan was verified before applying it; do not add an empty or duplicate changeset to disguise the normal version-PR state.
+- Open/review the separate version PR. Keep availability notes unchanged until reviewed main/CI publication, expected-version registry audit and all 42 npm-installed authoring checks pass. Preserve launch acceptance under items 44/48 separately. Local tarball success is not published npm success; no live publisher-auth or future-version registry success is claimed.
+- Earlier sections below are historical; their task-specific no-versioning instructions describe prior gate-only work, not this explicitly separate version PR.
+
 ## Latest continuation — October 28, 2026: Authoring Consumer Verification
 
 - Ready review PR: [#65](https://github.com/eonhive/prd/pull/65), `[stannesi] verify CLI authoring in installed consumer smoke`. Continued the existing branch with the owner's authorization; did not duplicate the implementation or mix in the original checkout's independent work.
