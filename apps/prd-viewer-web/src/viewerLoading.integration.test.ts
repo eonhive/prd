@@ -29,7 +29,7 @@ let parentPost: ReturnType<typeof vi.spyOn>;
 let fetcher: ReturnType<typeof vi.fn<typeof fetch>>;
 
 beforeAll(async () => {
-  for (const id of ["document-basic", "comic-basic", "storyboard-basic"]) {
+  for (const id of ["document-basic", "document-segmented-basic", "resume-basic", "comic-basic", "storyboard-basic"]) {
     archives.set(id, zipSync(await readFixture(resolve(process.cwd(), "examples", id))));
   }
 });
@@ -101,6 +101,34 @@ function title() {
   return container.querySelector(".viewer-document-heading h1")?.textContent;
 }
 
+function installPaginationGeometry() {
+  // jsdom does not fragment CSS columns. Model three columns around the actual rendered package.
+  const viewport = container.querySelector<HTMLElement>(".viewer-reading-viewport")!;
+  const flow = container.querySelector<HTMLElement>(".viewer-reading-flow")!;
+  Object.defineProperties(viewport, {
+    clientWidth: { get: () => 500 },
+    scrollWidth: { get: () => 1564 },
+  });
+  flow.style.columnGap = "32px";
+  vi.spyOn(flow, "getBoundingClientRect").mockImplementation(() => ({ left: -viewport.scrollLeft }) as DOMRect);
+  vi.spyOn(HTMLElement.prototype, "getClientRects").mockImplementation(function (this: HTMLElement) {
+    if (!flow.contains(this)) return [] as unknown as DOMRectList;
+    const section = this.closest(".structured-section");
+    const lastSection = ["why-this-exists", "scaling-path"].some((id) =>
+      section?.id === getViewerContentTargetId("node", id),
+    );
+    const page = lastSection ? 2 : this.closest(".structured-document-header") ? 0 : 1;
+    return [{ left: page * 532 - viewport.scrollLeft }] as unknown as DOMRectList;
+  });
+  return viewport;
+}
+
+async function chooseReadingMode(mode: string) {
+  const button = [...container.querySelectorAll<HTMLButtonElement>('[aria-label="Document reading mode"] button')]
+    .find((candidate) => candidate.textContent === mode)!;
+  await act(async () => button.click());
+}
+
 async function dispatchViewerDrag(
   target: Element,
   type: string,
@@ -115,6 +143,86 @@ async function dispatchViewerDrag(
 }
 
 describe("embedded archive loading", () => {
+  it.each(["document-basic", "document-segmented-basic"])(
+    "paginates the real %s renderer and keeps resources, targets and document ownership intact", async (sample) => {
+      await mount();
+      await request(sample);
+      const article = container.querySelector(".structured-document");
+      const image = container.querySelector<HTMLImageElement>(".structured-document img");
+      const source = image?.src;
+      const calls = fetcher.mock.calls.length;
+      const targets = [...container.querySelectorAll('[id^="prd-content-"]')].map((node) => node.id);
+      const viewport = installPaginationGeometry();
+      await chooseReadingMode("Paginated");
+      expect(container.querySelector('[aria-label="Document pages"]')!.textContent).toContain("Page 1 of 3");
+      const section = sample === "document-basic" ? "why-this-exists" : "scaling-path";
+      const link = container.querySelector<HTMLAnchorElement>(`.viewer-outline-list a[href="#${getViewerContentTargetId("node", section)}"]`)!;
+      await act(async () => link.click());
+      expect(viewport.scrollLeft).toBe(1064);
+      expect(container.querySelector('[aria-label="Document pages"]')!.textContent).toContain("Page 3 of 3");
+      expect(document.activeElement?.id).toBe(getViewerContentTargetId("node", section));
+      const next = [...container.querySelectorAll<HTMLButtonElement>('[aria-label="Document pages"] button')]
+        .find((button) => button.textContent === "Next page")!;
+      next.focus();
+      await act(async () => next.click());
+      expect(next.getAttribute("aria-disabled")).toBe("true");
+      expect(document.activeElement).toBe(next);
+      expect(viewport.scrollLeft).toBe(1064);
+      await chooseReadingMode("Continuous");
+      expect(container.querySelector(".structured-document")).toBe(article);
+      expect([...container.querySelectorAll('[id^="prd-content-"]')].map((node) => node.id)).toEqual(targets);
+      expect(new Set(targets).size).toBe(targets.length);
+      expect(container.querySelector(".structured-document img")).toBe(image);
+      expect(image?.src).toBe(source);
+      expect(fetcher).toHaveBeenCalledTimes(calls);
+      expect(container.querySelector('[aria-label="Document pages"]')).toBeNull();
+    },
+  );
+
+  it("offers both modes for a real local resume package without replacing its renderer", async () => {
+    await mount();
+    const input = container.querySelector<HTMLInputElement>('input[type="file"]')!;
+    Object.defineProperty(input, "files", { value: [new NodeFile([Uint8Array.from(archives.get("resume-basic")!)], "resume.prd")] });
+    await act(async () => input.dispatchEvent(new Event("change", { bubbles: true })));
+    const article = container.querySelector(".resume-document");
+    expect(article).not.toBeNull();
+    installPaginationGeometry();
+    await chooseReadingMode("Paginated");
+    expect(container.querySelector('[aria-label="Document pages"]')!.textContent).toContain("Page 1 of 3");
+    expect(container.querySelector(".resume-document")).toBe(article);
+    await chooseReadingMode("Continuous");
+    expect(container.querySelector(".resume-document")).toBe(article);
+  });
+
+  it("retains the paginated reading section across real locale changes and resets a new package to page one", async () => {
+    await mount();
+    await request("document-basic");
+    const viewport = installPaginationGeometry();
+    await chooseReadingMode("Paginated");
+    const link = container.querySelector<HTMLAnchorElement>(`.viewer-outline-list a[href="#${getViewerContentTargetId("node", "why-this-exists")}"]`)!;
+    await act(async () => link.click());
+    const article = container.querySelector(".structured-document");
+    const image = container.querySelector(".structured-document img");
+    const calls = fetcher.mock.calls.length;
+    const locale = container.querySelector<HTMLSelectElement>("#viewer-locale-select")!;
+    await act(async () => {
+      locale.value = "fr-FR";
+      locale.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(title()).toBe("Exemple de document PRD");
+    expect(viewport.scrollLeft).toBe(1064);
+    expect(container.querySelector('[aria-label="Document pages"]')!.textContent).toContain("Page 3 of 3");
+    expect(container.querySelector(".structured-document")).toBe(article);
+    expect(container.querySelector(".structured-document img")).toBe(image);
+    expect(fetcher).toHaveBeenCalledTimes(calls);
+    await request("document-segmented-basic");
+    expect(container.querySelector('[aria-label="Document pages"]')!.textContent).toContain("Page 1 of 3");
+    expect(viewport.scrollLeft).toBe(0);
+    await request("comic-basic");
+    expect(container.querySelector('[aria-label="Document reading mode"]')).toBeNull();
+    expect(container.querySelector(".comic-panel-navigation")).not.toBeNull();
+  });
+
   it.each([true, false])("keeps nested file feedback active with related target available: %s", async (hasRelatedTarget) => {
     await mount();
     const zone = container.querySelector(".upload-dropzone")!;

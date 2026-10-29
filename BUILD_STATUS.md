@@ -2,6 +2,14 @@
 
 ## 2026-10-29
 
+### Structured Viewer Pagination
+
+- Continued from main `cc7731c` in isolated `thehive/prd-paginated-reading`. The CLI `0.2.0` version preparation and independent primary-checkout work are outside this slice. No package/version, manifest, schema, viewer-core, uRK dependency or scheduler changes.
+- Added Continuous/Paginated reading around the existing structured renderer with one persistent article, selectable semantic content, resource URLs and namespaced targets. Native CSS columns compute temporary viewport-relative pages; accessible controls provide previous/next, live counts and scoped keyboard navigation. First/last actions preserve button focus, fragment links retain history/semantic focus, and ordinary touch/wheel scrolling remains native. Resume grids become a linear reading presentation of their existing DOM; visual profiles and HTML fallbacks retain their existing paths.
+- Private semantic anchors follow section/paragraph fragments across modes, resize, fonts/media, locale changes and hidden/reopened panes. New packages reset to page one. Native observers/events own reflow without another frame loop. Continuous mode remains the default; page numbers are not package semantics or a print/export guarantee.
+- Seventeen pagination measurement/controller cases and four real archive integration cases cover Document Basic, resolved segmented content, the local resume example, French overrides, resource/node continuity, explicit link anchors through repeated reflow, keyboard boundaries, no initial font-load jump and cleanup. jsdom geometry is modeled and does not execute CSS fragmentation. Browser use remains disabled in Work settings; real desktop/mobile layout, touch, assistive technology and launch acceptance remain under items 44/48.
+- Final validation passed: root typecheck, the **497-test / 36-file foundation gate**, workspace build, root-inclusive docs consistency, canonical validation/aggregate example smoke, both hosting bases, Workers dry run and whitespace checks. Updated homepage copy, product boundaries, reading implementation notes, hosting acceptance and backlog. No physical-device, browser fragmentation or long-session performance acceptance is claimed.
+
 ### CLI 0.2.0 Version PR Preparation
 
 - Started from reviewed main `4ac480d`, which includes merged release diagnostics PR #64 and authoring consumer verification PR #65. `release:status` planned exactly one minor bump, `@eonhive/prd-cli@0.2.0`, from the three existing authoring changesets.

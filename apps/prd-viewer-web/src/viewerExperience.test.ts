@@ -60,7 +60,7 @@ describe("public experience markup", () => {
     expect(html).toContain("Evolves with your ideas");
     expect(html).toContain('aria-label="Footer navigation"');
     expect(html).not.toContain('title="Embedded PRD reference viewer"');
-    expect(html).not.toContain("Paginated");
+    expect(html).toContain("Continuous and paginated reading");
   });
 
   it.each(["/", "/prd/"])("keeps the download and example handoff under hosting base %s", (basePath) => {

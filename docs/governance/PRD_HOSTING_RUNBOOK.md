@@ -360,6 +360,33 @@ animation again. Do not close launch items 44/48 without those deployed checks
 and the existing physical-device, assistive-technology, performance and hosting
 owner acceptance.
 
+### October 29 Paginated Reading Follow-Up
+
+The full and embedded Viewer now offer Continuous/Paginated reading for structured
+general documents. The same article and asset URLs remain mounted. Native CSS
+columns provide reflow, with app-owned page controls and semantic reading anchors.
+Comic/storyboard navigation and restricted HTML previews remain separate. No
+package loading behavior, manifest fields, runtime descriptor or uRK scheduler
+changes. Page counts describe the current reading space, not canonical pages.
+
+DOM tests model column measurements and exercise real canonical archives,
+segmented-section resolution, French overrides, resource continuity, fragment
+navigation, keyboard boundaries and lifecycle cleanup. Browser use remains
+disabled in Work settings; these tests do not establish actual CSS fragmentation,
+visual layout, screen-reader speech or physical touch acceptance.
+
+After deploying the reviewed build, check Document Basic and the segmented
+example in both modes at desktop and 320/390px widths. Follow outline and
+in-document fragments, use keyboard page controls, select/copy text across a
+break and tab into links/media on later pages. Change locale, reading width,
+side panels and focus mode, and close/reopen the Chapter 05 Viewer. Verify the
+same semantic reading location remains visible after reflow and image/font load;
+opening a different package must start on page one. Check tall tables/media,
+long paragraphs, zoom, first/last-page focus and horizontal touch scrolling.
+Repeat with reduced motion and a real screen reader, retaining continuous mode
+as the default. Launch items 44/48 remain open until this and the existing
+device, performance and deployment-owner acceptance are complete.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

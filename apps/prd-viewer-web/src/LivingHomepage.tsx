@@ -841,8 +841,8 @@ export function LivingHomepage({
             </span>
           </div>
           <p className="living-small-note">
-            Responsive reading, comic panel navigation, and storyboard review
-            are available in the reference renderer.
+            Continuous and paginated reading for structured documents, comic
+            panel navigation, and storyboard review are available in the reference Viewer.
           </p>
         </Chapter>
         <Chapter
