@@ -315,9 +315,12 @@ focus at a boundary. All content stays in semantic DOM order without page-based
 
 Tests model column geometry in jsdom and exercise real validated sample bytes,
 segmented-section resolution, French overrides and resource/node continuity.
-They do not execute a browser's CSS fragmentation engine. Browser use is disabled
-in Work settings; review actual desktop/mobile column breaks, long paragraphs,
-tables/media, focus and screen-reader behavior before launch acceptance.
+They do not execute a browser's CSS fragmentation engine. Browser access returned
+for the October 29 column-bounds follow-up. Actual desktop and 390/320px checks
+found and corrected phantom final pages caused by rounding each column to integer
+`clientWidth`. Page counts and navigation now use the fractional rendered flow
+width. Detailed browser evidence and remaining rich-content, physical-device and
+assistive-technology acceptance are recorded in the hosting runbook.
 Browser behavior references: [CSS column filling](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-fill)
 and [fragment rectangles](https://developer.mozilla.org/en-US/docs/Web/API/Element/getClientRects).
 

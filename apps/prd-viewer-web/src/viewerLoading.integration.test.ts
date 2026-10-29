@@ -110,7 +110,7 @@ function installPaginationGeometry() {
     scrollWidth: { get: () => 1564 },
   });
   flow.style.columnGap = "32px";
-  vi.spyOn(flow, "getBoundingClientRect").mockImplementation(() => ({ left: -viewport.scrollLeft }) as DOMRect);
+  vi.spyOn(flow, "getBoundingClientRect").mockImplementation(() => ({ left: -viewport.scrollLeft, width: 500 }) as DOMRect);
   vi.spyOn(HTMLElement.prototype, "getClientRects").mockImplementation(function (this: HTMLElement) {
     if (!flow.contains(this)) return [] as unknown as DOMRectList;
     const section = this.closest(".structured-section");

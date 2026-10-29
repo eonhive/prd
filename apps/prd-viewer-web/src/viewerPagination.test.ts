@@ -45,8 +45,13 @@ function fixture(withObserver = true) {
   vi.spyOn(window, "scrollTo").mockImplementation((options) => {
     vi.stubGlobal("scrollY", (options as ScrollToOptions).top ?? 0);
   });
-  Object.defineProperty(viewport, "clientWidth", { get: () => hidden ? 0 : width });
-  Object.defineProperty(viewport, "scrollWidth", { get: () => count * (width + 32) - 32 });
+  Object.defineProperty(viewport, "clientWidth", { get: () => hidden ? 0 : Math.round(width) });
+  Object.defineProperty(viewport, "scrollWidth", { get: () => Math.round(count * (width + 32) - 32) });
+  let scrollOffset = 0;
+  Object.defineProperty(viewport, "scrollLeft", {
+    get: () => scrollOffset,
+    set: (value: number) => { scrollOffset = Math.max(0, Math.min(value, (count - 1) * (width + 32))); },
+  });
   const rect = (left: number, top: number, height = 300): DOMRect => ({
     left, right: left + width, top, bottom: top + height, width, height, x: left, y: top, toJSON() {},
   });
@@ -89,6 +94,23 @@ describe("pagination measurements", () => {
 });
 
 describe("native document pagination", () => {
+  it.each([606.296875, 297.421875, 228.546875])(
+    "uses the rendered fractional column width %s rather than rounded clientWidth", (width) => {
+      const f = fixture();
+      f.layout(width, [0, 1, 2, 3, 4, 5], 6);
+      f.controller.setMode("paginated");
+      expect(f.state().pageCount).toBe(6);
+      f.controller.step(5);
+      expect(f.viewport.scrollLeft).toBeCloseTo(5 * (width + 32));
+      f.viewport.dispatchEvent(new Event("scroll"));
+      expect(f.state()).toMatchObject({ page: 6, pageCount: 6 });
+      f.controller.step(1);
+      expect(f.state()).toMatchObject({ page: 6, pageCount: 6 });
+      f.controller.step(-1);
+      expect(f.viewport.scrollLeft).toBeCloseTo(4 * (width + 32));
+    },
+  );
+
   it("changes modes and clamps previous/next while retaining all semantic nodes", () => {
     const f = fixture();
     const article = f.flow.firstElementChild;
