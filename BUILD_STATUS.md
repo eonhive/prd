@@ -2,6 +2,13 @@
 
 ## 2026-10-29
 
+### CLI 0.2.0 Version PR Preparation
+
+- Started from reviewed main `4ac480d`, which includes merged release diagnostics PR #64 and authoring consumer verification PR #65. `release:status` planned exactly one minor bump, `@eonhive/prd-cli@0.2.0`, from the three existing authoring changesets.
+- Ran the existing `release:version` command on isolated `thehive/prd-cli-0-2-0-version-pr`. Only the CLI version changed and the three intended changesets were consumed. Library versions and internal `^0.1.1` ranges remain unchanged; the lockfile-only refresh produced no lockfile diff. Added an explicitly unreleased CLI changelog entry instead of claiming publication.
+- Latest main Release run `40932175825` passed its release gate but failed preflight because the job still received an empty `NPM_TOKEN`; bootstrap and version/publish were skipped. Preparing a reviewable version PR does not bypass that guard. A maintainer must repair the intended Actions secret before CI can publish.
+- Release-candidate validation passed on Node 22: full `release:check` with **476 tests / 35 files**, typecheck/build/canonical validation and real installed-tarball smoke with all 42 authoring consumer steps. Aggregate example smoke, root-inclusive docs consistency and whitespace checks also passed; bootstrap correctly no-ops. Item 46 remains open until reviewed CI publication, expected-version registry audit and all 42 npm-installed checks succeed. Public availability remains CLI `0.1.1`; no credentials, workflow settings, format, schema, runtime or original-checkout work were changed, and nothing was published.
+
 ### Homepage Runtime-Unavailable Fallback
 
 - Continued in isolated `thehive/prd-home-runtime-fallback` from merged PR #66/main `5afc1d9`. Production's 21 HTTP/assets/package checks pass, and the merge's CI, Pages and Workers checks passed. Browser use remains disabled in Work settings; no fresh browser or audible acceptance is claimed.
