@@ -26,6 +26,30 @@ or viewer-core APIs change. Report, resume, and magazine are illustrative
 `general-document` layout studies. Comic and storyboard retain their own
 first-class profile identity and open their own valid example packages.
 
+### When motion cannot initialize
+
+A rejected runtime import or initialization activates an event-driven static
+presentation. It reuses the pure chapter-position helper and the same document
+and Viewer nodes. Native scrolling updates chapter navigation in both directions,
+profile visibility and the inline Viewer; device choices apply their widths
+immediately. There is no fallback frame loop, ambient timer, tween or automatic
+runtime retry. A healthy runtime retains sole ownership of the animated path.
+
+The fallback measures chapter and copy bounds on entry, resize and observed
+content changes, retaining the existing mobile sheet placement after chapter
+copy. Scroll events read cached bounds only. Leaving the story hides the fixed
+presentation; returning restores the current chapter. Observer and event cleanup
+also guards callbacks already queued when Home unmounts.
+
+Perspective, decorative particles and exploded layers are disabled. The separate
+structure inspector and profile descriptions remain available, and the real
+Viewer retains inline/focus presentation, sample selection and package links.
+The sound button is disabled with an explicit unavailable label. A delayed
+startup failure after unmount cannot activate fallback listeners or feedback.
+This fallback requires JavaScript; the existing `noscript` outline remains the
+no-JavaScript reading path. DOM tests verify behavior with rejected initialization,
+not actual network failure or browser rendering.
+
 ## Inspected uRK capabilities
 
 The upstream main branch was checked at commit

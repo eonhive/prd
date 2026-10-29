@@ -334,6 +334,32 @@ with motion off, ordinary playback without analysis, and genuine playback-error
 feedback/retry. Audible/browser autoplay, physical devices, accessibility and
 production sign-off remain under items 44/48.
 
+### October 29 Runtime-Unavailable Follow-Up
+
+PR #66 is merged at `5afc1d9`; its validation, Pages and Workers builds passed.
+Fresh production HTTP/assets/package checks passed all 21 cases on
+`prd.eonhive.com`. Local browser use still reports disabled in Work settings;
+these checks do not establish audible playback or deployed interaction acceptance.
+
+Source review and five failing DOM regressions exposed a fallback gap: rejected
+uRK startup left chapter selection at Awakening and device widths unchanged.
+The correction uses cached geometry with native scroll/resize events only after
+startup fails. It preserves the same paper and Viewer, enables reversible chapter
+selection, applies device widths immediately and disables unavailable sound.
+Eight DOM cases cover navigation, inline Viewer access, keyboard profiles,
+focus/return, geometry refresh, missing ResizeObserver, cleanup, delayed rejection
+and healthy-runtime ownership. Native dialog methods are substituted in DOM tests;
+browser focus containment remains a separate acceptance check.
+
+When browser use is available, block the runtime chunk in a production build and
+reload Home. Scroll forward/backward through all chapters, change devices and
+profiles, expand mobile descriptions, and enter/exit the real Viewer. Confirm
+chapter progress, sheet placement, sample/download continuity and unavailable
+sound feedback. Then remove the block and confirm the normal uRK path owns
+animation again. Do not close launch items 44/48 without those deployed checks
+and the existing physical-device, assistive-technology, performance and hosting
+owner acceptance.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

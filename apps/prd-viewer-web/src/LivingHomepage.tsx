@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import {
   livingChapters,
+  getChapterPosition,
   getCanonicalDemoProfile,
   getProfileForKey,
   livingProfileOrder,
@@ -272,17 +273,87 @@ export function LivingHomepage({
           runtime.setProfile(currentOptions.current.profile);
         }
       })
-      .catch(() =>
+      .catch(() => {
+        runtime?.dispose();
+        if (cancelled) return;
+        runtimeRef.current = undefined;
         setRuntimeMessage(
           "Motion is unavailable. All chapters and the Viewer are still ready to explore.",
-        ),
-      );
+        );
+      });
     return () => {
       cancelled = true;
       runtime?.dispose();
       runtimeRef.current = undefined;
     };
   }, []);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!runtimeMessage || !root) return;
+    const chapters = [...root.querySelectorAll<HTMLElement>("[data-living-chapter]")];
+    const copies = chapters.map((chapter) =>
+      chapter.querySelector<HTMLElement>(".living-chapter-copy"),
+    );
+    let starts: number[] = [];
+    let end = 0;
+    let disposed = false;
+
+    // Only a failed runtime uses this static path. Native events never animate or request frames.
+    const selectChapter = () => {
+      if (disposed) return;
+      const position = getChapterPosition(
+        window.scrollY + window.innerHeight * 0.18,
+        starts,
+      );
+      setChapter(Math.min(chapters.length - 1, Math.max(0, Math.floor(position + 0.08))));
+      root.dataset.storyComplete = String(window.scrollY > end - 160);
+    };
+
+    const measure = () => {
+      if (disposed) return;
+      starts = chapters.map((chapter) =>
+        chapter.getBoundingClientRect().top + window.scrollY,
+      );
+      end = (starts.at(-1) ?? 0) + (chapters.at(-1)?.offsetHeight ?? 0);
+      starts.forEach((start, index) =>
+        root.style.setProperty(`--chapter-start-${index}`, `${start}px`),
+      );
+      copies.forEach((copy, index) => {
+        if (!copy) return;
+        const stageTop = copy.getBoundingClientRect().bottom + window.scrollY + 70;
+        root.style.setProperty(`--chapter-stage-${index}`, `${stageTop}px`);
+      });
+      selectChapter();
+    };
+
+    const observer = typeof ResizeObserver === "undefined"
+      ? undefined
+      : new ResizeObserver(measure);
+    chapters.forEach((chapter) => observer?.observe(chapter));
+    copies.forEach((copy) => {
+      if (copy) observer?.observe(copy);
+    });
+    window.addEventListener("scroll", selectChapter, { passive: true });
+    window.addEventListener("resize", measure);
+    measure();
+    return () => {
+      disposed = true;
+      observer?.disconnect();
+      window.removeEventListener("scroll", selectChapter);
+      window.removeEventListener("resize", measure);
+    };
+  }, [runtimeMessage]);
+
+  useEffect(() => {
+    if (!runtimeMessage) return;
+    const sheet = documentRef.current;
+    const width = { desktop: 420, tablet: 340, mobile: 236 }[device];
+    sheet?.style.setProperty("--document-width", `${width}px`);
+    sheet?.style.setProperty("--profile-reveal", "1");
+    if (sheet) sheet.style.transform = "none";
+    stageRef.current?.style.setProperty("--layer-spread", "0");
+  }, [device, runtimeMessage]);
 
   useEffect(() => {
     runtimeRef.current?.update({ motion, quality, focused });
@@ -363,6 +434,7 @@ export function LivingHomepage({
       data-motion={motion}
       data-profile={profile}
       data-focused={focused}
+      data-runtime={runtimeMessage ? "unavailable" : undefined}
       aria-label="PRD Home"
     >
       <ViewerSiteNavigation
@@ -838,8 +910,11 @@ export function LivingHomepage({
           <button
             className="living-sound"
             aria-label={
-              audioPlaying ? "Mute ambient sound" : "Enable ambient sound"
+              runtimeMessage
+                ? "Ambient sound unavailable"
+                : audioPlaying ? "Mute ambient sound" : "Enable ambient sound"
             }
+            disabled={Boolean(runtimeMessage)}
             aria-pressed={audioPlaying}
             onClick={() => void toggleAudio()}
           >

@@ -1,5 +1,14 @@
 # BUILD STATUS
 
+## 2026-10-29
+
+### Homepage Runtime-Unavailable Fallback
+
+- Continued in isolated `thehive/prd-home-runtime-fallback` from merged PR #66/main `5afc1d9`. Production's 21 HTTP/assets/package checks pass, and the merge's CI, Pages and Workers checks passed. Browser use remains disabled in Work settings; no fresh browser or audible acceptance is claimed.
+- Five failing DOM regressions reproduced frozen chapter state, unchanged device widths and absent geometry/cleanup when uRK startup rejects. The homepage now uses a static, event-driven path only after runtime failure. It shares the existing pure chapter sampler, caches chapter/copy bounds outside scrolling, updates both directions, and retains the same paper and real inline/focus Viewer. Device widths apply immediately, decorative motion is disabled and sound is explicitly unavailable. There is no extra animation loop, retry scheduler, dependency, public API or format change.
+- Eight new DOM cases cover all chapters, device choices, geometry refresh, story exit/return, initial deep positions, absent ResizeObserver, profile keyboard controls, Viewer focus/return, cleanup, delayed startup rejection and healthy-runtime ownership. Dialog methods are substituted; these checks do not prove actual modal containment, mobile layout, network failures or assistive-technology speech.
+- Validation passed: **60 targeted tests**, root typecheck, the **473-test / 35-file foundation gate**, workspace build, canonical example validation/aggregate smoke, root-inclusive docs consistency, both hosting bases, Workers dry run and whitespace checks. Updated homepage behavior docs, hosting acceptance notes and backlog. Launch items 44/48 and the separate CLI publisher-credential blocker remain open.
+
 ## 2026-10-28
 
 ### Authoring Consumer Release Verification
