@@ -313,6 +313,53 @@ in Work settings. Repeat the deployed focus/search, file-drop and motion
 interaction checks when browser access is available, and complete the real
 OS/assistive/device and deployment-owner checks before closing items 44/48.
 
+### Optional Audio Lifecycle Follow-Up: October 28, 2026
+
+Homepage startup now invalidates delayed audio requests when the page is hidden,
+muted or disposed. Returning to view requires a fresh opt-in; stale playback or
+analysis completion cannot announce playing or produce a playback-error message.
+Fresh opt-in can proceed before a cancelled native promise settles; a second
+toggle can cancel a pending opt-in. Current playback errors retain feedback,
+missing Web Audio retains plain sound, and mute clears the spectrum level
+immediately. Existing uRK transport pause,
+analysis disable and kernel cleanup own the resources; no runtime dependency or
+package semantics change.
+
+Deterministic tests exercise the real audio adapter using substituted native
+media/context APIs, including source URL cleanup and reuse after cancellation.
+Browser automation is disabled for this follow-up. After review/deployment, test
+sound opt-in followed quickly by tab hide/return during a throttled first load;
+verify sound stays off, then enable it explicitly. Check mute and the visual level
+with motion off, ordinary playback without analysis, and genuine playback-error
+feedback/retry. Audible/browser autoplay, physical devices, accessibility and
+production sign-off remain under items 44/48.
+
+### October 29 Runtime-Unavailable Follow-Up
+
+PR #66 is merged at `5afc1d9`; its validation, Pages and Workers builds passed.
+Fresh production HTTP/assets/package checks passed all 21 cases on
+`prd.eonhive.com`. Local browser use still reports disabled in Work settings;
+these checks do not establish audible playback or deployed interaction acceptance.
+
+Source review and five failing DOM regressions exposed a fallback gap: rejected
+uRK startup left chapter selection at Awakening and device widths unchanged.
+The correction uses cached geometry with native scroll/resize events only after
+startup fails. It preserves the same paper and Viewer, enables reversible chapter
+selection, applies device widths immediately and disables unavailable sound.
+Eight DOM cases cover navigation, inline Viewer access, keyboard profiles,
+focus/return, geometry refresh, missing ResizeObserver, cleanup, delayed rejection
+and healthy-runtime ownership. Native dialog methods are substituted in DOM tests;
+browser focus containment remains a separate acceptance check.
+
+When browser use is available, block the runtime chunk in a production build and
+reload Home. Scroll forward/backward through all chapters, change devices and
+profiles, expand mobile descriptions, and enter/exit the real Viewer. Confirm
+chapter progress, sheet placement, sample/download continuity and unavailable
+sound feedback. Then remove the block and confirm the normal uRK path owns
+animation again. Do not close launch items 44/48 without those deployed checks
+and the existing physical-device, assistive-technology, performance and hosting
+owner acceptance.
+
 ## GitHub Pages Fallback
 
 The existing `.github/workflows/viewer-demo-pages.yml` workflow remains the fallback/staging deployment path.

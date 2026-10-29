@@ -13,6 +13,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runExternalConsumerSmoke } from "./external-consumer-smoke.mjs";
 
 const repoRoot = process.cwd();
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -312,6 +313,17 @@ export async function runReleaseSmoke() {
       ],
       { cwd: cliProjectDir }
     );
+
+    // Test the same installed authoring flow before publication, even at the old repo version.
+    const authoring = await runExternalConsumerSmoke({
+      repoRoot,
+      packageSpecs: publishablePackages.map((pkg) => tarballs[pkg.name]),
+      authoring: true,
+      summaryPath: "examples/dist/release-authoring-consumer-smoke-summary.json"
+    });
+    if (authoring.status !== "passed") {
+      throw new Error(`Tarball authoring consumer smoke failed. See ${authoring.summaryPath}`);
+    }
   } finally {
     if (process.env.KEEP_RELEASE_SMOKE !== "1") {
       await rm(scratchRoot, { recursive: true, force: true });

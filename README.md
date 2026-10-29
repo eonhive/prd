@@ -466,7 +466,7 @@ The release workflow publishes only after the Node 20+ CI gate is green. The his
 
 `pnpm runtime:conformance` is the canonical reference-viewer runtime corpus check. It evaluates the published fixtures in `examples/runtime-conformance/runtime-conformance-manifest.json` and emits `examples/dist/runtime-conformance-summary.json`.
 
-`pnpm consumer:smoke:npm` is the post-publish external-consumer smoke check. It installs the published `@eonhive/prd-*` packages from npm in a clean temp project, then exercises `prd pack`, `prd validate`, and `prd inspect` without workspace linking. It emits `examples/dist/external-consumer-smoke-summary.json`.
+`pnpm consumer:smoke:npm` is the post-publish external-consumer smoke check. It installs the published `@eonhive/prd-*` packages from npm in a clean temp project, then exercises `prd pack`, `prd validate`, and `prd inspect` without workspace linking. When the checked-out CLI targets stable `0.2.0` or later, it also requires `init` for all three profiles, Markdown import and comic/storyboard image import, with directory/archive validation and inspection. It emits `examples/dist/external-consumer-smoke-summary.json`, including `authoringRequired`. `release:check` runs that authoring flow against installed local tarballs before publication; this does not establish npm availability.
 
 The npm preview line started at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch is now the clean published preview; the broken `0.1.0` versions are deprecated with upgrade guidance, and post-publish registry audit plus npm consumer smoke pass for `0.1.1`.
 

@@ -26,6 +26,30 @@ or viewer-core APIs change. Report, resume, and magazine are illustrative
 `general-document` layout studies. Comic and storyboard retain their own
 first-class profile identity and open their own valid example packages.
 
+### When motion cannot initialize
+
+A rejected runtime import or initialization activates an event-driven static
+presentation. It reuses the pure chapter-position helper and the same document
+and Viewer nodes. Native scrolling updates chapter navigation in both directions,
+profile visibility and the inline Viewer; device choices apply their widths
+immediately. There is no fallback frame loop, ambient timer, tween or automatic
+runtime retry. A healthy runtime retains sole ownership of the animated path.
+
+The fallback measures chapter and copy bounds on entry, resize and observed
+content changes, retaining the existing mobile sheet placement after chapter
+copy. Scroll events read cached bounds only. Leaving the story hides the fixed
+presentation; returning restores the current chapter. Observer and event cleanup
+also guards callbacks already queued when Home unmounts.
+
+Perspective, decorative particles and exploded layers are disabled. The separate
+structure inspector and profile descriptions remain available, and the real
+Viewer retains inline/focus presentation, sample selection and package links.
+The sound button is disabled with an explicit unavailable label. A delayed
+startup failure after unmount cannot activate fallback listeners or feedback.
+This fallback requires JavaScript; the existing `noscript` outline remains the
+no-JavaScript reading path. DOM tests verify behavior with rejected initialization,
+not actual network failure or browser rendering.
+
 ## Inspected uRK capabilities
 
 The upstream main branch was checked at commit
@@ -96,6 +120,34 @@ evidence, not a browser frame-rate, heap-memory, GPU, or physical-device benchma
 Device transforms, layer separation, and reassembly change presentation only.
 The general-document studies are explicitly illustrative. Canonical package
 content is rendered by the real reference viewer in Chapter 05.
+
+## Optional audio lifecycle
+
+Sound remains opt-in and lazy. A private request generation now guards startup
+across module loading, adapter registration, native playback and optional Web
+Audio analysis. Hiding the page invalidates the request, pauses the existing uRK
+transport and disables analysis. Returning to the page does not revive an older
+request or announce paused audio as playing; a fresh visible opt-in is required.
+Hidden pages cannot initiate startup through a runtime command.
+
+Explicit mute and disposal also invalidate the request and immediately clear the
+audio visual level, including with motion off. Toggling while startup is pending
+cancels that opt-in. Cancellation resolves quietly as false; genuine playback
+failures from a current request still reach the existing sound feedback.
+Unavailable analysis retains ordinary playback. One shared initialization reuses
+the adapter, track and generated WAV URL. A fresh opt-in can proceed while an
+older cancelled native promise is pending; older completions cannot clear the
+new request's loading state, pause it or publish stale feedback. In-flight
+registration may finish a reusable track setup after visibility changes, but it
+cannot play that track until a fresh request. Disposal revokes the URL after the
+existing kernel cleanup, with no late playing callback.
+
+Runtime tests use the actual pinned uRK audio adapter with deterministic native
+media/Web Audio substitutes. They cover hide-and-return at startup, track setup,
+playback and analysis; immediate cancellation/retry; unavailable analysis; real playback
+errors; mute level reset; and disposal/URL cleanup. These are transport/lifecycle
+checks, not audible browser, autoplay-policy or physical-device acceptance.
+No audio API, format rule, dependency, or animation scheduler is introduced.
 
 ## Profile presentations
 

@@ -75,6 +75,9 @@ export async function createLivingExperienceRuntime(
   let audio: AudioAdapterApi | undefined;
   let audioUrl: string | undefined;
   let audioLoading = false;
+  let audioGeneration = 0;
+  let audioReady = false;
+  let audioInitialization: Promise<void> | undefined;
   const deviceSize = { width: 420 };
   let selectedDevice: DemoDevice = "desktop";
   let selectedProfile: DemoProfile = "document";
@@ -109,6 +112,43 @@ export async function createLivingExperienceRuntime(
   function cancelAmbient() {
     clearTimeout(ambientTimer);
     ambientTimer = undefined;
+  }
+
+  function cancelAudio() {
+    audioGeneration++;
+    audioLoading = false;
+    audio?.pause();
+    audio?.analysis.disable();
+    root.style.setProperty("--audio-level", "0");
+  }
+
+  function isAudioRequestCurrent(generation: number) {
+    return !disposed && !document.hidden && generation === audioGeneration;
+  }
+
+  function initializeAudio() {
+    if (!audioInitialization) {
+      audioInitialization = (async () => {
+        const [{ createAudioAdapter }, { createAmbientAudioUrl }] = await Promise.all([
+          import("@urk/adapters/audio"),
+          import("./livingExperienceAudio.js"),
+        ]);
+        if (disposed || !audioLoading) return;
+        if (!audio) audio = await kernel.registerAdapter(createAudioAdapter());
+        if (disposed) return;
+        // Complete one reusable setup if visibility changes during adapter registration.
+        if (!audioUrl) audioUrl = createAmbientAudioUrl();
+        audio.registerTrack({
+          id: "ambient",
+          label: "PRD ambient",
+          src: audioUrl,
+          loop: true,
+          volume: 0.22,
+        });
+        audioReady = true;
+      })().finally(() => { audioInitialization = undefined; });
+    }
+    return audioInitialization;
   }
 
   function releasePendingPaint() {
@@ -261,7 +301,7 @@ export async function createLivingExperienceRuntime(
   function handleVisibility() {
     if (document.hidden) {
       suspendPresentation();
-      audio?.pause();
+      cancelAudio();
       onAudio(false);
       kernel.pause();
     } else {
@@ -345,51 +385,41 @@ export async function createLivingExperienceRuntime(
       });
     },
     async toggleAudio() {
-      if (disposed || audioLoading) return false;
-      if (audio?.getSnapshot().status === "playing") {
-        audio.pause();
+      if (disposed || document.hidden) return false;
+      if (audioLoading || audio?.getSnapshot().status === "playing") {
+        cancelAudio();
         onAudio(false);
         return false;
       }
       audioLoading = true;
+      const generation = ++audioGeneration;
       try {
-        if (!audio) {
-          const [{ createAudioAdapter }, { createAmbientAudioUrl }] =
-            await Promise.all([
-              import("@urk/adapters/audio"),
-              import("./livingExperienceAudio.js"),
-            ]);
-          if (disposed) return false;
-          audio = await kernel.registerAdapter(createAudioAdapter());
-          if (disposed) return false;
-          audioUrl = createAmbientAudioUrl();
-          audio.registerTrack({
-            id: "ambient",
-            label: "PRD ambient",
-            src: audioUrl,
-            loop: true,
-            volume: 0.22,
-          });
-        }
+        if (!audioReady) await initializeAudio();
+        if (!isAudioRequestCurrent(generation) || !audio) return false;
         await audio.play("ambient");
-        if (disposed) return false;
+        if (!isAudioRequestCurrent(generation)) return false;
         // Analysis is optional; transport stays usable if Web Audio is unavailable.
         try {
           await audio.analysis.enable({ fftSize: 128 });
         } catch {
           /* Keep plain playback. */
         }
-        if (disposed) return false;
+        if (!isAudioRequestCurrent(generation)) return false;
         onAudio(true);
         requestUpdate();
         return true;
+      } catch (error) {
+        // Hiding or disposing cancels opt-in; it must not become a playback-error message.
+        if (!isAudioRequestCurrent(generation)) return false;
+        throw error;
       } finally {
-        audioLoading = false;
+        if (generation === audioGeneration) audioLoading = false;
       }
     },
     dispose() {
       if (disposed) return;
       disposed = true;
+      cancelAudio();
       cancelAmbient();
       motion.cancel();
       releasePendingPaint();

@@ -108,3 +108,27 @@ For CI annotation/reporting, smoke-capable release/check jobs should run:
 The first-preview bootstrap path has already been used for the initial `0.1.0` publication. For the one-time `0.1.0` public preview, the Release workflow first runs `pnpm release:preflight`, then checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.
 
 After `0.1.0` exists on npm, normal Changesets release flow remains the source of truth for `0.1.1+`. The post-publish verification lane then must run `pnpm release:audit:registry` before the external npm consumer smoke path is treated as authoritative.
+
+### Authoring consumer verification
+
+`release:check` also runs the external consumer flow against the four locally
+packed tarballs with authoring required, independently of their current version.
+It creates starters for all three profiles, imports Markdown with a local image,
+and imports naturally ordered images for both comic and storyboard. Each output
+is validated, inspected, packed, then validated and inspected as an archive.
+Checks verify JSON success/profile/source facts and imported source bytes/order.
+
+Post-publish consumer smoke automatically requires these authoring scenarios when
+the checked-out CLI manifest targets stable `0.2.0` or later, the first planned
+authoring release. It does not infer support from help text or skip a failing
+command. The existing `0.1.x` published baseline retains the six original
+installation/pack/validate/inspect checks. The summary's additive
+`authoringRequired` field distinguishes the two modes; malformed expected CLI
+versions and preparation failures produce failed summaries.
+
+The tarball summary is
+`examples/dist/release-authoring-consumer-smoke-summary.json`; the existing npm
+summary path and `prd-external-consumer-smoke-v0.1` contract remain unchanged.
+Tarball checks establish release-candidate compatibility, not npm availability.
+Actual publication still requires the CI credential gates, version PR review,
+registry audit and successful authoring consumer checks against npm packages.

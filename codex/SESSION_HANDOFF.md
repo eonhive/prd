@@ -1,5 +1,16 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 28, 2026: Authoring Consumer Verification
+
+- Ready review PR: [#65](https://github.com/eonhive/prd/pull/65), `[stannesi] verify CLI authoring in installed consumer smoke`. Continued the existing branch with the owner's authorization; did not duplicate the implementation or mix in the original checkout's independent work.
+- Final continuation verification passed on Node 22: 29 targeted tests and the full `release:check` (451 tests / 34 files), including all 42 real installed-tarball consumer steps. Repeated live registry audit, six-step npm `0.1.1` baseline, root-inclusive docs consistency and whitespace checks passed. The npm baseline reports `authoringRequired: false`; only the tarball run reports `authoringRequired: true`. No new authoring publication is claimed. This continuation needed no source changes after reviewing the existing implementation.
+- Isolated branch `thehive/prd-authoring-consumer-smoke` starts at merged main `2cf4980`. The original checkout and unrelated work remain untouched. Read-only Changesets status still plans only CLI `0.2.0`; live registry audit and six-step npm consumer smoke pass for published `0.1.1`.
+- Added `scripts/consumer-authoring-smoke.mjs`, used by external consumer smoke and, through it, release tarball smoke. It checks `init` across all three profiles, Markdown/local-image import, and both visual image imports, including natural order/source bytes and directory/archive validation/inspection. JSON/profile/source failures and missing commands fail the exact step; preparation failures also fail the retained summary and CLI exit.
+- Installed tarballs always require all 42 steps. Normal post-publish smoke decides from the checked-out CLI version: stable `0.2.0+` requires authoring, while `0.1.x` keeps the six baseline checks. The summary's additive `authoringRequired` field makes that distinction explicit; the contract identifier and existing npm summary path are unchanged.
+- Validation passed: 29 targeted tests; full `release:check` with **451 tests / 34 files**, typecheck/build/canonical validation and real installed tarball authoring smoke; read-only registry audit and real npm baseline smoke. The tarball authoring summary is ignored at `examples/dist/release-authoring-consumer-smoke-summary.json`. Release policy/runbook, README and active item 46 are updated. No dependency, package version, changeset or workflow edit.
+- Publication is still pending. Separate PR #64 reports missing Actions `NPM_TOKEN`; a maintainer must repair that configuration before reviewed CI versioning/publication, expected-version registry audit and the 42-step npm authoring run can complete item 46. No secret/token access, local versioning, workflow rerun, publication or deployment was performed. Browser/physical launch acceptance remains under items 44/48.
+- Earlier sections below are historical.
+
 ## Latest continuation — October 28, 2026: Merged Launch Verification
 
 - PR #61 and PR #62 are merged; reviewed main is `317c365`. Reused the isolated checkout on `thehive/prd-launch-verification` for this documentation follow-up. The original checkout's independent work remains untouched. The file-drop change retains nested feedback, ignores text drags, and preserves the archive/validation/rendering and privacy paths.
