@@ -269,9 +269,57 @@ from its current iframe window and its own exact origin. This UI message does no
 change PRD format or viewer-core contracts. Packaged media is paused when the
 workspace becomes hidden; it is not automatically restarted on return.
 
-Supported modes are responsive document flow, comic panel navigation, and
-storyboard review. Pagination is not implemented by the reference renderer and
-is not advertised or simulated as a working mode.
+Supported modes are continuous and paginated structured-document reading, comic
+panel navigation, and storyboard review. The embedded Viewer uses the same
+reading-mode implementation as the full workspace.
+
+### Structured-document reading modes
+
+The October 29 reading slice adds Continuous/Paginated controls around the
+existing structured `general-document` renderer, including resolved segmented
+content and the existing resume presentation. Comic, storyboard and restricted
+HTML previews retain their existing presentations without document-page controls.
+
+Pagination uses native CSS columns with a bounded viewport-relative height and
+the actual available content width. Browser layout determines column breaks and
+page count. Page numbers are temporary presentation state, not authored pages,
+manifest fields, canonical locators, print pagination or a format extension.
+The current reference presentation remains left-to-right. No new direction or
+writing-mode interpretation is introduced by this slice.
+
+`ViewerReadingView.tsx` retains one renderer tree and exposes mode controls,
+Previous/Next and an announced page count. Its private `viewerPagination.ts`
+controller observes resize, media load and font completion, with window resize
+as the fallback when ResizeObserver is unavailable. There is no render loop,
+animation framework, clone, screenshot or second package load. CSS columns
+fragment normal block flow; paginated resume grids become a linear presentation
+of the same DOM. Images are bounded to the page height, while native overflow
+keeps oversized content reachable. Printing releases the column constraints.
+
+Cached semantic anchors retain the current section or paragraph fragment across
+mode changes, width/height changes, locale updates and hidden/reopened embedded
+panes. Reflow approximates position within a split paragraph; it does not promise
+an identical line or page number after font/width changes. Missing authored IDs
+fall back to the existing node position and containing section. A newly opened
+package resets to page one. Native horizontal scroll updates page feedback;
+ordinary wheel/touch scrolling is not intercepted.
+
+Left/Right, Page Up/Down and Home/End operate only on the focused paginated
+viewport. Modifier keys, text selection, focused links/media, vertical arrows,
+Tab and Escape retain native behavior. Outline and in-content fragments reveal
+their target page, retain fragment history and focus the semantic target.
+Modified/new-tab links are left to the browser. Focused content on another page
+is revealed, and unavailable page actions use `aria-disabled` to preserve button
+focus at a boundary. All content stays in semantic DOM order without page-based
+`aria-hidden` or duplicate IDs. Continuous mode remains the default.
+
+Tests model column geometry in jsdom and exercise real validated sample bytes,
+segmented-section resolution, French overrides and resource/node continuity.
+They do not execute a browser's CSS fragmentation engine. Browser use is disabled
+in Work settings; review actual desktop/mobile column breaks, long paragraphs,
+tables/media, focus and screen-reader behavior before launch acceptance.
+Browser behavior references: [CSS column filling](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/column-fill)
+and [fragment rectangles](https://developer.mozilla.org/en-US/docs/Web/API/Element/getClientRects).
 
 ## Accessibility and follow-up
 

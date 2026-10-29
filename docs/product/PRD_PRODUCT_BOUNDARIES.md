@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: October 27, 2026_
+_Last updated: October 29, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -86,6 +86,15 @@ use native modal drawers. Outline selection closes the mobile drawer and focuses
 the authored section or selected panel/frame through the existing namespaced
 target map. Reading state and prepared resources remain mounted. This is an
 application presentation change with no new package requirements or core APIs.
+
+Structured `general-document` content also offers continuous and paginated
+reading around the same renderer, including resolved segmented sections and the
+existing resume presentation. Native CSS layout supplies temporary page breaks;
+app controls preserve semantic anchors across mode, locale and viewport changes.
+Page numbers are private presentation state, not manifest semantics, capability
+declarations, canonical locators or print/export guarantees. Visual-profile and
+HTML fallback presentations retain their existing controls. See the Living
+Homepage implementation notes for behavior and browser acceptance limits.
 
 ### 5.3 Studio
 

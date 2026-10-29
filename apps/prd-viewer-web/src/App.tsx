@@ -1,5 +1,6 @@
 import { unzipSync, strFromU8 } from "fflate";
 import { LivingHomepage } from "./LivingHomepage.js";
+import { ViewerReadingView } from "./ViewerReadingView.js";
 import {
   livingViewerExitFocusMessage,
   livingViewerLocalFileMessage,
@@ -2973,7 +2974,7 @@ function ViewerWorkspaceView({
                   renderModeMessage={getViewerRenderModeMessage(viewerRenderMode)}
                   readingLabel={
                     activeEntryDocument
-                      ? "Responsive document"
+                      ? "Structured document"
                       : activeComicDocument
                         ? "Comic"
                         : activeStoryboardDocument
@@ -3040,19 +3041,25 @@ function ViewerWorkspaceView({
                     />
                   )}
 
-                {activeEntryDocument &&
-                  (resumePresentationEnabled ? (
-                    <ResumeDocumentView
-                      document={activeEntryDocument}
-                      assetUrls={viewerState.assetUrls ?? {}}
-                      resumeProfile={viewerState.resumeProfile!}
-                    />
-                  ) : (
-                    <StructuredDocumentView
-                      document={activeEntryDocument}
-                      assetUrls={viewerState.assetUrls ?? {}}
-                    />
-                  ))}
+                {activeEntryDocument && (
+                  <ViewerReadingView
+                    packageIdentity={viewerState}
+                    contentIdentity={activeEntryDocument}
+                  >
+                    {resumePresentationEnabled ? (
+                      <ResumeDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                        resumeProfile={viewerState.resumeProfile!}
+                      />
+                    ) : (
+                      <StructuredDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    )}
+                  </ViewerReadingView>
+                )}
               </section>
             )}
           </section>
