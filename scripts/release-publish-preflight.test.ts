@@ -12,11 +12,12 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   releasePublishPreflightContractVersion,
+  formatReleasePublishPreflightReport,
   runReleasePublishPreflight
 } from "./release-publish-preflight.mjs";
 import { getReleasePackageVersionMode } from "./release-package-versions.mjs";
@@ -101,6 +102,61 @@ describe("release package version modes", () => {
 });
 
 describe("runReleasePublishPreflight", () => {
+  it.each([false, true])("reports a missing token in the real CLI and preserves failure (Actions summary: %s)", async (actionsSummary) => {
+    const repoRoot = await createTempDir("prd-release-preflight-cli-");
+    await createWorkspace(repoRoot, "0.1.1");
+    const preloadPath = join(repoRoot, "registry-fixture.mjs");
+    await writeFile(preloadPath, [
+      "/* Company: EonHive Inc. | Title: Registry Test Fixture",
+      " * Purpose: Keep the CLI regression independent of network and credentials.",
+      " * Author: Stan Nesi | Created: October 28, 2026 | Updated: October 28, 2026",
+      " * Notes: Vibe coded with Codex. */",
+      "globalThis.fetch = async () => Response.json({ versions: { '0.1.1': {} } });"
+    ].join("\n"));
+    const stepSummaryPath = join(repoRoot, "step-summary.md");
+    await writeFile(stepSummaryPath, "Earlier step\n");
+    const script = fileURLToPath(new URL("./release-publish-preflight.mjs", import.meta.url));
+    const error = await promisify(execFile)(process.execPath, [
+      "--import", pathToFileURL(preloadPath).href, script
+    ], {
+      cwd: repoRoot,
+      env: { ...process.env, NPM_TOKEN: "", GITHUB_STEP_SUMMARY: actionsSummary ? stepSummaryPath : "" }
+    }).then(() => { throw new Error("The missing-token CLI unexpectedly passed."); }, (caught) => caught);
+
+    expect(error.code).toBe(1);
+    expect(error.stdout).toContain("Release publish preflight: failed");
+    expect(error.stdout).toContain("npm token: failed");
+    expect(error.stdout).toContain("npm authentication: skipped");
+    expect(error.stdout).toContain("Set GitHub Actions secret NPM_TOKEN");
+    expect(error.stdout).toContain("RELEASE_PUBLISH_PREFLIGHT_SUMMARY_FILE:");
+    const summary = JSON.parse(await readFile(join(repoRoot, "examples/dist/release-publish-preflight-summary.json"), "utf8"));
+    expect(summary.contractVersion).toBe(releasePublishPreflightContractVersion);
+    expect(summary.status).toBe("failed");
+    expect(summary.checks.token.status).toBe("failed");
+    const markdown = await readFile(stepSummaryPath, "utf8");
+    expect(markdown.startsWith("Earlier step\n")).toBe(true);
+    if (actionsSummary) expect(markdown).toContain("npm token: failed");
+    else expect(markdown).toBe("Earlier step\n");
+  });
+
+  it("reports check states without dumping credential or command-error fields", async () => {
+    const repoRoot = await createTempDir("prd-release-preflight-report-");
+    await createWorkspace(repoRoot, "0.1.1");
+    const summary = await runReleasePublishPreflight(authorizedOptions(repoRoot));
+    const privateDetail = "private-token-in-command-output";
+    summary.checks.organizationMembership.errorMessage = privateDetail;
+    summary.unhandledError = privateDetail;
+    const report = formatReleasePublishPreflightReport(summary);
+    expect(report).toContain("Release publish preflight: passed");
+    expect(report).toContain("npm authentication: passed");
+    expect(report).toContain("organization membership: passed");
+    expect(report).toContain("package targets: passed");
+    expect(report).toContain("release mode: passed");
+    expect(report).not.toContain(privateDetail);
+    expect(report).not.toContain("test-publisher-token");
+    expect(report).not.toContain("Required actions:");
+  });
+
   it("leaves independently versioned targets to Changesets rather than bootstrap", async () => {
     const repoRoot = await createTempDir("prd-release-bootstrap-independent-");
     await createWorkspace(repoRoot, "0.1.1", { "@eonhive/prd-cli": { version: "0.2.0" } });

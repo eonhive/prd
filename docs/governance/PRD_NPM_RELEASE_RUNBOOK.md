@@ -33,6 +33,14 @@ pnpm release:audit:registry
 
 It emits `examples/dist/release-publish-preflight-summary.json`.
 
+The CLI also prints the status of each check and required recovery actions.
+Inside Actions it appends the same report to the job's step summary, preserving
+earlier content. The JSON contract and failing exit status remain authoritative;
+an unavailable step-summary file does not change the preflight result. Reports
+project known check states and recovery actions rather than dumping raw npm
+command output or credential fields. The workflow still uploads the full JSON
+artifact on failure.
+
 `pnpm release:audit:registry` is the post-publish registry metadata gate. It verifies:
 
 - each public package resolves on npm
@@ -143,6 +151,39 @@ If `release:preflight` fails:
 3. confirm that account can publish public scoped packages for the org
 4. regenerate `NPM_TOKEN` from that exact authorized account if there is any doubt
 5. rerun the `Release` workflow on `main`
+
+### Missing token diagnosis — October 28, 2026
+
+[Release run 40704420548](https://github.com/eonhive/prd/actions/runs/40704420548)
+passed `release:check` but failed preflight. Its uploaded artifact
+`release-publish-preflight-summary` (ID `12823406512`, SHA-256
+`597bc7ea4e2c75e2a4c4403cbd6e6a4047800799eac0ede9c6b1ed8e7fe8b990`)
+confirms:
+
+- package targets and Changesets release mode passed for the existing `0.1.1` set
+- `token` failed because the job received an empty `NPM_TOKEN`
+- npm authentication and organization membership were skipped
+
+The job then skipped bootstrap publication and Changesets version/publish.
+
+This is an unavailable workflow credential, not evidence of a bad package version
+or invalid npm account. No authentication request occurred, so account validity
+has not been assessed. GitHub documents that an unset secret expression resolves
+to an empty string in [Using secrets in GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets).
+
+A repository maintainer must configure `NPM_TOKEN` in
+[Actions secrets](https://github.com/eonhive/prd/settings/secrets/actions), or verify
+that an existing organization secret is available to this repository. The value
+must come from the intended authorized npm publisher. The current Release job
+does not select a GitHub environment, so an environment-only secret is not its
+configured source. Configure the value through GitHub's secret interface; do not
+commit it or include it in diagnostic artifacts.
+
+After configuration, rerun Release on the reviewed `main` revision. Require the
+token, auth, membership, target, and release-mode checks to pass. Review the
+resulting version PR separately, retain the CI-only publish path, and verify the
+actual published versions and external authoring commands before updating feature
+availability claims. Do not skip preflight or substitute a local publication.
 
 ---
 

@@ -9,7 +9,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -438,13 +438,42 @@ export async function runReleasePublishPreflight(options = {}) {
   };
 }
 
+export function formatReleasePublishPreflightReport(summary) {
+  const checks = [
+    ["token", "npm token"],
+    ["npmAuth", "npm authentication"],
+    ["organizationMembership", "organization membership"],
+    ["packageTargets", "package targets"],
+    ["bootstrapMode", "release mode"]
+  ];
+  const lines = [`Release publish preflight: ${summary.status}`];
+  // Report known check states and recovery actions without dumping raw npm output.
+  for (const [key, label] of checks) {
+    lines.push(`${label}: ${summary.checks[key].status}`);
+  }
+  if (summary.actions.length > 0) {
+    lines.push("", "Required actions:", ...summary.actions.map((action) => `- ${action}`));
+  }
+  return lines.join("\n");
+}
+
 const currentPath = fileURLToPath(import.meta.url);
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : null;
 
 if (invokedPath === currentPath) {
   const result = await runReleasePublishPreflight();
+  const report = formatReleasePublishPreflightReport(result);
+  console.log(report);
   console.log(`RELEASE_PUBLISH_PREFLIGHT_SUMMARY_FILE: ${result.summaryPath}`);
   if (result.status !== "passed") {
     process.exitCode = 1;
+  }
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    try {
+      await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n## Release publish preflight\n\n\`\`\`text\n${report}\n\`\`\`\n`, "utf8");
+    } catch {
+      // Actions reporting is advisory; the preflight result remains the publish gate.
+      console.error("Could not append the Actions step summary. The preflight JSON artifact remains available.");
+    }
   }
 }
