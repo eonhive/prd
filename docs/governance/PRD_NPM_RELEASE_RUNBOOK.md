@@ -185,6 +185,52 @@ resulting version PR separately, retain the CI-only publish path, and verify the
 actual published versions and external authoring commands before updating feature
 availability claims. Do not skip preflight or substitute a local publication.
 
+### Publisher token wiring - October 29, 2026
+
+PR #68 merged the CLI-only `0.2.0` version preparation. Retries of
+[Release run 40941252926](https://github.com/eonhive/prd/actions/runs/40941252926)
+then passed token, authentication, organization membership, package-target and
+release-mode preflight checks. The old missing-secret diagnosis is historical,
+not the current outcome of those retries.
+
+Publishing still failed: one retry hit Sigstore `TLOG_CREATE_ENTRY_ERROR` (409),
+and the next generated provenance but received `E404` from the registry PUT.
+The public registry still did not contain CLI `0.2.0`. Neither a transparency-log
+entry nor successful preflight establishes a published package or publish rights.
+
+The workflow had a separate credential-path defect. With `registry-url` set,
+`setup-node` selects an npm userconfig whose auth entry reads `NODE_AUTH_TOKEN`.
+Changesets writes its `NPM_TOKEN` configuration to `HOME/.npmrc`, which does not
+replace that selected userconfig. Preflight checks `NPM_TOKEN` directly and uses
+its own temporary npmrc for organization checks, so preflight can succeed while
+the publisher still uses setup-node's placeholder. See the
+[setup-node publishing example](https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-npm)
+and the [Changesets action implementation](https://github.com/changesets/action/blob/a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d/src/index.ts).
+
+Both publishing steps now map the same existing secret to both names:
+
+```yaml
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NPM_CONFIG_PROVENANCE: "true"
+```
+
+Do not create a second secret named `NODE_AUTH_TOKEN` or expose the token to
+installation/tests at job scope. The fix retains the existing secret source,
+preflight order, CI-only publication and provenance requirement. A loopback-only
+npm test reproduces the shadowed-home-npmrc failure and confirms the corrected
+mapping with fake credentials; it does not prove real registry write access.
+
+Review/merge the workflow correction, then run Release on the corrected main
+revision. Rerunning an older revision does not apply this workflow fix. If the
+corrected publisher still receives `E404`, inspect the npm account's package/team
+write access and the granular token's package scope and publishing permissions;
+do not infer those permissions from organization membership alone. Keep CLI
+`0.2.0` unpublished in availability notes until registry audit and the 42-step npm
+authoring consumer flow pass. Do not bump the version or disable provenance to
+hide a failed publish.
+
 ---
 
 ## 5. Quick Checks
