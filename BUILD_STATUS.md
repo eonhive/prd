@@ -2,6 +2,13 @@
 
 ## 2026-10-29
 
+### Publisher Credential Path Correction
+
+- Resumed after the requested pause and isolated the token fix from the other checkout's unfinished release-script/dependency/docs edits. Started from main `3682b7b`; no unrelated edits were copied. The app worktree helper could not resolve this nested repository, so bundled Git created a separate workspace checkout.
+- Release retries now pass the existing token/auth/org preflight, but publication remains incomplete. One retry failed on a Sigstore transparency-log conflict; the next produced provenance and failed with registry PUT `E404`. Public npm still reports CLI `0.1.1`, without `0.2.0`.
+- Corrected both publishing steps to map the existing `secrets.NPM_TOKEN` to `NODE_AUTH_TOKEN` as well as `NPM_TOKEN`. This aligns setup-node's selected npm userconfig with the token checked by preflight, instead of relying on a shadowed Changesets home npmrc. Preflight, secret scope, provenance, independent versions and CI-only publication remain intact.
+- Added workflow contract checks and a real loopback npm-auth regression using fake credentials. Three tests failed before the mapping change. Validation passed on Node 22: 44 targeted tests, full `release:check` with **504 tests / 37 files**, typecheck/build/canonical validation and all 42 installed-tarball authoring checks, aggregate example smoke, root-inclusive docs consistency and whitespace checks. Updated the maintainer runbook, item 46 and handoff. No source feature, dependency, package version, secret value, local publication or deployment change; real publish permissions and npm consumer verification remain to be proven after merge.
+
 ### Structured Viewer Pagination
 
 - Continued from main `cc7731c` in isolated `thehive/prd-paginated-reading`. The CLI `0.2.0` version preparation and independent primary-checkout work are outside this slice. No package/version, manifest, schema, viewer-core, uRK dependency or scheduler changes.
