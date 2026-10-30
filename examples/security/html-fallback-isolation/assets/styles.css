@@ -1,0 +1,7 @@
+/* Company: EonHive Inc. | Title: Discarded Author CSS Fixture
+ * Purpose: Supply nested package/external CSS references that the preview must not load.
+ * Author: Stan Nesi | Created: 2026-10-29 | Updated: 2026-10-29 | Notes: Vibe coded with Codex.
+ */
+@import url("http://127.0.0.1:5195/probe/nested-import");
+@font-face { font-family: unsafe-fixture; src: url("http://127.0.0.1:5195/probe/font"); }
+body { background: url("http://127.0.0.1:5195/probe/stylesheet-image"); }

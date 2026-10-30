@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
-const publishSteps = ["Bootstrap first public preview publish", "Version or publish packages"];
+const publishSteps = ["Version or publish packages"];
 const secretReference = "${{ secrets.NPM_TOKEN }}";
 
 function readStep(name: string) {
@@ -29,6 +29,15 @@ function readStep(name: string) {
 }
 
 describe("release workflow authentication", () => {
+  it("keeps full CI on Node 22 and retires automatic bootstrap publication", () => {
+    const ci = readFileSync(new URL("../.github/workflows/codex-ci.yml", import.meta.url), "utf8");
+    expect(ci).toContain("node-version: 22");
+    expect(workflow).toContain("node-version: 22");
+    expect(workflow).not.toContain("release:bootstrap");
+    expect(workflow).toContain("if: needs.release.outputs.published == 'true'");
+    expect(workflow).toContain("release_ref: ${{ github.sha }}");
+    expect(workflow).not.toContain("secrets: inherit");
+  });
   it.each(publishSteps)("gives %s the same token for preflight and setup-node auth", (name) => {
     const step = readStep(name);
     expect(step).toContain(`          NPM_TOKEN: ${secretReference}\n`);
@@ -36,7 +45,7 @@ describe("release workflow authentication", () => {
     expect(step).toContain('          NPM_CONFIG_PROVENANCE: "true"');
   });
 
-  it("keeps credentials step-scoped and preflight before both publishing paths", () => {
+  it("keeps credentials step-scoped and preflight before publication", () => {
     expect(workflow).toContain("registry-url: https://registry.npmjs.org");
     expect(readStep("Run release publish preflight")).toContain(`NPM_TOKEN: ${secretReference}`);
     for (const name of publishSteps) {

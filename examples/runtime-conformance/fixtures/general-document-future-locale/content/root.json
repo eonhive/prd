@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "general-document-future-locale",
+  "title": "Unsupported localized version",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Version conformance content for general-document-future-locale."
+    }
+  ]
+}

@@ -199,12 +199,16 @@ Extension mechanism rules:
 - required extensions must be declared explicitly rather than inferred from other fields
 - future extension namespaces should be registry-based, not ad hoc field sprawl
 
+Current reference runtime alignment: array declarations with boolean `required: true` are checked before content is read. Viewer-core currently implements no required extension contracts and reports these as `unsupported-required-capability`, preserving public manifest facts. False/omitted requirements remain optional; accepted object-form placeholder metadata remains opaque for compatibility. This runtime check changes neither structural validity nor extension field shapes. See [capability negotiation](../runtime/PRD_CAPABILITY_MODEL.md) for the exact boundary and optional-signature distinction.
+
 Versioning surfaces across the manifest draft are therefore:
 
 - `prdVersion` for the base format/spec
 - `manifestVersion` for the manifest schema
 - `profileVersion` when profile-specific versioning is needed
 - per-extension `version` inside each extension declaration
+
+Reference opening compatibility is now explicit under PRD-046: format/manifest and optional canonical-profile contract declarations support `1.0` / `1.0.0`; numeric `minViewer` requirements are compared against the runtime descriptor. Otherwise structurally valid unknown/newer/malformed runtime requirements produce an unsupported opening result, rather than silently claiming full support. This does not change manifest shapes or structural validate/inspect output. See [versioning policy](PRD_VERSIONING_POLICY.md) for syntax, content/locale/section checks and legacy behavior.
 
 ---
 

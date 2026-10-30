@@ -1,0 +1,51 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "cbz",
+  "profile": "comic",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 3,
+  "resourceCount": 3,
+  "resourceMap": [
+    {
+      "source": "pages/page-1.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    },
+    {
+      "source": "pages/page-2.png",
+      "asset": "import-image-2",
+      "href": "assets/images/import-image-2.png"
+    },
+    {
+      "source": "pages/page-10.png",
+      "asset": "import-image-3",
+      "href": "assets/images/import-image-3.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "cbz-reading-order",
+      "stage": "extract",
+      "message": "Pages are inferred from natural archive-path order. Verify editorial order; ComicInfo, manga direction, spreads and panel geometry are not interpreted."
+    },
+    {
+      "code": "cbz-generated-alt",
+      "stage": "extract",
+      "message": "Page alternative text is generated from filenames. It does not describe image contents; authored descriptions, OCR and panel detection are not provided."
+    },
+    {
+      "code": "cbz-members-omitted",
+      "stage": "extract",
+      "message": "1 non-page archive member omitted from the reading view, including unsupported formats, metadata or hidden files. They remain available only when source retention is enabled."
+    },
+    {
+      "code": "comic-page-order-reviewed",
+      "stage": "adapt",
+      "message": "Comic page sequence was explicitly selected during conversion review. Source page IDs, image assets and descriptions are retained. Verify the resulting order in Viewer."
+    }
+  ],
+  "validationWarnings": []
+}

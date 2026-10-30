@@ -8,7 +8,7 @@
  * Notes: Vibe coded with Codex.
  */
 
-export type ViewerAppRoute = "home" | "viewer" | "docs";
+export type ViewerAppRoute = "home" | "viewer" | "docs" | "convert";
 
 export function normalizeViewerBasePath(basePath: string): string {
   const trimmed = basePath.trim();
@@ -40,6 +40,7 @@ export function getViewerAppRouteFromPath(
   if (routePath === "docs" || routePath.startsWith("docs/")) {
     return "docs";
   }
+  if (routePath === "convert" || routePath.startsWith("convert/")) return "convert";
 
   return "home";
 }
@@ -49,6 +50,7 @@ export function getViewerAppRoutePath(
   basePath: string
 ): string {
   const normalizedBase = normalizeViewerBasePath(basePath);
+  if (route === "convert") return `${normalizedBase}convert/`;
   if (route === "viewer") {
     return `${normalizedBase}viewer/`;
   }

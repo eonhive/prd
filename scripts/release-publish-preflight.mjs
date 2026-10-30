@@ -4,32 +4,27 @@
  * Purpose: Verify npm token auth, org membership, package targets, and release mode before CI publish.
  * Author: Stan Nesi
  * Created: 2026-04-22
- * Updated: 2026-10-27
+ * Updated: 2026-10-30
  * Notes: Vibe coded with Codex.
  */
 
 import { spawn } from "node:child_process";
-import { appendFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { firstPreviewVersion, getReleasePackageVersionMode } from "./release-package-versions.mjs";
+import { loadReleasePackageMetadata, publicReleasePackages } from "./release-packages.mjs";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npmRegistryUrl = "https://registry.npmjs.org";
 const npmOrganization = "eonhive";
-const previewVersion = firstPreviewVersion;
+const previewVersion = "0.1.0";
 
 export const releasePublishPreflightContractVersion =
-  "prd-release-publish-preflight-v0.1";
+  "prd-release-publish-preflight-v0.2";
 export const defaultReleasePublishPreflightSummaryPath =
   "examples/dist/release-publish-preflight-summary.json";
-export const publishablePreviewPackages = [
-  { directory: "packages/prd-types", name: "@eonhive/prd-types" },
-  { directory: "packages/prd-validator", name: "@eonhive/prd-validator" },
-  { directory: "packages/prd-packager", name: "@eonhive/prd-packager" },
-  { directory: "packages/prd-cli", name: "@eonhive/prd-cli" }
-];
+export const publishablePreviewPackages = publicReleasePackages;
 
 function formatCommand(command, args) {
   return [command, ...args].join(" ");
@@ -96,11 +91,6 @@ function runCommand(command, args, options = {}) {
   });
 }
 
-async function readJson(repoRoot, relativePath) {
-  const raw = await readFile(join(repoRoot, relativePath), "utf8");
-  return JSON.parse(raw);
-}
-
 async function fetchRegistryDocument(packageName, fetchImpl) {
   const response = await fetchImpl(
     `${npmRegistryUrl}/${encodeURIComponent(packageName)}`,
@@ -145,21 +135,6 @@ async function fetchWhoAmI(npmToken, fetchImpl) {
   }
 
   return response.json();
-}
-
-async function loadPackageMetadata(repoRoot) {
-  const packages = [];
-
-  for (const pkg of publishablePreviewPackages) {
-    const manifest = await readJson(repoRoot, join(pkg.directory, "package.json"));
-    packages.push({
-      directory: pkg.directory,
-      name: manifest.name,
-      version: manifest.version
-    });
-  }
-
-  return packages;
 }
 
 function addAction(summary, action) {
@@ -287,6 +262,7 @@ export async function runReleasePublishPreflight(options = {}) {
       },
       packageTargets: {
         status: "pending",
+        versionPolicy: "independent",
         expectedPackages: publishablePreviewPackages.map(({ directory, name }) => ({
           directory,
           name
@@ -309,7 +285,7 @@ export async function runReleasePublishPreflight(options = {}) {
   await mkdir(dirname(summaryPath), { recursive: true });
 
   try {
-    const packages = await loadPackageMetadata(repoRoot);
+    const packages = await loadReleasePackageMetadata(repoRoot);
     const expectedPackages = publishablePreviewPackages.map(({ directory, name }) => ({
       directory,
       name
@@ -319,7 +295,6 @@ export async function runReleasePublishPreflight(options = {}) {
       name
     }));
     const versionSet = [...new Set(packages.map((pkg) => pkg.version))].sort();
-    const releaseMode = getReleasePackageVersionMode(packages.map((pkg) => pkg.version));
     summary.checks.packageTargets.packages = packages;
     summary.checks.packageTargets.versionSet = versionSet;
 
@@ -327,13 +302,7 @@ export async function runReleasePublishPreflight(options = {}) {
       summary.checks.packageTargets.status = "failed";
       markFailed(
         summary,
-        "Restore the expected publish set (@eonhive/prd-types, @eonhive/prd-validator, @eonhive/prd-packager, @eonhive/prd-cli) before rerunning Release."
-      );
-    } else if (releaseMode === null) {
-      summary.checks.packageTargets.status = "failed";
-      markFailed(
-        summary,
-        "Use stable package versions above 0.1.0 for normal Changesets releases. Only an all-0.1.0 set may use first-preview bootstrap; do not mix legacy bootstrap versions with later releases."
+        "Restore the expected public PRD package set, including @eonhive/prd-converter, before rerunning Release."
       );
     } else {
       summary.checks.packageTargets.status = "passed";
@@ -350,24 +319,17 @@ export async function runReleasePublishPreflight(options = {}) {
 
     const missingPackages = packageStatuses.filter((pkg) => !pkg.published);
     const publishedPackages = packageStatuses.filter((pkg) => pkg.published);
-    const previewEligible = releaseMode === "bootstrap-preview";
-
     summary.checks.bootstrapMode.missingPackages = missingPackages.map(
       ({ name, version }) => `${name}@${version}`
     );
     summary.checks.bootstrapMode.publishedPackages = publishedPackages.map(
       ({ name, version }) => `${name}@${version}`
     );
-    summary.checks.bootstrapMode.releaseMode = releaseMode;
-    summary.checks.bootstrapMode.previewEligible = previewEligible;
-    summary.checks.bootstrapMode.bootstrapRequired =
-      releaseMode === "bootstrap-preview" && missingPackages.length > 0;
-
-    if (releaseMode === null) {
-      summary.checks.bootstrapMode.status = "failed";
-    } else {
-      summary.checks.bootstrapMode.status = "passed";
-    }
+    // The one-time four-package bootstrap is historical; new packages use Changesets too.
+    summary.checks.bootstrapMode.releaseMode = "changesets-versioned";
+    summary.checks.bootstrapMode.previewEligible = false;
+    summary.checks.bootstrapMode.bootstrapRequired = false;
+    summary.checks.bootstrapMode.status = "passed";
 
     if (!npmToken) {
       summary.checks.token.status = "failed";
@@ -423,6 +385,9 @@ export async function runReleasePublishPreflight(options = {}) {
       );
     }
   } catch (error) {
+    if (summary.checks.packageTargets.status === "pending") {
+      summary.checks.packageTargets.status = "failed";
+    }
     markFailed(
       summary,
       "Fix the release publish preflight failure before rerunning the Release workflow."

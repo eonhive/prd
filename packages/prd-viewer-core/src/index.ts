@@ -13,6 +13,7 @@ import {
   isJsonEntryPath,
   normalizeProfileId
 } from "@eonhive/prd-types";
+import { getUnsupportedContentVersion, getUnsupportedManifestVersions } from "./versionCompatibility.js";
 
 export const PRD_REFERENCE_VIEWER_SUPPORTED_CAPABILITIES = [
   "general-document-structured-root",
@@ -38,16 +39,21 @@ export const PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR: PrdRuntimeCapabilityDescri
   referenceLoadMode: "eager-whole-package"
 };
 
-function parseGeneralDocumentEntry(entryText: string): PrdGeneralDocumentRoot {
-  return JSON.parse(entryText) as PrdGeneralDocumentRoot;
+function getUnsupportedRequiredCapabilities(manifest: PrdManifest): string[] {
+  const capabilities = manifest.compatibility?.capabilities;
+  const required = Array.isArray(capabilities)
+    ? capabilities
+    : capabilities?.required ?? [];
+  const supported: readonly string[] = PRD_REFERENCE_VIEWER_SUPPORTED_CAPABILITIES;
+
+  return required.filter((capability) => !supported.includes(capability));
 }
 
-function parseComicEntry(entryText: string): PrdComicRoot {
-  return JSON.parse(entryText) as PrdComicRoot;
-}
+function getUnsupportedRequiredExtensions(manifest: PrdManifest): string[] {
+  if (!Array.isArray(manifest.extensions)) return [];
 
-function parseStoryboardEntry(entryText: string): PrdStoryboardRoot {
-  return JSON.parse(entryText) as PrdStoryboardRoot;
+  // Viewer-core implements no required extension contracts. Optional host features do not imply support here.
+  return manifest.extensions.filter((extension) => extension.required === true).map((extension) => extension.id);
 }
 
 export async function openPrdDocument(
@@ -60,14 +66,41 @@ export async function openPrdDocument(
     ...manifest,
     profile: profileInfo.normalized
   };
+  function unsupported(message: string): PrdOpenedDocument {
+    return {
+      manifest: normalizedManifest, profileInfo, entryPath: normalizedManifest.entry,
+      localization: normalizedManifest.localization, supportState: "unsupported-required-capability", message
+    };
+  }
+
+  // Reading the entry would imply support for semantics the viewer cannot honor.
+  const unsupportedCapabilities = getUnsupportedRequiredCapabilities(normalizedManifest);
+  const unsupportedExtensions = getUnsupportedRequiredExtensions(normalizedManifest);
+  const unsupportedRequirements = getUnsupportedManifestVersions(normalizedManifest, PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR.viewerVersion);
+  if (unsupportedCapabilities.length > 0) {
+    unsupportedRequirements.push(`required capabilities: ${unsupportedCapabilities.join(", ")}`);
+  }
+  if (unsupportedExtensions.length > 0) {
+    unsupportedRequirements.push(`required extensions: ${unsupportedExtensions.join(", ")}`);
+  }
+  if (unsupportedRequirements.length > 0) {
+    return unsupported(`The current reference viewer does not support ${unsupportedRequirements.join("; ")}.`);
+  }
+
+  let structuredEntry: unknown;
+  if ((PRD_CANONICAL_CORE_PROFILE_IDS as readonly string[]).includes(profileInfo.normalized)) {
+    if (isJsonEntryPath(normalizedManifest.entry)) {
+      structuredEntry = JSON.parse(await packageReader.readText(normalizedManifest.entry));
+    }
+    const versionIssue = await getUnsupportedContentVersion(packageReader, normalizedManifest, structuredEntry);
+    if (versionIssue) return unsupported(`The current reference viewer does not support ${versionIssue}.`);
+  }
 
   if (
     profileInfo.normalized === "general-document" &&
     isJsonEntryPath(normalizedManifest.entry)
   ) {
-    const entryDocument = parseGeneralDocumentEntry(
-      await packageReader.readText(normalizedManifest.entry)
-    );
+    const entryDocument = structuredEntry as PrdGeneralDocumentRoot;
 
     return {
       manifest: normalizedManifest,
@@ -81,9 +114,7 @@ export async function openPrdDocument(
 
   if (profileInfo.normalized === "comic") {
     if (isJsonEntryPath(normalizedManifest.entry)) {
-      const comicDocument = parseComicEntry(
-        await packageReader.readText(normalizedManifest.entry)
-      );
+      const comicDocument = structuredEntry as PrdComicRoot;
 
       return {
         manifest: normalizedManifest,
@@ -123,9 +154,7 @@ export async function openPrdDocument(
 
   if (profileInfo.normalized === "storyboard") {
     if (isJsonEntryPath(normalizedManifest.entry)) {
-      const storyboardDocument = parseStoryboardEntry(
-        await packageReader.readText(normalizedManifest.entry)
-      );
+      const storyboardDocument = structuredEntry as PrdStoryboardRoot;
 
       return {
         manifest: normalizedManifest,

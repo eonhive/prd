@@ -13,6 +13,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
+import { ConvertWeb } from "./ConvertWeb.js";
+import { ConvertUpload } from "./ConvertUpload.js";
+import { convertInBrowser, convertMarkdownInBrowser } from "@eonhive/prd-converter/browser";
 import { LivingHomepage } from "./LivingHomepage.js";
 import { viewerLandingHero, viewerPublicDocsSections } from "./viewerDemoContent.js";
 
@@ -27,7 +30,7 @@ function renderRoute(pathname: string) {
 }
 
 describe("public experience markup", () => {
-  it.each(["/", "/viewer/", "/docs/"])("provides a skip target and real navigation on %s", (path) => {
+  it.each(["/", "/viewer/", "/docs/", "/convert/"])("provides a skip target and real navigation on %s", (path) => {
     const html = renderRoute(path);
     expect(html).toContain('href="#main-content"');
     expect(html.match(/id="main-content"/g)).toHaveLength(1);
@@ -61,6 +64,133 @@ describe("public experience markup", () => {
     expect(html).toContain('aria-label="Footer navigation"');
     expect(html).not.toContain('title="Embedded PRD reference viewer"');
     expect(html).toContain("Continuous and paginated reading");
+  });
+
+  it.each(["/", "/prd/"])("keeps the download and example handoff under hosting base %s", (basePath) => {
+    const html = renderToStaticMarkup(createElement(LivingHomepage, {
+      basePath, theme: "dark", onToggleTheme() {}, children: null,
+    }));
+    expect(html).toContain(`href="${basePath}examples/document-basic.prd" download=""`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=document-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=comic-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=storyboard-basic"`);
+    expect(html).toContain(`src="${basePath}brand/prd-world.webp"`);
+    expect(html).toContain('aria-label="Example package inspector"');
+    expect(html).toContain("Package details load as you reach this chapter.");
+    expect(html).not.toContain("validated when the demo was built");
+  });
+
+  it("only offers conversion and a clear local-file policy before any result exists", () => {
+    const html = renderRoute("/convert/");
+    expect(html).toContain("Files stay in this browser");
+    expect(html).toContain("Convert to PRD");
+    expect(html).toContain('aria-label="Document upload"');
+    expect(html).toContain('accept=".md,.markdown,.html,.htm,.cbz"');
+    expect(html).toContain("Browse files");
+    expect(html).toContain("Conversion options");
+    expect(html).toContain('aria-label="Conversion result"');
+    expect(html).not.toContain("Download PRD");
+    expect(html).not.toContain("Valid PRD package");
+    expect(html).not.toContain("Preview in Viewer");
+    expect(html).not.toContain("Recent");
+    expect(html).not.toContain("Templates");
+    expect(html).not.toContain("AI auto-detect");
+  });
+
+  it("escapes retained source markup in the completed conversion disclosure", async () => {
+    const sourceText = "# Safe document\n\n<script>unsafe()</script>";
+    const result = await convertMarkdownInBrowser({ source: { name: "source.md", bytes: new TextEncoder().encode(sourceText) } });
+    const html = renderToStaticMarkup(createElement(ConvertWeb, {
+      completed: { result, sourceName: "source.md", sourcePreview: sourceText, previewTruncated: false },
+      onComplete() {}, onPreview() {}
+    }));
+    expect(html).toContain("Valid PRD package");
+    expect(html).toContain("Preview in Viewer");
+    expect(html).toContain("&lt;script&gt;unsafe()&lt;/script&gt;");
+    expect(html).not.toContain("<script>unsafe()");
+  });
+
+  it.each([true, false])("reviews CBZ without exposing binary source, retention %s", async (preserveSource) => {
+    const bytes = new Uint8Array(readFileSync("examples/conversion-cbz/sample-comic.cbz"));
+    const result = await convertInBrowser({ source: { name: "sample-comic.cbz", bytes }, preserveSource });
+    const html = renderToStaticMarkup(createElement(ConvertWeb, {
+      completed: { result, sourceName: "sample-comic.cbz", sourcePreview: "binary-marker-should-not-render", previewTruncated: false },
+      onComplete() {}, onPreview() {}
+    }));
+    expect(html).toContain("· Comic · Adaptive reading");
+    expect(html).toContain("<dt>Pages</dt><dd>3</dd>");
+    expect(html).toContain("Original CBZ archive");
+    expect(html).toContain(preserveSource ? "exact source archive is included" : "source archive was omitted");
+    expect(html).not.toContain("binary-marker-should-not-render");
+    expect(html).toContain('aria-label="Comic page review"');
+    expect(html).toContain("Convert the original CBZ again to enable comic review.");
+    const upload = renderToStaticMarkup(createElement(ConvertUpload, {
+      source: new File([bytes], "sample-comic.cbz"), images: [], busy: false,
+      onSource() {}, onImages() {}, onError() {}
+    }));
+    expect(upload).toContain("CBZ comic archive");
+    expect(upload).toContain("Pages come from this archive");
+    expect(upload).not.toContain("Add images");
+  });
+
+  it("offers bounded native page review for a retained conversion session", async () => {
+    const bytes = new Uint8Array(readFileSync("examples/conversion-cbz/sample-comic.cbz"));
+    const file = new File([bytes], "sample-comic.cbz");
+    const result = await convertInBrowser({ source: { name: file.name, bytes } });
+    const html = renderToStaticMarkup(createElement(ConvertWeb, {
+      completed: { result, sourceName: file.name, sourcePreview: "", previewTruncated: false, sourceFile: file, settings: {} },
+      onComplete() {}, onPreview() {}
+    }));
+    expect(html).toContain("Review comic pages");
+    const firstControl = html.match(/<button[^>]+aria-label="Move pages\/page-1\.png earlier"[^>]*>/)?.[0];
+    expect(firstControl).toContain('disabled=""');
+    expect(html).toContain('aria-label="Move pages/page-2.png later"');
+    expect(html).toContain("Apply review");
+    expect(html).toContain("Reset changes");
+    expect(html).toContain("downloads keep using the current package until it succeeds");
+    expect(html).not.toContain("Convert the original CBZ again to enable comic review.");
+    expect(html).toContain("Browser support: HTML, Markdown and bounded CBZ comics.");
+    expect(html).not.toContain("EPUB, CBZ, DOCX and PDF use");
+  });
+
+  it("renders editable, bounded and escaped page descriptions with explicit source status", async () => {
+    const bytes = new Uint8Array(readFileSync("examples/conversion-cbz/sample-comic.cbz"));
+    const file = new File([bytes], "sample-comic.cbz");
+    const settings = { comicPageDescriptions: [{ pageId: "page-1", text: "</textarea><script>literal()</script>" }] };
+    const result = await convertInBrowser({ source: { name: file.name, bytes }, ...settings });
+    const html = renderToStaticMarkup(createElement(ConvertWeb, {
+      completed: { result, sourceName: file.name, sourcePreview: "", previewTruncated: false, sourceFile: file, settings },
+      onComplete() {}, onPreview() {}
+    }));
+    expect(html.match(/<textarea /g)).toHaveLength(3);
+    expect(html).toContain('maxLength="2048"');
+    expect(html).toContain("Page description");
+    expect(html).toContain("Provided description");
+    expect(html).toContain("Filename-derived description");
+    expect(html).toContain("&lt;/textarea&gt;&lt;script&gt;literal()&lt;/script&gt;");
+    expect(html).not.toContain("<script>literal()");
+    expect(html).toContain("accuracy is not automatically assessed");
+  });
+
+  it("restores an unapplied session draft while keeping the current archive unchanged", async () => {
+    const bytes = new Uint8Array(readFileSync("examples/conversion-cbz/sample-comic.cbz"));
+    const result = await convertInBrowser({ source: { name: "sample-comic.cbz", bytes } });
+    const before = Buffer.from(result.archive);
+    const html = renderToStaticMarkup(createElement(ConvertWeb, {
+      completed: {
+        result, sourceName: "sample-comic.cbz", sourcePreview: "", previewTruncated: false,
+        sourceFile: new File([bytes], "sample-comic.cbz"), settings: {},
+        reviewDraft: { pageIds: ["page-2", "page-3", "page-1"], descriptions: [{ pageId: "page-1", text: "Unapplied session description." }] }
+      }, onComplete() {}, onPreview() {}
+    }));
+    expect(html).toContain("Unapplied session description.");
+    expect(html).toContain("Draft description");
+    expect(html).toContain("Draft changes are not applied yet.");
+    expect(html.indexOf("pages/page-2.png")).toBeLessThan(html.indexOf("pages/page-1.png"));
+    expect(Buffer.from(result.archive).equals(before)).toBe(true);
+    if (result.document.profile !== "comic") throw new Error("Unexpected profile");
+    expect(result.document.panels[0]?.id).toBe("page-1");
+    expect(result.document.panels[0]?.alt).toBe("Page 1 comic page");
   });
 
   it.each(["/", "/prd/"])("keeps the download and example handoff under hosting base %s", (basePath) => {

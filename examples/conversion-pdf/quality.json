@@ -1,0 +1,37 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "pdf",
+  "profile": "general-document",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 14,
+  "resourceCount": 1,
+  "resourceMap": [
+    {
+      "source": "pdf-pages/page-2.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "pdf-reading-order",
+      "stage": "extract",
+      "message": "Text follows PDF extraction order and line grouping, which may differ from logical reading order. Headings, columns, tables, footnotes and semantic roles are not inferred; review every page."
+    },
+    {
+      "code": "pdf-subset",
+      "stage": "extract",
+      "message": "Text-bearing pages become responsive line paragraphs; non-text content on those pages remains only in retained source. Textless pages use bounded raster fallback without OCR or authored descriptions. Original layout, links, annotations, forms, scripts, attachments and metadata beyond title are not reconstructed."
+    },
+    {
+      "code": "pdf-page-image-fallback",
+      "stage": "extract",
+      "reference": "pdf-page-2",
+      "message": "This page has no extractable text and is retained as a rendered image. No OCR or image-content description was generated."
+    }
+  ],
+  "validationWarnings": []
+}

@@ -1,0 +1,38 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "html",
+  "profile": "general-document",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 11,
+  "resourceCount": 1,
+  "resourceMap": [
+    {
+      "source": "flow.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "html-subset",
+      "stage": "extract",
+      "message": "Static HTML semantics are reconstructed into PRD nodes. CSS, scripts, embedded applications, layout and inline styling are not preserved. Inline links and images may follow their containing block. Metadata other than title remains only in the original source, available when source retention is enabled."
+    },
+    {
+      "code": "html-element-omitted",
+      "stage": "extract",
+      "message": "Active, embedded or explicitly hidden content is omitted from the reading view.",
+      "reference": "style"
+    },
+    {
+      "code": "html-element-omitted",
+      "stage": "extract",
+      "message": "Active, embedded or explicitly hidden content is omitted from the reading view.",
+      "reference": "script"
+    }
+  ],
+  "validationWarnings": []
+}

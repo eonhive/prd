@@ -1,0 +1,59 @@
+{
+  "name": "@eonhive/prd-converter",
+  "version": "0.1.0",
+  "description": "Deterministic source ingestion using canonical PRD types, validation and packaging.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eonhive/PRD.git",
+    "directory": "packages/prd-converter"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./markdown": {
+      "types": "./dist/adapters/markdownParser.d.ts",
+      "import": "./dist/adapters/markdownParser.js"
+    },
+    "./image-sequence": {
+      "types": "./dist/adapters/imageSequence.d.ts",
+      "import": "./dist/adapters/imageSequence.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@eonhive/prd-packager": "^0.1.1",
+    "@eonhive/prd-types": "^0.1.1",
+    "@eonhive/prd-validator": "^0.1.1"
+  },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "1.0.10",
+    "parse5": "^8.0.1",
+    "pdfjs-dist": "6.4.299",
+    "saxes": "^6.0.0"
+  },
+  "devDependencies": {
+    "fflate": "^0.8.2"
+  }
+}

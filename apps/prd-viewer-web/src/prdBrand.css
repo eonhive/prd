@@ -42,6 +42,7 @@
   --nav-height: 4.5rem;
 }
 
+
 :root[data-theme="light"] {
   color-scheme: light;
   --bg: #f7f8fd;
@@ -759,4 +760,18 @@ body {
   .prd-segmented-link svg {
     flex-shrink: 0;
   }
+}
+
+/* Six product links need separate tap targets at the narrowest breakpoint. */
+@media (max-width: 400px) {
+  :root { --nav-height: 10.5rem; }
+  .app-shell .site-nav { padding-inline: 0.5rem; }
+  .app-shell .site-nav .nav-open-button { padding-inline: 0.45rem; }
+  .app-shell .site-nav .nav-open-arrow { display: none; }
+  .app-shell .site-nav .site-nav-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.15rem;
+  }
+  .app-shell .site-nav .site-nav-links a { text-align: center; }
 }

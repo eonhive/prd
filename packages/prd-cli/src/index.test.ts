@@ -109,7 +109,7 @@ describe("runCli", () => {
     const exitCode = await runCli(["wat"]);
 
     expect(exitCode).toBe(1);
-    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <init|import|pack|validate|inspect> ...");
+    expect(errorSpy).toHaveBeenCalledWith("Usage: prd <init|import|convert|pack|validate|inspect|sign|verify> ...");
   });
 
   it("reports usage/help errors for missing command args", async () => {
@@ -126,11 +126,11 @@ describe("runCli", () => {
     expect(messages).toContain(
       "Usage: prd init <targetDir> [--profile <general-document|comic|storyboard>] [--title <title>] [--id <id>] [--json]"
     );
-    expect(messages).toContain("Usage: prd import <markdown|images> ...");
+    expect(messages).toContain("Usage: prd import <markdown|images|html> ...");
     expect(messages).toContain(
       "Usage: prd import markdown <source.md> --out <targetDir> [--title <title>] [--id <id>] [--json]"
     );
-    expect(messages).toContain("Usage: prd pack <sourceDir> --out <file.prd>");
+    expect(messages).toContain("Usage: prd pack <sourceDir> --out <file.prd> [--container <zip|prd>]");
     expect(messages).toContain("Usage: prd validate <path> [--json]");
     expect(messages).toContain("Usage: prd inspect <path> [--json]");
   });
@@ -444,12 +444,12 @@ describe("runCli", () => {
       await mkdir(nonEmptyDir, { recursive: true });
       await writeFile(join(nonEmptyDir, "existing.txt"), "keep", "utf8");
 
-      expect(await runCli(["import", "html", sourcePath, "--out", targetDir])).toBe(1);
+      expect(await runCli(["import", "unknown", sourcePath, "--out", targetDir])).toBe(1);
       expect(await runCli(["import", "markdown", sourcePath, "--out", nonEmptyDir])).toBe(1);
 
       const messages = errorSpy.mock.calls.map(([value]) => String(value));
       expect(messages).toContain(
-        'Unsupported import source "html". Supported import sources: markdown, images.'
+        'Unsupported import source "unknown". Supported import sources: markdown, images, html.'
       );
       expect(messages).toContain(`Target directory is not empty: ${nonEmptyDir}`);
       await expect(readdir(targetDir)).rejects.toMatchObject({ code: "ENOENT" });

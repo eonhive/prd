@@ -5,7 +5,7 @@ _Updated: October 27, 2026_
 ## Scope
 
 The owner's light/dark PRD reference boards guide the existing public Home,
-Web Viewer, Docs, and their navigation. The folded document mark, purple
+Web Viewer, Docs, Convert, and their navigation. The folded document mark, purple
 accents, cool light surfaces, and navy dark surfaces form one product identity.
 This is a presentation baseline, not a change to PRD Core or package validity.
 
@@ -43,7 +43,7 @@ actions, and package facts use at least 12px at the default root size. Existing
 44px mobile control targets remain intact. The Docs hero uses the shared soft
 accent wash rather than a stronger tint behind secondary text.
 
-`ViewerSiteNavigation` supplies Home, Viewer, Docs, Profiles, and Examples on
+`ViewerSiteNavigation` supplies Home, Viewer, Convert, Docs, Profiles, and Examples on
 every public page. Profiles and Examples lead to real Home sections. Public
 pages link to Open Viewer; the Viewer retains its native Open .prd action.
 `PrdSiteFooter` provides the shared byline and public journeys on Home and Docs.
@@ -70,7 +70,7 @@ not claim to be the contents of those canonical packages.
 Docs uses the same header, theme toggle, action styling, panels, and footer.
 Section links and canonical repository documentation remain the navigation
 source; the rebrand does not create a second documentation corpus. Routes
-remain `/`, `/viewer/`, and `/docs/`, with `/prd/` supported as a hosting base.
+include `/`, `/viewer/`, `/convert/`, and `/docs/`, with `/prd/` supported as a hosting base.
 
 The reference board's AI, sharing, Studio, and other future controls do not
 create implementation requirements for this visual change. Supported Viewer
@@ -113,6 +113,18 @@ rebranded Home, Viewer, and Docs at 1280 × 720 and mobile viewports of
 - Native `.prd` selection, invalid-package feedback and recovery to a valid
   document. No browser warnings/errors were observed in these checks.
 
+Fresh screenshots and `browser-summary.json` are local generated evidence under
+ignored `examples/dist/rebrand-qa/`. Both hosting-base production builds pass;
+browser interactions were reviewed on the local development server. Physical
+touch, real OS drag/drop, screen-reader acceptance, constrained-device profiling,
+deployment and production route checks remain in launch items 44/48. Signature
+public-key/trust interaction acceptance remains separate under item 62.
+
+## Convert workspace — October 29, 2026
+
+The supplied light/dark converter mockup guides the tool layout rather than introducing another identity or landing page. `convertWeb.css` uses shared violet/light/navy tokens, folded-document marks, modest borders and readable 12px-or-larger labels. Upload and selected files sit beside a compact options rail; factual quality/assets/plain-source review follows beneath. Native browse/drop, removal and actual conversion actions remain distinguishable and keyboard-accessible; narrow layouts stack the panels and button targets are at least 44px.
+
+Only supported Markdown/HTML options appear. The reference's PSD/PSB, AI analysis, layer switches, 2GB limit, percentages, history and templates do not create capability claims. Source is never rendered as live HTML. See [Convert HTML/workspace policy](../architecture/PRD_CONVERT_WEB_HTML.md). Browser automation is disabled for this continuation, so new light/dark/mobile screenshots and interaction acceptance remain pending.
 The isolated review branch starts at main `c8e5935`. Its production preview was
 also reviewed at `http://127.0.0.1:4174/`: both Home themes, decoded real comic
 preview artwork, localized Viewer content retained across cross-page theme

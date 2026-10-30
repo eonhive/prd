@@ -1,0 +1,11 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:optional-extension",
+  "profile": "general-document",
+  "title": "Readable optional extension",
+  "entry": "content/root.json",
+  "extensions": [
+    { "id": "custom.renderer", "version": "99.0", "required": false }
+  ]
+}

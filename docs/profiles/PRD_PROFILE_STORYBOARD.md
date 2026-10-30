@@ -1,5 +1,5 @@
 # PRD_PROFILE_STORYBOARD.md
-_Last updated: April 8, 2026_
+_Last updated: October 28, 2026_
 _Status: Storyboard profile draft v0.1_
 
 ## 1. Purpose
@@ -160,6 +160,8 @@ This keeps runtime claims truthful while giving `storyboard` a real canonical ty
 ---
 
 ## 8. Validator Implications
+
+Structural validity and reference runtime version support are separate. Under PRD-046, supported format/manifest/canonical-profile/content contracts are `1.0` / `1.0.0`, and minimum-viewer requirements must be met. A future storyboard root or localized alternate returns the existing unsupported state without a render payload. Existing HTML safe-mode behavior remains available when base requirements pass. See [versioning policy](../core/PRD_VERSIONING_POLICY.md); validation string checks and profile shapes are unchanged.
 
 For the current executable baseline:
 

@@ -13,6 +13,18 @@ import type {
 export type { ViewerRenderMode };
 export { getViewerRenderModeMessage };
 
+export interface ViewerPresentation {
+  renderedHtml?: string;
+  entryDocument?: PrdGeneralDocumentRoot;
+  comicDocument?: PrdComicRoot;
+  storyboardDocument?: PrdStoryboardRoot;
+}
+
+export function selectViewerPresentation(base: ViewerPresentation, alternate?: ViewerPresentation): ViewerPresentation {
+  // A localized entry replaces the complete presentation; mixing fields can render HTML and JSON together.
+  return alternate ?? base;
+}
+
 export function inferViewerRenderMode(
   opened: PrdOpenedDocument | undefined,
   entryDocument: PrdGeneralDocumentRoot | undefined,

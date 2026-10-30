@@ -442,3 +442,8 @@ Right now, that role is being filled by `docs/decisions/PRD_DECISIONS.md`.
 A staged plan showing what should be built first, next, and later.
 
 Right now, that role is being filled by `docs/foundation/04_PRD/PRD_ROADMAP.md`.
+
+
+## PRD Convert
+
+The ingestion product boundary for reconstructing existing documents into PRD's canonical semantic model. It uses Core validation and packaging; Studio owns subsequent authoring and editing. The repository's Phase 1 implementation provides Markdown conversion through a library and CLI. See [the architecture record](../../architecture/PRD_CONVERT_PHASE_1.md).

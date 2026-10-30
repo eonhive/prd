@@ -1,6 +1,7 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { basename, join, relative } from "node:path";
-import { strFromU8, unzipSync } from "fflate";
+import { readFile, stat } from "node:fs/promises";
+import { strFromU8 } from "fflate";
+import { assertPrdArchiveSize, PrdContainerError, readPrdArchive, type PrdArchiveLimits } from "./container.js";
+import { PrdDirectoryError, readPackageDirectory, type PrdDirectoryLimits } from "./directory.js";
 import {
   PRD_LOCALIZED_ENTRIES_PATH,
   type PrdReferenceLoadMode,
@@ -12,6 +13,8 @@ import {
   type PrdFileMap,
   type PrdPackageValidationResult
 } from "./index.js";
+
+export { PRD_DEFAULT_DIRECTORY_LIMITS, PrdDirectoryError, readPackageDirectory, type PrdDirectoryLimits } from "./directory.js";
 
 export type PrdInspectionSourceKind = "directory" | "archive";
 export type PrdInspectionEntryKind =
@@ -42,33 +45,6 @@ function invalidResult(code: string, message: string, path: string): PrdPackageV
     errors: [{ code, message, path, severity: "error" }],
     warnings: []
   };
-}
-
-async function collectFiles(rootDir: string, currentDir = rootDir): Promise<PrdFileMap> {
-  const entries = await readdir(currentDir, { withFileTypes: true });
-  const files: PrdFileMap = {};
-
-  for (const entry of entries) {
-    if (entry.name.startsWith(".")) {
-      continue;
-    }
-
-    const fullPath = join(currentDir, entry.name);
-
-    if (entry.isDirectory()) {
-      Object.assign(files, await collectFiles(rootDir, fullPath));
-      continue;
-    }
-
-    if (!entry.isFile()) {
-      continue;
-    }
-
-    const relPath = relative(rootDir, fullPath).split("\\").join("/");
-    files[relPath] = new Uint8Array(await readFile(fullPath));
-  }
-
-  return files;
 }
 
 function inferSourceKind(targetPath: string): PrdInspectionSourceKind {
@@ -229,41 +205,33 @@ function buildInvalidInspectionResult(
 }
 
 export async function validatePackageDirectory(
-  directoryPath: string
+  directoryPath: string,
+  limits: Partial<PrdDirectoryLimits> = {}
 ): Promise<PrdPackageValidationResult> {
-  const stats = await stat(directoryPath);
-
-  if (!stats.isDirectory()) {
-    return invalidResult(
-      "package-directory-invalid",
-      `Expected a directory path, got \`${basename(directoryPath)}\`.`,
-      directoryPath
-    );
+  try {
+    return validatePackageFiles(await readPackageDirectory(directoryPath, limits));
+  } catch (error) {
+    if (!(error instanceof PrdDirectoryError)) throw error;
+    return invalidResult(error.code, error.message, directoryPath);
   }
-
-  return validatePackageFiles(await collectFiles(directoryPath));
 }
 
 export async function inspectPackageDirectory(
-  directoryPath: string
+  directoryPath: string,
+  limits: Partial<PrdDirectoryLimits> = {}
 ): Promise<PrdPackageInspectionResult> {
-  const stats = await stat(directoryPath);
-
-  if (!stats.isDirectory()) {
-    return buildInvalidInspectionResult(
-      "directory",
-      "package-directory-invalid",
-      `Expected a directory path, got \`${basename(directoryPath)}\`.`,
-      directoryPath
-    );
+  try {
+    const files = await readPackageDirectory(directoryPath, limits);
+    return buildInspectionResult(validatePackageFiles(files), files, "directory");
+  } catch (error) {
+    if (!(error instanceof PrdDirectoryError)) throw error;
+    return buildInvalidInspectionResult("directory", error.code, error.message, directoryPath);
   }
-
-  const files = await collectFiles(directoryPath);
-  return buildInspectionResult(validatePackageFiles(files), files, "directory");
 }
 
 export async function validatePrdArchive(
-  archivePath: string
+  archivePath: string,
+  limits: Partial<PrdArchiveLimits> = {}
 ): Promise<PrdPackageValidationResult> {
   if (!archivePath.endsWith(".prd")) {
     return invalidResult(
@@ -276,12 +244,13 @@ export async function validatePrdArchive(
   let archiveEntries: PrdFileMap;
 
   try {
+    assertPrdArchiveSize((await stat(archivePath)).size, limits);
     const bytes = new Uint8Array(await readFile(archivePath));
-    archiveEntries = unzipSync(bytes);
-  } catch {
+    archiveEntries = readPrdArchive(bytes, limits);
+  } catch (error) {
     return invalidResult(
-      "archive-read-invalid",
-      "The `.prd` archive could not be opened as a valid ZIP package.",
+      error instanceof PrdContainerError ? error.code : "archive-read-invalid",
+      error instanceof PrdContainerError ? error.message : "The `.prd` archive could not be opened as a valid ZIP package.",
       archivePath
     );
   }
@@ -290,7 +259,8 @@ export async function validatePrdArchive(
 }
 
 export async function inspectPrdArchive(
-  archivePath: string
+  archivePath: string,
+  limits: Partial<PrdArchiveLimits> = {}
 ): Promise<PrdPackageInspectionResult> {
   if (!archivePath.endsWith(".prd")) {
     return buildInvalidInspectionResult(
@@ -304,13 +274,14 @@ export async function inspectPrdArchive(
   let archiveEntries: PrdFileMap;
 
   try {
+    assertPrdArchiveSize((await stat(archivePath)).size, limits);
     const bytes = new Uint8Array(await readFile(archivePath));
-    archiveEntries = unzipSync(bytes);
-  } catch {
+    archiveEntries = readPrdArchive(bytes, limits);
+  } catch (error) {
     return buildInvalidInspectionResult(
       "archive",
-      "archive-read-invalid",
-      "The `.prd` archive could not be opened as a valid ZIP package.",
+      error instanceof PrdContainerError ? error.code : "archive-read-invalid",
+      error instanceof PrdContainerError ? error.message : "The `.prd` archive could not be opened as a valid ZIP package.",
       archivePath
     );
   }
@@ -323,7 +294,8 @@ export async function inspectPrdArchive(
 }
 
 export async function validatePackage(
-  targetPath: string
+  targetPath: string,
+  limits: Partial<PrdArchiveLimits> = {}
 ): Promise<PrdPackageValidationResult> {
   let targetStats;
 
@@ -338,14 +310,15 @@ export async function validatePackage(
   }
 
   if (targetStats.isDirectory()) {
-    return validatePackageDirectory(targetPath);
+    return validatePackageDirectory(targetPath, limits);
   }
 
-  return validatePrdArchive(targetPath);
+  return validatePrdArchive(targetPath, limits);
 }
 
 export async function inspectPackage(
-  targetPath: string
+  targetPath: string,
+  limits: Partial<PrdArchiveLimits> = {}
 ): Promise<PrdPackageInspectionResult> {
   let targetStats;
 
@@ -361,8 +334,8 @@ export async function inspectPackage(
   }
 
   if (targetStats.isDirectory()) {
-    return inspectPackageDirectory(targetPath);
+    return inspectPackageDirectory(targetPath, limits);
   }
 
-  return inspectPrdArchive(targetPath);
+  return inspectPrdArchive(targetPath, limits);
 }

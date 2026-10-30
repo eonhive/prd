@@ -375,19 +375,28 @@ export function ViewerSiteNavigation({
           <PrdBrandMark />
         </span>
         <span>
-          <strong>{route === "viewer" ? "PRD Viewer" : "PRD"}</strong>
+          <strong>{route === "viewer" ? "PRD Viewer" : route === "convert" ? "PRD Convert" : "PRD"}</strong>
           <small>Portable Responsive Document</small>
         </span>
       </a>
       <nav className="site-nav-links" aria-label="Main navigation">
-        {(["home", "viewer", "docs"] as const).map((item) => (
+        {(["home", "viewer", "convert", "docs"] as const).map((item) => (
           <a
             key={item}
             href={getViewerAppRoutePath(item, basePath)}
             aria-current={route === item ? "page" : undefined}
             onClick={(event) => navigate(event, item)}
           >
-            {item === "home" ? "Home" : item === "viewer" ? "Viewer" : "Docs"}
+            {item === "home" ? "Home" : item === "viewer" ? "Viewer" : item === "convert" ? "Convert" : "Docs"}
+          </a>
+        ))}
+        {(["profiles", "examples"] as const).map((section) => (
+          <a
+            key={section}
+            href={`${getViewerAppRoutePath("home", basePath)}#${section}`}
+            onClick={(event) => navigate(event, "home", section)}
+          >
+            {section === "profiles" ? "Profiles" : "Examples"}
           </a>
         ))}
         {(["profiles", "examples"] as const).map((section) => (
@@ -426,7 +435,7 @@ export function ViewerSiteNavigation({
             href={getViewerAppRoutePath("viewer", basePath)}
             onClick={(event) => navigate(event, "viewer")}
           >
-            Open Viewer <span aria-hidden="true">↗</span>
+            Open Viewer <span className="nav-open-arrow" aria-hidden="true">↗</span>
           </a>
         )}
       </div>

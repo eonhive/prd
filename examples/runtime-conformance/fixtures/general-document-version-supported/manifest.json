@@ -1,0 +1,12 @@
+{
+  "prdVersion": "1.0.0",
+  "manifestVersion": "1.0.0",
+  "id": "urn:prd:conformance:general-document-version-supported",
+  "profile": "general-document",
+  "title": "Supported normalized versions",
+  "entry": "content/root.json",
+  "profileVersion": "1.0.0",
+  "compatibility": {
+    "minViewer": "0.1.0"
+  }
+}

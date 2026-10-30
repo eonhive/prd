@@ -409,6 +409,7 @@ PRD should be designed so it can support a broader ecosystem, potentially includ
 
 - PRD format/spec
 - PRDc archive/codex role
+- PRD Convert ingestion tools, sharing the canonical semantic model, validator and packager
 - Studio authoring tools
 - Viewer apps
 - Cloud services

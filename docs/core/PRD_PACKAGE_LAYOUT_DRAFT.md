@@ -1,5 +1,5 @@
 # PRD_PACKAGE_LAYOUT_DRAFT.md
-_Last updated: April 11, 2026_
+_Last updated: October 27, 2026_
 _Status: Package layout draft v0.1_
 
 ## 1. Package Philosophy
@@ -29,6 +29,8 @@ The layout must not force large-work structure onto tiny packages, and it must n
 
 The canonical PRD package layout is:
 
+This is the logical ZIP-payload layout in both supported transports. The optional [PRD 1.0 envelope](PRD_CONTAINER_FORMAT.md) sits outside that ZIP and adds no package member or alternate manifest. Default output remains ZIP for compatibility.
+
 ```text
 <package>.prd
 ├── manifest.json
@@ -37,6 +39,7 @@ The canonical PRD package layout is:
 ├── attachments/
 ├── metadata/
 ├── snapshots/
+├── extensions/
 └── protected/
 ```
 
@@ -48,6 +51,7 @@ Interpretation:
 - `attachments/` holds declared bundled attachments
 - `metadata/` holds supplemental public metadata files that do not belong inline in the base manifest
 - `snapshots/` holds static fallbacks such as print-safe or safe-mode outputs
+- `extensions/` holds manifest-declared optional extension data, including `extensions/eonhive/signature.json` for [signature-v1](../extensions/PRD_SIGNATURE_V1.md)
 - `protected/` holds optional protected/private payloads or protected sub-manifests
 
 This is the canonical default layout, not a license for deep required nesting.
@@ -85,13 +89,14 @@ The canonical optional folders are:
 | `attachments/` | bundled attachment files that travel with the package |
 | `metadata/` | supplemental public metadata files, indexes, or light structured sidecars |
 | `snapshots/` | static fallback files such as HTML or PDF snapshots |
+| `extensions/` | optional extension payloads referenced by manifest declarations |
 | `protected/` | optional protected/private content or metadata declared by the manifest |
 
 Optional file/folder rules:
 
 - `content/` SHOULD be the default location for the manifest `entry` target in canonical packages
 - larger `general-document` works MAY segment public section files under `content/sections/`
-- `assets/`, `attachments/`, `metadata/`, `snapshots/`, and `protected/` MAY be absent
+- `assets/`, `attachments/`, `metadata/`, `snapshots/`, `extensions/`, and `protected/` MAY be absent
 - `protected/` MUST never be required for the base open path
 - `snapshots/` SHOULD be optional and used only when a profile, workflow, or fallback need exists
 - package authors MAY add subdirectories inside these folders for organization, especially in large works

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "2.0",
+  "profile": "general-document",
+  "type": "document-section",
+  "id": "part",
+  "title": "Versioned section",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Unsupported section content must remain blocked."
+    }
+  ]
+}

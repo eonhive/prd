@@ -30,6 +30,7 @@ describe("viewer routes", () => {
     expect(getViewerAppRouteFromPath("/docs/", "/")).toBe("docs");
     expect(getViewerAppRouteFromPath("/viewer", "/")).toBe("viewer");
     expect(getViewerAppRouteFromPath("/viewer/", "/")).toBe("viewer");
+    expect(getViewerAppRouteFromPath("/convert/", "/")).toBe("convert");
     expect(getViewerAppRouteFromPath("/anything-else", "/")).toBe("home");
   });
 
@@ -39,6 +40,7 @@ describe("viewer routes", () => {
     expect(getViewerAppRouteFromPath("/prd/docs/", "/prd/")).toBe("docs");
     expect(getViewerAppRouteFromPath("/prd/viewer", "/prd/")).toBe("viewer");
     expect(getViewerAppRouteFromPath("/prd/viewer/", "/prd/")).toBe("viewer");
+    expect(getViewerAppRouteFromPath("/prd/convert/", "/prd/")).toBe("convert");
   });
 
   it("builds stable route paths for local and hosted deployment", () => {
@@ -48,5 +50,7 @@ describe("viewer routes", () => {
     expect(getViewerAppRoutePath("home", "/prd/")).toBe("/prd/");
     expect(getViewerAppRoutePath("docs", "/prd/")).toBe("/prd/docs/");
     expect(getViewerAppRoutePath("viewer", "/prd/")).toBe("/prd/viewer/");
+    expect(getViewerAppRoutePath("convert", "/")).toBe("/convert/");
+    expect(getViewerAppRoutePath("convert", "/prd/")).toBe("/prd/convert/");
   });
 });

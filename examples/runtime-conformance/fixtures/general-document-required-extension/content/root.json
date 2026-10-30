@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "required-extension",
+  "title": "Unsupported required extension",
+  "children": [
+    { "type": "paragraph", "text": "Required-extension content must remain blocked in an unsupported viewer." }
+  ]
+}

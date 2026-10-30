@@ -19,7 +19,7 @@ It is a concise canonical extraction of the current minimal-package baseline alr
 
 The minimum legal PRD package is:
 
-- one ZIP archive using the `.prd` extension
+- one ZIP payload using the `.prd` extension, directly or in the additive [PRD 1.0 container](PRD_CONTAINER_FORMAT.md); default output remains ordinary ZIP
 - one root `manifest.json`
 - one public content file referenced by `entry`
 
@@ -89,7 +89,7 @@ No rights, payment, ownership, encryption, signature, attachment, localization, 
 
 The viewer finds content in this order:
 
-1. Open the `.prd` file as a ZIP archive.
+1. Identify the `.prd` transport, validate/remove the PRD header when present, and open its ZIP payload according to [PRD_CONTAINER_FORMAT.md](PRD_CONTAINER_FORMAT.md).
 2. Locate `manifest.json` at the archive root.
 3. Parse the required manifest fields.
 4. Read `entry` as the single primary content path.
@@ -178,7 +178,7 @@ The checklist below applies to the **logical file set** inside a package (the co
 
 A package passes the minimum legal PRD baseline only if all of the following are true:
 
-- it is a ZIP archive with the `.prd` extension (required for the distribution artifact; not required when the validator target is a directory)
+- it uses the `.prd` extension and a ZIP payload in either supported transport form (required for distribution; not for directory validation)
 - `manifest.json` exists at the archive root
 - `manifest.json` parses as one JSON object
 - `prdVersion`, `manifestVersion`, `id`, `profile`, `title`, and `entry` all exist and are strings

@@ -4,14 +4,14 @@
  * Purpose: Verify published PRD npm metadata is consumer-safe after release.
  * Author: Stan Nesi
  * Created: 2026-04-23
- * Updated: 2026-10-27
+ * Updated: 2026-10-30
  * Notes: Vibe coded with Codex.
  */
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { getReleasePackageVersionMode } from "./release-package-versions.mjs";
+import { loadReleasePackageMetadata, publicReleasePackages } from "./release-packages.mjs";
 
 const npmRegistryUrl = "https://registry.npmjs.org";
 const expectedDistTag = "latest";
@@ -19,15 +19,10 @@ const concreteInternalDependencyRangePattern =
   /^(?:[\^~])?\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 
 export const releaseRegistryAuditContractVersion =
-  "prd-release-registry-audit-v0.1";
+  "prd-release-registry-audit-v0.2";
 export const defaultReleaseRegistryAuditSummaryPath =
   "examples/dist/release-registry-audit-summary.json";
-export const auditedPublicPackages = [
-  { directory: "packages/prd-types", name: "@eonhive/prd-types" },
-  { directory: "packages/prd-validator", name: "@eonhive/prd-validator" },
-  { directory: "packages/prd-packager", name: "@eonhive/prd-packager" },
-  { directory: "packages/prd-cli", name: "@eonhive/prd-cli" }
-];
+export const auditedPublicPackages = publicReleasePackages;
 
 function addAction(summary, action) {
   if (!summary.actions.includes(action)) {
@@ -38,26 +33,6 @@ function addAction(summary, action) {
 function markFailed(summary, action) {
   summary.status = "failed";
   addAction(summary, action);
-}
-
-async function readJson(repoRoot, relativePath) {
-  const raw = await readFile(join(repoRoot, relativePath), "utf8");
-  return JSON.parse(raw);
-}
-
-async function loadPackageMetadata(repoRoot) {
-  const packages = [];
-
-  for (const pkg of auditedPublicPackages) {
-    const manifest = await readJson(repoRoot, join(pkg.directory, "package.json"));
-    packages.push({
-      directory: pkg.directory,
-      name: manifest.name,
-      version: manifest.version
-    });
-  }
-
-  return packages;
 }
 
 async function fetchRegistryDocument(packageName, fetchImpl) {
@@ -139,6 +114,7 @@ export async function runReleaseRegistryAudit(options = {}) {
     checks: {
       packageTargets: {
         status: "pending",
+        versionPolicy: "independent",
         packages: [],
         versionSet: []
       }
@@ -150,7 +126,7 @@ export async function runReleaseRegistryAudit(options = {}) {
   await mkdir(dirname(summaryPath), { recursive: true });
 
   try {
-    const packages = await loadPackageMetadata(repoRoot);
+    const packages = await loadReleasePackageMetadata(repoRoot);
     const expectedPackages = auditedPublicPackages.map(({ directory, name }) => ({
       directory,
       name
@@ -164,13 +140,12 @@ export async function runReleaseRegistryAudit(options = {}) {
     summary.checks.packageTargets.versionSet = versionSet;
 
     if (
-      JSON.stringify(actualPackages) !== JSON.stringify(expectedPackages) ||
-      getReleasePackageVersionMode(packages.map((pkg) => pkg.version)) === null
+      JSON.stringify(actualPackages) !== JSON.stringify(expectedPackages)
     ) {
       summary.checks.packageTargets.status = "failed";
       markFailed(
         summary,
-        "Restore the expected four public package names and stable release versions. Audit each package at its own version; do not mix first-preview bootstrap and later release versions."
+        "Restore the expected public PRD package set, including @eonhive/prd-converter, before rerunning registry audit."
       );
     } else {
       summary.checks.packageTargets.status = "passed";
@@ -218,6 +193,11 @@ export async function runReleaseRegistryAudit(options = {}) {
 
         packageSummary.published = true;
         packageSummary.deprecated = publishedManifest.deprecated ?? null;
+        if (packageSummary.deprecated) {
+          packageSummary.status = "failed";
+          packageSummary.errorMessage = `Expected version ${pkg.version} is deprecated.`;
+          markFailed(summary, `Select a non-deprecated release of ${pkg.name} before treating it as consumer-safe.`);
+        }
 
         if (packageSummary.latestVersion !== pkg.version) {
           packageSummary.status = "failed";
@@ -254,6 +234,9 @@ export async function runReleaseRegistryAudit(options = {}) {
       summary.packages.push(packageSummary);
     }
   } catch (error) {
+    if (summary.checks.packageTargets.status === "pending") {
+      summary.checks.packageTargets.status = "failed";
+    }
     markFailed(
       summary,
       "Fix the registry audit failure before continuing to post-publish consumer smoke."

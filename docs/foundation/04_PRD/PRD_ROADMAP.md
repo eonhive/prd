@@ -319,3 +319,58 @@ The correct path is:
 - then grow into ecosystem and advanced extensions
 
 Anything else is noise.
+
+
+## PRD Convert Phase 1 (October 27, 2026)
+
+The owner-requested converter foundation now adds one complete adaptive Markdown path through existing validation, packaging and Viewer opening. It shares canonical semantic roots and the existing parser; produces source/quality attachments; and enforces input/resource budgets. This is a CLI/library foundation, pending release. The later conversion web app, additional formats, faithful/hybrid strategies and optional advanced features remain separate phases. See [the architecture record](../../architecture/PRD_CONVERT_PHASE_1.md).
+
+
+### Phase 2 HTML increment
+
+The next converter increment implements a static UTF-8 HTML adapter using the same normalized content, resource limits, quality reporting, validator and packager. It includes real source/archive/report fixtures and CLI/Viewer checks. [HTML mapping and safety policy](../../architecture/PRD_CONVERT_HTML.md) defines the supported subset and omissions. The owner's revised sequence puts EPUB/CBZ next, then DOCX; release onboarding and the conversion web app remain separate.
+
+
+### Shared importer output and HTML directory workflow
+
+`prd import html` now completes the source → directory → validation → packaging → Viewer path, sharing canonical output helpers with Markdown/image imports and using separately versioned diagnostics. PRD-042 records the implementation boundary. The later CBZ continuation below closes local HTML directory visual acceptance. DOCX/PDF/Office/cloud/frontend work remains separate.
+
+### CBZ archive increment
+
+CBZ now produces canonical whole-page comic panels through the same converter and the existing bounded archive decoder, with explicit order/metadata/alternative-text warnings. CLI, both-transport Viewer opening, malformed archive tests, a real example and local browser acceptance are included. PRD-043 and the [CBZ policy](../../architecture/PRD_CONVERT_CBZ.md) define limits and fidelity. HTML directory rendering, fragment navigation and report retrieval were also checked locally. EPUB is next, with its own spine/XML/relationships policy before implementation; DOCX, PDF, Convert Web and Office/advanced lanes follow. Release onboarding remains separate.
+
+### EPUB chapter increment
+
+EPUB now completes a bounded reflowable XML → spine-ordered canonical chapter sections → existing validation/packaging → Viewer path. It reuses HTML semantics and raster collection, maps chapter anchors, reports navigation/layout/metadata losses, and isolates its optional XML parser. PRD-044 and the [EPUB policy](../../architecture/PRD_CONVERT_EPUB.md) define the accepted subset and safety limits. Real example, security tests, CLI/Viewer round trips and local browser acceptance are included. DOCX is next after a separate ZIP/XML/relationships policy; PDF, Convert Web, Office/advanced work and release onboarding remain separate.
+
+### DOCX body increment
+
+DOCX now completes a bounded transitional Word body → canonical content → existing validator/packager → Viewer-opening path. It reuses XML/resource foundations, resolves OPC relationships and structural styles, and maps simple lists/tables, bookmark links and raster assets. PRD-045 and the [DOCX policy](../../architecture/PRD_CONVERT_DOCX.md) define limitations and budgets. A real Word fixture is rendered and visually inspected; automated PRD Viewer opening is covered in both transports. Local browser acceptance completed on October 28, including lists/table/image, bookmark navigation and exact attachments. The subsequent PDF increment is recorded below; OCR, web conversion, Office execution and release onboarding remain separate.
+
+### PDF extraction and fallback increment — October 28, 2026
+
+PDF now completes a bounded byte snapshot → isolated extraction/page fallback → canonical page sections → existing validator/packager → Viewer path under PRD-047 and [PDF policy](../../architecture/PRD_CONVERT_PDF.md). Text follows extraction order with explicit review warnings; textless pages become bounded PNGs without OCR. Optional PDF.js/native canvas dependencies load only for Node import. The real mixed-page example passes security/lifecycle, CLI, both-transport Viewer-opening and local browser checks. Convert Web is the next separately specified product increment. Office/advanced work, OCR, faithful/hybrid output and public release remain separate.
+
+### Convert Web Markdown increment — October 28, 2026
+
+PRD-048 and [Convert Web policy](../../architecture/PRD_CONVERT_WEB.md) add a real local `/convert/` route in the existing app. The existing Markdown adapter shares canonical assembly/validation with Node and a packager memory export. A bounded cancellable worker produces actual quality/source attachments, downloads and exact-archive Viewer preview. Browser-downloaded example, Node parity, both transports, resource/lifecycle/security cases and local production-browser checks prove the first path. Browser HTML follows under its own parser policy. Simultaneous preview/repair, other browser adapters, public release and deployment remain separate.
+
+### Browser HTML and conversion workspace — October 29, 2026
+
+PRD-052 and [browser HTML/workspace policy](../../architecture/PRD_CONVERT_WEB_HTML.md) extend the existing browser seam to bounded static HTML with lazy optional parsing and ES module workers. The original Markdown-only export stays compatible. The owner reference informs upload/options/review layout without inventing PSD/AI/layer/history functionality. Real HTML output, Node parity and both-transport Viewer checks establish the semantic/package path. Fresh visual/interaction acceptance is pending while automation is disabled. Further browser adapters, repair/editor work, release and deployment remain separate.
+
+### Browser CBZ comics — October 29, 2026
+
+PRD-053 and [browser CBZ policy](../../architecture/PRD_CONVERT_WEB_CBZ.md) reuse the existing bounded archive adapter and canonical Comic output in the local worker. Shared page-sequence settings preserve default output and stable source-page identities; they add no reading-direction field. The workspace handles binary source explicitly and shows real pages/resources/diagnostics. Node parity, both transports, hostile archives and installed consumers cover the executable path; fresh live UI/Viewer interaction acceptance stays open. The owner authorized this focused implementation while that review is pending. Additional browser formats, repair/editing, PSD/AI/cloud, release and deployment remain separate.
+
+### Focused comic sequence repair — October 29, 2026
+
+PRD-054 and [page-review policy](../../architecture/PRD_CONVERT_PAGE_REVIEW.md) add source-backed filename move/reset/apply for CBZ results. A bounded complete page-ID permutation reruns the same conversion/validation pipeline; page identities/assets and previous output on failure remain intact. Selected File/settings are session context, separate from package source retention. Actual reviewed output and Node/browser/Viewer/lifecycle evidence cover the executable path. Live controls/focus/download/Viewer-return acceptance remains pending. Full editing, further repair actions and additional browser formats require separate scope.
+
+### Supplied comic descriptions and session drafts — October 29, 2026
+
+PRD-055 and [description/draft policy](../../architecture/PRD_CONVERT_COMIC_DESCRIPTIONS.md) extend source-backed repair with bounded plain text in existing canonical panel `alt`, preserving source IDs/images and page ordering. The UI retains unapplied text/order across Viewer return in the same nonpersistent session and exports it only after successful revalidation/packaging. Actual supplied/remaining counts replace no quality assessment. Automated Node/browser/Viewer/security/lifecycle evidence and the real described example cover the executable path. Browser access briefly returned for native file selection, then stopped before conversion; full live/responsive acceptance stays open. Quality diagnostics follow below before further adapters or general editing.
+
+### Quality diagnostic review — October 29, 2026
+
+PRD-056 and [quality-review policy](../../architecture/PRD_CONVERT_QUALITY_REVIEW.md) expose existing report codes, conversion stages/source references and distinct package-validator paths. Category/text filtering scans the complete list before its bounded display, with truthful counts and unchanged downloads. This is private-app presentation, preserving report v1, Core/package authority and source limitations after review. Automated provenance/filter/bounds/security/real-conversion tests cover implementation; live filters, keyboard, reset, themes/mobile and earlier workspace acceptance remain open while browser use is disabled. Finish that review before additional browser formats or editing; release onboarding and deployment remain separate.

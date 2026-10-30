@@ -645,3 +645,11 @@ If a future prompt generates PRD work without:
 - a proposed source-of-truth doc update when the source-of-truth is incomplete
 
 then the output is incomplete and should not be treated as a locked PRD artifact.
+
+
+## PRD Convert implementation continuity
+
+For subsequent conversion work, read `docs/architecture/PRD_CONVERT_PHASE_1.md` and reuse `packages/prd-converter`'s adapter registry, bounded resolver and canonical normalized roots. Preserve existing CLI import contracts. Adapters must not construct independent manifests or write package files. Add one complete tested format path at a time, report losses, and demonstrate a real archive opening in the existing Viewer before claiming completion. The Phase 1 CLI/library does not imply a deployed converter UI or support for deferred source formats.
+
+
+For importer continuations, preserve `prd-cli`'s shared `importPackage.ts` serializer/writer and the HTML directory/report contracts under PRD-042. Existing Markdown/image file bytes, JSON, warning behavior and ordering are compatibility requirements. Use `prepareConversion` instead of writing another extraction pipeline or round-tripping through a temporary ZIP. The revised next-format order is EPUB/CBZ, DOCX, PDF, Convert Web, then Office/advanced lanes; do not start those formats inside an HTML consolidation task.

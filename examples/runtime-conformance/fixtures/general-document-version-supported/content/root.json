@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "general-document-version-supported",
+  "title": "Supported normalized versions",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Version conformance content for general-document-version-supported."
+    }
+  ]
+}

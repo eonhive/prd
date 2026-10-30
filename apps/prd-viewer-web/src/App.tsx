@@ -1,5 +1,14 @@
-import { unzipSync, strFromU8 } from "fflate";
+import { strFromU8 } from "fflate";
+import { assertPrdArchiveSize, readPrdArchive } from "@eonhive/prd-validator/container";
+import type { PrdSignatureResult } from "@eonhive/prd-validator/signature";
+import { openViewerPackage } from "./viewerPackageVerification.js";
+import { ViewerSignaturePanel } from "./ViewerSignaturePanel.js";
+import { HtmlFallbackFrame } from "./HtmlFallbackFrame.js";
+import { createHtmlFallbackRenderer, type HtmlFallbackRenderer } from "./htmlFallback.js";
+import { createAssetBlob } from "./assetBlob.js";
 import { LivingHomepage } from "./LivingHomepage.js";
+import { ConvertWeb } from "./ConvertWeb.js";
+import type { WebConversion } from "./convertJob.js";
 import { ViewerReadingView } from "./ViewerReadingView.js";
 import {
   livingViewerExitFocusMessage,
@@ -24,8 +33,7 @@ import {
 import type { PrdFileMap, PrdPackageValidationResult } from "@eonhive/prd-validator";
 import { validatePackageFiles } from "@eonhive/prd-validator";
 import {
-  PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR,
-  openPrdDocument
+  PRD_REFERENCE_VIEWER_RUNTIME_DESCRIPTOR
 } from "@eonhive/prd-viewer-core";
 import {
   type PrdAssetDeclaration,
@@ -40,7 +48,6 @@ import {
   type PrdLocalizedContentIndexRoot,
   type PrdLocalizedDocumentOverridesRoot,
   type PrdOpenedDocument,
-  type PrdPackageReader,
   type PrdPublicMetadata,
   type PrdReferenceLoadMode,
   PRD_GENERAL_DOCUMENT_SECTION_ENTRY_PREFIX,
@@ -52,7 +59,8 @@ import {
 } from "@eonhive/prd-types";
 import {
   getViewerRenderModeMessage,
-  inferViewerRenderMode
+  inferViewerRenderMode,
+  selectViewerPresentation
 } from "./viewerRenderMode.js";
 import {
   type ViewerDemoExampleArchive,
@@ -185,51 +193,6 @@ function getPublicDocsLinkHref(href: string): string {
   return `${canonicalDocsRepositoryUrl}${href}`;
 }
 
-function createPackageReader(files: PrdFileMap): PrdPackageReader {
-  return {
-    has(path) {
-      return path in files;
-    },
-    readText(path) {
-      const file = files[path];
-      if (!file) {
-        throw new Error(`Missing package file: ${path}`);
-      }
-      return strFromU8(file);
-    },
-    readBinary(path) {
-      const file = files[path];
-      if (!file) {
-        throw new Error(`Missing package file: ${path}`);
-      }
-      return file;
-    }
-  };
-}
-
-function resolvePath(basePath: string, target: string): string {
-  if (target.startsWith("/") || target.startsWith("#") || /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target)) {
-    return target;
-  }
-
-  const segments = basePath.split("/");
-  segments.pop();
-  const stack = [...segments];
-
-  for (const part of target.split("/")) {
-    if (part === "." || part.length === 0) {
-      continue;
-    }
-    if (part === "..") {
-      stack.pop();
-      continue;
-    }
-    stack.push(part);
-  }
-
-  return stack.join("/");
-}
-
 function guessMimeType(path: string): string {
   if (path.endsWith(".css")) return "text/css";
   if (path.endsWith(".svg")) return "image/svg+xml";
@@ -247,59 +210,16 @@ function guessMimeType(path: string): string {
   return "application/octet-stream";
 }
 
-function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
-  const copy = new Uint8Array(bytes.byteLength);
-  copy.set(bytes);
-  return copy.buffer;
-}
-
 function createObjectUrl(
   file: Uint8Array,
   mimeType: string,
   objectUrls: string[]
 ): string {
   const url = URL.createObjectURL(
-    new Blob([toArrayBuffer(file)], { type: mimeType })
+    createAssetBlob(file, mimeType)
   );
   objectUrls.push(url);
   return url;
-}
-
-function rewriteHtmlDocument(
-  html: string,
-  entryPath: string,
-  files: PrdFileMap,
-  objectUrls: string[]
-): string {
-  const parser = new DOMParser();
-  const document = parser.parseFromString(html, "text/html");
-  const selectors: Array<[string, "href" | "src" | "poster"]> = [
-    ["link[href]", "href"],
-    ["img[src]", "src"],
-    ["source[src]", "src"],
-    ["script[src]", "src"],
-    ["video[poster]", "poster"]
-  ];
-
-  for (const [selector, attribute] of selectors) {
-    for (const element of document.querySelectorAll<HTMLElement>(selector)) {
-      const original = element.getAttribute(attribute);
-      if (!original) {
-        continue;
-      }
-
-      const resolved = resolvePath(entryPath, original);
-      const file = files[resolved];
-      if (!file) {
-        continue;
-      }
-
-      const url = createObjectUrl(file, guessMimeType(resolved), objectUrls);
-      element.setAttribute(attribute, url);
-    }
-  }
-
-  return `<!doctype html>\n${document.documentElement.outerHTML}`;
 }
 
 function createAssetUrlMap(
@@ -901,12 +821,12 @@ function resolveSegmentedGeneralDocument(
   };
 }
 
-function createLocalizedViewerVariantFromEntry(
+async function createLocalizedViewerVariantFromEntry(
   entryPath: string,
   normalizedProfile: string,
   files: PrdFileMap,
-  objectUrls: string[]
-): LocalizedViewerVariant | undefined {
+  renderHtmlFallback: HtmlFallbackRenderer
+): Promise<LocalizedViewerVariant | undefined> {
   const entryFile = files[entryPath];
   if (!entryFile) {
     return undefined;
@@ -942,23 +862,18 @@ function createLocalizedViewerVariantFromEntry(
   if (isHtmlEntryPath(entryPath)) {
     return {
       entryPath,
-      renderedHtml: rewriteHtmlDocument(
-        strFromU8(entryFile),
-        entryPath,
-        files,
-        objectUrls
-      )
+      renderedHtml: await renderHtmlFallback(strFromU8(entryFile), entryPath)
     };
   }
 
   return undefined;
 }
 
-function createLocalizedViewerVariants(
+async function createLocalizedViewerVariants(
   files: PrdFileMap,
   opened: PrdOpenedDocument,
-  objectUrls: string[]
-): Record<string, LocalizedViewerVariant> {
+  renderHtmlFallback: HtmlFallbackRenderer
+): Promise<Record<string, LocalizedViewerVariant>> {
   const localizedEntriesRoot = parseLocalizedContentIndexRoot(files);
   if (
     !localizedEntriesRoot ||
@@ -997,11 +912,11 @@ function createLocalizedViewerVariants(
       let variant: LocalizedViewerVariant | undefined;
 
       if (entry) {
-        variant = createLocalizedViewerVariantFromEntry(
+        variant = await createLocalizedViewerVariantFromEntry(
           entry,
           opened.profileInfo.normalized,
           files,
-          objectUrls
+          renderHtmlFallback
         );
 
         if (!variant) {
@@ -2708,7 +2623,7 @@ function ViewerWorkspaceView({
 
   let workspaceStatus = "Ready when you are";
   if (loading || sampleLoadingId !== null) workspaceStatus = "Opening document";
-  else if (error || viewerState?.validation.valid === false)
+  else if (error || viewerState?.validation.valid === false || viewerState?.signature?.status === "invalid")
     workspaceStatus = "Could not open document";
   else if (viewerState?.opened) workspaceStatus = "Package open";
 
@@ -2969,21 +2884,27 @@ function ViewerWorkspaceView({
                   }
                 }}
               >
-                <ViewerStageStatus
-                  valid={viewerState.validation.valid}
-                  renderModeMessage={getViewerRenderModeMessage(viewerRenderMode)}
-                  readingLabel={
-                    activeEntryDocument
-                      ? "Structured document"
-                      : activeComicDocument
-                        ? "Comic"
-                        : activeStoryboardDocument
-                          ? "Storyboard"
-                          : activeRenderedHtml
-                            ? "HTML preview"
-                            : undefined
-                  }
-                />
+                {viewerState.signature?.status === "invalid" ? (
+                  <p className="status error" role="alert">
+                    Signature check failed. This document was not opened. {viewerState.signature.message}
+                  </p>
+                ) : (
+                  <ViewerStageStatus
+                    valid={viewerState.validation.valid}
+                    renderModeMessage={getViewerRenderModeMessage(viewerRenderMode)}
+                    readingLabel={
+                      activeEntryDocument
+                        ? "Responsive document"
+                        : activeComicDocument
+                          ? "Comic"
+                          : activeStoryboardDocument
+                            ? "Storyboard"
+                            : activeRenderedHtml
+                              ? "HTML preview"
+                              : undefined
+                    }
+                  />
+                )}
 
                 {viewerState.opened?.supportState === "reserved-profile" && (
                   <div className="reserved">
@@ -3033,12 +2954,7 @@ function ViewerWorkspaceView({
 
                 {viewerState.opened?.supportState !== "reserved-profile" &&
                   activeRenderedHtml && (
-                    <iframe
-                      className="viewer-surface"
-                      title="PRD content frame"
-                      sandbox=""
-                      srcDoc={activeRenderedHtml}
-                    />
+                    <HtmlFallbackFrame html={activeRenderedHtml} />
                   )}
 
                 {activeEntryDocument && (
@@ -3107,6 +3023,10 @@ function ViewerWorkspaceView({
                     activeEntryPath={activeEntryPath}
                   />
 
+                  {viewerState.signature && (
+                    <ViewerSignaturePanel result={viewerState.signature} />
+                  )}
+
                   {viewerState.opened && (
                     <PublicMetadataView
                       title={
@@ -3116,7 +3036,7 @@ function ViewerWorkspaceView({
                       identity={viewerState.opened.manifest.identity}
                       publicMetadata={activePublicMetadata}
                       coverUrl={
-                        activePublicMetadata?.cover
+                        !activeRenderedHtml && activePublicMetadata?.cover
                           ? viewerState.assetUrls?.[activePublicMetadata.cover]
                           : undefined
                       }
@@ -3201,7 +3121,7 @@ function ViewerWorkspaceView({
                             viewerState.assetUrls?.[asset.href];
                           return (
                             <figure key={asset.href}>
-                              {url && asset.type?.startsWith("image/") ? (
+                              {url && !activeRenderedHtml && asset.type?.startsWith("image/") ? (
                                 <img src={url} alt="" loading="lazy" />
                               ) : (
                                 <span>
@@ -3257,6 +3177,7 @@ function ViewerWorkspaceView({
 
 interface ViewerState {
   validation: PrdPackageValidationResult;
+  signature?: PrdSignatureResult;
   opened?: PrdOpenedDocument;
   renderedHtml?: string;
   assetUrls?: AssetUrlMap;
@@ -3288,6 +3209,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
+  const [conversion, setConversion] = useState<WebConversion | null>(null);
 
   function notifyHomepage(message: LivingViewerMessage) {
     if (!embeddedViewer || window.parent === window) return;
@@ -3375,7 +3297,8 @@ export function App() {
     const pageTitles = {
       home: "PRD — A new way to experience documents.",
       viewer: "PRD Viewer — Open. Read. Explore.",
-      docs: "PRD Docs — Start your next chapter."
+      docs: "PRD Docs — Start your next chapter.",
+      convert: "PRD Convert — A new chapter for your documents."
     };
     document.title = pageTitles[route];
   }, [route]);
@@ -3463,15 +3386,16 @@ export function App() {
   }, [activeLocale, viewerState]);
 
   const activeEntryPath = activeLocalizedVariant?.entryPath ?? viewerState?.opened?.entryPath;
-  const activeRenderedHtml =
-    activeLocalizedVariant?.renderedHtml ?? viewerState?.renderedHtml;
-  const activeEntryDocument =
-    activeLocalizedVariant?.entryDocument ?? viewerState?.opened?.entryDocument;
-  const activeComicDocument =
-    activeLocalizedVariant?.comicDocument ?? viewerState?.opened?.comicDocument;
-  const activeStoryboardDocument =
-    activeLocalizedVariant?.storyboardDocument ??
-    viewerState?.opened?.storyboardDocument;
+  const activePresentation = selectViewerPresentation({
+    renderedHtml: viewerState?.renderedHtml,
+    entryDocument: viewerState?.opened?.entryDocument,
+    comicDocument: viewerState?.opened?.comicDocument,
+    storyboardDocument: viewerState?.opened?.storyboardDocument
+  }, activeLocalizedVariant);
+  const activeRenderedHtml = activePresentation.renderedHtml;
+  const activeEntryDocument = activePresentation.entryDocument;
+  const activeComicDocument = activePresentation.comicDocument;
+  const activeStoryboardDocument = activePresentation.storyboardDocument;
   const activePublicMetadata =
     activeLocalizedVariant?.publicMetadata ?? viewerState?.opened?.manifest.public;
   const viewerRenderMode = useMemo(() => {
@@ -3535,11 +3459,13 @@ export function App() {
       URL.revokeObjectURL(url);
     }
     objectUrlsRef.current = [];
+    const objectUrls: string[] = [];
 
     try {
+      assertPrdArchiveSize(file.size);
       const bytes = new Uint8Array(await file.arrayBuffer());
       if (generation !== loadGenerationRef.current) return;
-      const files = unzipSync(bytes) as PrdFileMap;
+      const files = readPrdArchive(bytes);
       const validation = validatePackageFiles(files);
 
       if (!validation.valid || !validation.manifest) {
@@ -3549,9 +3475,20 @@ export function App() {
         return;
       }
 
-      const opened = await openPrdDocument(createPackageReader(files));
+      const { signature, opened } = await openViewerPackage(files);
       if (generation !== loadGenerationRef.current) return;
+      if (!opened) {
+        currentSampleRef.current = null;
+        setViewerState({ validation, signature });
+        return;
+      }
       const packageFacts = createPackageFacts(files, opened);
+      if (opened.supportState === "unsupported-required-capability") {
+        // Localized entries must not bypass the runtime's capability decision.
+        setViewerState({ validation, signature, opened, packageFacts });
+        return;
+      }
+
       const normalizedOpened =
         opened.entryDocument !== undefined
           ? {
@@ -3559,44 +3496,50 @@ export function App() {
               entryDocument: resolveSegmentedGeneralDocument(opened.entryDocument, files)
             }
           : opened;
+      const renderHtmlFallback = createHtmlFallbackRenderer(files, normalizedOpened.manifest.assets, {
+        create: (file, mime) => createObjectUrl(file, mime, objectUrls),
+        revoke: (url) => URL.revokeObjectURL(url)
+      });
       const renderedHtml =
         normalizedOpened.entryHtml !== undefined
-          ? rewriteHtmlDocument(
+          ? await renderHtmlFallback(
               normalizedOpened.entryHtml,
-              normalizedOpened.entryPath,
-              files,
-              objectUrlsRef.current
+              normalizedOpened.entryPath
             )
           : undefined;
+      if (generation !== loadGenerationRef.current) return;
       const assetUrls = createAssetUrlMap(
         normalizedOpened.manifest.assets,
         files,
-        objectUrlsRef.current
+        objectUrls
       );
       const attachmentUrls = createAttachmentUrlMap(
         normalizedOpened.manifest.attachments,
         files,
-        objectUrlsRef.current
+        objectUrls
       );
       resolveAssetReferenceUrl(
         normalizedOpened.manifest.public?.cover,
         assetUrls,
         files,
-        objectUrlsRef.current
+        objectUrls
       );
       const resumeProfile = parseResumeProfileData(
         files,
         normalizedOpened.manifest.profile
       );
-      const localizedVariants = createLocalizedViewerVariants(
+      const localizedVariants = await createLocalizedViewerVariants(
         files,
         normalizedOpened,
-        objectUrlsRef.current
+        renderHtmlFallback
       );
+      if (generation !== loadGenerationRef.current) return;
+      objectUrlsRef.current = objectUrls;
       setSelectedLocale(normalizedOpened.localization?.defaultLocale);
 
       setViewerState({
         validation,
+        signature,
         opened: normalizedOpened,
         renderedHtml,
         assetUrls,
@@ -3612,6 +3555,9 @@ export function App() {
       setViewerState(null);
       setSelectedLocale(undefined);
     } finally {
+      if (objectUrlsRef.current !== objectUrls) {
+        for (const url of objectUrls) URL.revokeObjectURL(url);
+      }
       if (generation === loadGenerationRef.current) setLoading(false);
     }
   }
@@ -3746,6 +3692,10 @@ export function App() {
         </LivingHomepage>
       ) : route === "docs" ? (
         <PublicDocsSurface onNavigate={navigateToRoute} />
+      ) : route === "convert" ? (
+        <ConvertWeb completed={conversion} onComplete={setConversion} onPreview={(result) => {
+          void handleFile(new File([result.result.archive as Uint8Array<ArrayBuffer>], "converted.prd")).then(() => navigateToRoute("viewer"));
+        }} />
       ) : (
         <ViewerWorkspaceView
           fileInputRef={fileInputRef}

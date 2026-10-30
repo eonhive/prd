@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "2.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "general-document-future-locale-fr",
+  "title": "Unsupported localized version",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Localized version conformance content must respect the same compatibility check."
+    }
+  ],
+  "lang": "fr-FR"
+}

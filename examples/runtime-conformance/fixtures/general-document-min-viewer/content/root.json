@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "general-document-min-viewer",
+  "title": "Newer viewer required",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Version conformance content for general-document-min-viewer."
+    }
+  ]
+}

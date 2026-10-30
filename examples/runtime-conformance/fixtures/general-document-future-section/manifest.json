@@ -1,0 +1,8 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:general-document-future-section",
+  "profile": "general-document",
+  "title": "Unsupported section version",
+  "entry": "content/root.json"
+}

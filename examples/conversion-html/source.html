@@ -1,0 +1,41 @@
+<!--
+Company: EonHive Inc. | Title: HTML Conversion Example
+Purpose: Exercise real semantic HTML ingestion, safe omissions and packaged images.
+Author: Stan Nesi | Created: 2026-10-27 | Updated: 2026-10-27
+Notes: Vibe coded with Codex.
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PRD Convert — HTML Report</title>
+    <style>body { max-width: 760px; margin: auto; color: #5927b0; }</style>
+    <script>window.prdSourceScriptRan = true;</script>
+  </head>
+  <body>
+    <h1>Portable HTML report</h1>
+    <p>This document becomes <strong>structured, responsive content</strong> inside PRD.</p>
+    <h2 id="details">Preserved structure</h2>
+    <ul>
+      <li>Headings, paragraphs, lists and quotes</li>
+      <li>Simple tables, links and local raster images</li>
+      <li>Declared package resources and a conversion report</li>
+    </ul>
+    <blockquote>Reading does not require running the source document's scripts.</blockquote>
+    <figure>
+      <img src="flow.png" alt="Three connected portable content blocks">
+      <figcaption>A local image embedded as a declared PRD asset.</figcaption>
+    </figure>
+    <table>
+      <caption>Conversion behavior</caption>
+      <thead><tr><th>Source feature</th><th>PRD result</th></tr></thead>
+      <tbody>
+        <tr><td>Semantic HTML</td><td>Canonical structured nodes</td></tr>
+        <tr><td>CSS and scripts</td><td>Omitted from reading; reported</td></tr>
+        <tr><td>Source retention</td><td>Reported by the selected conversion workflow</td></tr>
+      </tbody>
+    </table>
+    <p>Visit the <a href="https://github.com/eonhive/PRD">PRD repository</a> or
+      <a href="#details">return to preserved structure</a>.</p>
+  </body>
+</html>

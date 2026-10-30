@@ -50,11 +50,69 @@
       "expected": {
         "validation": {
           "valid": true,
-          "warningCodes": ["comic-html-entry-legacy"]
+          "warningCodes": [
+            "comic-html-entry-legacy"
+          ]
         },
         "runtime": {
           "supportState": "safe-mode",
           "renderMode": "html-fallback-rendered"
+        }
+      }
+    },
+    {
+      "id": "general-document-required-capability",
+      "path": "examples/runtime-conformance/fixtures/general-document-required-capability",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-required-capability-array",
+      "path": "examples/runtime-conformance/fixtures/general-document-required-capability-array",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-required-extension",
+      "path": "examples/runtime-conformance/fixtures/general-document-required-extension",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-optional-extension",
+      "path": "examples/runtime-conformance/fixtures/general-document-optional-extension",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "fully-supported",
+          "renderMode": "structured-json-rendered"
         }
       }
     },
@@ -64,7 +122,107 @@
       "expected": {
         "validation": {
           "valid": true,
-          "warningCodes": ["profile-unknown"]
+          "warningCodes": [
+            "profile-unknown"
+          ]
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-version-supported",
+      "path": "examples/runtime-conformance/fixtures/general-document-version-supported",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "fully-supported",
+          "renderMode": "structured-json-rendered"
+        }
+      }
+    },
+    {
+      "id": "general-document-future-version",
+      "path": "examples/runtime-conformance/fixtures/general-document-future-version",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-min-viewer",
+      "path": "examples/runtime-conformance/fixtures/general-document-min-viewer",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-malformed-min-viewer",
+      "path": "examples/runtime-conformance/fixtures/general-document-malformed-min-viewer",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-future-content",
+      "path": "examples/runtime-conformance/fixtures/general-document-future-content",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-future-section",
+      "path": "examples/runtime-conformance/fixtures/general-document-future-section",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
+        },
+        "runtime": {
+          "supportState": "unsupported-required-capability",
+          "renderMode": "unsupported-entry-mode"
+        }
+      }
+    },
+    {
+      "id": "general-document-future-locale",
+      "path": "examples/runtime-conformance/fixtures/general-document-future-locale",
+      "expected": {
+        "validation": {
+          "valid": true,
+          "warningCodes": []
         },
         "runtime": {
           "supportState": "unsupported-required-capability",

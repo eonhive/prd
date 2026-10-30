@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "required-capability-array",
+  "title": "Unsupported required capability array",
+  "children": [
+    { "type": "paragraph", "text": "Legacy capability arrays also declare required behavior." }
+  ]
+}

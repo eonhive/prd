@@ -21,11 +21,12 @@ The release channel is:
 
 - npm `latest`
 
-The public preview package set is limited to:
+As rechecked on October 30, 2026, those four packages remain on npm `latest` at `0.1.1`; `@eonhive/prd-converter` is not yet published. The current release-check catalog now includes it for its first Changesets release:
 
 - `@eonhive/prd-types`
 - `@eonhive/prd-validator`
 - `@eonhive/prd-packager`
+- `@eonhive/prd-converter` (repository implementation; publication pending)
 - `@eonhive/prd-cli`
 
 The following workspace packages stay private:
@@ -51,13 +52,12 @@ Internal dependency order remains:
 1. `@eonhive/prd-types`
 2. `@eonhive/prd-validator`
 3. `@eonhive/prd-packager`
-4. `@eonhive/prd-cli`
+4. `@eonhive/prd-converter`
+5. `@eonhive/prd-cli`
 
 Changesets is the release source of truth for version planning and publish orchestration.
 
-After the coordinated first-preview/corrective baseline, public package versions are independent. The current Changesets configuration has no fixed or linked release group. For example, a CLI-only minor release can target `@eonhive/prd-cli@0.2.0` while unchanged libraries remain at `0.1.1`; this is an illustrative version plan, not a statement that the release is published. Do not bump unrelated packages solely to satisfy a gate's former one-version assumption.
-
-Preflight and registry audit retain the exact four-package boundary. They accept stable post-preview versions per package, reject malformed/unconfigured prerelease versions and mixed first-preview/post-preview sets, and keep npm auth/org and consumer-safe metadata requirements unchanged. Registry audit verifies each expected version and each package's own `latest` tag, not one shared toolchain version. Changesets and declared dependency ranges determine necessary dependent updates; external consumer smoke still proves the installed combination works.
+Under PRD-057, public npm versions are independent. Changesets `fixed` and `linked` groups remain empty; changesets and dependency updates determine each package's next version. A tooling release does not force unrelated packages to the same version. Preflight accepts independently selected stable versions (including the converter’s first version), rejects malformed/prerelease install specs, registry audit checks each package's declared version and `latest` tag, and the CI consumer installs exact per-package versions from the release commit. `scripts/release-packages.mjs` is the shared five-package catalog used by these checks and tarball smoke.
 
 ---
 
@@ -76,23 +76,23 @@ Releases do **not** publish from:
 
 Local development may still use older Node versions for non-release work, but the supported release environment is:
 
-- **Node.js 20+**
+- **Node.js 22** for release validation/publication
 - the repo root `.nvmrc` pins local release work to Node 22
 
-CI release validation currently runs on Node 22, and post-publish consumer smoke runs on Node 20 to verify the declared package floor.
+CI release validation runs on Node 22, and post-publish consumer smoke runs on Node 20 for baseline packaging, authoring and Markdown/HTML/image conversion. Optional PDF extraction requires Node 22.13+ and is covered by the separate release/tarball gates; this consumer lane does not claim Node 20 PDF support.
 
 ---
 
 ## 4. Publish Gate
 
-No public npm release is treated as complete unless all of these are green in CI on Node 20+:
+No public npm release is treated as complete unless these pass in Node 22 release CI, with the separate Node 20 baseline consumer check also green:
 
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm build`
 - `pnpm examples:validate`
 - `pnpm examples:smoke` (canonical aggregate smoke command)
-- tarball smoke tests for all four public packages
+- tarball smoke tests for all five public packages, including the consumer workflow against local tarballs
 - release publish preflight passes with a valid npm token and verified `eonhive` org access
 - release workflow itself is healthy
 - post-publish registry audit confirms npm metadata is consumer-safe (no `workspace:*` dependency values in published manifests)
@@ -105,30 +105,8 @@ For CI annotation/reporting, smoke-capable release/check jobs should run:
 
 `--json-summary` is a supported smoke option intended for machine-readable CI summaries/artifacts.
 
-The first-preview bootstrap path has already been used for the initial `0.1.0` publication. For the one-time `0.1.0` public preview, the Release workflow first runs `pnpm release:preflight`, then checks npm for the current preview package versions and publishes any still-unpublished preview packages directly in dependency order before falling through to normal Changesets automation.
+The one-time four-package bootstrap is complete and removed from current CI. Its historical script remains available for explicitly owner-approved recovery only; new packages, including the converter, use Changesets and never use that bootstrap. Internal release/registry/consumer summary contracts are now independently versioned as `prd-release-publish-preflight-v0.2`, `prd-release-registry-audit-v0.2` and `prd-external-consumer-smoke-v0.2`. The preflight's retained `bootstrapMode` fields report `changesets-versioned`, with both eligibility/required flags false. Public CLI JSON, format, schema and library contracts are unchanged.
 
-After `0.1.0` exists on npm, normal Changesets release flow remains the source of truth for `0.1.1+`. The post-publish verification lane then must run `pnpm release:audit:registry` before the external npm consumer smoke path is treated as authoritative.
+The Release workflow is restricted to `main` and serialized without canceling a running publish. It calls the read-only reusable consumer workflow only when [Changesets v1 reports `published == 'true'`](https://github.com/changesets/action/blob/maintenance/v1/README.md#outputs). A successful version-PR update does not trigger published-consumer checks for packages that have not shipped. Verification checks out the release commit, runs registry audit first, then installs exact declared versions with `node scripts/external-consumer-smoke.mjs --workspace-versions`. Manual read-only verification remains available through `workflow_dispatch`. The consumer receives no inherited publisher secrets.
 
-### Authoring consumer verification
-
-`release:check` also runs the external consumer flow against the four locally
-packed tarballs with authoring required, independently of their current version.
-It creates starters for all three profiles, imports Markdown with a local image,
-and imports naturally ordered images for both comic and storyboard. Each output
-is validated, inspected, packed, then validated and inspected as an archive.
-Checks verify JSON success/profile/source facts and imported source bytes/order.
-
-Post-publish consumer smoke automatically requires these authoring scenarios when
-the checked-out CLI manifest targets stable `0.2.0` or later, the first planned
-authoring release. It does not infer support from help text or skip a failing
-command. The existing `0.1.x` published baseline retains the six original
-installation/pack/validate/inspect checks. The summary's additive
-`authoringRequired` field distinguishes the two modes; malformed expected CLI
-versions and preparation failures produce failed summaries.
-
-The tarball summary is
-`examples/dist/release-authoring-consumer-smoke-summary.json`; the existing npm
-summary path and `prd-external-consumer-smoke-v0.1` contract remain unchanged.
-Tarball checks establish release-candidate compatibility, not npm availability.
-Actual publication still requires the CI credential gates, version PR review,
-registry audit and successful authoring consumer checks against npm packages.
+The current consumer requires 48 steps: baseline install/pack/validate/inspect, all three profile starters, Markdown and both comic/storyboard image imports with directory/archive validation and inspection, HTML import, SDK conversion with byte-exact source/report checks, and CLI conversion with validation/inspection. The upstream `authoringRequired` flag and stable-CLI-version check remain; current CLI `0.2.0+` and local tarball verification require the full authoring matrix. Preparation and command failures produce failed summaries and stop subsequent steps. Registry audit rejects missing expected versions, wrong `latest`, deprecated expected releases and unsafe dependency metadata. Local code/tests passing does not mean npm publication, authenticated publisher access, GitHub execution, deployment or live Convert UI acceptance has completed.

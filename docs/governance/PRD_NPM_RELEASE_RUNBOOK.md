@@ -8,7 +8,7 @@ This runbook is for maintainers publishing the PRD tooling packages.
 
 Before release work:
 
-- use Node 20+
+- use Node 22 for release validation/publication; the separate Node 20 consumer lane checks the baseline package floor
 - align your shell to the repo `.nvmrc` when using `nvm`
 - ensure `main` is green in CI
 - ensure `NPM_TOKEN` is configured in GitHub Actions
@@ -28,10 +28,11 @@ pnpm release:audit:registry
 - npm auth works for the token
 - the token owner is visible in the `eonhive` npm org
 - the repo is still targeting the expected `@eonhive/prd-*` package set
-- release mode is correct for the package-specific versions: all four at `0.1.0` may use historical first-preview bootstrap; stable versions above `0.1.0`, including unequal versions, use normal Changesets mode
-- malformed versions, unconfigured prerelease/build-label channels, or mixed `0.1.0`/post-preview sets fail closed
+- all five public targets are present, including `@eonhive/prd-converter`
+- package versions may differ; each is released through Changesets
+- the historical initial-preview bootstrap is not used
 
-It emits `examples/dist/release-publish-preflight-summary.json`.
+It emits `examples/dist/release-publish-preflight-summary.json` with contract `prd-release-publish-preflight-v0.2`. `packageTargets.versionPolicy` is `independent`; retained `bootstrapMode` fields report `changesets-versioned`, `previewEligible: false` and `bootstrapRequired: false`. No token or publishing permissions were configured by the October 30 implementation task. Maintainers must verify the existing CI token also permits publishing the new converter package.
 
 The CLI also prints the status of each check and required recovery actions.
 Inside Actions it appends the same report to the job's step summary, preserving
@@ -44,12 +45,13 @@ artifact on failure.
 `pnpm release:audit:registry` is the post-publish registry metadata gate. It verifies:
 
 - each public package resolves on npm
-- each package's own expected version is published
-- each package's npm `latest` resolves to its own expected version; versions need not match across packages
+- the expected version is published
+- npm `latest` resolves to that expected version
+- the expected version is not deprecated
 - published dependencies contain no `workspace:*` values
 - internal `@eonhive/prd-*` dependency edges resolve to concrete semver ranges
 
-It emits `examples/dist/release-registry-audit-summary.json`.
+It emits `examples/dist/release-registry-audit-summary.json` with contract `prd-release-registry-audit-v0.2`. Each target is compared against its own workspace version; equality across the toolchain is not required. Before first converter publication, its missing-package failure is expected and prevents claiming the release has shipped.
 
 `pnpm examples:smoke` is the canonical aggregate smoke gate command.
 When CI/release checks need machine-readable annotation artifacts, run:
@@ -83,27 +85,28 @@ pnpm changeset
 4. review and merge that version PR
 5. let the Release workflow publish the packages from `main`
 
-Review `pnpm release:status` before versioning. Keep CLI-only changesets CLI-only unless real dependency changes require coordinated bumps. The version PR may legitimately contain different public versions; `release:preflight` must not require version equality. On an independent release, leave `PRD_NPM_VERSION` unset for post-publish consumer smoke so it installs each package's `latest`. That optional single-version override is for deliberate coordinated-version checks only.
+Public versions follow independent Changesets planning with empty `fixed`/`linked` groups. Review each planned version and concrete internal dependency range in the version PR; do not bump unchanged packages just to match another package's number. A real versioning preview applied only to a temporary workspace on October 30 left `prd-types` at `0.1.1`, planned `prd-validator`, `prd-packager`, `prd-converter` and `prd-cli` at `0.2.0`, and updated their internal ranges accordingly. This is evidence for the then-current queue, not a hardcoded next-release version. Checkout manifests were not changed by that preview.
 
-The gate fix alone does not ship queued features. After its merge, review the version PR's exact packages, versions, and dependency ranges; run `release:check`; publish only through the existing `main` workflow; and require per-package registry audit plus clean external-consumer verification before updating availability claims. Do not version or publish unfinished primary-checkout changes as part of a gate-only patch.
+Release runs are serialized and restricted to `main`. After an actual Changesets publish, the Release job calls the reusable `Post-Publish Consumer Smoke` workflow at the release commit. Creating/updating a version PR does not trigger it. The consumer audits registry metadata and runs `node scripts/external-consumer-smoke.mjs --workspace-versions`, installing each commit-declared version rather than assuming one shared version or following changing dist-tags. It has read-only repository permissions and no inherited publisher secrets. Maintainers can also dispatch read-only verification manually.
+
+The consumer's `prd-external-consumer-smoke-v0.2` summary records five install specs and 48 steps: six baseline package checks, 36 authoring round-trip checks (three profile starters, Markdown, and comic/storyboard image imports), then six HTML/SDK/CLI conversion checks. The original JSON/profile/source-byte/order verifiers remain active; `authoringRequired` still identifies the complete authoring matrix. The identical runner executes against five local tarballs during `pnpm release:check` before publication. `PRD_NPM_VERSION`/`PRD_NPM_DIST_TAG` and explicit programmatic `packageSpecs` remain available for manual checks; `--workspace-versions` is the normal exact-version CI path. A setup failure is a failed summary, not a passing run with no commands.
 
 Do not publish manually from a workstation unless the release workflow is unavailable and the repo owner explicitly approves that exception.
 
 ---
 
-## 3. First Public Preview
+## 3. First Public Preview — Historical
 
-The first public preview uses the current unpublished `0.1.0` package versions.
+The original first public preview used the then-unpublished `0.1.0` versions of the four original packages.
 
 That means:
 
-- the release workflow first runs `pnpm release:preflight`
-- the release workflow first runs `pnpm release:bootstrap --publish`
-- that bootstrap step checks npm for the current `0.1.0` package versions
-- any still-unpublished preview packages are published directly in dependency order
-- future releases should use normal Changesets version PR flow
+- the historical workflow ran preflight and the one-time bootstrap
+- it checked npm for the original `0.1.0` versions
+- it published missing original packages in dependency order
+- current releases use normal Changesets version PR flow
 
-For stable unpublished post-preview versions, whether unified or package-specific, `pnpm release:preflight` should pass in normal Changesets mode (with auth/org checks satisfied) and `pnpm release:bootstrap --publish` should no-op. Only an all-`0.1.0` workspace is bootstrap-eligible.
+That automatic bootstrap step is retired from CI. The script's original four-package allowlist is deliberately unchanged and does not include the converter. Its local publish mode is historical owner-approved recovery tooling, not the path for onboarding or releasing new packages.
 
 The publish set for the first preview is:
 
@@ -112,16 +115,7 @@ The publish set for the first preview is:
 - `@eonhive/prd-packager`
 - `@eonhive/prd-cli`
 
-After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking. Once the checked-out CLI version targets stable `0.2.0` or later, authoring checks are also required automatically: three profile starters, Markdown with a local image, and comic/storyboard image imports, with directory/archive validation and inspection for each. Missing commands, incorrect JSON/profile/source facts and changed import bytes/order fail the run; they are not treated as optional capabilities.
-
-Before publication, `release:check` runs the same authoring flow against installed
-local tarballs even while the repository version is still `0.1.1`. Its retained
-summary is `examples/dist/release-authoring-consumer-smoke-summary.json` (42 steps:
-six baseline checks plus six checks for each authoring scenario). The npm summary
-includes `authoringRequired`; a passing legacy six-step `0.1.x` run does not prove
-the new authoring commands shipped. Preparation failures also fail the summary
-and CLI exit. Keep availability notes unchanged until the expected CLI release,
-per-package audit and 42-step npm authoring run are verified.
+After an actual publish on `main`, the current reusable consumer workflow must pass. Its expanded scope is described above; the initial four-package flow exercised `pack`, `validate` and `inspect` without workspace linking.
 
 ## 4. Corrective 0.1.1 Release
 
@@ -207,7 +201,7 @@ the publisher still uses setup-node's placeholder. See the
 [setup-node publishing example](https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-npm)
 and the [Changesets action implementation](https://github.com/changesets/action/blob/a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d/src/index.ts).
 
-Both publishing steps now map the same existing secret to both names:
+PR #71 mapped the same existing secret to both variable names for the then-existing publishers. The integrated converter workflow retains this mapping on Changesets publication and retires automatic bootstrap:
 
 ```yaml
 env:
@@ -222,13 +216,13 @@ preflight order, CI-only publication and provenance requirement. A loopback-only
 npm test reproduces the shadowed-home-npmrc failure and confirms the corrected
 mapping with fake credentials; it does not prove real registry write access.
 
-Review/merge the workflow correction, then run Release on the corrected main
-revision. Rerunning an older revision does not apply this workflow fix. If the
+The workflow correction is merged in main. A future Release must use that corrected
+revision or a reviewed descendant; rerunning an older revision does not apply the fix. If the
 corrected publisher still receives `E404`, inspect the npm account's package/team
 write access and the granular token's package scope and publishing permissions;
 do not infer those permissions from organization membership alone. Keep CLI
-`0.2.0` unpublished in availability notes until registry audit and the 42-step npm
-authoring consumer flow pass. Do not bump the version or disable provenance to
+`0.2.0` unpublished in availability notes until registry audit and the current 48-step npm
+authoring/conversion consumer flow pass. Do not bump the version or disable provenance to
 hide a failed publish.
 
 ---
@@ -257,3 +251,9 @@ Release/check flows should keep smoke gating consistent:
   2. `node ./scripts/external-consumer-smoke.mjs`
 
 `release:publish` exists for workflow use and emergency maintainer recovery. It is not the default day-to-day path.
+
+## Integrated converter review — October 30, 2026
+
+The review branch preserves PR #71’s step-scoped `NODE_AUTH_TOKEN` mapping and preflight reporting. Only the Changesets publishing step remains: completed first-preview bootstrap is retired from automatic CI under PRD-057. Codex CI and release validation use Node 22; the separate read-only post-publish baseline consumer remains Node 20.
+
+Read-only npm checks on October 30 still show the original four packages at `0.1.1`, no CLI `0.2.0`, and no converter publication. The newly calculated Changesets plan is CLI `0.3.0`, validator/packager/converter `0.2.0`, with types unchanged at `0.1.1`. This is a candidate plan, not a publication or a manual version update. Review the version PR’s actual versions and concrete dependency ranges after this implementation merges.

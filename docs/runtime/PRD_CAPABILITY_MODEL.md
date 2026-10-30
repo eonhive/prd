@@ -1,5 +1,5 @@
 # PRD_CAPABILITY_MODEL.md
-_Last updated: April 16, 2026_
+_Last updated: October 29, 2026_
 _Status: Canonical runtime capability draft v0.2_
 
 ## 1. Capability Philosophy
@@ -98,6 +98,8 @@ Rules:
 - structured `comic` and `storyboard` entry support is currently tracked through profile/runtime conformance rather than new required capability identifiers
 - `base-entry-html` remains relevant only for legacy HTML fallback paths; it is not the canonical base document capability for any core profile
 - when the current reference viewer opens an HTML fallback path, it should report that path as restricted `safe-mode` behavior rather than the canonical fully-supported structured path
+
+The private web host now applies PRD-051's [HTML fallback policy](PRD_HTML_FALLBACK_POLICY.md) to every HTML preparation path: local reading markup/media only, no authored navigation/CSS/active content, default-deny CSP and an opaque frame. The defensive alternate branch shares this compiler without changing the existing JSON-only localized-entry validation rule. No capability ID/public descriptor field or extra privilege for signed packages is added. Browser request/navigation acceptance is tracked separately from generated-markup tests.
 - `audio-playback`, `ambient-audio`, `narration-audio`, and `text-to-speech` are examples of optional capabilities that may improve the experience without changing minimal validity
 - AI reader personalities, summarizers, or other assistant behaviors remain viewer/runtime product logic unless a later higher-priority PRD spec defines a narrower interoperable declaration
 
@@ -140,10 +142,10 @@ Capability negotiation should happen in this order:
 1. Open the package and read the public manifest.
 2. Resolve base package validity first.
 3. Read `compatibility` and declared extensions.
-4. Compare document `required` capabilities against viewer/renderer supported capabilities.
-5. If all required capabilities are supported, open normally.
-6. If some required capabilities are unsupported, attempt safe mode or a declared static fallback when available.
-7. Ignore unsupported optional capabilities if base readability can still be preserved.
+4. Compare declared versions/minimum viewer, document `required` capabilities and explicit required extension declarations against implemented runtime support.
+5. If all required behavior is supported, open normally.
+6. If required behavior is unsupported, use a truthful declared fallback when its contract is implemented, or report the unsupported state without opening content.
+7. Ignore unsupported optional capabilities/extensions if base readability can still be preserved.
 
 Rules:
 
@@ -151,6 +153,27 @@ Rules:
 - optional capabilities must not block the base open path
 - unsupported required extensions must not be silently ignored
 - negotiation must prefer safety and truthful reporting over speculative rendering
+
+Current executable required-capability handling (October 27, 2026):
+
+- `openPrdDocument` compares `compatibility.capabilities.required` with `PRD_REFERENCE_VIEWER_SUPPORTED_CAPABILITIES` after profile normalization and before reading the content entry.
+- The legacy `compatibility.capabilities: string[]` form is also interpreted as required capabilities.
+- Unsupported requirements return `unsupported-required-capability`, normalized manifest/profile/entry facts and a message naming missing capabilities. No structured or HTML render payload is read or returned, and no undeclared fallback is invented.
+- The web app stops content/resource preparation for this state, including localized alternate entries, while retaining validation and package facts.
+- Supported requirements and unknown optional capabilities preserve existing opening behavior. Package validity remains the validator's responsibility.
+- Version compatibility now follows PRD-046 and the exact [reference opening policy](../core/PRD_VERSIONING_POLICY.md#42-reference-viewer-opening-baseline). General static-fallback declarations and migration remain separate follow-up work.
+
+Current executable required-extension handling (October 27, 2026):
+
+- Only array-form `extensions` declarations with the explicit boolean `required: true` declare required behavior. False or omitted requirements remain optional. The accepted object-form placeholder stays opaque metadata; field names inside it are not reinterpreted as declarations.
+- Viewer-core currently implements no required extension contracts. Every explicit required extension therefore returns the existing `unsupported-required-capability` state before entry, extension payload, asset or locale reads. The message names its extension ID; combined capability/extension failures report both categories. No new support-state label or public descriptor field is introduced.
+- Normalized manifest/profile/entry/localization facts remain available. The web app's existing unsupported-state guard also stops localized alternate entries and resource URL preparation. No fallback is inferred from an ordinary root, HTML entry or optional capability.
+- This is an interpretation boundary after structural validation, not a partial-loading claim: archive bytes are still loaded eagerly and the validator still inspects content before runtime opening.
+- Optional unknown IDs/versions preserve base opening and existing legacy HTML safe-mode behavior. Structural validation and CLI validation/inspection remain unchanged.
+- Capability identifiers and extension identifiers are separate namespaces. Supporting a capability with the same name does not establish extension support. The host's optional `eonhive.signature` verification does not make it a viewer-core required-extension handler; signature-v1 itself requires `required: false`.
+- No required-extension version is accepted merely because its ID is familiar. A later handler needs a specified version/payload contract and positive/negative conformance evidence before this unsupported baseline can change. Version migration, fallback contracts and a general extension registry are outside this implementation.
+
+Current version checks (October 28, 2026) retain structural validity as a separate result. Unsupported format/manifest/canonical-profile versions or minimum-viewer requirements stop before entry reads. Unsupported structured root, referenced section or localized alternate versions stop before a render payload is returned. They reuse `unsupported-required-capability` and the web host's existing no-locale/resource-preparation guard. The runtime checks only declared presentation files; it does not infer new version fields for unversioned controls or unrelated JSON. Numeric two-part legacy minimums such as `0.1` remain supported.
 
 ### 4.1 Safe mode
 
@@ -195,7 +218,7 @@ The current support-state labels are:
 | `static-fallback` | a snapshot or other static fallback path is used instead of the intended live or rich path |
 | `protected-unavailable` | protected/private material is not available, but the public/base path remains readable |
 | `unsupported-extension-ignored` | an optional unsupported extension was ignored without breaking the base path |
-| `unsupported-required-capability` | the intended experience cannot be honored because a required capability is missing |
+| `unsupported-required-capability` | the intended experience cannot be honored because a required capability, extension or version requirement is unsupported |
 
 These labels describe runtime state. They do not change whether the package is structurally valid.
 
@@ -311,10 +334,13 @@ Document:
 {
   "compatibility": {
     "capabilities": {
-      "required": ["general-document-structured-root", "custom-renderer-x"],
+      "required": ["general-document-structured-root"],
       "optional": ["static-snapshot"]
     }
-  }
+  },
+  "extensions": [
+    { "id": "custom-renderer-x", "version": "1.0", "required": true }
+  ]
 }
 ```
 
@@ -332,8 +358,8 @@ Viewer:
 
 Result:
 
-- `static-fallback`, if a truthful static fallback exists
-- otherwise `unsupported-required-capability`
+- `unsupported-required-capability` in the current reference viewer, with no content read
+- a later runtime may use `static-fallback` only when an explicit fallback contract is implemented; the optional `static-snapshot` capability alone does not define one
 
 ### 6.5 Web novel package with optional narration and TTS
 

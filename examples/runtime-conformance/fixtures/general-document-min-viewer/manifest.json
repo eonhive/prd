@@ -1,0 +1,11 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:general-document-min-viewer",
+  "profile": "general-document",
+  "title": "Newer viewer required",
+  "entry": "content/root.json",
+  "compatibility": {
+    "minViewer": "0.2"
+  }
+}

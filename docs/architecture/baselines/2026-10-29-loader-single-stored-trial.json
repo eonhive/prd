@@ -1,0 +1,3197 @@
+{
+  "contractVersion": "prd-loader-baseline-v1",
+  "generatedAt": "2026-10-30T00:43:13.076Z",
+  "sampleCount": 5,
+  "environment": {
+    "node": "v24.5.0",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M1"
+  },
+  "implementation": {
+    "packages/prd-validator/dist/container.js": "9307cb0aa80ead6e0edbae29234da14cb09ca69c9ec2a08ce99a4828a789fde3",
+    "packages/prd-validator/dist/zipRecords.js": "3d805b169a7637fc35751b91ef354ef6f5cee1f724002f23223430175185f1bb",
+    "packages/prd-validator/dist/index.js": "ff80de42784cc1a19751d34bcb6e984bd2f1e10b5a044c46309cd7efdbf6667e",
+    "packages/prd-viewer-core/dist/index.js": "9f368af65ddf5c3de98e6ceb9b452b48e5f8233e1b9b89d5e56277f9750eccd0"
+  },
+  "archiveLimits": {
+    "maxArchiveBytes": 67108864,
+    "maxExpandedBytes": 134217728,
+    "maxFileBytes": 33554432,
+    "maxEntries": 10000
+  },
+  "method": "One warmup then measured warm-cache repetitions; a fresh --expose-gc child per fixture/compression/transport. Decode includes envelope, record/path/budget checks, DEFLATE or stored copying, CRC and complete file materialization. Validate then parse the default root through viewer-core. Hash every logical file outside timing and check fixture parity. Peak RSS is lifetime process high-water including imports, warmup and digest checks; snapshots are after opening, not transient peaks. No app section/locale expansion, signature verification, Blob/image decode, browser layout/paint/GPU, cold-cache or device claims.",
+  "cases": [
+    {
+      "id": "document-basic/level-0/zip",
+      "fixture": "document-basic",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 13599,
+      "archiveSha256": "c3fa71802adad5e59e722feb80dae2cd12be24236b8df19bf12d8b48b20b813c",
+      "logicalSha256": "b5e2e18a386b0927af8ee507f1afdd8f2998f74cf449a9c5dece6b89bdf2d2de",
+      "fileCount": 11,
+      "materializedBytes": 12215,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.309,
+          "decodeMs": 0.215,
+          "validateMs": 0.218,
+          "interpretMs": 0.052,
+          "totalMs": 0.794,
+          "memoryAfter": {
+            "rss": 58146816,
+            "heapUsed": 6011464,
+            "external": 2405288,
+            "arrayBuffers": 270447
+          }
+        },
+        {
+          "readMs": 0.25,
+          "decodeMs": 0.163,
+          "validateMs": 0.185,
+          "interpretMs": 0.049,
+          "totalMs": 0.647,
+          "memoryAfter": {
+            "rss": 58277888,
+            "heapUsed": 5815752,
+            "external": 2405288,
+            "arrayBuffers": 270447
+          }
+        },
+        {
+          "readMs": 0.238,
+          "decodeMs": 0.159,
+          "validateMs": 0.192,
+          "interpretMs": 0.044,
+          "totalMs": 0.632,
+          "memoryAfter": {
+            "rss": 58327040,
+            "heapUsed": 5659752,
+            "external": 2405288,
+            "arrayBuffers": 270447
+          }
+        },
+        {
+          "readMs": 0.31,
+          "decodeMs": 0.189,
+          "validateMs": 0.231,
+          "interpretMs": 0.047,
+          "totalMs": 0.777,
+          "memoryAfter": {
+            "rss": 58392576,
+            "heapUsed": 5820776,
+            "external": 2405288,
+            "arrayBuffers": 270447
+          }
+        },
+        {
+          "readMs": 0.203,
+          "decodeMs": 0.168,
+          "validateMs": 0.192,
+          "interpretMs": 0.048,
+          "totalMs": 0.612,
+          "memoryAfter": {
+            "rss": 58441728,
+            "heapUsed": 5717384,
+            "external": 2405288,
+            "arrayBuffers": 270447
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.25,
+        "decodeMs": 0.168,
+        "validateMs": 0.192,
+        "interpretMs": 0.048,
+        "totalMs": 0.647
+      },
+      "maxTotalMs": 0.794,
+      "processPeakRssKiB": 57104,
+      "gcExposed": true
+    },
+    {
+      "id": "document-basic/level-0/prd",
+      "fixture": "document-basic",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 13615,
+      "archiveSha256": "51a1a7845beaf3c1b7fe6fe9675a44b82cb4692cb3fe7a3feb71f26d54d13272",
+      "logicalSha256": "b5e2e18a386b0927af8ee507f1afdd8f2998f74cf449a9c5dece6b89bdf2d2de",
+      "fileCount": 11,
+      "materializedBytes": 12215,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.242,
+          "decodeMs": 0.222,
+          "validateMs": 0.236,
+          "interpretMs": 0.055,
+          "totalMs": 0.755,
+          "memoryAfter": {
+            "rss": 58507264,
+            "heapUsed": 5842864,
+            "external": 2405320,
+            "arrayBuffers": 270479
+          }
+        },
+        {
+          "readMs": 0.238,
+          "decodeMs": 0.168,
+          "validateMs": 0.184,
+          "interpretMs": 0.05,
+          "totalMs": 0.639,
+          "memoryAfter": {
+            "rss": 58638336,
+            "heapUsed": 5907616,
+            "external": 2405320,
+            "arrayBuffers": 270479
+          }
+        },
+        {
+          "readMs": 0.276,
+          "decodeMs": 0.163,
+          "validateMs": 0.199,
+          "interpretMs": 0.044,
+          "totalMs": 0.683,
+          "memoryAfter": {
+            "rss": 58671104,
+            "heapUsed": 5661256,
+            "external": 2405320,
+            "arrayBuffers": 270479
+          }
+        },
+        {
+          "readMs": 0.191,
+          "decodeMs": 0.158,
+          "validateMs": 0.16,
+          "interpretMs": 0.043,
+          "totalMs": 0.551,
+          "memoryAfter": {
+            "rss": 58703872,
+            "heapUsed": 5881672,
+            "external": 2405320,
+            "arrayBuffers": 270479
+          }
+        },
+        {
+          "readMs": 0.292,
+          "decodeMs": 0.162,
+          "validateMs": 0.184,
+          "interpretMs": 0.047,
+          "totalMs": 0.685,
+          "memoryAfter": {
+            "rss": 58785792,
+            "heapUsed": 5718424,
+            "external": 2405320,
+            "arrayBuffers": 270479
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.242,
+        "decodeMs": 0.163,
+        "validateMs": 0.184,
+        "interpretMs": 0.047,
+        "totalMs": 0.683
+      },
+      "maxTotalMs": 0.755,
+      "processPeakRssKiB": 57424,
+      "gcExposed": true
+    },
+    {
+      "id": "document-basic/level-6/zip",
+      "fixture": "document-basic",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 5649,
+      "archiveSha256": "a1198602784191d07814fe2990ef38b03ec4807af74980b3752f7be79c6f606f",
+      "logicalSha256": "b5e2e18a386b0927af8ee507f1afdd8f2998f74cf449a9c5dece6b89bdf2d2de",
+      "fileCount": 11,
+      "materializedBytes": 12215,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.314,
+          "decodeMs": 1.329,
+          "validateMs": 0.27,
+          "interpretMs": 0.061,
+          "totalMs": 1.975,
+          "memoryAfter": {
+            "rss": 63340544,
+            "heapUsed": 6110328,
+            "external": 7923367,
+            "arrayBuffers": 5788526
+          }
+        },
+        {
+          "readMs": 0.311,
+          "decodeMs": 0.86,
+          "validateMs": 0.203,
+          "interpretMs": 0.052,
+          "totalMs": 1.427,
+          "memoryAfter": {
+            "rss": 63455232,
+            "heapUsed": 5901096,
+            "external": 7923367,
+            "arrayBuffers": 5788526
+          }
+        },
+        {
+          "readMs": 0.274,
+          "decodeMs": 0.646,
+          "validateMs": 0.225,
+          "interpretMs": 0.049,
+          "totalMs": 1.194,
+          "memoryAfter": {
+            "rss": 63488000,
+            "heapUsed": 5817672,
+            "external": 7923367,
+            "arrayBuffers": 5788526
+          }
+        },
+        {
+          "readMs": 0.369,
+          "decodeMs": 0.649,
+          "validateMs": 0.232,
+          "interpretMs": 0.053,
+          "totalMs": 1.303,
+          "memoryAfter": {
+            "rss": 63537152,
+            "heapUsed": 6038224,
+            "external": 7923367,
+            "arrayBuffers": 5788526
+          }
+        },
+        {
+          "readMs": 0.242,
+          "decodeMs": 1.108,
+          "validateMs": 0.197,
+          "interpretMs": 0.05,
+          "totalMs": 1.598,
+          "memoryAfter": {
+            "rss": 63586304,
+            "heapUsed": 5878528,
+            "external": 7923367,
+            "arrayBuffers": 5788526
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.311,
+        "decodeMs": 0.86,
+        "validateMs": 0.225,
+        "interpretMs": 0.052,
+        "totalMs": 1.427
+      },
+      "maxTotalMs": 1.975,
+      "processPeakRssKiB": 62144,
+      "gcExposed": true
+    },
+    {
+      "id": "document-basic/level-6/prd",
+      "fixture": "document-basic",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 5665,
+      "archiveSha256": "80f2924628cf872b1e8f60f65294f1c70c44b06133ccf2e8f19a74a16e410fbc",
+      "logicalSha256": "b5e2e18a386b0927af8ee507f1afdd8f2998f74cf449a9c5dece6b89bdf2d2de",
+      "fileCount": 11,
+      "materializedBytes": 12215,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.247,
+          "decodeMs": 0.927,
+          "validateMs": 0.259,
+          "interpretMs": 0.064,
+          "totalMs": 1.498,
+          "memoryAfter": {
+            "rss": 63455232,
+            "heapUsed": 5941280,
+            "external": 7923399,
+            "arrayBuffers": 5788558
+          }
+        },
+        {
+          "readMs": 0.312,
+          "decodeMs": 1.324,
+          "validateMs": 0.256,
+          "interpretMs": 0.058,
+          "totalMs": 1.949,
+          "memoryAfter": {
+            "rss": 63569920,
+            "heapUsed": 6063064,
+            "external": 7923399,
+            "arrayBuffers": 5788558
+          }
+        },
+        {
+          "readMs": 0.341,
+          "decodeMs": 0.59,
+          "validateMs": 0.223,
+          "interpretMs": 0.047,
+          "totalMs": 1.202,
+          "memoryAfter": {
+            "rss": 63602688,
+            "heapUsed": 5818424,
+            "external": 7923399,
+            "arrayBuffers": 5788558
+          }
+        },
+        {
+          "readMs": 0.243,
+          "decodeMs": 0.515,
+          "validateMs": 0.163,
+          "interpretMs": 0.042,
+          "totalMs": 0.962,
+          "memoryAfter": {
+            "rss": 63619072,
+            "heapUsed": 5840192,
+            "external": 7923399,
+            "arrayBuffers": 5788558
+          }
+        },
+        {
+          "readMs": 0.377,
+          "decodeMs": 0.614,
+          "validateMs": 0.205,
+          "interpretMs": 0.049,
+          "totalMs": 1.245,
+          "memoryAfter": {
+            "rss": 63766528,
+            "heapUsed": 5877160,
+            "external": 7923399,
+            "arrayBuffers": 5788558
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.312,
+        "decodeMs": 0.614,
+        "validateMs": 0.223,
+        "interpretMs": 0.049,
+        "totalMs": 1.245
+      },
+      "maxTotalMs": 1.949,
+      "processPeakRssKiB": 62304,
+      "gcExposed": true
+    },
+    {
+      "id": "document-segmented-basic/level-0/zip",
+      "fixture": "document-segmented-basic",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 4320,
+      "archiveSha256": "513b8eed399d3908446cef6d774b92df1dbe8c12de737ebe7630b8bca1309ca3",
+      "logicalSha256": "15ecfebfdccf4c68d28200ddedd6d8f27bdf7a920f62ba2665cee39acc7c2a24",
+      "fileCount": 7,
+      "materializedBytes": 3418,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.195,
+          "decodeMs": 0.197,
+          "validateMs": 0.136,
+          "interpretMs": 0.049,
+          "totalMs": 0.576,
+          "memoryAfter": {
+            "rss": 58621952,
+            "heapUsed": 5683792,
+            "external": 2369136,
+            "arrayBuffers": 234295
+          }
+        },
+        {
+          "readMs": 0.249,
+          "decodeMs": 0.157,
+          "validateMs": 0.122,
+          "interpretMs": 0.048,
+          "totalMs": 0.576,
+          "memoryAfter": {
+            "rss": 58671104,
+            "heapUsed": 5819000,
+            "external": 2369136,
+            "arrayBuffers": 234295
+          }
+        },
+        {
+          "readMs": 0.282,
+          "decodeMs": 0.155,
+          "validateMs": 0.118,
+          "interpretMs": 0.041,
+          "totalMs": 0.596,
+          "memoryAfter": {
+            "rss": 58867712,
+            "heapUsed": 5823040,
+            "external": 2369136,
+            "arrayBuffers": 234295
+          }
+        },
+        {
+          "readMs": 0.457,
+          "decodeMs": 0.135,
+          "validateMs": 0.123,
+          "interpretMs": 0.041,
+          "totalMs": 0.757,
+          "memoryAfter": {
+            "rss": 58884096,
+            "heapUsed": 5643200,
+            "external": 2369136,
+            "arrayBuffers": 234295
+          }
+        },
+        {
+          "readMs": 0.242,
+          "decodeMs": 0.117,
+          "validateMs": 0.092,
+          "interpretMs": 0.033,
+          "totalMs": 0.485,
+          "memoryAfter": {
+            "rss": 58900480,
+            "heapUsed": 5829008,
+            "external": 2369136,
+            "arrayBuffers": 234295
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.249,
+        "decodeMs": 0.155,
+        "validateMs": 0.122,
+        "interpretMs": 0.041,
+        "totalMs": 0.576
+      },
+      "maxTotalMs": 0.757,
+      "processPeakRssKiB": 57552,
+      "gcExposed": true
+    },
+    {
+      "id": "document-segmented-basic/level-0/prd",
+      "fixture": "document-segmented-basic",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 4336,
+      "archiveSha256": "554cac913489913cb223e3a35ae41a6cf25a043d62335cc1c905cf36f97e9aa9",
+      "logicalSha256": "15ecfebfdccf4c68d28200ddedd6d8f27bdf7a920f62ba2665cee39acc7c2a24",
+      "fileCount": 7,
+      "materializedBytes": 3418,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.181,
+          "decodeMs": 0.204,
+          "validateMs": 0.162,
+          "interpretMs": 0.05,
+          "totalMs": 0.597,
+          "memoryAfter": {
+            "rss": 58408960,
+            "heapUsed": 5988392,
+            "external": 2369168,
+            "arrayBuffers": 234327
+          }
+        },
+        {
+          "readMs": 0.236,
+          "decodeMs": 0.15,
+          "validateMs": 0.151,
+          "interpretMs": 0.051,
+          "totalMs": 0.588,
+          "memoryAfter": {
+            "rss": 58441728,
+            "heapUsed": 5996120,
+            "external": 2369168,
+            "arrayBuffers": 234327
+          }
+        },
+        {
+          "readMs": 0.267,
+          "decodeMs": 0.105,
+          "validateMs": 0.097,
+          "interpretMs": 0.039,
+          "totalMs": 0.507,
+          "memoryAfter": {
+            "rss": 58572800,
+            "heapUsed": 5998744,
+            "external": 2369168,
+            "arrayBuffers": 234327
+          }
+        },
+        {
+          "readMs": 0.23,
+          "decodeMs": 0.099,
+          "validateMs": 0.088,
+          "interpretMs": 0.037,
+          "totalMs": 0.453,
+          "memoryAfter": {
+            "rss": 58589184,
+            "heapUsed": 5643664,
+            "external": 2369168,
+            "arrayBuffers": 234327
+          }
+        },
+        {
+          "readMs": 0.261,
+          "decodeMs": 0.119,
+          "validateMs": 0.093,
+          "interpretMs": 0.032,
+          "totalMs": 0.505,
+          "memoryAfter": {
+            "rss": 58589184,
+            "heapUsed": 6003096,
+            "external": 2369168,
+            "arrayBuffers": 234327
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.236,
+        "decodeMs": 0.119,
+        "validateMs": 0.097,
+        "interpretMs": 0.039,
+        "totalMs": 0.507
+      },
+      "maxTotalMs": 0.597,
+      "processPeakRssKiB": 57264,
+      "gcExposed": true
+    },
+    {
+      "id": "document-segmented-basic/level-6/zip",
+      "fixture": "document-segmented-basic",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 2573,
+      "archiveSha256": "17eb6478decafcf402c641d5c8a3ecf81a70aa666ec1b3fa3590d77d5de42482",
+      "logicalSha256": "15ecfebfdccf4c68d28200ddedd6d8f27bdf7a920f62ba2665cee39acc7c2a24",
+      "fileCount": 7,
+      "materializedBytes": 3418,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.283,
+          "decodeMs": 0.579,
+          "validateMs": 0.157,
+          "interpretMs": 0.051,
+          "totalMs": 1.07,
+          "memoryAfter": {
+            "rss": 60686336,
+            "heapUsed": 5640032,
+            "external": 5359528,
+            "arrayBuffers": 3224687
+          }
+        },
+        {
+          "readMs": 0.174,
+          "decodeMs": 0.47,
+          "validateMs": 0.105,
+          "interpretMs": 0.047,
+          "totalMs": 0.795,
+          "memoryAfter": {
+            "rss": 60801024,
+            "heapUsed": 5912120,
+            "external": 5359528,
+            "arrayBuffers": 3224687
+          }
+        },
+        {
+          "readMs": 0.192,
+          "decodeMs": 0.519,
+          "validateMs": 0.109,
+          "interpretMs": 0.04,
+          "totalMs": 0.86,
+          "memoryAfter": {
+            "rss": 62341120,
+            "heapUsed": 6016640,
+            "external": 5359528,
+            "arrayBuffers": 3224687
+          }
+        },
+        {
+          "readMs": 0.257,
+          "decodeMs": 0.415,
+          "validateMs": 0.091,
+          "interpretMs": 0.031,
+          "totalMs": 0.793,
+          "memoryAfter": {
+            "rss": 62439424,
+            "heapUsed": 5763136,
+            "external": 5359528,
+            "arrayBuffers": 3224687
+          }
+        },
+        {
+          "readMs": 0.232,
+          "decodeMs": 0.459,
+          "validateMs": 0.092,
+          "interpretMs": 0.036,
+          "totalMs": 0.819,
+          "memoryAfter": {
+            "rss": 62472192,
+            "heapUsed": 5930104,
+            "external": 5359528,
+            "arrayBuffers": 3224687
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.232,
+        "decodeMs": 0.47,
+        "validateMs": 0.105,
+        "interpretMs": 0.04,
+        "totalMs": 0.819
+      },
+      "maxTotalMs": 1.07,
+      "processPeakRssKiB": 61072,
+      "gcExposed": true
+    },
+    {
+      "id": "document-segmented-basic/level-6/prd",
+      "fixture": "document-segmented-basic",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 2589,
+      "archiveSha256": "315e65de525ddc20fde26515ec7b5b9c95e35530659f9e530be6ff6727e68f42",
+      "logicalSha256": "15ecfebfdccf4c68d28200ddedd6d8f27bdf7a920f62ba2665cee39acc7c2a24",
+      "fileCount": 7,
+      "materializedBytes": 3418,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.268,
+          "decodeMs": 0.57,
+          "validateMs": 0.152,
+          "interpretMs": 0.051,
+          "totalMs": 1.041,
+          "memoryAfter": {
+            "rss": 60604416,
+            "heapUsed": 5640128,
+            "external": 5359560,
+            "arrayBuffers": 3224719
+          }
+        },
+        {
+          "readMs": 0.186,
+          "decodeMs": 0.492,
+          "validateMs": 0.109,
+          "interpretMs": 0.046,
+          "totalMs": 0.833,
+          "memoryAfter": {
+            "rss": 60686336,
+            "heapUsed": 6066064,
+            "external": 5359560,
+            "arrayBuffers": 3224719
+          }
+        },
+        {
+          "readMs": 0.32,
+          "decodeMs": 0.422,
+          "validateMs": 0.1,
+          "interpretMs": 0.037,
+          "totalMs": 0.879,
+          "memoryAfter": {
+            "rss": 61210624,
+            "heapUsed": 6095456,
+            "external": 5359560,
+            "arrayBuffers": 3224719
+          }
+        },
+        {
+          "readMs": 0.259,
+          "decodeMs": 0.426,
+          "validateMs": 0.099,
+          "interpretMs": 0.033,
+          "totalMs": 0.818,
+          "memoryAfter": {
+            "rss": 61390848,
+            "heapUsed": 5763336,
+            "external": 5359560,
+            "arrayBuffers": 3224719
+          }
+        },
+        {
+          "readMs": 0.227,
+          "decodeMs": 0.436,
+          "validateMs": 0.082,
+          "interpretMs": 0.032,
+          "totalMs": 0.777,
+          "memoryAfter": {
+            "rss": 61423616,
+            "heapUsed": 5909888,
+            "external": 5359560,
+            "arrayBuffers": 3224719
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.259,
+        "decodeMs": 0.436,
+        "validateMs": 0.1,
+        "interpretMs": 0.037,
+        "totalMs": 0.833
+      },
+      "maxTotalMs": 1.041,
+      "processPeakRssKiB": 60064,
+      "gcExposed": true
+    },
+    {
+      "id": "resume-basic/level-0/zip",
+      "fixture": "resume-basic",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 4276,
+      "archiveSha256": "3e91a2f90a5287a6c53d3ab692644ff63114d47d6039b1b9e4c72ceab1f8be28",
+      "logicalSha256": "7e50d4d4ab85f646209095c129ee161cd54d4533187fd3ebf00ca8ece3a0bd20",
+      "fileCount": 6,
+      "materializedBytes": 3572,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.264,
+          "decodeMs": 0.201,
+          "validateMs": 0.135,
+          "interpretMs": 0.047,
+          "totalMs": 0.647,
+          "memoryAfter": {
+            "rss": 58212352,
+            "heapUsed": 5729368,
+            "external": 2369230,
+            "arrayBuffers": 234389
+          }
+        },
+        {
+          "readMs": 0.273,
+          "decodeMs": 0.104,
+          "validateMs": 0.074,
+          "interpretMs": 0.037,
+          "totalMs": 0.488,
+          "memoryAfter": {
+            "rss": 58343424,
+            "heapUsed": 5598560,
+            "external": 2369230,
+            "arrayBuffers": 234389
+          }
+        },
+        {
+          "readMs": 0.32,
+          "decodeMs": 0.096,
+          "validateMs": 0.08,
+          "interpretMs": 0.035,
+          "totalMs": 0.531,
+          "memoryAfter": {
+            "rss": 58408960,
+            "heapUsed": 5995096,
+            "external": 2369230,
+            "arrayBuffers": 234389
+          }
+        },
+        {
+          "readMs": 0.263,
+          "decodeMs": 0.136,
+          "validateMs": 0.091,
+          "interpretMs": 0.037,
+          "totalMs": 0.528,
+          "memoryAfter": {
+            "rss": 58408960,
+            "heapUsed": 5640488,
+            "external": 2369230,
+            "arrayBuffers": 234389
+          }
+        },
+        {
+          "readMs": 0.288,
+          "decodeMs": 0.128,
+          "validateMs": 0.111,
+          "interpretMs": 0.04,
+          "totalMs": 0.567,
+          "memoryAfter": {
+            "rss": 58408960,
+            "heapUsed": 5996792,
+            "external": 2369230,
+            "arrayBuffers": 234389
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.273,
+        "decodeMs": 0.128,
+        "validateMs": 0.091,
+        "interpretMs": 0.037,
+        "totalMs": 0.531
+      },
+      "maxTotalMs": 0.647,
+      "processPeakRssKiB": 57072,
+      "gcExposed": true
+    },
+    {
+      "id": "resume-basic/level-0/prd",
+      "fixture": "resume-basic",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 4292,
+      "archiveSha256": "62d24eb6f0495aed01d3a173ca911370ec88e3236707a119da49b0d02f6e97f6",
+      "logicalSha256": "7e50d4d4ab85f646209095c129ee161cd54d4533187fd3ebf00ca8ece3a0bd20",
+      "fileCount": 6,
+      "materializedBytes": 3572,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.435,
+          "decodeMs": 0.222,
+          "validateMs": 0.157,
+          "interpretMs": 0.05,
+          "totalMs": 0.864,
+          "memoryAfter": {
+            "rss": 58605568,
+            "heapUsed": 5598336,
+            "external": 2369262,
+            "arrayBuffers": 234421
+          }
+        },
+        {
+          "readMs": 0.438,
+          "decodeMs": 0.124,
+          "validateMs": 0.085,
+          "interpretMs": 0.043,
+          "totalMs": 0.69,
+          "memoryAfter": {
+            "rss": 58671104,
+            "heapUsed": 5598872,
+            "external": 2369262,
+            "arrayBuffers": 234421
+          }
+        },
+        {
+          "readMs": 0.302,
+          "decodeMs": 0.102,
+          "validateMs": 0.08,
+          "interpretMs": 0.034,
+          "totalMs": 0.519,
+          "memoryAfter": {
+            "rss": 58687488,
+            "heapUsed": 5965008,
+            "external": 2369262,
+            "arrayBuffers": 234421
+          }
+        },
+        {
+          "readMs": 0.168,
+          "decodeMs": 0.134,
+          "validateMs": 0.108,
+          "interpretMs": 0.042,
+          "totalMs": 0.452,
+          "memoryAfter": {
+            "rss": 58703872,
+            "heapUsed": 5868496,
+            "external": 2369262,
+            "arrayBuffers": 234421
+          }
+        },
+        {
+          "readMs": 0.256,
+          "decodeMs": 0.129,
+          "validateMs": 0.1,
+          "interpretMs": 0.035,
+          "totalMs": 0.52,
+          "memoryAfter": {
+            "rss": 58703872,
+            "heapUsed": 5866784,
+            "external": 2369262,
+            "arrayBuffers": 234421
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.302,
+        "decodeMs": 0.129,
+        "validateMs": 0.1,
+        "interpretMs": 0.042,
+        "totalMs": 0.52
+      },
+      "maxTotalMs": 0.864,
+      "processPeakRssKiB": 57360,
+      "gcExposed": true
+    },
+    {
+      "id": "resume-basic/level-6/zip",
+      "fixture": "resume-basic",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 2398,
+      "archiveSha256": "e386b2b932f6b35e44d0252c2f219a1fc1e895b6dde371b397c269d59f48b36e",
+      "logicalSha256": "7e50d4d4ab85f646209095c129ee161cd54d4533187fd3ebf00ca8ece3a0bd20",
+      "fileCount": 6,
+      "materializedBytes": 3572,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.32,
+          "decodeMs": 0.693,
+          "validateMs": 0.142,
+          "interpretMs": 0.05,
+          "totalMs": 1.205,
+          "memoryAfter": {
+            "rss": 60407808,
+            "heapUsed": 6064416,
+            "external": 4934175,
+            "arrayBuffers": 2799334
+          }
+        },
+        {
+          "readMs": 0.365,
+          "decodeMs": 0.515,
+          "validateMs": 0.116,
+          "interpretMs": 0.054,
+          "totalMs": 1.049,
+          "memoryAfter": {
+            "rss": 60817408,
+            "heapUsed": 5678008,
+            "external": 4934175,
+            "arrayBuffers": 2799334
+          }
+        },
+        {
+          "readMs": 0.259,
+          "decodeMs": 0.469,
+          "validateMs": 0.099,
+          "interpretMs": 0.039,
+          "totalMs": 0.866,
+          "memoryAfter": {
+            "rss": 61145088,
+            "heapUsed": 5887800,
+            "external": 4934175,
+            "arrayBuffers": 2799334
+          }
+        },
+        {
+          "readMs": 0.595,
+          "decodeMs": 0.49,
+          "validateMs": 0.104,
+          "interpretMs": 0.041,
+          "totalMs": 1.23,
+          "memoryAfter": {
+            "rss": 61325312,
+            "heapUsed": 5758400,
+            "external": 4934175,
+            "arrayBuffers": 2799334
+          }
+        },
+        {
+          "readMs": 0.368,
+          "decodeMs": 0.429,
+          "validateMs": 0.082,
+          "interpretMs": 0.032,
+          "totalMs": 0.911,
+          "memoryAfter": {
+            "rss": 61325312,
+            "heapUsed": 5903112,
+            "external": 4934175,
+            "arrayBuffers": 2799334
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.365,
+        "decodeMs": 0.49,
+        "validateMs": 0.104,
+        "interpretMs": 0.041,
+        "totalMs": 1.049
+      },
+      "maxTotalMs": 1.23,
+      "processPeakRssKiB": 59904,
+      "gcExposed": true
+    },
+    {
+      "id": "resume-basic/level-6/prd",
+      "fixture": "resume-basic",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 2414,
+      "archiveSha256": "53c6381a68c3c1339f33536b11f302728610df96b31d5a729f08547835418efe",
+      "logicalSha256": "7e50d4d4ab85f646209095c129ee161cd54d4533187fd3ebf00ca8ece3a0bd20",
+      "fileCount": 6,
+      "materializedBytes": 3572,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.28,
+          "decodeMs": 0.706,
+          "validateMs": 0.157,
+          "interpretMs": 0.054,
+          "totalMs": 1.197,
+          "memoryAfter": {
+            "rss": 60604416,
+            "heapUsed": 6121792,
+            "external": 4934207,
+            "arrayBuffers": 2799366
+          }
+        },
+        {
+          "readMs": 0.265,
+          "decodeMs": 0.503,
+          "validateMs": 0.108,
+          "interpretMs": 0.048,
+          "totalMs": 0.924,
+          "memoryAfter": {
+            "rss": 60784640,
+            "heapUsed": 5678248,
+            "external": 4934207,
+            "arrayBuffers": 2799366
+          }
+        },
+        {
+          "readMs": 0.326,
+          "decodeMs": 0.439,
+          "validateMs": 0.107,
+          "interpretMs": 0.04,
+          "totalMs": 0.912,
+          "memoryAfter": {
+            "rss": 61194240,
+            "heapUsed": 5948424,
+            "external": 4934207,
+            "arrayBuffers": 2799366
+          }
+        },
+        {
+          "readMs": 0.301,
+          "decodeMs": 0.443,
+          "validateMs": 0.086,
+          "interpretMs": 0.037,
+          "totalMs": 0.867,
+          "memoryAfter": {
+            "rss": 61210624,
+            "heapUsed": 5948568,
+            "external": 4934207,
+            "arrayBuffers": 2799366
+          }
+        },
+        {
+          "readMs": 0.333,
+          "decodeMs": 0.483,
+          "validateMs": 0.121,
+          "interpretMs": 0.042,
+          "totalMs": 0.98,
+          "memoryAfter": {
+            "rss": 61243392,
+            "heapUsed": 5795176,
+            "external": 4934207,
+            "arrayBuffers": 2799366
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.301,
+        "decodeMs": 0.483,
+        "validateMs": 0.108,
+        "interpretMs": 0.042,
+        "totalMs": 0.924
+      },
+      "maxTotalMs": 1.197,
+      "processPeakRssKiB": 59840,
+      "gcExposed": true
+    },
+    {
+      "id": "comic-basic/level-0/zip",
+      "fixture": "comic-basic",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 609504,
+      "archiveSha256": "66f52d2d0e78f044f26a41e5a2d8d6016abade31056b785f4cb46be3c3af189c",
+      "logicalSha256": "0b7e6fd88660f46d0a5dc8eeb628352b4054a094ae2ebefa27aa579e052f2243",
+      "fileCount": 7,
+      "materializedBytes": 608662,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.375,
+          "decodeMs": 6.093,
+          "validateMs": 0.14,
+          "interpretMs": 0.045,
+          "totalMs": 6.653,
+          "memoryAfter": {
+            "rss": 62947328,
+            "heapUsed": 6938632,
+            "external": 4789392,
+            "arrayBuffers": 2654551
+          }
+        },
+        {
+          "readMs": 0.33,
+          "decodeMs": 6.113,
+          "validateMs": 0.131,
+          "interpretMs": 0.043,
+          "totalMs": 6.618,
+          "memoryAfter": {
+            "rss": 63029248,
+            "heapUsed": 7039176,
+            "external": 4789392,
+            "arrayBuffers": 2654551
+          }
+        },
+        {
+          "readMs": 0.337,
+          "decodeMs": 5.904,
+          "validateMs": 0.122,
+          "interpretMs": 0.035,
+          "totalMs": 6.398,
+          "memoryAfter": {
+            "rss": 63045632,
+            "heapUsed": 7021184,
+            "external": 4789392,
+            "arrayBuffers": 2654551
+          }
+        },
+        {
+          "readMs": 0.344,
+          "decodeMs": 6.07,
+          "validateMs": 0.119,
+          "interpretMs": 0.037,
+          "totalMs": 6.571,
+          "memoryAfter": {
+            "rss": 63078400,
+            "heapUsed": 6775544,
+            "external": 4789392,
+            "arrayBuffers": 2654551
+          }
+        },
+        {
+          "readMs": 0.341,
+          "decodeMs": 5.998,
+          "validateMs": 0.111,
+          "interpretMs": 0.037,
+          "totalMs": 6.487,
+          "memoryAfter": {
+            "rss": 63078400,
+            "heapUsed": 6787968,
+            "external": 4789392,
+            "arrayBuffers": 2654551
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.341,
+        "decodeMs": 6.07,
+        "validateMs": 0.122,
+        "interpretMs": 0.037,
+        "totalMs": 6.571
+      },
+      "maxTotalMs": 6.653,
+      "processPeakRssKiB": 61632,
+      "gcExposed": true
+    },
+    {
+      "id": "comic-basic/level-0/prd",
+      "fixture": "comic-basic",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 609520,
+      "archiveSha256": "c5c7877ffb4b34108296b9d549b4260555dd02a5967107b4d66953f54e77ed5b",
+      "logicalSha256": "0b7e6fd88660f46d0a5dc8eeb628352b4054a094ae2ebefa27aa579e052f2243",
+      "fileCount": 7,
+      "materializedBytes": 608662,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.377,
+          "decodeMs": 6.078,
+          "validateMs": 0.124,
+          "interpretMs": 0.045,
+          "totalMs": 6.625,
+          "memoryAfter": {
+            "rss": 62767104,
+            "heapUsed": 6947192,
+            "external": 4789424,
+            "arrayBuffers": 2654583
+          }
+        },
+        {
+          "readMs": 0.343,
+          "decodeMs": 5.976,
+          "validateMs": 0.118,
+          "interpretMs": 0.041,
+          "totalMs": 6.479,
+          "memoryAfter": {
+            "rss": 62799872,
+            "heapUsed": 7004464,
+            "external": 4789424,
+            "arrayBuffers": 2654583
+          }
+        },
+        {
+          "readMs": 0.317,
+          "decodeMs": 5.809,
+          "validateMs": 0.096,
+          "interpretMs": 0.03,
+          "totalMs": 6.252,
+          "memoryAfter": {
+            "rss": 62881792,
+            "heapUsed": 6991176,
+            "external": 4789424,
+            "arrayBuffers": 2654583
+          }
+        },
+        {
+          "readMs": 0.357,
+          "decodeMs": 5.941,
+          "validateMs": 0.105,
+          "interpretMs": 0.036,
+          "totalMs": 6.438,
+          "memoryAfter": {
+            "rss": 62898176,
+            "heapUsed": 6775832,
+            "external": 4789424,
+            "arrayBuffers": 2654583
+          }
+        },
+        {
+          "readMs": 0.339,
+          "decodeMs": 5.897,
+          "validateMs": 0.094,
+          "interpretMs": 0.031,
+          "totalMs": 6.361,
+          "memoryAfter": {
+            "rss": 62898176,
+            "heapUsed": 6788104,
+            "external": 4789424,
+            "arrayBuffers": 2654583
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.343,
+        "decodeMs": 5.941,
+        "validateMs": 0.105,
+        "interpretMs": 0.036,
+        "totalMs": 6.438
+      },
+      "maxTotalMs": 6.625,
+      "processPeakRssKiB": 61456,
+      "gcExposed": true
+    },
+    {
+      "id": "comic-basic/level-6/zip",
+      "fixture": "comic-basic",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 608477,
+      "archiveSha256": "314c203515bc090586e14562ab47f564d43455c81c5fa5576a973addd74b9cb4",
+      "logicalSha256": "0b7e6fd88660f46d0a5dc8eeb628352b4054a094ae2ebefa27aa579e052f2243",
+      "fileCount": 7,
+      "materializedBytes": 608662,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 1.486,
+          "decodeMs": 10.419,
+          "validateMs": 0.162,
+          "interpretMs": 0.053,
+          "totalMs": 12.12,
+          "memoryAfter": {
+            "rss": 121454592,
+            "heapUsed": 6417504,
+            "external": 62439854,
+            "arrayBuffers": 60305013
+          }
+        },
+        {
+          "readMs": 0.395,
+          "decodeMs": 9.143,
+          "validateMs": 0.112,
+          "interpretMs": 0.043,
+          "totalMs": 9.693,
+          "memoryAfter": {
+            "rss": 125845504,
+            "heapUsed": 6442800,
+            "external": 62439854,
+            "arrayBuffers": 60305013
+          }
+        },
+        {
+          "readMs": 0.434,
+          "decodeMs": 9.332,
+          "validateMs": 0.135,
+          "interpretMs": 0.035,
+          "totalMs": 9.937,
+          "memoryAfter": {
+            "rss": 127959040,
+            "heapUsed": 6500920,
+            "external": 62439854,
+            "arrayBuffers": 60305013
+          }
+        },
+        {
+          "readMs": 0.342,
+          "decodeMs": 9.295,
+          "validateMs": 0.118,
+          "interpretMs": 0.048,
+          "totalMs": 9.802,
+          "memoryAfter": {
+            "rss": 128417792,
+            "heapUsed": 6442984,
+            "external": 62439854,
+            "arrayBuffers": 60305013
+          }
+        },
+        {
+          "readMs": 0.505,
+          "decodeMs": 9.75,
+          "validateMs": 0.187,
+          "interpretMs": 0.08,
+          "totalMs": 10.521,
+          "memoryAfter": {
+            "rss": 128548864,
+            "heapUsed": 6469288,
+            "external": 62439854,
+            "arrayBuffers": 60305013
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.434,
+        "decodeMs": 9.332,
+        "validateMs": 0.135,
+        "interpretMs": 0.048,
+        "totalMs": 9.937
+      },
+      "maxTotalMs": 12.12,
+      "processPeakRssKiB": 125552,
+      "gcExposed": true
+    },
+    {
+      "id": "comic-basic/level-6/prd",
+      "fixture": "comic-basic",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 608493,
+      "archiveSha256": "5b78cb588aaa03390cec9bce8887c5ac9504af8fa8cc961f35759fdbceb9cc46",
+      "logicalSha256": "0b7e6fd88660f46d0a5dc8eeb628352b4054a094ae2ebefa27aa579e052f2243",
+      "fileCount": 7,
+      "materializedBytes": 608662,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.537,
+          "decodeMs": 9.036,
+          "validateMs": 0.133,
+          "interpretMs": 0.055,
+          "totalMs": 9.761,
+          "memoryAfter": {
+            "rss": 119799808,
+            "heapUsed": 6416648,
+            "external": 62439886,
+            "arrayBuffers": 60305045
+          }
+        },
+        {
+          "readMs": 0.281,
+          "decodeMs": 8.628,
+          "validateMs": 0.117,
+          "interpretMs": 0.042,
+          "totalMs": 9.068,
+          "memoryAfter": {
+            "rss": 125435904,
+            "heapUsed": 6632240,
+            "external": 62439886,
+            "arrayBuffers": 60305045
+          }
+        },
+        {
+          "readMs": 0.394,
+          "decodeMs": 8.807,
+          "validateMs": 0.109,
+          "interpretMs": 0.035,
+          "totalMs": 9.345,
+          "memoryAfter": {
+            "rss": 125943808,
+            "heapUsed": 6801000,
+            "external": 62439886,
+            "arrayBuffers": 60305045
+          }
+        },
+        {
+          "readMs": 0.311,
+          "decodeMs": 8.205,
+          "validateMs": 0.103,
+          "interpretMs": 0.039,
+          "totalMs": 8.658,
+          "memoryAfter": {
+            "rss": 126582784,
+            "heapUsed": 6442840,
+            "external": 62439886,
+            "arrayBuffers": 60305045
+          }
+        },
+        {
+          "readMs": 0.4,
+          "decodeMs": 8.199,
+          "validateMs": 0.1,
+          "interpretMs": 0.034,
+          "totalMs": 8.733,
+          "memoryAfter": {
+            "rss": 127942656,
+            "heapUsed": 6459096,
+            "external": 62439886,
+            "arrayBuffers": 60305045
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.394,
+        "decodeMs": 8.628,
+        "validateMs": 0.109,
+        "interpretMs": 0.039,
+        "totalMs": 9.068
+      },
+      "maxTotalMs": 9.761,
+      "processPeakRssKiB": 124960,
+      "gcExposed": true
+    },
+    {
+      "id": "storyboard-basic/level-0/zip",
+      "fixture": "storyboard-basic",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 5308,
+      "archiveSha256": "f9ea2eb640854da26b5f53f74225522c0125e30708cd4dd95a34df83f46bbe20",
+      "logicalSha256": "f5e37cf110c7d81bfdeee2571a212376396be3480f3a4cda58444041d07e4cad",
+      "fileCount": 7,
+      "materializedBytes": 4466,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.196,
+          "decodeMs": 0.206,
+          "validateMs": 0.101,
+          "interpretMs": 0.039,
+          "totalMs": 0.542,
+          "memoryAfter": {
+            "rss": 58310656,
+            "heapUsed": 5546608,
+            "external": 2373208,
+            "arrayBuffers": 238367
+          }
+        },
+        {
+          "readMs": 0.17,
+          "decodeMs": 0.118,
+          "validateMs": 0.054,
+          "interpretMs": 0.028,
+          "totalMs": 0.369,
+          "memoryAfter": {
+            "rss": 58376192,
+            "heapUsed": 6008920,
+            "external": 2373208,
+            "arrayBuffers": 238367
+          }
+        },
+        {
+          "readMs": 0.271,
+          "decodeMs": 0.115,
+          "validateMs": 0.056,
+          "interpretMs": 0.023,
+          "totalMs": 0.465,
+          "memoryAfter": {
+            "rss": 58376192,
+            "heapUsed": 5579672,
+            "external": 2373208,
+            "arrayBuffers": 238367
+          }
+        },
+        {
+          "readMs": 0.221,
+          "decodeMs": 0.11,
+          "validateMs": 0.049,
+          "interpretMs": 0.027,
+          "totalMs": 0.406,
+          "memoryAfter": {
+            "rss": 58392576,
+            "heapUsed": 5576584,
+            "external": 2373208,
+            "arrayBuffers": 238367
+          }
+        },
+        {
+          "readMs": 0.343,
+          "decodeMs": 0.111,
+          "validateMs": 0.051,
+          "interpretMs": 0.031,
+          "totalMs": 0.536,
+          "memoryAfter": {
+            "rss": 58408960,
+            "heapUsed": 6010400,
+            "external": 2373208,
+            "arrayBuffers": 238367
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.221,
+        "decodeMs": 0.115,
+        "validateMs": 0.054,
+        "interpretMs": 0.028,
+        "totalMs": 0.465
+      },
+      "maxTotalMs": 0.542,
+      "processPeakRssKiB": 57056,
+      "gcExposed": true
+    },
+    {
+      "id": "storyboard-basic/level-0/prd",
+      "fixture": "storyboard-basic",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 5324,
+      "archiveSha256": "aedd2a0811f62548a5ef8e5cc96d90735e7b51b410e398b7234313b8eaccb399",
+      "logicalSha256": "f5e37cf110c7d81bfdeee2571a212376396be3480f3a4cda58444041d07e4cad",
+      "fileCount": 7,
+      "materializedBytes": 4466,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.275,
+          "decodeMs": 0.208,
+          "validateMs": 0.103,
+          "interpretMs": 0.038,
+          "totalMs": 0.624,
+          "memoryAfter": {
+            "rss": 58245120,
+            "heapUsed": 5547368,
+            "external": 2373240,
+            "arrayBuffers": 238399
+          }
+        },
+        {
+          "readMs": 0.247,
+          "decodeMs": 0.121,
+          "validateMs": 0.057,
+          "interpretMs": 0.03,
+          "totalMs": 0.455,
+          "memoryAfter": {
+            "rss": 58261504,
+            "heapUsed": 5819896,
+            "external": 2373240,
+            "arrayBuffers": 238399
+          }
+        },
+        {
+          "readMs": 0.183,
+          "decodeMs": 0.166,
+          "validateMs": 0.07,
+          "interpretMs": 0.026,
+          "totalMs": 0.446,
+          "memoryAfter": {
+            "rss": 58277888,
+            "heapUsed": 5581000,
+            "external": 2373240,
+            "arrayBuffers": 238399
+          }
+        },
+        {
+          "readMs": 0.331,
+          "decodeMs": 0.139,
+          "validateMs": 0.064,
+          "interpretMs": 0.031,
+          "totalMs": 0.565,
+          "memoryAfter": {
+            "rss": 58277888,
+            "heapUsed": 5577840,
+            "external": 2373240,
+            "arrayBuffers": 238399
+          }
+        },
+        {
+          "readMs": 0.226,
+          "decodeMs": 0.11,
+          "validateMs": 0.053,
+          "interpretMs": 0.023,
+          "totalMs": 0.413,
+          "memoryAfter": {
+            "rss": 58277888,
+            "heapUsed": 5865912,
+            "external": 2373240,
+            "arrayBuffers": 238399
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.247,
+        "decodeMs": 0.139,
+        "validateMs": 0.064,
+        "interpretMs": 0.03,
+        "totalMs": 0.455
+      },
+      "maxTotalMs": 0.624,
+      "processPeakRssKiB": 56960,
+      "gcExposed": true
+    },
+    {
+      "id": "storyboard-basic/level-6/zip",
+      "fixture": "storyboard-basic",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 2864,
+      "archiveSha256": "961adab974604ca20390d3cfff3101814e6b24422148ac371bbef8501a64b118",
+      "logicalSha256": "f5e37cf110c7d81bfdeee2571a212376396be3480f3a4cda58444041d07e4cad",
+      "fileCount": 7,
+      "materializedBytes": 4466,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.248,
+          "decodeMs": 0.438,
+          "validateMs": 0.095,
+          "interpretMs": 0.04,
+          "totalMs": 0.821,
+          "memoryAfter": {
+            "rss": 61374464,
+            "heapUsed": 5677464,
+            "external": 5366797,
+            "arrayBuffers": 3231956
+          }
+        },
+        {
+          "readMs": 0.2,
+          "decodeMs": 0.332,
+          "validateMs": 0.061,
+          "interpretMs": 0.031,
+          "totalMs": 0.624,
+          "memoryAfter": {
+            "rss": 61440000,
+            "heapUsed": 5939320,
+            "external": 5366797,
+            "arrayBuffers": 3231956
+          }
+        },
+        {
+          "readMs": 0.263,
+          "decodeMs": 0.558,
+          "validateMs": 0.056,
+          "interpretMs": 0.023,
+          "totalMs": 0.9,
+          "memoryAfter": {
+            "rss": 61489152,
+            "heapUsed": 5720488,
+            "external": 5366797,
+            "arrayBuffers": 3231956
+          }
+        },
+        {
+          "readMs": 0.246,
+          "decodeMs": 0.487,
+          "validateMs": 0.053,
+          "interpretMs": 0.028,
+          "totalMs": 0.814,
+          "memoryAfter": {
+            "rss": 61489152,
+            "heapUsed": 5663512,
+            "external": 5366797,
+            "arrayBuffers": 3231956
+          }
+        },
+        {
+          "readMs": 0.229,
+          "decodeMs": 0.469,
+          "validateMs": 0.048,
+          "interpretMs": 0.023,
+          "totalMs": 0.77,
+          "memoryAfter": {
+            "rss": 61489152,
+            "heapUsed": 5665848,
+            "external": 5366797,
+            "arrayBuffers": 3231956
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.246,
+        "decodeMs": 0.469,
+        "validateMs": 0.056,
+        "interpretMs": 0.028,
+        "totalMs": 0.814
+      },
+      "maxTotalMs": 0.9,
+      "processPeakRssKiB": 60064,
+      "gcExposed": true
+    },
+    {
+      "id": "storyboard-basic/level-6/prd",
+      "fixture": "storyboard-basic",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 2880,
+      "archiveSha256": "f96d5a7e82aefa3579913188ae0de810b4cc7fd47fdad65a3dcea5014fc6f494",
+      "logicalSha256": "f5e37cf110c7d81bfdeee2571a212376396be3480f3a4cda58444041d07e4cad",
+      "fileCount": 7,
+      "materializedBytes": 4466,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.278,
+          "decodeMs": 0.418,
+          "validateMs": 0.094,
+          "interpretMs": 0.041,
+          "totalMs": 0.831,
+          "memoryAfter": {
+            "rss": 60719104,
+            "heapUsed": 5678352,
+            "external": 5366829,
+            "arrayBuffers": 3231988
+          }
+        },
+        {
+          "readMs": 0.321,
+          "decodeMs": 0.332,
+          "validateMs": 0.069,
+          "interpretMs": 0.036,
+          "totalMs": 0.759,
+          "memoryAfter": {
+            "rss": 60768256,
+            "heapUsed": 5925672,
+            "external": 5366829,
+            "arrayBuffers": 3231988
+          }
+        },
+        {
+          "readMs": 0.286,
+          "decodeMs": 0.606,
+          "validateMs": 0.066,
+          "interpretMs": 0.027,
+          "totalMs": 0.985,
+          "memoryAfter": {
+            "rss": 60817408,
+            "heapUsed": 5721856,
+            "external": 5366829,
+            "arrayBuffers": 3231988
+          }
+        },
+        {
+          "readMs": 0.229,
+          "decodeMs": 0.494,
+          "validateMs": 0.052,
+          "interpretMs": 0.03,
+          "totalMs": 0.805,
+          "memoryAfter": {
+            "rss": 60817408,
+            "heapUsed": 5665376,
+            "external": 5366829,
+            "arrayBuffers": 3231988
+          }
+        },
+        {
+          "readMs": 0.224,
+          "decodeMs": 0.474,
+          "validateMs": 0.05,
+          "interpretMs": 0.025,
+          "totalMs": 0.773,
+          "memoryAfter": {
+            "rss": 60817408,
+            "heapUsed": 5714824,
+            "external": 5366829,
+            "arrayBuffers": 3231988
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.278,
+        "decodeMs": 0.474,
+        "validateMs": 0.066,
+        "interpretMs": 0.03,
+        "totalMs": 0.805
+      },
+      "maxTotalMs": 0.985,
+      "processPeakRssKiB": 59408,
+      "gcExposed": true
+    },
+    {
+      "id": "long-1000-sections/level-0/zip",
+      "fixture": "long-1000-sections",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 1822222,
+      "archiveSha256": "1632d3e611a7d13741a8fe2741de4c2c9017124ef56ab3650fc59f78815c1b38",
+      "logicalSha256": "50c73054c7f690508dcb2ef7b9abbfd610fb7db5ea0c0895280e2f59a1359668",
+      "fileCount": 2,
+      "materializedBytes": 1821988,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.71,
+          "decodeMs": 17.255,
+          "validateMs": 7.085,
+          "interpretMs": 2.402,
+          "totalMs": 27.452,
+          "memoryAfter": {
+            "rss": 95256576,
+            "heapUsed": 11618360,
+            "external": 13285116,
+            "arrayBuffers": 7506639
+          }
+        },
+        {
+          "readMs": 0.446,
+          "decodeMs": 15.997,
+          "validateMs": 8.061,
+          "interpretMs": 2.288,
+          "totalMs": 26.792,
+          "memoryAfter": {
+            "rss": 100220928,
+            "heapUsed": 20515792,
+            "external": 13285116,
+            "arrayBuffers": 7506639
+          }
+        },
+        {
+          "readMs": 0.571,
+          "decodeMs": 18.426,
+          "validateMs": 5.762,
+          "interpretMs": 2.228,
+          "totalMs": 26.987,
+          "memoryAfter": {
+            "rss": 113868800,
+            "heapUsed": 26326816,
+            "external": 13285116,
+            "arrayBuffers": 7506639
+          }
+        },
+        {
+          "readMs": 0.539,
+          "decodeMs": 16.062,
+          "validateMs": 5.657,
+          "interpretMs": 2.248,
+          "totalMs": 24.505,
+          "memoryAfter": {
+            "rss": 113885184,
+            "heapUsed": 26343200,
+            "external": 13285116,
+            "arrayBuffers": 7506639
+          }
+        },
+        {
+          "readMs": 0.538,
+          "decodeMs": 15.982,
+          "validateMs": 5.726,
+          "interpretMs": 2.2,
+          "totalMs": 24.447,
+          "memoryAfter": {
+            "rss": 114180096,
+            "heapUsed": 26367688,
+            "external": 13285116,
+            "arrayBuffers": 7506639
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.539,
+        "decodeMs": 16.062,
+        "validateMs": 5.762,
+        "interpretMs": 2.248,
+        "totalMs": 26.792
+      },
+      "maxTotalMs": 27.452,
+      "processPeakRssKiB": 111584,
+      "gcExposed": true
+    },
+    {
+      "id": "long-1000-sections/level-0/prd",
+      "fixture": "long-1000-sections",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 1822238,
+      "archiveSha256": "07e938fa5952b0c93fc074f814584ae3b2922cc040175e92b7f67e0ac34ee7e6",
+      "logicalSha256": "50c73054c7f690508dcb2ef7b9abbfd610fb7db5ea0c0895280e2f59a1359668",
+      "fileCount": 2,
+      "materializedBytes": 1821988,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.607,
+          "decodeMs": 17.649,
+          "validateMs": 7.373,
+          "interpretMs": 2.563,
+          "totalMs": 28.192,
+          "memoryAfter": {
+            "rss": 94224384,
+            "heapUsed": 11617592,
+            "external": 13285148,
+            "arrayBuffers": 7506671
+          }
+        },
+        {
+          "readMs": 0.524,
+          "decodeMs": 16.592,
+          "validateMs": 7.91,
+          "interpretMs": 2.531,
+          "totalMs": 27.558,
+          "memoryAfter": {
+            "rss": 100466688,
+            "heapUsed": 20516432,
+            "external": 13285148,
+            "arrayBuffers": 7506671
+          }
+        },
+        {
+          "readMs": 0.707,
+          "decodeMs": 17.943,
+          "validateMs": 5.723,
+          "interpretMs": 2.258,
+          "totalMs": 26.632,
+          "memoryAfter": {
+            "rss": 114114560,
+            "heapUsed": 26528280,
+            "external": 13285148,
+            "arrayBuffers": 7506671
+          }
+        },
+        {
+          "readMs": 0.546,
+          "decodeMs": 16.224,
+          "validateMs": 5.698,
+          "interpretMs": 2.255,
+          "totalMs": 24.723,
+          "memoryAfter": {
+            "rss": 114130944,
+            "heapUsed": 26339592,
+            "external": 13285148,
+            "arrayBuffers": 7506671
+          }
+        },
+        {
+          "readMs": 0.509,
+          "decodeMs": 16.116,
+          "validateMs": 5.792,
+          "interpretMs": 2.278,
+          "totalMs": 24.694,
+          "memoryAfter": {
+            "rss": 114163712,
+            "heapUsed": 26365304,
+            "external": 13285148,
+            "arrayBuffers": 7506671
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.546,
+        "decodeMs": 16.592,
+        "validateMs": 5.792,
+        "interpretMs": 2.278,
+        "totalMs": 26.632
+      },
+      "maxTotalMs": 28.192,
+      "processPeakRssKiB": 111584,
+      "gcExposed": true
+    },
+    {
+      "id": "long-1000-sections/level-6/zip",
+      "fixture": "long-1000-sections",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 41270,
+      "archiveSha256": "6f7bb6132e65e6849cb54039eab9464e5c476a401e86305fca03d6e4b835c079",
+      "logicalSha256": "50c73054c7f690508dcb2ef7b9abbfd610fb7db5ea0c0895280e2f59a1359668",
+      "fileCount": 2,
+      "materializedBytes": 1821988,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.327,
+          "decodeMs": 13.048,
+          "validateMs": 7.56,
+          "interpretMs": 2.669,
+          "totalMs": 23.604,
+          "memoryAfter": {
+            "rss": 113524736,
+            "heapUsed": 15433912,
+            "external": 32933499,
+            "arrayBuffers": 3944735
+          }
+        },
+        {
+          "readMs": 0.323,
+          "decodeMs": 12.6,
+          "validateMs": 8.814,
+          "interpretMs": 2.572,
+          "totalMs": 24.309,
+          "memoryAfter": {
+            "rss": 119160832,
+            "heapUsed": 15528520,
+            "external": 32933499,
+            "arrayBuffers": 3944735
+          }
+        },
+        {
+          "readMs": 0.37,
+          "decodeMs": 23.953,
+          "validateMs": 7.254,
+          "interpretMs": 2.602,
+          "totalMs": 34.18,
+          "memoryAfter": {
+            "rss": 122306560,
+            "heapUsed": 20980328,
+            "external": 32933499,
+            "arrayBuffers": 27155022
+          }
+        },
+        {
+          "readMs": 0.386,
+          "decodeMs": 13.243,
+          "validateMs": 6.578,
+          "interpretMs": 2.817,
+          "totalMs": 23.024,
+          "memoryAfter": {
+            "rss": 127156224,
+            "heapUsed": 20852472,
+            "external": 32933499,
+            "arrayBuffers": 27155022
+          }
+        },
+        {
+          "readMs": 0.341,
+          "decodeMs": 14.327,
+          "validateMs": 6.914,
+          "interpretMs": 3.393,
+          "totalMs": 24.976,
+          "memoryAfter": {
+            "rss": 129056768,
+            "heapUsed": 20873440,
+            "external": 32933499,
+            "arrayBuffers": 27155022
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.341,
+        "decodeMs": 13.243,
+        "validateMs": 7.254,
+        "interpretMs": 2.669,
+        "totalMs": 24.309
+      },
+      "maxTotalMs": 34.18,
+      "processPeakRssKiB": 126064,
+      "gcExposed": true
+    },
+    {
+      "id": "long-1000-sections/level-6/prd",
+      "fixture": "long-1000-sections",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 41286,
+      "archiveSha256": "5bca517d627a0903f0678dc68b874e3b645b8ef58cdc37939c12b0ef737ffe3d",
+      "logicalSha256": "50c73054c7f690508dcb2ef7b9abbfd610fb7db5ea0c0895280e2f59a1359668",
+      "fileCount": 2,
+      "materializedBytes": 1821988,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.397,
+          "decodeMs": 13.396,
+          "validateMs": 8.055,
+          "interpretMs": 2.736,
+          "totalMs": 24.584,
+          "memoryAfter": {
+            "rss": 112934912,
+            "heapUsed": 15460392,
+            "external": 32933531,
+            "arrayBuffers": 3944767
+          }
+        },
+        {
+          "readMs": 0.32,
+          "decodeMs": 12.824,
+          "validateMs": 9.136,
+          "interpretMs": 2.44,
+          "totalMs": 24.72,
+          "memoryAfter": {
+            "rss": 118882304,
+            "heapUsed": 15496728,
+            "external": 32933531,
+            "arrayBuffers": 3944767
+          }
+        },
+        {
+          "readMs": 0.288,
+          "decodeMs": 23.998,
+          "validateMs": 7.156,
+          "interpretMs": 2.652,
+          "totalMs": 34.093,
+          "memoryAfter": {
+            "rss": 121782272,
+            "heapUsed": 20980800,
+            "external": 32933531,
+            "arrayBuffers": 27155054
+          }
+        },
+        {
+          "readMs": 0.387,
+          "decodeMs": 13.102,
+          "validateMs": 6.145,
+          "interpretMs": 2.448,
+          "totalMs": 22.081,
+          "memoryAfter": {
+            "rss": 127975424,
+            "heapUsed": 20853128,
+            "external": 32933531,
+            "arrayBuffers": 27155054
+          }
+        },
+        {
+          "readMs": 0.332,
+          "decodeMs": 12.477,
+          "validateMs": 5.793,
+          "interpretMs": 2.371,
+          "totalMs": 20.974,
+          "memoryAfter": {
+            "rss": 129908736,
+            "heapUsed": 20873536,
+            "external": 32933531,
+            "arrayBuffers": 27155054
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.332,
+        "decodeMs": 13.102,
+        "validateMs": 7.156,
+        "interpretMs": 2.448,
+        "totalMs": 24.584
+      },
+      "maxTotalMs": 34.093,
+      "processPeakRssKiB": 126896,
+      "gcExposed": true
+    },
+    {
+      "id": "assets-32-mib/level-0/zip",
+      "fixture": "assets-32-mib",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 33556506,
+      "archiveSha256": "439096095d772b3dc56175778615b0353ebc3b29f513c19d7dbb257c2b01e208",
+      "logicalSha256": "ede5d89207f4aa028d3b8afbee54b97bd366c38cc432d8c14f575ffbc2ed5991",
+      "fileCount": 10,
+      "materializedBytes": 33555392,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 11.111,
+          "decodeMs": 210.441,
+          "validateMs": 0.199,
+          "interpretMs": 0.127,
+          "totalMs": 221.878,
+          "memoryAfter": {
+            "rss": 195231744,
+            "heapUsed": 5880024,
+            "external": 136576856,
+            "arrayBuffers": 134442015
+          }
+        },
+        {
+          "readMs": 5.286,
+          "decodeMs": 176.583,
+          "validateMs": 0.118,
+          "interpretMs": 0.164,
+          "totalMs": 182.151,
+          "memoryAfter": {
+            "rss": 195248128,
+            "heapUsed": 5498864,
+            "external": 136590256,
+            "arrayBuffers": 134455415
+          }
+        },
+        {
+          "readMs": 6.397,
+          "decodeMs": 184.347,
+          "validateMs": 0.121,
+          "interpretMs": 0.166,
+          "totalMs": 191.031,
+          "memoryAfter": {
+            "rss": 195248128,
+            "heapUsed": 5383184,
+            "external": 69464958,
+            "arrayBuffers": 67330117
+          }
+        },
+        {
+          "readMs": 7.225,
+          "decodeMs": 185.029,
+          "validateMs": 0.253,
+          "interpretMs": 0.13,
+          "totalMs": 192.637,
+          "memoryAfter": {
+            "rss": 195264512,
+            "heapUsed": 5484584,
+            "external": 136590256,
+            "arrayBuffers": 134455415
+          }
+        },
+        {
+          "readMs": 5.569,
+          "decodeMs": 254.895,
+          "validateMs": 0.131,
+          "interpretMs": 0.054,
+          "totalMs": 260.65,
+          "memoryAfter": {
+            "rss": 190136320,
+            "heapUsed": 5498192,
+            "external": 136590256,
+            "arrayBuffers": 134455415
+          }
+        }
+      ],
+      "median": {
+        "readMs": 6.397,
+        "decodeMs": 185.029,
+        "validateMs": 0.131,
+        "interpretMs": 0.13,
+        "totalMs": 192.637
+      },
+      "maxTotalMs": 260.65,
+      "processPeakRssKiB": 190704,
+      "gcExposed": true
+    },
+    {
+      "id": "assets-32-mib/level-0/prd",
+      "fixture": "assets-32-mib",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 33556522,
+      "archiveSha256": "9baf89fa57ae62cc1348713be82962760556c77334abc189558b0645cac95de9",
+      "logicalSha256": "ede5d89207f4aa028d3b8afbee54b97bd366c38cc432d8c14f575ffbc2ed5991",
+      "fileCount": 10,
+      "materializedBytes": 33555392,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 10.787,
+          "decodeMs": 209.212,
+          "validateMs": 0.201,
+          "interpretMs": 0.126,
+          "totalMs": 220.325,
+          "memoryAfter": {
+            "rss": 195166208,
+            "heapUsed": 6052984,
+            "external": 136576888,
+            "arrayBuffers": 134442047
+          }
+        },
+        {
+          "readMs": 5.194,
+          "decodeMs": 174.394,
+          "validateMs": 0.114,
+          "interpretMs": 0.162,
+          "totalMs": 179.863,
+          "memoryAfter": {
+            "rss": 195215360,
+            "heapUsed": 5499016,
+            "external": 136590288,
+            "arrayBuffers": 134455447
+          }
+        },
+        {
+          "readMs": 5.999,
+          "decodeMs": 180.771,
+          "validateMs": 0.107,
+          "interpretMs": 0.155,
+          "totalMs": 187.032,
+          "memoryAfter": {
+            "rss": 195215360,
+            "heapUsed": 5383464,
+            "external": 69464974,
+            "arrayBuffers": 67330133
+          }
+        },
+        {
+          "readMs": 5.163,
+          "decodeMs": 177.307,
+          "validateMs": 0.121,
+          "interpretMs": 0.061,
+          "totalMs": 182.652,
+          "memoryAfter": {
+            "rss": 195231744,
+            "heapUsed": 5484720,
+            "external": 136590288,
+            "arrayBuffers": 134455447
+          }
+        },
+        {
+          "readMs": 5.075,
+          "decodeMs": 184.424,
+          "validateMs": 0.129,
+          "interpretMs": 0.051,
+          "totalMs": 189.679,
+          "memoryAfter": {
+            "rss": 195248128,
+            "heapUsed": 5498328,
+            "external": 136590288,
+            "arrayBuffers": 134455447
+          }
+        }
+      ],
+      "median": {
+        "readMs": 5.194,
+        "decodeMs": 180.771,
+        "validateMs": 0.121,
+        "interpretMs": 0.126,
+        "totalMs": 187.032
+      },
+      "maxTotalMs": 220.325,
+      "processPeakRssKiB": 190704,
+      "gcExposed": true
+    },
+    {
+      "id": "assets-32-mib/level-6/zip",
+      "fixture": "assets-32-mib",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 33562677,
+      "archiveSha256": "3b5c74a5fbf7623fff4261cdec6a6b230db4aed4d6ff7996cd40ee6aed50a1e1",
+      "logicalSha256": "ede5d89207f4aa028d3b8afbee54b97bd366c38cc432d8c14f575ffbc2ed5991",
+      "fileCount": 10,
+      "materializedBytes": 33555392,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 8.138,
+          "decodeMs": 349.24,
+          "validateMs": 1.111,
+          "interpretMs": 0.224,
+          "totalMs": 358.713,
+          "memoryAfter": {
+            "rss": 270925824,
+            "heapUsed": 4775968,
+            "external": 85650948,
+            "arrayBuffers": 83520575
+          }
+        },
+        {
+          "readMs": 5.112,
+          "decodeMs": 340.264,
+          "validateMs": 1.007,
+          "interpretMs": 0.252,
+          "totalMs": 346.635,
+          "memoryAfter": {
+            "rss": 271204352,
+            "heapUsed": 4819880,
+            "external": 87656815,
+            "arrayBuffers": 85526442
+          }
+        },
+        {
+          "readMs": 5.197,
+          "decodeMs": 347.605,
+          "validateMs": 1.073,
+          "interpretMs": 0.261,
+          "totalMs": 354.136,
+          "memoryAfter": {
+            "rss": 271351808,
+            "heapUsed": 4809264,
+            "external": 87116191,
+            "arrayBuffers": 84985818
+          }
+        },
+        {
+          "readMs": 6.614,
+          "decodeMs": 343.995,
+          "validateMs": 1.021,
+          "interpretMs": 0.26,
+          "totalMs": 351.89,
+          "memoryAfter": {
+            "rss": 267878400,
+            "heapUsed": 4716944,
+            "external": 83173439,
+            "arrayBuffers": 81043066
+          }
+        },
+        {
+          "readMs": 5.669,
+          "decodeMs": 531.505,
+          "validateMs": 2.092,
+          "interpretMs": 0.899,
+          "totalMs": 540.165,
+          "memoryAfter": {
+            "rss": 268337152,
+            "heapUsed": 5258304,
+            "external": 106265041,
+            "arrayBuffers": 104134668
+          }
+        }
+      ],
+      "median": {
+        "readMs": 5.669,
+        "decodeMs": 347.605,
+        "validateMs": 1.073,
+        "interpretMs": 0.26,
+        "totalMs": 354.136
+      },
+      "maxTotalMs": 540.165,
+      "processPeakRssKiB": 264992,
+      "gcExposed": true
+    },
+    {
+      "id": "assets-32-mib/level-6/prd",
+      "fixture": "assets-32-mib",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 33562693,
+      "archiveSha256": "8296ee8b642f55c5b7eba85065978b777416f11ceac55c0a23f22af3ac0e3624",
+      "logicalSha256": "ede5d89207f4aa028d3b8afbee54b97bd366c38cc432d8c14f575ffbc2ed5991",
+      "fileCount": 10,
+      "materializedBytes": 33555392,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 7.561,
+          "decodeMs": 335.733,
+          "validateMs": 1.048,
+          "interpretMs": 0.218,
+          "totalMs": 344.561,
+          "memoryAfter": {
+            "rss": 261292032,
+            "heapUsed": 4810096,
+            "external": 87211430,
+            "arrayBuffers": 85081057
+          }
+        },
+        {
+          "readMs": 4.904,
+          "decodeMs": 330.118,
+          "validateMs": 1.006,
+          "interpretMs": 0.244,
+          "totalMs": 336.273,
+          "memoryAfter": {
+            "rss": 261341184,
+            "heapUsed": 4944336,
+            "external": 93006081,
+            "arrayBuffers": 90875708
+          }
+        },
+        {
+          "readMs": 4.913,
+          "decodeMs": 597.8,
+          "validateMs": 1.044,
+          "interpretMs": 0.249,
+          "totalMs": 604.006,
+          "memoryAfter": {
+            "rss": 267370496,
+            "heapUsed": 5983848,
+            "external": 137258746,
+            "arrayBuffers": 135128373
+          }
+        },
+        {
+          "readMs": 4.816,
+          "decodeMs": 342.8,
+          "validateMs": 1.094,
+          "interpretMs": 0.259,
+          "totalMs": 348.97,
+          "memoryAfter": {
+            "rss": 267714560,
+            "heapUsed": 4916760,
+            "external": 91529078,
+            "arrayBuffers": 89398705
+          }
+        },
+        {
+          "readMs": 6.278,
+          "decodeMs": 353.015,
+          "validateMs": 1.21,
+          "interpretMs": 0.324,
+          "totalMs": 360.828,
+          "memoryAfter": {
+            "rss": 262193152,
+            "heapUsed": 4853464,
+            "external": 88575039,
+            "arrayBuffers": 86444666
+          }
+        }
+      ],
+      "median": {
+        "readMs": 4.913,
+        "decodeMs": 342.8,
+        "validateMs": 1.048,
+        "interpretMs": 0.249,
+        "totalMs": 348.97
+      },
+      "maxTotalMs": 604.006,
+      "processPeakRssKiB": 261440,
+      "gcExposed": true
+    },
+    {
+      "id": "images-4x4096/level-0/zip",
+      "fixture": "images-4x4096",
+      "compressionLevel": 0,
+      "transport": "zip",
+      "archiveBytes": 7687261,
+      "archiveSha256": "5b7a7ffe54d2c3833efacd861a1dcd3240cde02e4456737fe6fc6262add441e7",
+      "logicalSha256": "657938e57fe6ba2f58b582aeee6340882eacb51967518abd9472d26f0579f90b",
+      "fileCount": 6,
+      "materializedBytes": 7686579,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 1.624,
+          "decodeMs": 69.983,
+          "validateMs": 0.214,
+          "interpretMs": 0.046,
+          "totalMs": 71.866,
+          "memoryAfter": {
+            "rss": 91553792,
+            "heapUsed": 6958840,
+            "external": 33100740,
+            "arrayBuffers": 30965899
+          }
+        },
+        {
+          "readMs": 1.171,
+          "decodeMs": 71.323,
+          "validateMs": 0.18,
+          "interpretMs": 0.043,
+          "totalMs": 72.716,
+          "memoryAfter": {
+            "rss": 93536256,
+            "heapUsed": 7070560,
+            "external": 33100740,
+            "arrayBuffers": 30965899
+          }
+        },
+        {
+          "readMs": 1.395,
+          "decodeMs": 69.904,
+          "validateMs": 0.114,
+          "interpretMs": 0.047,
+          "totalMs": 71.46,
+          "memoryAfter": {
+            "rss": 93569024,
+            "heapUsed": 6809488,
+            "external": 33100740,
+            "arrayBuffers": 30965899
+          }
+        },
+        {
+          "readMs": 1.198,
+          "decodeMs": 68.809,
+          "validateMs": 0.115,
+          "interpretMs": 0.039,
+          "totalMs": 70.16,
+          "memoryAfter": {
+            "rss": 93585408,
+            "heapUsed": 7060440,
+            "external": 33100740,
+            "arrayBuffers": 30965899
+          }
+        },
+        {
+          "readMs": 1.788,
+          "decodeMs": 70.633,
+          "validateMs": 0.113,
+          "interpretMs": 0.034,
+          "totalMs": 72.568,
+          "memoryAfter": {
+            "rss": 93601792,
+            "heapUsed": 7065344,
+            "external": 33100740,
+            "arrayBuffers": 30965899
+          }
+        }
+      ],
+      "median": {
+        "readMs": 1.395,
+        "decodeMs": 69.983,
+        "validateMs": 0.115,
+        "interpretMs": 0.043,
+        "totalMs": 71.866
+      },
+      "maxTotalMs": 72.716,
+      "processPeakRssKiB": 91440,
+      "gcExposed": true
+    },
+    {
+      "id": "images-4x4096/level-0/prd",
+      "fixture": "images-4x4096",
+      "compressionLevel": 0,
+      "transport": "prd",
+      "archiveBytes": 7687277,
+      "archiveSha256": "a9d87f5f9be33609ac1a9eacb230156723d001e7e639be9f48a08b9b6a1631e4",
+      "logicalSha256": "657938e57fe6ba2f58b582aeee6340882eacb51967518abd9472d26f0579f90b",
+      "fileCount": 6,
+      "materializedBytes": 7686579,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 1.647,
+          "decodeMs": 69.554,
+          "validateMs": 0.208,
+          "interpretMs": 0.041,
+          "totalMs": 71.45,
+          "memoryAfter": {
+            "rss": 91602944,
+            "heapUsed": 6998872,
+            "external": 33100772,
+            "arrayBuffers": 30965931
+          }
+        },
+        {
+          "readMs": 1.255,
+          "decodeMs": 71.352,
+          "validateMs": 0.134,
+          "interpretMs": 0.142,
+          "totalMs": 72.882,
+          "memoryAfter": {
+            "rss": 93585408,
+            "heapUsed": 6807920,
+            "external": 33100772,
+            "arrayBuffers": 30965931
+          }
+        },
+        {
+          "readMs": 1.241,
+          "decodeMs": 67.532,
+          "validateMs": 0.114,
+          "interpretMs": 0.047,
+          "totalMs": 68.933,
+          "memoryAfter": {
+            "rss": 93618176,
+            "heapUsed": 6811960,
+            "external": 33100772,
+            "arrayBuffers": 30965931
+          }
+        },
+        {
+          "readMs": 1.179,
+          "decodeMs": 67.502,
+          "validateMs": 0.107,
+          "interpretMs": 0.04,
+          "totalMs": 68.828,
+          "memoryAfter": {
+            "rss": 93634560,
+            "heapUsed": 7086568,
+            "external": 33100772,
+            "arrayBuffers": 30965931
+          }
+        },
+        {
+          "readMs": 1.321,
+          "decodeMs": 67.39,
+          "validateMs": 0.111,
+          "interpretMs": 0.042,
+          "totalMs": 68.865,
+          "memoryAfter": {
+            "rss": 93650944,
+            "heapUsed": 7032136,
+            "external": 33100772,
+            "arrayBuffers": 30965931
+          }
+        }
+      ],
+      "median": {
+        "readMs": 1.255,
+        "decodeMs": 67.532,
+        "validateMs": 0.114,
+        "interpretMs": 0.042,
+        "totalMs": 68.933
+      },
+      "maxTotalMs": 72.882,
+      "processPeakRssKiB": 91488,
+      "gcExposed": true
+    },
+    {
+      "id": "images-4x4096/level-6/zip",
+      "fixture": "images-4x4096",
+      "compressionLevel": 6,
+      "transport": "zip",
+      "archiveBytes": 403881,
+      "archiveSha256": "5a9729664b83d51c9a7e28870673ea58b31bbcc4bd0a74900b13fc16f1ad4692",
+      "logicalSha256": "657938e57fe6ba2f58b582aeee6340882eacb51967518abd9472d26f0579f90b",
+      "fileCount": 6,
+      "materializedBytes": 7686579,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.375,
+          "decodeMs": 65.349,
+          "validateMs": 0.232,
+          "interpretMs": 0.11,
+          "totalMs": 66.066,
+          "memoryAfter": {
+            "rss": 145735680,
+            "heapUsed": 4629544,
+            "external": 28152798,
+            "arrayBuffers": 26017957
+          }
+        },
+        {
+          "readMs": 0.384,
+          "decodeMs": 63.334,
+          "validateMs": 0.136,
+          "interpretMs": 0.127,
+          "totalMs": 63.98,
+          "memoryAfter": {
+            "rss": 146276352,
+            "heapUsed": 4583384,
+            "external": 27623017,
+            "arrayBuffers": 25492644
+          }
+        },
+        {
+          "readMs": 0.351,
+          "decodeMs": 73.915,
+          "validateMs": 0.096,
+          "interpretMs": 0.148,
+          "totalMs": 74.51,
+          "memoryAfter": {
+            "rss": 147161088,
+            "heapUsed": 4588376,
+            "external": 29198956,
+            "arrayBuffers": 27068583
+          }
+        },
+        {
+          "readMs": 0.314,
+          "decodeMs": 62.703,
+          "validateMs": 0.107,
+          "interpretMs": 0.039,
+          "totalMs": 63.163,
+          "memoryAfter": {
+            "rss": 147177472,
+            "heapUsed": 4595776,
+            "external": 28707436,
+            "arrayBuffers": 26577063
+          }
+        },
+        {
+          "readMs": 0.29,
+          "decodeMs": 62.582,
+          "validateMs": 0.101,
+          "interpretMs": 0.033,
+          "totalMs": 63.007,
+          "memoryAfter": {
+            "rss": 147243008,
+            "heapUsed": 4595344,
+            "external": 27623017,
+            "arrayBuffers": 25492644
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.351,
+        "decodeMs": 63.334,
+        "validateMs": 0.107,
+        "interpretMs": 0.11,
+        "totalMs": 63.98
+      },
+      "maxTotalMs": 74.51,
+      "processPeakRssKiB": 143824,
+      "gcExposed": true
+    },
+    {
+      "id": "images-4x4096/level-6/prd",
+      "fixture": "images-4x4096",
+      "compressionLevel": 6,
+      "transport": "prd",
+      "archiveBytes": 403897,
+      "archiveSha256": "7f56576f933b92e31554960f3aa8ab1327261d8e260085af49ac85615f42a356",
+      "logicalSha256": "657938e57fe6ba2f58b582aeee6340882eacb51967518abd9472d26f0579f90b",
+      "fileCount": 6,
+      "materializedBytes": 7686579,
+      "supportState": "fully-supported",
+      "samples": [
+        {
+          "readMs": 0.66,
+          "decodeMs": 90.411,
+          "validateMs": 0.222,
+          "interpretMs": 0.104,
+          "totalMs": 91.398,
+          "memoryAfter": {
+            "rss": 151126016,
+            "heapUsed": 4617592,
+            "external": 24475620,
+            "arrayBuffers": 22340779
+          }
+        },
+        {
+          "readMs": 0.337,
+          "decodeMs": 62.772,
+          "validateMs": 0.131,
+          "interpretMs": 0.135,
+          "totalMs": 63.376,
+          "memoryAfter": {
+            "rss": 155598848,
+            "heapUsed": 4580896,
+            "external": 27623033,
+            "arrayBuffers": 25492660
+          }
+        },
+        {
+          "readMs": 0.309,
+          "decodeMs": 71.834,
+          "validateMs": 0.109,
+          "interpretMs": 0.148,
+          "totalMs": 72.4,
+          "memoryAfter": {
+            "rss": 156712960,
+            "heapUsed": 4589968,
+            "external": 28673659,
+            "arrayBuffers": 26543286
+          }
+        },
+        {
+          "readMs": 0.325,
+          "decodeMs": 63.13,
+          "validateMs": 0.106,
+          "interpretMs": 0.038,
+          "totalMs": 63.599,
+          "memoryAfter": {
+            "rss": 157270016,
+            "heapUsed": 4586224,
+            "external": 29198972,
+            "arrayBuffers": 27068599
+          }
+        },
+        {
+          "readMs": 0.289,
+          "decodeMs": 62.639,
+          "validateMs": 0.104,
+          "interpretMs": 0.032,
+          "totalMs": 63.064,
+          "memoryAfter": {
+            "rss": 157302784,
+            "heapUsed": 4596832,
+            "external": 26047092,
+            "arrayBuffers": 23916719
+          }
+        }
+      ],
+      "median": {
+        "readMs": 0.325,
+        "decodeMs": 63.13,
+        "validateMs": 0.109,
+        "interpretMs": 0.104,
+        "totalMs": 63.599
+      },
+      "maxTotalMs": 91.398,
+      "processPeakRssKiB": 153648,
+      "gcExposed": true
+    }
+  ],
+  "comparison": [
+    {
+      "id": "document-basic/level-0/zip",
+      "decodeBeforeMs": 0.308,
+      "decodeAfterMs": 0.168,
+      "decodeChangePercent": -45.455,
+      "totalBeforeMs": 3.402,
+      "totalAfterMs": 0.647,
+      "peakBeforeRssKiB": 57824,
+      "peakAfterRssKiB": 57104
+    },
+    {
+      "id": "document-basic/level-0/prd",
+      "decodeBeforeMs": 0.284,
+      "decodeAfterMs": 0.163,
+      "decodeChangePercent": -42.606,
+      "totalBeforeMs": 1.09,
+      "totalAfterMs": 0.683,
+      "peakBeforeRssKiB": 57728,
+      "peakAfterRssKiB": 57424
+    },
+    {
+      "id": "document-basic/level-6/zip",
+      "decodeBeforeMs": 1.28,
+      "decodeAfterMs": 0.86,
+      "decodeChangePercent": -32.812,
+      "totalBeforeMs": 2.508,
+      "totalAfterMs": 1.427,
+      "peakBeforeRssKiB": 65520,
+      "peakAfterRssKiB": 62144
+    },
+    {
+      "id": "document-basic/level-6/prd",
+      "decodeBeforeMs": 0.82,
+      "decodeAfterMs": 0.614,
+      "decodeChangePercent": -25.122,
+      "totalBeforeMs": 1.518,
+      "totalAfterMs": 1.245,
+      "peakBeforeRssKiB": 63728,
+      "peakAfterRssKiB": 62304
+    },
+    {
+      "id": "document-segmented-basic/level-0/zip",
+      "decodeBeforeMs": 0.155,
+      "decodeAfterMs": 0.155,
+      "decodeChangePercent": 0,
+      "totalBeforeMs": 0.731,
+      "totalAfterMs": 0.576,
+      "peakBeforeRssKiB": 56544,
+      "peakAfterRssKiB": 57552
+    },
+    {
+      "id": "document-segmented-basic/level-0/prd",
+      "decodeBeforeMs": 0.163,
+      "decodeAfterMs": 0.119,
+      "decodeChangePercent": -26.994,
+      "totalBeforeMs": 0.638,
+      "totalAfterMs": 0.507,
+      "peakBeforeRssKiB": 56656,
+      "peakAfterRssKiB": 57264
+    },
+    {
+      "id": "document-segmented-basic/level-6/zip",
+      "decodeBeforeMs": 0.419,
+      "decodeAfterMs": 0.47,
+      "decodeChangePercent": 12.172,
+      "totalBeforeMs": 1.548,
+      "totalAfterMs": 0.819,
+      "peakBeforeRssKiB": 60112,
+      "peakAfterRssKiB": 61072
+    },
+    {
+      "id": "document-segmented-basic/level-6/prd",
+      "decodeBeforeMs": 0.55,
+      "decodeAfterMs": 0.436,
+      "decodeChangePercent": -20.727,
+      "totalBeforeMs": 1.183,
+      "totalAfterMs": 0.833,
+      "peakBeforeRssKiB": 60816,
+      "peakAfterRssKiB": 60064
+    },
+    {
+      "id": "resume-basic/level-0/zip",
+      "decodeBeforeMs": 0.199,
+      "decodeAfterMs": 0.128,
+      "decodeChangePercent": -35.678,
+      "totalBeforeMs": 0.795,
+      "totalAfterMs": 0.531,
+      "peakBeforeRssKiB": 57264,
+      "peakAfterRssKiB": 57072
+    },
+    {
+      "id": "resume-basic/level-0/prd",
+      "decodeBeforeMs": 0.288,
+      "decodeAfterMs": 0.129,
+      "decodeChangePercent": -55.208,
+      "totalBeforeMs": 0.899,
+      "totalAfterMs": 0.52,
+      "peakBeforeRssKiB": 57088,
+      "peakAfterRssKiB": 57360
+    },
+    {
+      "id": "resume-basic/level-6/zip",
+      "decodeBeforeMs": 0.44,
+      "decodeAfterMs": 0.49,
+      "decodeChangePercent": 11.364,
+      "totalBeforeMs": 0.93,
+      "totalAfterMs": 1.049,
+      "peakBeforeRssKiB": 59952,
+      "peakAfterRssKiB": 59904
+    },
+    {
+      "id": "resume-basic/level-6/prd",
+      "decodeBeforeMs": 0.586,
+      "decodeAfterMs": 0.483,
+      "decodeChangePercent": -17.577,
+      "totalBeforeMs": 1.156,
+      "totalAfterMs": 0.924,
+      "peakBeforeRssKiB": 59712,
+      "peakAfterRssKiB": 59840
+    },
+    {
+      "id": "comic-basic/level-0/zip",
+      "decodeBeforeMs": 3.665,
+      "decodeAfterMs": 6.07,
+      "decodeChangePercent": 65.621,
+      "totalBeforeMs": 4.515,
+      "totalAfterMs": 6.571,
+      "peakBeforeRssKiB": 62080,
+      "peakAfterRssKiB": 61632
+    },
+    {
+      "id": "comic-basic/level-0/prd",
+      "decodeBeforeMs": 4.129,
+      "decodeAfterMs": 5.941,
+      "decodeChangePercent": 43.885,
+      "totalBeforeMs": 4.998,
+      "totalAfterMs": 6.438,
+      "peakBeforeRssKiB": 61696,
+      "peakAfterRssKiB": 61456
+    },
+    {
+      "id": "comic-basic/level-6/zip",
+      "decodeBeforeMs": 11.618,
+      "decodeAfterMs": 9.332,
+      "decodeChangePercent": -19.676,
+      "totalBeforeMs": 12.839,
+      "totalAfterMs": 9.937,
+      "peakBeforeRssKiB": 128592,
+      "peakAfterRssKiB": 125552
+    },
+    {
+      "id": "comic-basic/level-6/prd",
+      "decodeBeforeMs": 12.982,
+      "decodeAfterMs": 8.628,
+      "decodeChangePercent": -33.539,
+      "totalBeforeMs": 13.792,
+      "totalAfterMs": 9.068,
+      "peakBeforeRssKiB": 126336,
+      "peakAfterRssKiB": 124960
+    },
+    {
+      "id": "storyboard-basic/level-0/zip",
+      "decodeBeforeMs": 0.191,
+      "decodeAfterMs": 0.115,
+      "decodeChangePercent": -39.791,
+      "totalBeforeMs": 0.954,
+      "totalAfterMs": 0.465,
+      "peakBeforeRssKiB": 56896,
+      "peakAfterRssKiB": 57056
+    },
+    {
+      "id": "storyboard-basic/level-0/prd",
+      "decodeBeforeMs": 0.178,
+      "decodeAfterMs": 0.139,
+      "decodeChangePercent": -21.91,
+      "totalBeforeMs": 0.788,
+      "totalAfterMs": 0.455,
+      "peakBeforeRssKiB": 58272,
+      "peakAfterRssKiB": 56960
+    },
+    {
+      "id": "storyboard-basic/level-6/zip",
+      "decodeBeforeMs": 0.588,
+      "decodeAfterMs": 0.469,
+      "decodeChangePercent": -20.238,
+      "totalBeforeMs": 1.123,
+      "totalAfterMs": 0.814,
+      "peakBeforeRssKiB": 59984,
+      "peakAfterRssKiB": 60064
+    },
+    {
+      "id": "storyboard-basic/level-6/prd",
+      "decodeBeforeMs": 0.706,
+      "decodeAfterMs": 0.474,
+      "decodeChangePercent": -32.861,
+      "totalBeforeMs": 1.338,
+      "totalAfterMs": 0.805,
+      "peakBeforeRssKiB": 59440,
+      "peakAfterRssKiB": 59408
+    },
+    {
+      "id": "long-1000-sections/level-0/zip",
+      "decodeBeforeMs": 11.983,
+      "decodeAfterMs": 16.062,
+      "decodeChangePercent": 34.04,
+      "totalBeforeMs": 32.911,
+      "totalAfterMs": 26.792,
+      "peakBeforeRssKiB": 106320,
+      "peakAfterRssKiB": 111584
+    },
+    {
+      "id": "long-1000-sections/level-0/prd",
+      "decodeBeforeMs": 14.07,
+      "decodeAfterMs": 16.592,
+      "decodeChangePercent": 17.925,
+      "totalBeforeMs": 31.845,
+      "totalAfterMs": 26.632,
+      "peakBeforeRssKiB": 105968,
+      "peakAfterRssKiB": 111584
+    },
+    {
+      "id": "long-1000-sections/level-6/zip",
+      "decodeBeforeMs": 16.361,
+      "decodeAfterMs": 13.243,
+      "decodeChangePercent": -19.058,
+      "totalBeforeMs": 31.682,
+      "totalAfterMs": 24.309,
+      "peakBeforeRssKiB": 128528,
+      "peakAfterRssKiB": 126064
+    },
+    {
+      "id": "long-1000-sections/level-6/prd",
+      "decodeBeforeMs": 15.07,
+      "decodeAfterMs": 13.102,
+      "decodeChangePercent": -13.059,
+      "totalBeforeMs": 31.341,
+      "totalAfterMs": 24.584,
+      "peakBeforeRssKiB": 125584,
+      "peakAfterRssKiB": 126896
+    },
+    {
+      "id": "assets-32-mib/level-0/zip",
+      "decodeBeforeMs": 192.468,
+      "decodeAfterMs": 185.029,
+      "decodeChangePercent": -3.865,
+      "totalBeforeMs": 200.07,
+      "totalAfterMs": 192.637,
+      "peakBeforeRssKiB": 193536,
+      "peakAfterRssKiB": 190704
+    },
+    {
+      "id": "assets-32-mib/level-0/prd",
+      "decodeBeforeMs": 200.957,
+      "decodeAfterMs": 180.771,
+      "decodeChangePercent": -10.045,
+      "totalBeforeMs": 211.622,
+      "totalAfterMs": 187.032,
+      "peakBeforeRssKiB": 194208,
+      "peakAfterRssKiB": 190704
+    },
+    {
+      "id": "assets-32-mib/level-6/zip",
+      "decodeBeforeMs": 426.821,
+      "decodeAfterMs": 347.605,
+      "decodeChangePercent": -18.56,
+      "totalBeforeMs": 439.471,
+      "totalAfterMs": 354.136,
+      "peakBeforeRssKiB": 256432,
+      "peakAfterRssKiB": 264992
+    },
+    {
+      "id": "assets-32-mib/level-6/prd",
+      "decodeBeforeMs": 393.428,
+      "decodeAfterMs": 342.8,
+      "decodeChangePercent": -12.868,
+      "totalBeforeMs": 402.794,
+      "totalAfterMs": 348.97,
+      "peakBeforeRssKiB": 252928,
+      "peakAfterRssKiB": 261440
+    },
+    {
+      "id": "images-4x4096/level-0/zip",
+      "decodeBeforeMs": 55.802,
+      "decodeAfterMs": 69.983,
+      "decodeChangePercent": 25.413,
+      "totalBeforeMs": 61.645,
+      "totalAfterMs": 71.866,
+      "peakBeforeRssKiB": 91440,
+      "peakAfterRssKiB": 91440
+    },
+    {
+      "id": "images-4x4096/level-0/prd",
+      "decodeBeforeMs": 43.028,
+      "decodeAfterMs": 67.532,
+      "decodeChangePercent": 56.949,
+      "totalBeforeMs": 45.055,
+      "totalAfterMs": 68.933,
+      "peakBeforeRssKiB": 94544,
+      "peakAfterRssKiB": 91488
+    },
+    {
+      "id": "images-4x4096/level-6/zip",
+      "decodeBeforeMs": 71.641,
+      "decodeAfterMs": 63.334,
+      "decodeChangePercent": -11.595,
+      "totalBeforeMs": 72.383,
+      "totalAfterMs": 63.98,
+      "peakBeforeRssKiB": 144128,
+      "peakAfterRssKiB": 143824
+    },
+    {
+      "id": "images-4x4096/level-6/prd",
+      "decodeBeforeMs": 75.666,
+      "decodeAfterMs": 63.13,
+      "decodeChangePercent": -16.568,
+      "totalBeforeMs": 76.503,
+      "totalAfterMs": 63.599,
+      "peakBeforeRssKiB": 152784,
+      "peakAfterRssKiB": 153648
+    }
+  ]
+}

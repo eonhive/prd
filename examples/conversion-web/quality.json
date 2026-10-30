@@ -1,0 +1,31 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "markdown",
+  "profile": "general-document",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 8,
+  "resourceCount": 1,
+  "resourceMap": [
+    {
+      "source": "flow.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "markdown-subset",
+      "stage": "extract",
+      "message": "Only ATX headings, paragraphs, flat lists, blockquotes and standalone local raster images are mapped. Inline styling is flattened; links, tables, nested lists, code and HTML have no equivalent semantics. Consult the source attachment for original syntax and omitted content."
+    },
+    {
+      "code": "markdown-unsupported",
+      "stage": "extract",
+      "message": "Skipped fenced code block; code nodes are not supported by markdown import v0.1."
+    }
+  ],
+  "validationWarnings": []
+}

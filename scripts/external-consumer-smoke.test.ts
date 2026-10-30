@@ -4,7 +4,7 @@
  * Purpose: Verify npm consumer smoke summary generation without hitting the network.
  * Author: Stan Nesi
  * Created: 2026-04-19
- * Updated: 2026-04-19
+ * Updated: 2026-10-30
  * Notes: Vibe coded with Codex.
  */
 
@@ -22,6 +22,7 @@ import {
   externalConsumerSmokeContractVersion,
   runExternalConsumerSmoke
 } from "./external-consumer-smoke.mjs";
+import { publicReleasePackages } from "./release-packages.mjs";
 
 const tempDirs = [];
 const execFileAsync = promisify(execFile);
@@ -83,6 +84,8 @@ function sourceCliRunner() {
     if (args[0] === "install") {
       return "";
     }
+    // Installed SDK execution is covered by the real tarball consumer lane.
+    if (args[0]?.endsWith("check-converter.mjs")) return "";
     lines = [];
     const code = await runCli(args.slice(2));
     if (code !== 0) {
@@ -112,6 +115,7 @@ describe("buildPublishedPackageSpecs", () => {
       "@eonhive/prd-types@latest",
       "@eonhive/prd-validator@latest",
       "@eonhive/prd-packager@latest",
+      "@eonhive/prd-converter@latest",
       "@eonhive/prd-cli@latest"
     ]);
   });
@@ -121,6 +125,7 @@ describe("buildPublishedPackageSpecs", () => {
       "@eonhive/prd-types@0.1.0",
       "@eonhive/prd-validator@0.1.0",
       "@eonhive/prd-packager@0.1.0",
+      "@eonhive/prd-converter@0.1.0",
       "@eonhive/prd-cli@0.1.0"
     ]);
   });
@@ -151,16 +156,57 @@ describe("runExternalConsumerSmoke", () => {
     expect(result.status).toBe("passed");
     expect(writtenSummary.contractVersion).toBe(externalConsumerSmokeContractVersion);
     expect(writtenSummary.status).toBe("passed");
-    expect(writtenSummary.authoringRequired).toBe(false);
-    expect(writtenSummary.steps).toHaveLength(6);
-    expect(recordedCommands).toHaveLength(6);
+    expect(writtenSummary.steps).toHaveLength(12);
+    expect(recordedCommands).toHaveLength(12);
     expect(recordedCommands[0].args).toContain("@eonhive/prd-cli@0.1.0");
+    expect(recordedCommands[0].args).toContain("@eonhive/prd-converter@0.1.0");
+    expect(recordedCommands.some(call => call.args.includes("html"))).toBe(true);
+    expect(recordedCommands.some(call => call.args.includes("convert"))).toBe(true);
+    expect(writtenSummary.steps.some(step => step.title === "Convert with the public SDK" && step.status === "passed")).toBe(true);
     expect(recordedCommands[2].args).toEqual([
       "--no-install",
       "prd",
       "inspect",
       expect.stringContaining("document-basic")
     ]);
+  });
+
+  it("uses exact per-package workspace versions for the CI consumer path", async () => {
+    const repoRoot = await createTempDir("prd-consumer-workspace-versions-");
+    await createFixtureRoot(repoRoot);
+    for (const pkg of publicReleasePackages) {
+      await mkdir(join(repoRoot, pkg.directory), { recursive: true });
+      await writeFile(join(repoRoot, pkg.directory, "package.json"), JSON.stringify({
+        name: pkg.name, version: pkg.name === "@eonhive/prd-converter" ? "0.2.0" : "0.1.1"
+      }));
+    }
+    const result = await runExternalConsumerSmoke({ repoRoot, workspaceVersions: true, commandRunner: async () => {} });
+    expect(result.status).toBe("passed");
+    expect(result.packageSpecs).toContain("@eonhive/prd-converter@0.2.0");
+    expect(result.packageSpecs).toContain("@eonhive/prd-cli@0.1.1");
+    expect(result.packageSpecs.some(spec => spec.endsWith("@latest"))).toBe(false);
+  });
+
+  it("records preparation failures as failed summaries and makes no install attempt", async () => {
+    const repoRoot = await createTempDir("prd-consumer-prepare-failure-");
+    let commands = 0;
+    const result = await runExternalConsumerSmoke({ repoRoot, commandRunner: async () => { commands++; } });
+    expect(result.status).toBe("failed");
+    expect(result.steps[0]?.title).toBe("Prepare consumer smoke inputs");
+    expect(commands).toBe(0);
+    expect(JSON.parse(await readFile(result.summaryPath, "utf8")).status).toBe("failed");
+  });
+
+  it("stops at a failed new conversion step without claiming subsequent validation passed", async () => {
+    const repoRoot = await createTempDir("prd-consumer-convert-failure-");
+    await createFixtureRoot(repoRoot);
+    const result = await runExternalConsumerSmoke({ repoRoot, commandRunner: async (_command, args) => {
+      if (args.includes("convert")) throw new Error("convert failed");
+    } });
+    expect(result.status).toBe("failed");
+    expect(result.steps.at(-1)?.title).toBe("Convert with the CLI");
+    expect(result.steps.at(-1)?.status).toBe("failed");
+    expect(result.steps.some(step => step.title === "Validate CLI conversion")).toBe(false);
   });
 
   it("records the failing step when a mocked command errors", async () => {
@@ -197,7 +243,7 @@ describe("runExternalConsumerSmoke", () => {
 
     expect(result.status, JSON.stringify(result.steps.filter((step) => step.status === "failed"))).toBe("passed");
     expect(result.authoringRequired).toBe(true);
-    expect(result.steps).toHaveLength(42);
+    expect(result.steps).toHaveLength(48);
     expect(result.steps.filter((step) => step.title.endsWith("inspect archive"))).toHaveLength(6);
     await expect(readFile(join(result.consumerProjectDir, "package.json"))).rejects.toMatchObject({ code: "ENOENT" });
   });
@@ -212,7 +258,7 @@ describe("runExternalConsumerSmoke", () => {
     });
     expect(result.status, JSON.stringify(result.steps.filter((step) => step.status === "failed"))).toBe("passed");
     expect(result.authoringRequired).toBe(true);
-    expect(result.steps).toHaveLength(42);
+    expect(result.steps).toHaveLength(48);
   });
 
   it("rejects a successful command that reports the wrong archive profile", async () => {

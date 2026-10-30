@@ -11,6 +11,8 @@
     "build": "pnpm -r build",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
+    "prearchive:mutations": "pnpm --filter @eonhive/prd-validator... build",
+    "archive:mutations": "node ./scripts/archive-mutation-check.mjs",
     "consumer:smoke:npm": "node ./scripts/external-consumer-smoke.mjs",
     "docs:check": "node ./scripts/check-docs-consistency.mjs",
     "clean": "node ./scripts/clean.mjs",

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "comic",
+  "type": "comic",
+  "id": "restricted-fixture-fr",
+  "title": "Lecture structurée en français",
+  "panels": [
+    { "id": "flow-fr", "asset": "cover", "alt": "Diagramme fourni dans le document", "caption": "La variante française utilise la structure canonique." }
+  ]
+}
