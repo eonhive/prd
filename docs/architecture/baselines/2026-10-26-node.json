@@ -1,0 +1,948 @@
+{
+  "auditVersion": "prd-architecture-audit-v0.1",
+  "generatedAt": "2026-10-26T22:25:28.075Z",
+  "environment": {
+    "node": "v24.5.0",
+    "platform": "darwin",
+    "release": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M1"
+  },
+  "method": "One warmup plus five warm-cache samples; fresh child per fixture/strategy; GC before each. RSS is process high-water including imports and warmup, not browser or incremental asset memory. Content-only probe skips assets AND validation; it is not a conforming replacement loader.",
+  "fixtures": [
+    {
+      "name": "document-basic",
+      "archiveBytes": 5649,
+      "archiveSha256": "a1198602784191d07814fe2990ef38b03ec4807af74980b3752f7be79c6f606f",
+      "fileCount": 11,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.954,
+              "unzipMs": 0.252,
+              "validateMs": 0.281,
+              "interpretMs": 0.036,
+              "totalMs": 1.522
+            },
+            {
+              "readMs": 0.74,
+              "unzipMs": 0.235,
+              "validateMs": 0.225,
+              "interpretMs": 0.028,
+              "totalMs": 1.228
+            },
+            {
+              "readMs": 0.746,
+              "unzipMs": 1.016,
+              "validateMs": 0.223,
+              "interpretMs": 0.027,
+              "totalMs": 2.012
+            },
+            {
+              "readMs": 0.428,
+              "unzipMs": 0.751,
+              "validateMs": 0.237,
+              "interpretMs": 0.033,
+              "totalMs": 1.448
+            },
+            {
+              "readMs": 0.719,
+              "unzipMs": 0.763,
+              "validateMs": 0.202,
+              "interpretMs": 0.027,
+              "totalMs": 1.712
+            }
+          ],
+          "materializedBytes": 12215,
+          "median": {
+            "readMs": 0.74,
+            "unzipMs": 0.751,
+            "validateMs": 0.225,
+            "interpretMs": 0.028,
+            "totalMs": 1.522
+          },
+          "maxTotalMs": 2.012,
+          "processPeakRssKiB": 62768
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 0.334,
+              "unzipMs": 0.472,
+              "validateMs": null,
+              "interpretMs": 0.051,
+              "totalMs": 0.861
+            },
+            {
+              "readMs": 0.419,
+              "unzipMs": 0.975,
+              "validateMs": null,
+              "interpretMs": 0.176,
+              "totalMs": 1.572
+            },
+            {
+              "readMs": 0.644,
+              "unzipMs": 0.473,
+              "validateMs": null,
+              "interpretMs": 0.065,
+              "totalMs": 1.182
+            },
+            {
+              "readMs": 0.509,
+              "unzipMs": 0.442,
+              "validateMs": null,
+              "interpretMs": 0.062,
+              "totalMs": 1.015
+            },
+            {
+              "readMs": 0.224,
+              "unzipMs": 0.461,
+              "validateMs": null,
+              "interpretMs": 0.044,
+              "totalMs": 0.73
+            }
+          ],
+          "materializedBytes": 8198,
+          "median": {
+            "readMs": 0.419,
+            "unzipMs": 0.472,
+            "validateMs": null,
+            "interpretMs": 0.062,
+            "totalMs": 1.015
+          },
+          "maxTotalMs": 1.572,
+          "processPeakRssKiB": 61872
+        }
+      ]
+    },
+    {
+      "name": "document-segmented-basic",
+      "archiveBytes": 2573,
+      "archiveSha256": "17eb6478decafcf402c641d5c8a3ecf81a70aa666ec1b3fa3590d77d5de42482",
+      "fileCount": 7,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.36,
+              "unzipMs": 0.342,
+              "validateMs": 0.214,
+              "interpretMs": 0.044,
+              "totalMs": 0.96
+            },
+            {
+              "readMs": 0.185,
+              "unzipMs": 0.291,
+              "validateMs": 0.13,
+              "interpretMs": 0.017,
+              "totalMs": 0.624
+            },
+            {
+              "readMs": 0.297,
+              "unzipMs": 0.356,
+              "validateMs": 0.127,
+              "interpretMs": 0.017,
+              "totalMs": 0.796
+            },
+            {
+              "readMs": 0.391,
+              "unzipMs": 0.277,
+              "validateMs": 0.128,
+              "interpretMs": 0.017,
+              "totalMs": 0.813
+            },
+            {
+              "readMs": 0.315,
+              "unzipMs": 0.295,
+              "validateMs": 0.123,
+              "interpretMs": 0.016,
+              "totalMs": 0.748
+            }
+          ],
+          "materializedBytes": 3418,
+          "median": {
+            "readMs": 0.315,
+            "unzipMs": 0.295,
+            "validateMs": 0.128,
+            "interpretMs": 0.017,
+            "totalMs": 0.796
+          },
+          "maxTotalMs": 0.96,
+          "processPeakRssKiB": 61968
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 0.485,
+              "unzipMs": 0.437,
+              "validateMs": null,
+              "interpretMs": 0.063,
+              "totalMs": 0.987
+            },
+            {
+              "readMs": 0.375,
+              "unzipMs": 0.265,
+              "validateMs": null,
+              "interpretMs": 0.034,
+              "totalMs": 0.674
+            },
+            {
+              "readMs": 0.215,
+              "unzipMs": 0.263,
+              "validateMs": null,
+              "interpretMs": 0.031,
+              "totalMs": 0.51
+            },
+            {
+              "readMs": 0.251,
+              "unzipMs": 0.246,
+              "validateMs": null,
+              "interpretMs": 0.035,
+              "totalMs": 0.532
+            },
+            {
+              "readMs": 0.337,
+              "unzipMs": 0.257,
+              "validateMs": null,
+              "interpretMs": 0.031,
+              "totalMs": 0.625
+            }
+          ],
+          "materializedBytes": 3126,
+          "median": {
+            "readMs": 0.337,
+            "unzipMs": 0.263,
+            "validateMs": null,
+            "interpretMs": 0.034,
+            "totalMs": 0.625
+          },
+          "maxTotalMs": 0.987,
+          "processPeakRssKiB": 61664
+        }
+      ]
+    },
+    {
+      "name": "resume-basic",
+      "archiveBytes": 2398,
+      "archiveSha256": "e386b2b932f6b35e44d0252c2f219a1fc1e895b6dde371b397c269d59f48b36e",
+      "fileCount": 6,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.328,
+              "unzipMs": 0.397,
+              "validateMs": 0.187,
+              "interpretMs": 0.029,
+              "totalMs": 0.94
+            },
+            {
+              "readMs": 0.322,
+              "unzipMs": 0.304,
+              "validateMs": 0.203,
+              "interpretMs": 0.024,
+              "totalMs": 0.853
+            },
+            {
+              "readMs": 0.415,
+              "unzipMs": 0.274,
+              "validateMs": 0.186,
+              "interpretMs": 0.026,
+              "totalMs": 0.901
+            },
+            {
+              "readMs": 1.692,
+              "unzipMs": 0.298,
+              "validateMs": 0.19,
+              "interpretMs": 0.039,
+              "totalMs": 2.219
+            },
+            {
+              "readMs": 0.26,
+              "unzipMs": 0.258,
+              "validateMs": 0.111,
+              "interpretMs": 0.022,
+              "totalMs": 0.651
+            }
+          ],
+          "materializedBytes": 3572,
+          "median": {
+            "readMs": 0.328,
+            "unzipMs": 0.298,
+            "validateMs": 0.187,
+            "interpretMs": 0.026,
+            "totalMs": 0.901
+          },
+          "maxTotalMs": 2.219,
+          "processPeakRssKiB": 62608
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 0.526,
+              "unzipMs": 0.311,
+              "validateMs": null,
+              "interpretMs": 0.053,
+              "totalMs": 0.895
+            },
+            {
+              "readMs": 0.215,
+              "unzipMs": 0.197,
+              "validateMs": null,
+              "interpretMs": 0.044,
+              "totalMs": 0.457
+            },
+            {
+              "readMs": 0.191,
+              "unzipMs": 0.175,
+              "validateMs": null,
+              "interpretMs": 0.027,
+              "totalMs": 0.393
+            },
+            {
+              "readMs": 0.324,
+              "unzipMs": 0.18,
+              "validateMs": null,
+              "interpretMs": 0.026,
+              "totalMs": 0.53
+            },
+            {
+              "readMs": 0.433,
+              "unzipMs": 0.173,
+              "validateMs": null,
+              "interpretMs": 0.032,
+              "totalMs": 0.639
+            }
+          ],
+          "materializedBytes": 2810,
+          "median": {
+            "readMs": 0.324,
+            "unzipMs": 0.18,
+            "validateMs": null,
+            "interpretMs": 0.032,
+            "totalMs": 0.53
+          },
+          "maxTotalMs": 0.895,
+          "processPeakRssKiB": 61600
+        }
+      ]
+    },
+    {
+      "name": "comic-basic",
+      "archiveBytes": 608477,
+      "archiveSha256": "314c203515bc090586e14562ab47f564d43455c81c5fa5576a973addd74b9cb4",
+      "fileCount": 7,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.824,
+              "unzipMs": 3.199,
+              "validateMs": 0.273,
+              "interpretMs": 0.026,
+              "totalMs": 4.322
+            },
+            {
+              "readMs": 1.771,
+              "unzipMs": 4.051,
+              "validateMs": 0.165,
+              "interpretMs": 0.023,
+              "totalMs": 6.009
+            },
+            {
+              "readMs": 0.678,
+              "unzipMs": 0.687,
+              "validateMs": 0.205,
+              "interpretMs": 0.022,
+              "totalMs": 1.592
+            },
+            {
+              "readMs": 1.878,
+              "unzipMs": 2.2,
+              "validateMs": 0.122,
+              "interpretMs": 0.021,
+              "totalMs": 4.22
+            },
+            {
+              "readMs": 4.86,
+              "unzipMs": 2.022,
+              "validateMs": 0.136,
+              "interpretMs": 0.021,
+              "totalMs": 7.039
+            }
+          ],
+          "materializedBytes": 608662,
+          "median": {
+            "readMs": 1.771,
+            "unzipMs": 2.2,
+            "validateMs": 0.165,
+            "interpretMs": 0.022,
+            "totalMs": 4.322
+          },
+          "maxTotalMs": 7.039,
+          "processPeakRssKiB": 67680
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 3.571,
+              "unzipMs": 0.382,
+              "validateMs": null,
+              "interpretMs": 0.179,
+              "totalMs": 4.136
+            },
+            {
+              "readMs": 0.948,
+              "unzipMs": 0.192,
+              "validateMs": null,
+              "interpretMs": 0.044,
+              "totalMs": 1.185
+            },
+            {
+              "readMs": 1.971,
+              "unzipMs": 0.573,
+              "validateMs": null,
+              "interpretMs": 0.049,
+              "totalMs": 2.594
+            },
+            {
+              "readMs": 0.721,
+              "unzipMs": 0.313,
+              "validateMs": null,
+              "interpretMs": 0.096,
+              "totalMs": 1.131
+            },
+            {
+              "readMs": 0.286,
+              "unzipMs": 0.145,
+              "validateMs": null,
+              "interpretMs": 0.027,
+              "totalMs": 0.458
+            }
+          ],
+          "materializedBytes": 1920,
+          "median": {
+            "readMs": 0.948,
+            "unzipMs": 0.313,
+            "validateMs": null,
+            "interpretMs": 0.049,
+            "totalMs": 1.185
+          },
+          "maxTotalMs": 4.136,
+          "processPeakRssKiB": 66352
+        }
+      ]
+    },
+    {
+      "name": "storyboard-basic",
+      "archiveBytes": 2864,
+      "archiveSha256": "961adab974604ca20390d3cfff3101814e6b24422148ac371bbef8501a64b118",
+      "fileCount": 7,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.685,
+              "unzipMs": 0.791,
+              "validateMs": 0.296,
+              "interpretMs": 0.035,
+              "totalMs": 1.808
+            },
+            {
+              "readMs": 0.384,
+              "unzipMs": 0.152,
+              "validateMs": 0.084,
+              "interpretMs": 0.015,
+              "totalMs": 0.634
+            },
+            {
+              "readMs": 0.335,
+              "unzipMs": 0.14,
+              "validateMs": 0.109,
+              "interpretMs": 0.017,
+              "totalMs": 0.601
+            },
+            {
+              "readMs": 0.353,
+              "unzipMs": 0.316,
+              "validateMs": 0.073,
+              "interpretMs": 0.016,
+              "totalMs": 0.759
+            },
+            {
+              "readMs": 0.346,
+              "unzipMs": 0.325,
+              "validateMs": 0.099,
+              "interpretMs": 0.016,
+              "totalMs": 0.786
+            }
+          ],
+          "materializedBytes": 4466,
+          "median": {
+            "readMs": 0.353,
+            "unzipMs": 0.316,
+            "validateMs": 0.099,
+            "interpretMs": 0.016,
+            "totalMs": 0.759
+          },
+          "maxTotalMs": 1.808,
+          "processPeakRssKiB": 62000
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 1.506,
+              "unzipMs": 0.524,
+              "validateMs": null,
+              "interpretMs": 0.082,
+              "totalMs": 2.115
+            },
+            {
+              "readMs": 0.332,
+              "unzipMs": 0.152,
+              "validateMs": null,
+              "interpretMs": 0.039,
+              "totalMs": 0.523
+            },
+            {
+              "readMs": 0.436,
+              "unzipMs": 0.139,
+              "validateMs": null,
+              "interpretMs": 0.035,
+              "totalMs": 0.609
+            },
+            {
+              "readMs": 0.391,
+              "unzipMs": 0.13,
+              "validateMs": null,
+              "interpretMs": 0.038,
+              "totalMs": 0.559
+            },
+            {
+              "readMs": 0.525,
+              "unzipMs": 0.154,
+              "validateMs": null,
+              "interpretMs": 0.04,
+              "totalMs": 0.72
+            }
+          ],
+          "materializedBytes": 1443,
+          "median": {
+            "readMs": 0.436,
+            "unzipMs": 0.152,
+            "validateMs": null,
+            "interpretMs": 0.039,
+            "totalMs": 0.609
+          },
+          "maxTotalMs": 2.115,
+          "processPeakRssKiB": 62064
+        }
+      ]
+    },
+    {
+      "name": "long-1000-sections",
+      "archiveBytes": 41270,
+      "archiveSha256": "6f7bb6132e65e6849cb54039eab9464e5c476a401e86305fca03d6e4b835c079",
+      "fileCount": 2,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.451,
+              "unzipMs": 28.58,
+              "validateMs": 10.405,
+              "interpretMs": 3.382,
+              "totalMs": 42.818
+            },
+            {
+              "readMs": 0.475,
+              "unzipMs": 3.782,
+              "validateMs": 7.948,
+              "interpretMs": 2.493,
+              "totalMs": 14.698
+            },
+            {
+              "readMs": 0.326,
+              "unzipMs": 2.04,
+              "validateMs": 6.718,
+              "interpretMs": 3.209,
+              "totalMs": 12.293
+            },
+            {
+              "readMs": 0.671,
+              "unzipMs": 24.495,
+              "validateMs": 7.066,
+              "interpretMs": 2.566,
+              "totalMs": 34.799
+            },
+            {
+              "readMs": 0.356,
+              "unzipMs": 3.722,
+              "validateMs": 6.615,
+              "interpretMs": 2.531,
+              "totalMs": 13.224
+            }
+          ],
+          "materializedBytes": 1821988,
+          "median": {
+            "readMs": 0.451,
+            "unzipMs": 3.782,
+            "validateMs": 7.066,
+            "interpretMs": 2.566,
+            "totalMs": 14.698
+          },
+          "maxTotalMs": 42.818,
+          "processPeakRssKiB": 105024
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 0.472,
+              "unzipMs": 12.036,
+              "validateMs": null,
+              "interpretMs": 2.328,
+              "totalMs": 14.845
+            },
+            {
+              "readMs": 0.376,
+              "unzipMs": 3.458,
+              "validateMs": null,
+              "interpretMs": 2.675,
+              "totalMs": 6.511
+            },
+            {
+              "readMs": 0.302,
+              "unzipMs": 4.247,
+              "validateMs": null,
+              "interpretMs": 2.528,
+              "totalMs": 7.078
+            },
+            {
+              "readMs": 0.448,
+              "unzipMs": 3.557,
+              "validateMs": null,
+              "interpretMs": 2.458,
+              "totalMs": 6.463
+            },
+            {
+              "readMs": 0.424,
+              "unzipMs": 2.71,
+              "validateMs": null,
+              "interpretMs": 2.389,
+              "totalMs": 5.525
+            }
+          ],
+          "materializedBytes": 1821988,
+          "median": {
+            "readMs": 0.424,
+            "unzipMs": 3.557,
+            "validateMs": null,
+            "interpretMs": 2.458,
+            "totalMs": 6.511
+          },
+          "maxTotalMs": 14.845,
+          "processPeakRssKiB": 78784
+        }
+      ]
+    },
+    {
+      "name": "assets-32-mib",
+      "archiveBytes": 33562677,
+      "archiveSha256": "3b5c74a5fbf7623fff4261cdec6a6b230db4aed4d6ff7996cd40ee6aed50a1e1",
+      "fileCount": 10,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 12.115,
+              "unzipMs": 8.75,
+              "validateMs": 2.15,
+              "interpretMs": 0.035,
+              "totalMs": 23.05
+            },
+            {
+              "readMs": 7.21,
+              "unzipMs": 5.316,
+              "validateMs": 0.134,
+              "interpretMs": 0.03,
+              "totalMs": 12.69
+            },
+            {
+              "readMs": 7.39,
+              "unzipMs": 3.488,
+              "validateMs": 0.128,
+              "interpretMs": 0.106,
+              "totalMs": 11.111
+            },
+            {
+              "readMs": 7.553,
+              "unzipMs": 2.053,
+              "validateMs": 0.122,
+              "interpretMs": 0.036,
+              "totalMs": 9.764
+            },
+            {
+              "readMs": 11.628,
+              "unzipMs": 2.393,
+              "validateMs": 0.121,
+              "interpretMs": 0.026,
+              "totalMs": 14.168
+            }
+          ],
+          "materializedBytes": 33555392,
+          "median": {
+            "readMs": 7.553,
+            "unzipMs": 3.488,
+            "validateMs": 0.128,
+            "interpretMs": 0.035,
+            "totalMs": 12.69
+          },
+          "maxTotalMs": 23.05,
+          "processPeakRssKiB": 226080
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 10.183,
+              "unzipMs": 0.298,
+              "validateMs": null,
+              "interpretMs": 0.042,
+              "totalMs": 10.527
+            },
+            {
+              "readMs": 9.649,
+              "unzipMs": 0.282,
+              "validateMs": null,
+              "interpretMs": 0.04,
+              "totalMs": 9.972
+            },
+            {
+              "readMs": 7.604,
+              "unzipMs": 0.381,
+              "validateMs": null,
+              "interpretMs": 0.052,
+              "totalMs": 8.038
+            },
+            {
+              "readMs": 7.499,
+              "unzipMs": 0.248,
+              "validateMs": null,
+              "interpretMs": 0.038,
+              "totalMs": 7.785
+            },
+            {
+              "readMs": 9.081,
+              "unzipMs": 0.209,
+              "validateMs": null,
+              "interpretMs": 0.034,
+              "totalMs": 9.324
+            }
+          ],
+          "materializedBytes": 960,
+          "median": {
+            "readMs": 9.081,
+            "unzipMs": 0.282,
+            "validateMs": null,
+            "interpretMs": 0.04,
+            "totalMs": 9.324
+          },
+          "maxTotalMs": 10.527,
+          "processPeakRssKiB": 160144
+        }
+      ]
+    },
+    {
+      "name": "images-4x4096",
+      "archiveBytes": 403881,
+      "archiveSha256": "5a9729664b83d51c9a7e28870673ea58b31bbcc4bd0a74900b13fc16f1ad4692",
+      "fileCount": 6,
+      "measurements": [
+        {
+          "strategy": "eager",
+          "samples": [
+            {
+              "readMs": 0.386,
+              "unzipMs": 16.381,
+              "validateMs": 0.238,
+              "interpretMs": 0.027,
+              "totalMs": 17.032
+            },
+            {
+              "readMs": 0.627,
+              "unzipMs": 12.836,
+              "validateMs": 0.152,
+              "interpretMs": 0.02,
+              "totalMs": 13.636
+            },
+            {
+              "readMs": 0.471,
+              "unzipMs": 11.669,
+              "validateMs": 0.115,
+              "interpretMs": 0.022,
+              "totalMs": 12.276
+            },
+            {
+              "readMs": 3.993,
+              "unzipMs": 74.913,
+              "validateMs": 0.126,
+              "interpretMs": 0.021,
+              "totalMs": 79.053
+            },
+            {
+              "readMs": 2.61,
+              "unzipMs": 16.426,
+              "validateMs": 0.129,
+              "interpretMs": 0.021,
+              "totalMs": 19.186
+            }
+          ],
+          "materializedBytes": 7686579,
+          "median": {
+            "readMs": 0.627,
+            "unzipMs": 16.381,
+            "validateMs": 0.129,
+            "interpretMs": 0.021,
+            "totalMs": 17.032
+          },
+          "maxTotalMs": 79.053,
+          "processPeakRssKiB": 88704
+        },
+        {
+          "strategy": "content-only-probe",
+          "samples": [
+            {
+              "readMs": 0.428,
+              "unzipMs": 0.189,
+              "validateMs": null,
+              "interpretMs": 0.026,
+              "totalMs": 0.645
+            },
+            {
+              "readMs": 0.296,
+              "unzipMs": 0.152,
+              "validateMs": null,
+              "interpretMs": 0.035,
+              "totalMs": 0.483
+            },
+            {
+              "readMs": 4.523,
+              "unzipMs": 0.126,
+              "validateMs": null,
+              "interpretMs": 0.053,
+              "totalMs": 4.702
+            },
+            {
+              "readMs": 0.467,
+              "unzipMs": 0.097,
+              "validateMs": null,
+              "interpretMs": 0.029,
+              "totalMs": 0.593
+            },
+            {
+              "readMs": 0.808,
+              "unzipMs": 0.122,
+              "validateMs": null,
+              "interpretMs": 0.039,
+              "totalMs": 0.97
+            }
+          ],
+          "materializedBytes": 859,
+          "median": {
+            "readMs": 0.467,
+            "unzipMs": 0.126,
+            "validateMs": null,
+            "interpretMs": 0.035,
+            "totalMs": 0.645
+          },
+          "maxTotalMs": 4.702,
+          "processPeakRssKiB": 63760
+        }
+      ]
+    }
+  ],
+  "probes": {
+    "requiredCapabilityObject": {
+      "valid": true,
+      "warningCodes": [],
+      "supportState": "fully-supported"
+    },
+    "requiredCapabilityArray": {
+      "valid": true,
+      "warningCodes": [],
+      "supportState": "fully-supported"
+    },
+    "requiredExtension": {
+      "valid": true,
+      "warningCodes": [],
+      "supportState": "fully-supported"
+    },
+    "futureVersion": {
+      "valid": true,
+      "warningCodes": [],
+      "supportState": "fully-supported"
+    },
+    "archiveMember:../outside.txt": {
+      "valid": true,
+      "errorCodes": []
+    },
+    "archiveMember:/absolute.txt": {
+      "valid": true,
+      "errorCodes": []
+    },
+    "archiveMember:assets\\backslash.txt": {
+      "valid": true,
+      "errorCodes": []
+    },
+    "boundedExpansion": {
+      "archiveBytes": 8754,
+      "expandedBytes": 8388608,
+      "valid": true
+    },
+    "javascriptLink": {
+      "valid": false
+    },
+    "remoteCoreAsset": {
+      "valid": false
+    },
+    "contentSchema": [
+      {
+        "name": "document-basic",
+        "packageValid": true,
+        "schemaValid": false,
+        "schemaErrorCount": 344
+      },
+      {
+        "name": "document-segmented-basic",
+        "packageValid": true,
+        "schemaValid": false,
+        "schemaErrorCount": 108
+      },
+      {
+        "name": "resume-basic",
+        "packageValid": true,
+        "schemaValid": true,
+        "schemaErrorCount": 0
+      }
+    ],
+    "repeatPack": {
+      "byteIdentical": false,
+      "firstSha256": "19155e541704b2d239c9d9591da034b0c17330f30f28b6af967323bc86672c9a",
+      "secondSha256": "8e11b0f7f2d6d4079d21ecef25f307eb89a5ea5108c014163c29b36174ba53c9"
+    }
+  }
+}

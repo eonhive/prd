@@ -1,0 +1,15 @@
+{
+  "prdVersion": "2.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:general-document-future-version",
+  "profile": "general-document",
+  "title": "Unsupported future format",
+  "entry": "content/root.json",
+  "localization": {
+    "defaultLocale": "en-US",
+    "availableLocales": [
+      "en-US",
+      "fr-FR"
+    ]
+  }
+}

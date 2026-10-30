@@ -1,0 +1,66 @@
+{
+  "contractVersion": "prd-import-report-v1",
+  "sourceFormat": "html",
+  "targetProfile": "general-document",
+  "content": {
+    "nodeCount": 11,
+    "nodeTypes": {
+      "heading": 2,
+      "paragraph": 3,
+      "list": 1,
+      "quote": 1,
+      "image": 1,
+      "table": 1,
+      "links": 2
+    }
+  },
+  "resources": {
+    "assetCount": 1,
+    "byteCount": 1276,
+    "items": [
+      {
+        "id": "import-image-1",
+        "href": "assets/images/import-image-1.png",
+        "type": "image/png"
+      }
+    ]
+  },
+  "sourcePreserved": false,
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "readingQuality": "not-assessed",
+  "warnings": [
+    {
+      "code": "html-subset",
+      "stage": "extract",
+      "message": "Static HTML semantics are reconstructed into PRD nodes. CSS, scripts, embedded applications, layout and inline styling are not preserved. Inline links and images may follow their containing block. Metadata other than title remains only in the original source, available when source retention is enabled."
+    },
+    {
+      "code": "html-element-omitted",
+      "stage": "extract",
+      "message": "Active, embedded or explicitly hidden content is omitted from the reading view.",
+      "reference": "style"
+    },
+    {
+      "code": "html-element-omitted",
+      "stage": "extract",
+      "message": "Active, embedded or explicitly hidden content is omitted from the reading view.",
+      "reference": "script"
+    },
+    {
+      "code": "source-not-preserved",
+      "stage": "adapt",
+      "message": "Source retention was disabled. Original syntax and omitted content are not included in this package."
+    }
+  ],
+  "errors": [],
+  "unsupportedElements": [
+    "style",
+    "script"
+  ],
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": []
+  }
+}

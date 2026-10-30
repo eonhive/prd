@@ -75,7 +75,10 @@ describe("runRuntimeConformanceCheck", () => {
     expect(writtenSummary.runtimeId).toBe("reference-viewer");
     expect(writtenSummary.status).toBe("passed");
     expect(Array.isArray(writtenSummary.fixtures)).toBe(true);
-    expect(writtenSummary.fixtures.length).toBe(5);
+    const { manifest } = await loadRuntimeConformanceManifest({ repoRoot });
+    expect(writtenSummary.fixtures.map((fixture) => fixture.id)).toEqual(
+      manifest.fixtures.map((fixture) => fixture.id)
+    );
     expect(writtenSummary.fixtures.every((fixture) => fixture.status === "passed")).toBe(
       true
     );

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0",
+  "id": "document",
+  "title": "PRD Convert — HTML Report",
+  "profile": "general-document",
+  "children": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Portable HTML report",
+      "id": "node-1"
+    },
+    {
+      "type": "paragraph",
+      "text": "This document becomes structured, responsive content inside PRD.",
+      "id": "node-2"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Preserved structure",
+      "id": "html-anchor-1"
+    },
+    {
+      "type": "list",
+      "style": "unordered",
+      "items": [
+        "Headings, paragraphs, lists and quotes",
+        "Simple tables, links and local raster images",
+        "Declared package resources and a conversion report"
+      ],
+      "id": "node-4"
+    },
+    {
+      "type": "quote",
+      "text": "Reading does not require running the source document's scripts.",
+      "id": "node-5"
+    },
+    {
+      "type": "image",
+      "asset": "import-image-1",
+      "alt": "Three connected portable content blocks",
+      "id": "node-6"
+    },
+    {
+      "type": "paragraph",
+      "text": "A local image embedded as a declared PRD asset.",
+      "id": "node-7"
+    },
+    {
+      "type": "table",
+      "columns": [
+        {
+          "id": "column-1",
+          "label": "Source feature"
+        },
+        {
+          "id": "column-2",
+          "label": "PRD result"
+        }
+      ],
+      "rows": [
+        {
+          "column-1": "Semantic HTML",
+          "column-2": "Canonical structured nodes"
+        },
+        {
+          "column-1": "CSS and scripts",
+          "column-2": "Omitted from reading; reported"
+        },
+        {
+          "column-1": "Source retention",
+          "column-2": "Reported by the selected conversion workflow"
+        }
+      ],
+      "caption": "Conversion behavior",
+      "id": "node-8"
+    },
+    {
+      "type": "paragraph",
+      "text": "Visit the PRD repository or return to preserved structure.",
+      "id": "node-9"
+    },
+    {
+      "type": "links",
+      "style": "inline",
+      "items": [
+        {
+          "label": "PRD repository",
+          "href": "https://github.com/eonhive/PRD"
+        }
+      ],
+      "id": "node-10"
+    },
+    {
+      "type": "links",
+      "style": "inline",
+      "items": [
+        {
+          "label": "return to preserved structure",
+          "href": "#html-anchor-1"
+        }
+      ],
+      "id": "node-11"
+    }
+  ],
+  "type": "document"
+}

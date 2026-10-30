@@ -35,6 +35,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./signing": {
+      "types": "./dist/signing.d.ts",
+      "import": "./dist/signing.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
     }
   },
   "scripts": {

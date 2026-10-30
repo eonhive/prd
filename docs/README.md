@@ -16,7 +16,13 @@ If you are entering from the repo root:
 
 Primary paths:
 
+* source-verified implementation assessment
+  * [October 26, 2026 architecture audit and modernization plan](architecture/PRD_ARCHITECTURE_ASSESSMENT_2026-10-26.md) (evidence and pending proposals; does not replace format canon)
+  * [October 29 current-loader measurements](core/PRD_PERFORMANCE_AND_LOADING.md#13-current-loader-measurements-and-stored-windows-october-29-2026) (both transports, stored/DEFLATE, byte parity, rejected trials and Node-only limits)
+  * [October 30 allocation investigation](core/PRD_PERFORMANCE_AND_LOADING.md#14-allocation-investigation-and-viewer-blob-preparation-october-30-2026) (rejected decoder preallocation, retained boundaries and private Viewer Blob-copy removal)
+  * [Bounded archive mutation checks](core/PRD_CONTAINER_FORMAT.md#bounded-mutation-checks-october-30-2026) (reproducible controls/operators, filename corrections and assurance boundary)
 * core format canon
+  * `core/PRD_CONTAINER_FORMAT.md` (magic bytes, ZIP payload, legacy compatibility and reference archive limits)
   * `core/PRD_MINIMAL_VALID_SPEC.md`
   * `core/PRD_MANIFEST_DRAFT.md`
   * `core/PRD_PACKAGE_LAYOUT_DRAFT.md`
@@ -24,8 +30,11 @@ Primary paths:
 * runtime contracts
   * `runtime/PRD_CAPABILITY_MODEL.md`
   * `runtime/PRD_CONFORMANCE.md`
+  * `runtime/PRD_HTML_FALLBACK_POLICY.md` (private Viewer containment policy; live browser acceptance pending)
   * `runtime/PRD_CLI_JSON_CONTRACT.md`
   * `../examples/runtime-conformance/runtime-conformance-manifest.json`
+* optional extension contracts
+  * [Digital signatures v1](extensions/PRD_SIGNATURE_V1.md) (logical file coverage and explicit public-key trust)
 * profile specs
   * `profiles/PRD_PROFILE_GENERAL_DOCUMENT.md`
   * `profiles/PRD_PROFILE_COMIC.md`
@@ -35,11 +44,32 @@ Primary paths:
   * `governance/PRD_PROMPT_DOCTRINE.md`
   * `governance/PRD_RELEASE_POLICY.md`
   * `governance/PRD_HOSTING_RUNBOOK.md`
+* PRD Convert foundation
+  * [Source inventory, architecture record and safety limits](architecture/PRD_CONVERT_PHASE_1.md)
+  * [Real Markdown conversion example](../examples/conversion-markdown/README.md)
+  * [HTML mapping and safety policy](architecture/PRD_CONVERT_HTML.md)
+  * [Real HTML conversion example](../examples/conversion-html/README.md)
+  * [CBZ mapping and bounded archive policy](architecture/PRD_CONVERT_CBZ.md)
+  * [Real CBZ comic conversion example](../examples/conversion-cbz/README.md)
+  * [EPUB chapter mapping and XML safety policy](architecture/PRD_CONVERT_EPUB.md)
+  * [Real EPUB book conversion example](../examples/conversion-epub/README.md)
+  * [DOCX body mapping and OPC safety policy](architecture/PRD_CONVERT_DOCX.md)
+  * [Real DOCX conversion example](../examples/conversion-docx/README.md)
+  * [PDF extraction, fallback and process limits](architecture/PRD_CONVERT_PDF.md)
+  * [Real mixed-page PDF conversion example](../examples/conversion-pdf/README.md)
+  * [Convert Web execution and limits](architecture/PRD_CONVERT_WEB.md)
+  * [Browser HTML and converter workspace](architecture/PRD_CONVERT_WEB_HTML.md)
+  * [Browser CBZ and comic page sequence](architecture/PRD_CONVERT_WEB_CBZ.md)
+  * [Comic conversion page-order repair](architecture/PRD_CONVERT_PAGE_REVIEW.md)
+  * [Supplied comic descriptions and session drafts](architecture/PRD_CONVERT_COMIC_DESCRIPTIONS.md)
+  * [Conversion quality diagnostic review](architecture/PRD_CONVERT_QUALITY_REVIEW.md)
+  * [Actual browser-generated conversion example](../examples/conversion-web/README.md)
 * product boundaries
   * `product/PRD_PRODUCT_BOUNDARIES.md`
   * `product/PRD_AUTHORING_WORKFLOW.md`
   * `product/PRD_IMPORT_EXPORT_MATRIX.md`
 * `product/PRD_LIVING_HOMEPAGE.md` (six-chapter public experience, uRK capability audit, and real Viewer integration)
+* `product/PRD_VISUAL_IDENTITY.md` (shared purple identity, public navigation, page styling, and artwork provenance)
 * prompt packs
   * `prompts/PRD_MASTER_PROMPTS.md`
 
@@ -136,6 +166,7 @@ Viewer/renderer capability and runtime-facing spec docs:
 
 * `PRD_CAPABILITY_MODEL.md`
 * `PRD_CONFORMANCE.md`
+* `PRD_HTML_FALLBACK_POLICY.md`
 * `PRD_CLI_JSON_CONTRACT.md`
 
 Published executable runtime corpus:
@@ -152,7 +183,7 @@ Dedicated profile specs:
 
 ### `extensions/`
 
-Reserved location for optional extension-layer specs.
+Optional extension-layer specs, currently including [PRD_SIGNATURE_V1.md](extensions/PRD_SIGNATURE_V1.md). These do not become mandatory core-format requirements.
 
 ### `product/`
 

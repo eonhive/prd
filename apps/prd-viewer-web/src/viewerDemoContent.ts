@@ -62,16 +62,16 @@ export const viewerLandingHero = {
   description:
     "Portable Responsive Document brings structured text, comics, and storyboards into one packaged format. Create or import with the CLI, validate and inspect, pack a .prd archive, then open it in the reference viewer.",
   primaryAction: "Open Viewer",
-  secondaryAction: "Load Sample PRD",
-  tertiaryAction: "View CLI Flow"
+  secondaryAction: "Explore Examples",
+  tertiaryAction: "Read Docs"
 };
 
 export const viewerAuthoringAvailabilityNote =
   "Authoring commands are available in the repository build. Published npm CLI 0.1.1 provides pack, validate, and inspect; init and import await the next CLI release.";
 
 export const viewerPublicDocsIntro = {
-  eyebrow: "Public docs",
-  title: "Start here. Make your first PRD.",
+  eyebrow: "PRD documentation",
+  title: "Start your next chapter.",
   description:
     "Try a sample, follow the authoring workflow, or explore the format. These guides link to the canonical repository documentation, with release and hosting notes kept in their own section."
 };

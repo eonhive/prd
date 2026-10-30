@@ -14,7 +14,9 @@
     "@urk/adapters": "file:vendor/urk-adapters-0.2.0.tgz",
     "@urk/core": "file:vendor/urk-core-0.2.0.tgz",
     "fflate": "^0.8.2",
+    "parse5": "8.0.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "@eonhive/prd-converter": "^0.1.0"
   }
 }

@@ -8,17 +8,13 @@
  * Notes: Vibe coded with Codex.
  */
 
-import {
-  copyFile,
-  mkdir,
-  readdir,
-  stat,
-  writeFile
-} from "node:fs/promises";
-import { basename, extname, join, parse, resolve } from "node:path";
+import { readdir, stat } from "node:fs/promises";
+import { createImportPackageFiles, IMPORT_ENTRY_PATH, writeImportPackage } from "./importPackage.js";
+import { compareImageSequenceNames, titleFromImagePath as titleFromPath } from "@eonhive/prd-converter/image-sequence";
+import { extname, join, parse, resolve } from "node:path";
 import type { PrdAssetDeclaration } from "@eonhive/prd-types";
 
-const ENTRY_PATH = "content/root.json";
+const ENTRY_PATH = IMPORT_ENTRY_PATH;
 const SUPPORTED_IMAGE_EXTENSIONS = new Map([
   [".gif", "image/gif"],
   [".jpeg", "image/jpeg"],
@@ -28,10 +24,6 @@ const SUPPORTED_IMAGE_EXTENSIONS = new Map([
   [".webp", "image/webp"]
 ]);
 const SUPPORTED_IMAGE_IMPORT_PROFILES = ["comic", "storyboard"] as const;
-const naturalFileNameCollator = new Intl.Collator("en", {
-  numeric: true,
-  sensitivity: "base"
-});
 
 export type PrdImageImportProfile = (typeof SUPPORTED_IMAGE_IMPORT_PROFILES)[number];
 
@@ -100,8 +92,6 @@ export async function importImagesToPrdPackage(
   const title = options.title ?? titleFromPath(options.sourceDir);
   const id = options.id ?? `urn:prd:local:${slugFromTitle(title)}`;
 
-  await assertTargetIsWritable(options.targetDir);
-
   const files = buildPackageFiles({
     id,
     title,
@@ -109,26 +99,7 @@ export async function importImagesToPrdPackage(
     assets: collected.assets
   });
 
-  const directories = new Set([
-    ...files.map((file) => file.path.split("/").slice(0, -1).join("/")),
-    ...collected.assets.map((asset) => asset.href.split("/").slice(0, -1).join("/"))
-  ]);
-
-  for (const directory of directories) {
-    if (directory.length === 0) {
-      continue;
-    }
-
-    await mkdir(join(options.targetDir, directory), { recursive: true });
-  }
-
-  for (const asset of collected.assets) {
-    await copyFile(asset.sourcePath, join(options.targetDir, asset.href));
-  }
-
-  for (const file of files) {
-    await writeFile(join(options.targetDir, file.path), file.contents, "utf8");
-  }
+  await writeImportPackage(options.targetDir, files, collected.assets);
 
   return {
     imported: true,
@@ -156,27 +127,6 @@ async function assertSourceIsReadableDirectory(sourceDir: string): Promise<void>
   }
 }
 
-async function assertTargetIsWritable(targetDir: string): Promise<void> {
-  try {
-    const targetStat = await stat(targetDir);
-    if (!targetStat.isDirectory()) {
-      throw new Error(`Target path is not a directory: ${targetDir}`);
-    }
-
-    const entries = await readdir(targetDir);
-    if (entries.length > 0) {
-      throw new Error(`Target directory is not empty: ${targetDir}`);
-    }
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") {
-      await mkdir(targetDir, { recursive: true });
-      return;
-    }
-
-    throw error;
-  }
-}
-
 async function collectImageAssets({
   sourceDir,
   profile
@@ -196,7 +146,7 @@ async function collectImageAssets({
   const assetDirectory = profile === "comic" ? "assets/panels" : "assets/frames";
 
   const sortedEntries = entries.sort((left, right) =>
-    naturalFileNameCollator.compare(left.name, right.name)
+    compareImageSequenceNames(left.name, right.name)
   );
 
   for (const entry of sortedEntries) {
@@ -262,68 +212,44 @@ function buildPackageFiles({
   title: string;
   profile: PrdImageImportProfile;
   assets: PendingImageAsset[];
-}): Array<{ path: string; contents: string }> {
+}) {
   const manifestAssets: PrdAssetDeclaration[] = assets.map((asset) => ({
     id: asset.id,
     href: asset.href,
     type: asset.type
   }));
 
-  return [
-    {
-      path: "manifest.json",
-      contents: json({
-        prdVersion: "1.0",
-        manifestVersion: "1.0",
-        id,
-        profile,
-        title,
-        entry: ENTRY_PATH,
-        assets: manifestAssets
-      })
-    },
-    {
-      path: ENTRY_PATH,
-      contents:
-        profile === "comic"
-          ? json({
-              schemaVersion: "1.0",
-              profile,
-              type: "comic",
-              id: slugFromTitle(title),
-              title,
-              panels: assets.map((asset, index) => ({
-                id: `panel-${index + 1}`,
-                asset: asset.id,
-                alt: `${asset.label} comic panel`
-              }))
-            })
-          : json({
-              schemaVersion: "1.0",
-              profile,
-              type: "storyboard",
-              id: slugFromTitle(title),
-              title,
-              frames: assets.map((asset, index) => ({
-                id: `frame-${index + 1}`,
-                asset: asset.id,
-                alt: `${asset.label} storyboard frame`,
-                notes: "Add storyboard notes for this imported frame."
-              }))
-            })
-    }
-  ];
-}
-
-function titleFromPath(path: string): string {
-  const parsedName = parse(basename(path)).name;
-  const title = parsedName
-    .split(/[-_\s]+/u)
-    .filter((part) => part.length > 0)
-    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-    .join(" ");
-
-  return title.length > 0 ? title : "Untitled PRD";
+  return createImportPackageFiles({
+    id,
+    title,
+    assets: manifestAssets,
+    content: profile === "comic"
+      ? {
+          schemaVersion: "1.0",
+          profile,
+          type: "comic",
+          id: slugFromTitle(title),
+          title,
+          panels: assets.map((asset, index) => ({
+            id: `panel-${index + 1}`,
+            asset: asset.id,
+            alt: `${asset.label} comic panel`
+          }))
+        }
+      : {
+          schemaVersion: "1.0",
+          profile,
+          type: "storyboard",
+          id: slugFromTitle(title),
+          title,
+          frames: assets.map((asset, index) => ({
+            id: `frame-${index + 1}`,
+            asset: asset.id,
+            alt: `${asset.label} storyboard frame`,
+            notes: "Add storyboard notes for this imported frame."
+          }))
+        }
+  });
 }
 
 function slugFromTitle(title: string): string {
@@ -333,12 +259,4 @@ function slugFromTitle(title: string): string {
     .replace(/^-+|-+$/gu, "");
 
   return slug.length > 0 ? slug : "untitled-prd";
-}
-
-function json(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
-}
-
-function isNodeError(error: unknown): error is NodeJS.ErrnoException {
-  return error instanceof Error && "code" in error;
 }

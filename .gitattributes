@@ -1,0 +1,11 @@
+# Company: EonHive Inc. | Title: Binary Document Attributes
+# Purpose: Preserve archive and PDF bytes across checkouts, diffs and merges.
+# Author: Stan Nesi | Created: 2026-10-30 | Updated: 2026-10-30
+# Notes: Vibe coded with Codex.
+
+# PDF cross-reference offsets and archive checksums depend on exact bytes.
+*.[pP][rR][dD] binary
+*.[pP][dD][fF] binary
+*.[dD][oO][cC][xX] binary
+*.[eE][pP][uU][bB] binary
+*.[cC][bB][zZ] binary

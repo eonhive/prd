@@ -1,0 +1,11 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:required-capability-array",
+  "profile": "general-document",
+  "title": "Unsupported required capability array",
+  "entry": "content/root.json",
+  "compatibility": {
+    "capabilities": ["custom.renderer"]
+  }
+}

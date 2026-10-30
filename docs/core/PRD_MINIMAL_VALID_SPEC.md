@@ -1,5 +1,5 @@
 # PRD_MINIMAL_VALID_SPEC.md
-_Last updated: April 16, 2026_  
+_Last updated: October 27, 2026_
 _Status: Ratified minimal-valid baseline v0.3_
 
 ## Purpose
@@ -66,7 +66,7 @@ Normative terms are interpreted as defined by RFC 2119/8174 usage: MUST, MUST NO
 ### Transport and package root
 
 **MVS-001**  
-For interchange validity, a minimal PRD package **MUST** be a ZIP archive with a `.prd` extension.
+For interchange validity, a minimal PRD package **MUST** use the `.prd` extension and a ZIP payload, either as the existing ZIP archive or inside the additive PRD container 1.0 envelope defined in [PRD_CONTAINER_FORMAT.md](PRD_CONTAINER_FORMAT.md) and PRD-040. Default writers retain the legacy ZIP form during the staged rollout. In both forms, package-root paths refer to the ZIP payload root.
 
 **MVS-002**  
 The package **MUST** include `manifest.json` at package root (archive root for `.prd`; directory root for tooling directory validation mode).
@@ -253,7 +253,7 @@ Invalid for minimal-valid `general-document` canonical conformance.
 
 | Req ID(s) | Normative requirement | Current enforcement truth | Issue code family / status | Positive fixture(s) | Negative fixture(s) / tests |
 | --- | --- | --- | --- | --- | --- |
-| `MVS-001` | `.prd` ZIP transport is required for interchange | Enforced in node/archive entrypoints rather than core in-memory validation | `archive-extension-invalid`, `archive-read-invalid` | archive validation and inspection tests in `packages/prd-validator/src/index.test.ts`; built CLI archive E2E in `packages/prd-cli/src/cli.e2e.test.ts` | dedicated bad-archive fixture is still deferred; current negative coverage is API-level |
+| `MVS-001` | `.prd` with a ZIP payload, directly or in the PRD 1.0 envelope | Shared browser-safe container reader plus Node extension policy; not core in-memory semantic validation | `archive-extension-invalid`, `archive-magic-invalid`, `container-*`, `archive-read-invalid`; operational budgets/member guards documented in the container contract | archive and CLI round trips for both forms | `packages/prd-validator/src/container.test.ts` covers malformed headers, invalid ZIP, hostile members, declared/actual limits and legacy compatibility |
 | `MVS-002`, `MVS-003` | root `manifest.json` exists and parses as one JSON object | Enforced by package-file validation before profile/content checks | `manifest-missing`, `manifest-json-invalid`, `manifest-shape` | `examples/document-basic`, `examples/comic-basic`, `examples/storyboard-basic` | existing validator fixture coverage for missing/invalid manifest packages |
 | `MVS-004`, `MVS-005` | required opening fields stay top-level and public | Enforced in manifest validation | `prdVersion-required`, `manifestVersion-required`, `id-required`, `profile-required`, `title-required`, `entry-required` | canonical examples and `validManifest` fixture coverage | required-field tests in `packages/prd-validator/src/index.test.ts` |
 | `MVS-006`, `MVS-007` | reference tooling may accept directories while interchange remains `.prd`; canonical layout stays predictable | Directory acceptance is implemented in `@eonhive/prd-validator/node`; canonical layout remains guidance rather than a hard-validity requirement beyond referenced paths | no dedicated layout issue code; directory mode is explicit runtime/tooling behavior | directory/archive dual-mode tests in `packages/prd-validator/src/index.test.ts` | non-canonical but structurally valid layouts remain allowed if manifest references resolve |

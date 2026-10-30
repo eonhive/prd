@@ -51,6 +51,7 @@
   "dependencies": {
     "@eonhive/prd-packager": "^0.1.1",
     "@eonhive/prd-types": "^0.1.1",
-    "@eonhive/prd-validator": "^0.1.1"
+    "@eonhive/prd-validator": "^0.1.1",
+    "@eonhive/prd-converter": "^0.1.0"
   }
 }

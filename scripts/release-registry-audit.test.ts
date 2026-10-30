@@ -4,7 +4,7 @@
  * Purpose: Verify published npm metadata audit behavior without live registry access.
  * Author: Stan Nesi
  * Created: 2026-04-23
- * Updated: 2026-04-23
+ * Updated: 2026-10-30
  * Notes: Vibe coded with Codex.
  */
 
@@ -16,6 +16,7 @@ import {
   releaseRegistryAuditContractVersion,
   runReleaseRegistryAudit
 } from "./release-registry-audit.mjs";
+import { publicReleasePackages } from "./release-packages.mjs";
 
 const tempDirs = [];
 
@@ -30,15 +31,8 @@ async function createTempDir(prefix) {
   return directory;
 }
 
-async function createWorkspace(repoRoot, version = "0.1.1") {
-  const packages = [
-    { directory: "packages/prd-types", name: "@eonhive/prd-types" },
-    { directory: "packages/prd-validator", name: "@eonhive/prd-validator" },
-    { directory: "packages/prd-packager", name: "@eonhive/prd-packager" },
-    { directory: "packages/prd-cli", name: "@eonhive/prd-cli" }
-  ];
-
-  for (const pkg of packages) {
+async function createWorkspace(repoRoot, version = "0.1.1", versions = {}) {
+  for (const pkg of publicReleasePackages) {
     const packageDirectory = join(repoRoot, pkg.directory);
     await mkdir(packageDirectory, { recursive: true });
     await writeFile(
@@ -46,7 +40,7 @@ async function createWorkspace(repoRoot, version = "0.1.1") {
       `${JSON.stringify(
         {
           name: pkg.name,
-          version
+          version: versions[pkg.name] ?? version
         },
         null,
         2
@@ -120,7 +114,42 @@ describe("runReleaseRegistryAudit", () => {
 
     expect(result.status).toBe("passed");
     expect(writtenSummary.contractVersion).toBe(releaseRegistryAuditContractVersion);
+    expect(writtenSummary.packages).toHaveLength(5);
     expect(writtenSummary.packages.every((pkg) => pkg.status === "passed")).toBe(true);
+  });
+
+  it("audits each independent version, including the converter, against its own latest tag", async () => {
+    const repoRoot = await createTempDir("prd-registry-independent-");
+    const versions = { "@eonhive/prd-converter": "0.2.0", "@eonhive/prd-cli": "0.3.0" };
+    await createWorkspace(repoRoot, "0.1.1", versions);
+    const result = await runReleaseRegistryAudit({ repoRoot, fetchImpl: async url => {
+      const name = decodeURIComponent(String(url).split("/").pop() ?? "");
+      return createJsonResponse(200, createRegistryDocument(name, versions[name] ?? "0.1.1", { "@eonhive/prd-types": "^0.1.1" }));
+    } });
+    expect(result.status).toBe("passed");
+    expect(result.checks.packageTargets.versionPolicy).toBe("independent");
+    expect(result.checks.packageTargets.versionSet).toEqual(["0.1.1", "0.2.0", "0.3.0"]);
+    expect(result.packages.find(pkg => pkg.name === "@eonhive/prd-converter")?.expectedVersion).toBe("0.2.0");
+  });
+
+  it.each(["missing", "latest", "workspace", "deprecated", "unavailable"])("fails converter metadata case %s even when the four original packages pass", async mode => {
+    const repoRoot = await createTempDir("prd-registry-converter-");
+    await createWorkspace(repoRoot);
+    const result = await runReleaseRegistryAudit({ repoRoot, fetchImpl: async url => {
+      const name = decodeURIComponent(String(url).split("/").pop() ?? "");
+      const document = createRegistryDocument(name, "0.1.1");
+      if (name === "@eonhive/prd-converter") {
+        if (mode === "missing") return createJsonResponse(404, {});
+        if (mode === "unavailable") return createJsonResponse(503, {});
+        if (mode === "latest") document["dist-tags"].latest = "0.1.0";
+        if (mode === "workspace") document.versions["0.1.1"].dependencies = { "@eonhive/prd-types": "workspace:*" };
+        if (mode === "deprecated") document.versions["0.1.1"].deprecated = "Upgrade to a supported version.";
+      }
+      return createJsonResponse(200, document);
+    } });
+    expect(result.status).toBe("failed");
+    expect(result.packages.filter(pkg => pkg.status === "passed")).toHaveLength(4);
+    expect(result.packages.find(pkg => pkg.name === "@eonhive/prd-converter")?.status).toBe("failed");
   });
 
   it("fails when published registry metadata still contains workspace protocol dependencies", async () => {

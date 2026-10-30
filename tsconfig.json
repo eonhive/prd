@@ -4,9 +4,9 @@
     { "path": "./packages/prd-types" },
     { "path": "./packages/prd-validator" },
     { "path": "./packages/prd-packager" },
+    { "path": "./packages/prd-converter" },
     { "path": "./packages/prd-cli" },
     { "path": "./packages/prd-viewer-core" },
     { "path": "./apps/prd-viewer-web" }
   ]
 }
-

@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Company: EonHive Inc. | Title: HTML Fallback Isolation Fixture
+Purpose: Exercise retained reading content and discarded network/navigation features.
+Author: Stan Nesi | Created: 2026-10-29 | Updated: 2026-10-29 | Notes: Vibe coded with Codex. -->
+<html lang="en">
+  <head>
+    <title>Restricted HTML Reading Fixture</title>
+    <base href="http://127.0.0.1:5195/probe/base/">
+    <meta http-equiv="refresh" content="0;url=http://127.0.0.1:5195/probe/refresh">
+    <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="preconnect" href="http://127.0.0.1:5195">
+    <style>@import "http://127.0.0.1:5195/probe/import"; p { background-image: url(http://127.0.0.1:5195/probe/css); }</style>
+    <script>fetch("http://127.0.0.1:5195/probe/script"); window.top.location="http://127.0.0.1:5195/probe/top";</script>
+  </head>
+  <body onload="fetch('http://127.0.0.1:5195/probe/onload')">
+    <main>
+      <h1>Restricted HTML Reading Fixture</h1>
+      <p>These reading elements, the packaged raster image and manual audio control remain available.</p>
+      <figure>
+        <img src="../assets/cover.png" srcset="http://127.0.0.1:5195/probe/srcset 2x" alt="Packaged conversion flow diagram">
+        <figcaption>The image comes from a declared package asset.</figcaption>
+      </figure>
+      <audio src="../assets/intro-tone.wav" autoplay loop controls>Packaged audio preview.</audio>
+      <table><caption>Reading sequence</caption><tr><th scope="col">Step</th><th scope="col">Action</th></tr><tr><td>1</td><td>Read</td></tr><tr><td>2</td><td>Change locale</td></tr></table>
+      <h2 id="part-two">Navigation labels remain text</h2>
+      <p><a href="#part-two">Local fragment label</a> · <a href="http://127.0.0.1:5195/probe/link" target="_top" ping="http://127.0.0.1:5195/probe/ping">External link label</a></p>
+      <form action="http://127.0.0.1:5195/probe/form"><label>Form label <input name="value" value="fixture"></label><button>Submit label</button></form>
+      <img src="http://127.0.0.1:5195/probe/image" alt="External image omitted">
+      <img src="../assets/unsafe.svg" alt="SVG image omitted in restricted preview">
+      <iframe src="http://127.0.0.1:5195/probe/frame"></iframe>
+      <object data="http://127.0.0.1:5195/probe/object"></object>
+      <template shadowrootmode="open"><img src="http://127.0.0.1:5195/probe/template"></template>
+    </main>
+  </body>
+</html>

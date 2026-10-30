@@ -1,0 +1,134 @@
+{
+  "generatedAt": "2026-10-30T11:41:28.801Z",
+  "status": "passed",
+  "inputs": 6150,
+  "readerCalls": 12300,
+  "reports": [
+    {
+      "contractVersion": "prd-archive-mutations-v1",
+      "seed": 0,
+      "iterations": 2000,
+      "limits": {
+        "maxArchiveBytes": 16384,
+        "maxFileBytes": 16384,
+        "maxExpandedBytes": 32768,
+        "maxEntries": 16
+      },
+      "status": "passed",
+      "processed": 2050,
+      "accepted": 76,
+      "rejected": 1974,
+      "rejectionCodes": {
+        "archive-read-invalid": 976,
+        "archive-member-path-invalid": 2,
+        "archive-entry-limit": 2,
+        "archive-file-size-limit": 4,
+        "archive-expanded-size-limit": 2,
+        "archive-checksum-mismatch": 97,
+        "archive-size-limit": 2,
+        "archive-magic-invalid": 294,
+        "container-length-mismatch": 581,
+        "container-header-truncated": 8,
+        "container-flags-unsupported": 4,
+        "container-version-unsupported": 2
+      },
+      "failures": [],
+      "inputDigest": "c1b644b532fbb1f96f9b0f476c16f2939f4e9b509c32071e109f32a10aa8b268",
+      "method": "Fixed synthetic archive controls and seeded mutations only; some controls contain no PRD manifest, and semantic validation/rendering is outside this check. Each input is read twice with tight byte/count budgets; accepted controls require exact source parity. Mutants may remain valid. Check error type, deterministic outcomes, input preservation, safe null-prototype paths, owned outputs and returned byte/count limits. No exhaustive fuzz, native-memory, cross-engine or security-audit assurance.",
+      "environment": {
+        "node": "v24.5.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "implementation": {
+        "packages/prd-validator/dist/container.js": "b1603d76bfe8ea3ea2faaa5a98384399f64d99cccdd4e6958342149c61d8725f",
+        "packages/prd-validator/dist/zipRecords.js": "566813ec64ab0090f6ebc0741198f0b345ee0ff215452a52c9153a8ad2e957ec",
+        "scripts/archive-mutation-check.mjs": "c5b78f28bea926047e1a2aaa3976fbb55eb3254bdac36708541e6b00657fe0d9"
+      }
+    },
+    {
+      "contractVersion": "prd-archive-mutations-v1",
+      "seed": 1,
+      "iterations": 2000,
+      "limits": {
+        "maxArchiveBytes": 16384,
+        "maxFileBytes": 16384,
+        "maxExpandedBytes": 32768,
+        "maxEntries": 16
+      },
+      "status": "passed",
+      "processed": 2050,
+      "accepted": 80,
+      "rejected": 1970,
+      "rejectionCodes": {
+        "archive-read-invalid": 996,
+        "archive-member-path-invalid": 2,
+        "archive-entry-limit": 2,
+        "archive-file-size-limit": 4,
+        "archive-expanded-size-limit": 2,
+        "archive-checksum-mismatch": 92,
+        "archive-size-limit": 2,
+        "archive-magic-invalid": 281,
+        "container-length-mismatch": 576,
+        "container-header-truncated": 10,
+        "container-version-unsupported": 2,
+        "container-flags-unsupported": 1
+      },
+      "failures": [],
+      "inputDigest": "75c78019144c49be6e59d9d1426336d93b827208eacd5b4c6602e1014dbcfbb6",
+      "method": "Fixed synthetic archive controls and seeded mutations only; some controls contain no PRD manifest, and semantic validation/rendering is outside this check. Each input is read twice with tight byte/count budgets; accepted controls require exact source parity. Mutants may remain valid. Check error type, deterministic outcomes, input preservation, safe null-prototype paths, owned outputs and returned byte/count limits. No exhaustive fuzz, native-memory, cross-engine or security-audit assurance.",
+      "environment": {
+        "node": "v24.5.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "implementation": {
+        "packages/prd-validator/dist/container.js": "b1603d76bfe8ea3ea2faaa5a98384399f64d99cccdd4e6958342149c61d8725f",
+        "packages/prd-validator/dist/zipRecords.js": "566813ec64ab0090f6ebc0741198f0b345ee0ff215452a52c9153a8ad2e957ec",
+        "scripts/archive-mutation-check.mjs": "c5b78f28bea926047e1a2aaa3976fbb55eb3254bdac36708541e6b00657fe0d9"
+      }
+    },
+    {
+      "contractVersion": "prd-archive-mutations-v1",
+      "seed": 12648430,
+      "iterations": 2000,
+      "limits": {
+        "maxArchiveBytes": 16384,
+        "maxFileBytes": 16384,
+        "maxExpandedBytes": 32768,
+        "maxEntries": 16
+      },
+      "status": "passed",
+      "processed": 2050,
+      "accepted": 75,
+      "rejected": 1975,
+      "rejectionCodes": {
+        "archive-read-invalid": 967,
+        "archive-member-path-invalid": 2,
+        "archive-entry-limit": 2,
+        "archive-file-size-limit": 4,
+        "archive-expanded-size-limit": 2,
+        "archive-checksum-mismatch": 104,
+        "archive-size-limit": 2,
+        "archive-magic-invalid": 328,
+        "container-length-mismatch": 550,
+        "container-flags-unsupported": 5,
+        "container-header-truncated": 6,
+        "container-version-unsupported": 3
+      },
+      "failures": [],
+      "inputDigest": "988dfc4c7981959ad2abd025677090d1c58a6fc813ee96bee206b4ddf3e3857d",
+      "method": "Fixed synthetic archive controls and seeded mutations only; some controls contain no PRD manifest, and semantic validation/rendering is outside this check. Each input is read twice with tight byte/count budgets; accepted controls require exact source parity. Mutants may remain valid. Check error type, deterministic outcomes, input preservation, safe null-prototype paths, owned outputs and returned byte/count limits. No exhaustive fuzz, native-memory, cross-engine or security-audit assurance.",
+      "environment": {
+        "node": "v24.5.0",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "implementation": {
+        "packages/prd-validator/dist/container.js": "b1603d76bfe8ea3ea2faaa5a98384399f64d99cccdd4e6958342149c61d8725f",
+        "packages/prd-validator/dist/zipRecords.js": "566813ec64ab0090f6ebc0741198f0b345ee0ff215452a52c9153a8ad2e957ec",
+        "scripts/archive-mutation-check.mjs": "c5b78f28bea926047e1a2aaa3976fbb55eb3254bdac36708541e6b00657fe0d9"
+      }
+    }
+  ]
+}

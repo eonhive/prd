@@ -15,6 +15,9 @@ import {
   type PrdMarkdownImportResult
 } from "./importMarkdown.js";
 import { initPrdPackage, type PrdInitResult } from "./init.js";
+import { runSignCommand, runVerifyCommand } from "./signature.js";
+import { runConvertCommand } from "./convert.js";
+import { runHtmlImportCommand } from "./importHtml.js";
 
 type CommandHandler = (args: string[]) => Promise<number>;
 type CliIssue = { code: string; message: string };
@@ -297,6 +300,9 @@ function formatImageImportResult(
 }
 
 const handlers: Record<string, CommandHandler> = {
+  convert: runConvertCommand,
+  sign: runSignCommand,
+  verify: runVerifyCommand,
   async init(args) {
     const targetDir = args[0];
     const jsonOutput = hasFlag(args, "--json");
@@ -325,18 +331,19 @@ const handlers: Record<string, CommandHandler> = {
 
   async import(args) {
     const sourceKind = args[0];
+    if (sourceKind === "html") return runHtmlImportCommand(args.slice(1));
     const sourcePath = args[1];
     const outDir = parseFlag(args, "--out");
     const jsonOutput = hasFlag(args, "--json");
 
     if (!sourceKind) {
-      console.error("Usage: prd import <markdown|images> ...");
+      console.error("Usage: prd import <markdown|images|html> ...");
       return 1;
     }
 
     if (sourceKind !== "markdown" && sourceKind !== "images") {
       console.error(
-        `Unsupported import source "${sourceKind}". Supported import sources: markdown, images.`
+        `Unsupported import source "${sourceKind}". Supported import sources: markdown, images, html.`
       );
       return 1;
     }
@@ -376,13 +383,18 @@ const handlers: Record<string, CommandHandler> = {
   async pack(args) {
     const sourceDir = args[0];
     const outFile = parseFlag(args, "--out");
+    const container = hasFlag(args, "--container") ? parseFlag(args, "--container") : "zip";
 
     if (!sourceDir || !outFile) {
-      console.error("Usage: prd pack <sourceDir> --out <file.prd>");
+      console.error("Usage: prd pack <sourceDir> --out <file.prd> [--container <zip|prd>]");
       return 1;
     }
 
-    const outputPath = await packDirectoryToFile(sourceDir, outFile);
+    if (container !== "zip" && container !== "prd") {
+      console.error("`--container` must be `zip` or `prd`.");
+      return 1;
+    }
+    const outputPath = await packDirectoryToFile(sourceDir, outFile, { container });
     console.log(`Packed ${basename(sourceDir)} -> ${outputPath}`);
     return 0;
   },
@@ -431,7 +443,7 @@ export async function runCli(argv: string[]): Promise<number> {
   const handler = command ? handlers[command] : undefined;
 
   if (!handler) {
-    console.error("Usage: prd <init|import|pack|validate|inspect> ...");
+    console.error("Usage: prd <init|import|convert|pack|validate|inspect|sign|verify> ...");
     return 1;
   }
 

@@ -1,0 +1,239 @@
+{
+  "contractVersion": "prd-asset-blob-baseline-v1",
+  "generatedAt": "2026-10-30T05:13:39.477Z",
+  "environment": {
+    "node": "v24.5.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1"
+  },
+  "implementation": {
+    "apps/prd-viewer-web/src/assetBlob.ts": "897d2bf5ba1dec1fc0cdff984b630859034b905407fb2d61298740453c16cf71",
+    "scripts/asset-blob-baseline.mjs": "8196ad1d47806669b9d09e8963bea695d60a3de23575655061e8432f826298f5"
+  },
+  "method": "Node native Blob, not browser memory/rendering. Fresh GC-enabled child per strategy; eight offset views totaling 32 MiB. One warmup and five measured construction samples. GC before each; memory snapshots immediately before/after construction. Explicit clone count follows the measured source paths; byte parity is checked afterward. Lifetime RSS includes tsx imports, source creation, warmup and Blob read-back verification. Interactive host; no universal latency/heap/GC guarantee.",
+  "cases": [
+    {
+      "strategy": "copy-before-blob",
+      "sourceBytes": 33554432,
+      "sourceCount": 8,
+      "sourceSha256": [
+        "e292baa696fa8c1b2cb5a1b17b8b6ba25b0f08fbd37b29506cb03b8a5da22b05",
+        "575f42009c28a230e4326c31b94954d2ec21c1a860cc14f40f045301c06eca45",
+        "0f7169304c3071992682e31cbd38adc297e59cfd828ad9bc2ca727f82d0764f0",
+        "a1ba8350168d42c81a8eba510324f83444147ab248184eb887b8ba686131f46c",
+        "e53212533d1a6d4a5145fe6979e220bd12f5fcbc6a253e427ad4073f8610076c",
+        "722b440b11c5f16eab8cf4afe77678aae81f513a051f127699f1b93a5b4405ad",
+        "c34331a913b1cecad68a2c1c61133699a7aa266cb4f3b1e5e0a6426c297d5207",
+        "f726e5a8cbcec6c7334661c8bb8d80720f563bd9d1c59f566d61ed43b2bb8052"
+      ],
+      "explicitPreBlobCloneBytes": 33554432,
+      "samples": [
+        {
+          "constructMs": 5.341,
+          "before": {
+            "rss": 233668608,
+            "heapTotal": 11894784,
+            "heapUsed": 6551352,
+            "external": 77947363,
+            "arrayBuffers": 109077351
+          },
+          "after": {
+            "rss": 233668608,
+            "heapTotal": 11894784,
+            "heapUsed": 6572688,
+            "external": 73753059,
+            "arrayBuffers": 138437479
+          },
+          "addedArrayBufferBytes": 29360128
+        },
+        {
+          "constructMs": 3.841,
+          "before": {
+            "rss": 280002560,
+            "heapTotal": 11894784,
+            "heapUsed": 6572080,
+            "external": 73753059,
+            "arrayBuffers": 104883047
+          },
+          "after": {
+            "rss": 280002560,
+            "heapTotal": 11894784,
+            "heapUsed": 6583288,
+            "external": 73753059,
+            "arrayBuffers": 138437479
+          },
+          "addedArrayBufferBytes": 33554432
+        },
+        {
+          "constructMs": 3.871,
+          "before": {
+            "rss": 280002560,
+            "heapTotal": 11894784,
+            "heapUsed": 6573632,
+            "external": 69558755,
+            "arrayBuffers": 100688743
+          },
+          "after": {
+            "rss": 280018944,
+            "heapTotal": 11894784,
+            "heapUsed": 6595984,
+            "external": 73753059,
+            "arrayBuffers": 138437479
+          },
+          "addedArrayBufferBytes": 37748736
+        },
+        {
+          "constructMs": 3.918,
+          "before": {
+            "rss": 280018944,
+            "heapTotal": 11894784,
+            "heapUsed": 6585320,
+            "external": 69558755,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 280018944,
+            "heapTotal": 11894784,
+            "heapUsed": 6597128,
+            "external": 73753059,
+            "arrayBuffers": 138437479
+          },
+          "addedArrayBufferBytes": 67108864
+        },
+        {
+          "constructMs": 2.785,
+          "before": {
+            "rss": 280018944,
+            "heapTotal": 11894784,
+            "heapUsed": 6586328,
+            "external": 73753059,
+            "arrayBuffers": 104883047
+          },
+          "after": {
+            "rss": 280018944,
+            "heapTotal": 11894784,
+            "heapUsed": 6597744,
+            "external": 73753059,
+            "arrayBuffers": 138437479
+          },
+          "addedArrayBufferBytes": 33554432
+        }
+      ],
+      "medianConstructMs": 3.871,
+      "processPeakRssKiB": 273488,
+      "gcExposed": true
+    },
+    {
+      "strategy": "direct-buffer-view",
+      "sourceBytes": 33554432,
+      "sourceCount": 8,
+      "sourceSha256": [
+        "e292baa696fa8c1b2cb5a1b17b8b6ba25b0f08fbd37b29506cb03b8a5da22b05",
+        "575f42009c28a230e4326c31b94954d2ec21c1a860cc14f40f045301c06eca45",
+        "0f7169304c3071992682e31cbd38adc297e59cfd828ad9bc2ca727f82d0764f0",
+        "a1ba8350168d42c81a8eba510324f83444147ab248184eb887b8ba686131f46c",
+        "e53212533d1a6d4a5145fe6979e220bd12f5fcbc6a253e427ad4073f8610076c",
+        "722b440b11c5f16eab8cf4afe77678aae81f513a051f127699f1b93a5b4405ad",
+        "c34331a913b1cecad68a2c1c61133699a7aa266cb4f3b1e5e0a6426c297d5207",
+        "f726e5a8cbcec6c7334661c8bb8d80720f563bd9d1c59f566d61ed43b2bb8052"
+      ],
+      "explicitPreBlobCloneBytes": 0,
+      "samples": [
+        {
+          "constructMs": 3.041,
+          "before": {
+            "rss": 229277696,
+            "heapTotal": 11894784,
+            "heapUsed": 6551440,
+            "external": 44392931,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 229277696,
+            "heapTotal": 11894784,
+            "heapUsed": 6571200,
+            "external": 40198627,
+            "arrayBuffers": 104883047
+          },
+          "addedArrayBufferBytes": 33554432
+        },
+        {
+          "constructMs": 2.235,
+          "before": {
+            "rss": 267173888,
+            "heapTotal": 11894784,
+            "heapUsed": 6572376,
+            "external": 107307491,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 267173888,
+            "heapTotal": 11894784,
+            "heapUsed": 6581984,
+            "external": 40198627,
+            "arrayBuffers": 104883047
+          },
+          "addedArrayBufferBytes": 33554432
+        },
+        {
+          "constructMs": 2.308,
+          "before": {
+            "rss": 267173888,
+            "heapTotal": 11894784,
+            "heapUsed": 6829592,
+            "external": 107307491,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 267173888,
+            "heapTotal": 11894784,
+            "heapUsed": 6594680,
+            "external": 40198627,
+            "arrayBuffers": 104883047
+          },
+          "addedArrayBufferBytes": 33554432
+        },
+        {
+          "constructMs": 1.763,
+          "before": {
+            "rss": 267190272,
+            "heapTotal": 11894784,
+            "heapUsed": 6585616,
+            "external": 107307491,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 267190272,
+            "heapTotal": 11894784,
+            "heapUsed": 6595824,
+            "external": 40198627,
+            "arrayBuffers": 104883047
+          },
+          "addedArrayBufferBytes": 33554432
+        },
+        {
+          "constructMs": 2.037,
+          "before": {
+            "rss": 267190272,
+            "heapTotal": 11894784,
+            "heapUsed": 6586624,
+            "external": 107307491,
+            "arrayBuffers": 71328615
+          },
+          "after": {
+            "rss": 267190272,
+            "heapTotal": 11894784,
+            "heapUsed": 6596440,
+            "external": 40198627,
+            "arrayBuffers": 104883047
+          },
+          "addedArrayBufferBytes": 33554432
+        }
+      ],
+      "medianConstructMs": 2.235,
+      "processPeakRssKiB": 260960,
+      "gcExposed": true
+    }
+  ]
+}

@@ -1766,7 +1766,8 @@ function validateContentNode(
         );
       }
 
-      if (Array.isArray(node.children) && isNonEmptyString(node.src)) {
+      // A malformed inline value still conflicts with a packaged section reference.
+      if (node.children !== undefined && isNonEmptyString(node.src)) {
         issues.push(
           makeIssue(
             "error",

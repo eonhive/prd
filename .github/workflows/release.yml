@@ -11,9 +11,16 @@ permissions:
   pull-requests: write
   id-token: write
 
+concurrency:
+  group: prd-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
 
     steps:
       - name: Check out repository
@@ -52,13 +59,8 @@ jobs:
           path: examples/dist/release-publish-preflight-summary.json
           if-no-files-found: error
 
-      - name: Bootstrap first public preview publish
-        run: pnpm release:bootstrap --publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-
       - name: Version or publish packages
+        id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm release:version
@@ -69,3 +71,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
+
+  verify-published:
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/post-publish-consumer-smoke.yml
+    with:
+      release_ref: ${{ github.sha }}

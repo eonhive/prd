@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: May 24, 2026_
+_Last updated: October 27, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -58,6 +58,13 @@ The Living Homepage uses uRK only as an app-level presentation dependency. Its c
 
 Codex operational files under `codex/` may remain tracked for implementation continuity, but they are not part of the public product docs, public site navigation, or canonical format documentation.
 
+Home, Viewer, and Docs share the purple PRD visual identity and public
+navigation. Profiles and Examples are real Home sections rather than separate
+product applications. The rebrand preserves the three-route static app,
+existing profile families, and normal sample-package opening. See
+[PRD_VISUAL_IDENTITY.md](PRD_VISUAL_IDENTITY.md) for presentation ownership,
+asset provenance, and the pending browser/production acceptance checks.
+
 ---
 
 ## 5. Product Roles
@@ -73,6 +80,24 @@ PRD Core is the standard-defining layer. It must stay portable, profile-aware, s
 The reference viewer demonstrates one truthful opening path for valid packages.
 
 It may expose package facts, support states, and render-mode behavior, but it does not define PRD validity. Current reference viewer loading is eager whole-package in-memory loading.
+
+The October 27, 2026 workspace refresh follows the supplied purple document-icon
+and Viewer/Studio visual references. The implemented product surface remains the
+Web Viewer: cool white/lavender light surfaces, navy dark surfaces, a compact
+reading toolbar, searchable outline, collapsible navigation/details panels,
+comfortable or wide reading width, and focus reading. At widths of 1000 CSS
+pixels or less, the panels become native modal drawers with Escape dismissal
+and focus restoration. Selecting an outline item closes the drawer and moves
+focus to the authored section or active panel/frame. Panel and focus controls
+preserve the mounted document, locale, and visual selection.
+
+Info shows validation, compatibility, metadata, and locale controls. Files shows
+declared packaged assets and attachments, with technical package facts inside a
+disclosure. Empty-state example cards and the Examples navigation view open the
+existing generated archives through the normal validator/renderer. These are
+presentation changes; the references do not introduce Studio, Cloud, sharing,
+AI, new reading modes, or new package requirements. Production deployment and
+physical device/screen-reader acceptance remain separate launch work.
 
 ### 5.3 Studio
 
@@ -105,6 +130,14 @@ The render contract belongs to PRD Core and runtime docs. Concrete renderer impl
 PRDc is the Document Archive Codex role.
 
 It may index, organize, relate, analyze, and operate over PRD packages and related archive material. It is not the base format, and PRD packages must remain useful without PRDc.
+
+---
+
+### 5.8 PRD Convert
+
+PRD Convert is the ingestion product for reconstructing existing content into structured, responsive PRD. It uses Core's semantic types, validator and packager. Studio remains responsible for authoring/editing, Viewer for reading, and PRDc for archive management. Product boundaries need not be separate services.
+
+The repository implements its [Phase 1 foundation](../architecture/PRD_CONVERT_PHASE_1.md): one converter package, bounded Markdown, HTML, CBZ, EPUB, DOCX and PDF adapters, profile selection, source/quality attachments and `prd convert`. Node CLI/library tooling remains pending public release. A [local browser Markdown/HTML/CBZ surface](../architecture/PRD_CONVERT_WEB.md) now runs at `/convert/` using explicit browser exports and the same canonical assembly/packager; it is not yet deployed. HTML is a Phase 2 increment with a [specified static semantic subset](../architecture/PRD_CONVERT_HTML.md). CBZ maps whole raster pages to canonical comic panels under its [bounded archive policy](../architecture/PRD_CONVERT_CBZ.md). EPUB maps bounded reflowable spine chapters through the [EPUB policy](../architecture/PRD_CONVERT_EPUB.md). DOCX maps a bounded transitional Word body under the [DOCX policy](../architecture/PRD_CONVERT_DOCX.md). PDF maps text/page fallbacks under the [PDF policy](../architecture/PRD_CONVERT_PDF.md), with optional dependencies isolated to Node import tooling. Additional browser formats and faithful/hybrid or simultaneous previews remain later phases. Existing Markdown/image import commands retain their contracts.
 
 ---
 
@@ -173,6 +206,8 @@ The current public preview does not ship:
 - full protection, encryption, or signature stack
 - certification or formal compatibility badge program
 
+The repository now implements the narrow optional [signature-v1 extension](../extensions/PRD_SIGNATURE_V1.md): local archive signing, public-key verification and Viewer status. It is pending the normal release path. This does not provide encryption, identity accounts, certificate trust, key management or revocation, and unsigned reading stays available.
+
 Those remain later optional lanes and must be introduced through explicit docs, extensions, or product plans when they are ready.
 
 ---
@@ -184,6 +219,21 @@ The current Phase 5 authoring docs are:
 - `docs/product/PRD_AUTHORING_WORKFLOW.md`
 - `docs/product/PRD_IMPORT_EXPORT_MATRIX.md`
 
-The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, and `prd import images`. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
+The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, `prd import images`, `prd import html`, and the direct-archive `prd convert` pipeline. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The current public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow; separates `/` Home, `/viewer/` workspace, and `/docs/` public docs; includes light and premium dark modes; and targets Cloudflare Workers Static Assets at `prd.eonhive.com` with GitHub Pages as staging/fallback. Deployment and live launch QA remain separate acceptance steps from local build verification. HTML, DOCX, EPUB, PDF, hosted conversion, full Studio, Cloud publishing, PRDc workflows, and broad visual editing remain deferred product lanes.
+The current public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow; separates `/` Home, `/viewer/` workspace, and `/docs/` public docs; includes light and premium dark modes; and targets Cloudflare Workers Static Assets at `prd.eonhive.com` with GitHub Pages as staging/fallback. Deployment and live launch QA remain separate acceptance steps from local build verification. Limited HTML, EPUB, DOCX and PDF conversion now exists as repository CLI/library tooling pending release. The local Markdown/HTML/CBZ Convert Web route is implemented but not yet deployed; server conversion, full Studio, Cloud publishing, PRDc workflows and broad visual editing remain deferred product lanes.
+
+
+The HTML directory workflow now shares output helpers with Markdown/image imports and emits a separately versioned diagnostic report. [PRD-042](../decisions/PRD_DECISIONS.md#prd-042--import-output-is-shared-while-conversion-remains-optional-tooling) records this optional tooling boundary. Structural validity remains Core-owned; reading quality and conversion fidelity are separate. No additional package/service/renderer is introduced by this consolidation.
+
+### Convert workspace continuation — October 29, 2026
+
+The owner's reference informs the current local `/convert/` workspace: upload/files, supported conversion options and factual review/download. HTML now shares the bounded Node adapter through generic browser dispatch and lazy parsing; the existing Markdown-only API remains compatible. See [execution/UI boundary](../architecture/PRD_CONVERT_WEB_HTML.md). Source review is escaped text; the existing Viewer owns reading/rendering. PSD/AI/layers, editing, templates/history, cloud, additional browser formats and deployment remain separate capabilities rather than decorative controls.
+
+The subsequent [browser CBZ increment](../architecture/PRD_CONVERT_WEB_CBZ.md) reuses the bounded archive adapter and Comic profile in the same workspace. Natural/reversed page sequence is a conversion setting, not new profile metadata or manga-direction behavior. Binary source gets an explicit retention explanation rather than a text preview. No separate service, package, renderer or authoring scope is introduced; fresh live acceptance and deployment remain open.
+
+PRD-054 adds one [conversion repair action](../architecture/PRD_CONVERT_PAGE_REVIEW.md): draft and apply a complete comic page sequence by rerunning the selected CBZ through the existing pipeline. It preserves every imported page/asset and the current result on failure. Selected source/settings remain only in session memory, independently of optional package source retention. This does not establish a general document/package editor, Studio authoring or a new rendering engine. Fresh UI acceptance remains open.
+
+PRD-055 extends focused repair with [supplied comic descriptions and session drafts](../architecture/PRD_CONVERT_COMIC_DESCRIPTIONS.md). Existing canonical `alt` holds plain text keyed by source page ID; no new schema/renderer or automated image analysis is involved. Unapplied text/order stays in local memory across Viewer return, outside exports until successful Apply. Source retention is separate and reload/input changes end the review. Full editing stays Studio-owned; accuracy assessment, further repair tools and live/deployed acceptance remain separately scoped.
+
+PRD-056 adds [quality diagnostic review](../architecture/PRD_CONVERT_QUALITY_REVIEW.md) as app presentation of existing report facts: codes, conversion stages/source references, package-validator paths and complete-list filtering. Filters do not change outputs or establish resolution/confidence/fidelity. Report v1, Core validation, canonical package contracts and the Viewer rendering boundary remain unchanged. Live workspace acceptance, release and deployment remain separate.

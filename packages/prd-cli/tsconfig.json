@@ -13,8 +13,8 @@
   "references": [
     { "path": "../prd-types" },
     { "path": "../prd-validator" },
-    { "path": "../prd-packager" }
+    { "path": "../prd-packager" },
+    { "path": "../prd-converter" }
   ],
   "include": ["src/**/*.ts"]
 }
-

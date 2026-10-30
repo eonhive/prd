@@ -1,0 +1,7 @@
+<!-- Company: EonHive Inc. | Title: Omitted SVG Fixture
+Purpose: Exercise exclusion of nested-resource formats and automatic host fallback previews.
+Author: Stan Nesi | Created: 2026-10-29 | Updated: 2026-10-29 | Notes: Vibe coded with Codex. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+  <image href="http://127.0.0.1:5195/probe/svg-image" width="32" height="32"/>
+  <script>fetch("http://127.0.0.1:5195/probe/svg-script")</script>
+</svg>

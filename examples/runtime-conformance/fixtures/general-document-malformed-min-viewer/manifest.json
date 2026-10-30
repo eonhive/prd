@@ -1,0 +1,11 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:general-document-malformed-min-viewer",
+  "profile": "general-document",
+  "title": "Unrecognized viewer version",
+  "entry": "content/root.json",
+  "compatibility": {
+    "minViewer": "latest"
+  }
+}

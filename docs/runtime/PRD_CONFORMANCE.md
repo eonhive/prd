@@ -1,5 +1,5 @@
 # PRD_CONFORMANCE.md
-_Last updated: April 16, 2026_
+_Last updated: October 29, 2026_
 _Status: Canonical runtime conformance draft v0.2_
 
 ## 1. Purpose
@@ -114,6 +114,8 @@ Profile recognition does not automatically imply full render support.
 
 Capability support is declared through runtime-facing metadata such as the capability model in `runtime/PRD_CAPABILITY_MODEL.md`.
 
+The reference runtime also checks explicit `extensions[].required: true` declarations before profile dispatch/content reads. It currently implements no required extension contracts, so every such declaration returns `unsupported-required-capability` with its ID in the message. The result retains manifest/profile/entry/locale facts without a render payload. Optional declarations and opaque object placeholders preserve existing behavior. The host's optional signature verification does not establish required-extension support in viewer-core.
+
 ### 5.4 Support-state reporting
 
 Support-state reporting is the runtime result of opening a package in a specific implementation.
@@ -157,6 +159,8 @@ For the minimal public opening path:
 - a viewer may use networked product features later, but those do not define base conformance
 - unsupported active/runtime features should degrade to the local public path when possible
 
+The private Web Viewer implements [restricted HTML fallback](PRD_HTML_FALLBACK_POLICY.md) under PRD-051: parse5 data-tree preparation, allowlisted reading markup, selected declared local media, early default-deny CSP and an opaque unprivileged frame. Authored navigation/forms/CSS/active or foreign content is disabled in every HTML preparation path. The defensive alternate-HTML branch uses the same compiler, while current localized alternate validity remains JSON-only. Outer automatic image previews are suppressed while HTML is active. Complete alternate presentations replace base presentations without mixing HTML and structured content. This remains legacy `safe-mode` presentation, separate from structural validity and canonical structured rendering. Live browser request/navigation/disposal acceptance remains pending because browser use was disabled during this implementation; serialization tests and builds do not prove network isolation across engines.
+
 ### 6.3 Loading baseline
 
 For the current executable foundation:
@@ -166,6 +170,10 @@ For the current executable foundation:
 - collection and series metadata are grouping metadata, not a load graph
 - attachments are supplemental and must not block the base open path
 - the current reference viewer truthfully uses eager whole-package in-memory loading
+
+The reference Viewer now shares the [PRD container reader](../core/PRD_CONTAINER_FORMAT.md) with Node tooling. It accepts legacy ZIP and opt-in PRD 1.0 envelopes, validates headers before unwrapping, and enforces documented archive policies before semantic opening. Container version is distinct from manifest and runtime capability versions. This does not change the runtime descriptor's eager load mode.
+
+The optional [signature-v1 extension](../extensions/PRD_SIGNATURE_V1.md) is a separate verification result, not a new structural validity or viewer support state. The web host checks it before opening content/resources: known-invalid signatures block rendering; unsigned, untrusted or unsupported checks receive truthful status and remain readable. Verified requires an independently selected matching public key. The existing runtime conformance corpus remains about semantic opening/capability behavior; signature conformance is covered by separate library, CLI and browser checks.
 
 Viewers may optimize beyond that later, but they must not imply those optimizations are already part of the core conformance baseline if they are not.
 
@@ -283,6 +291,19 @@ The published baseline currently covers:
 3. validator-valid structured `storyboard` opening as `fully-supported`
 4. validator-valid legacy HTML `comic` opening as `safe-mode`
 5. validator-valid custom unsupported entry opening as `unsupported-required-capability`
+6. validator-valid structured `general-document` with unsupported object-form required capabilities returning `unsupported-required-capability` before entry parsing
+7. the same unsupported behavior for legacy array-form required capabilities
+8. validator-valid `general-document` requiring an unsupported extension, with a localized alternate entry that must also remain blocked
+9. validator-valid `general-document` with an unsupported optional extension/version preserving `fully-supported` base opening
+10. normalized `1.0.0` format/manifest/profile/content and equal `0.1.0` minimum viewer preserving `fully-supported`
+11. an unsupported future format with a declared localized alternate returning unsupported before entry opening
+12. a newer minimum-viewer requirement returning unsupported
+13. an unrecognized minimum-viewer string returning unsupported while remaining structurally valid
+14. an unsupported default content version returning no render payload
+15. an unsupported referenced section version returning no render payload
+16. an unsupported localized alternate version blocking the eager presentation path
+
+Unknown optional capabilities/extensions do not block base opening. Required-behavior checks do not change package validity or add capability identifiers for `comic` or `storyboard`. Required extensions use the existing unsupported state without claiming a required extension handler. PRD-046 now defines exact version compatibility and numeric minimum-viewer checks separately from structural validity. The web guard prevents locale/resource preparation for this state. Older-version migration, general ranges and undeclared fallbacks remain unimplemented. The corpus contains 16 fixtures.
 
 This corpus is explicitly scoped to the current `reference-viewer` baseline. It is a shared executable reference, not yet a universal certification program for all PRD runtimes.
 

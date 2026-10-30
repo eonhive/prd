@@ -1,0 +1,195 @@
+{
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "viewport": [
+      1280,
+      720
+    ],
+    "build": "Vite development with React StrictMode; two frames after DOM commit, not first raster or browser peak memory"
+  },
+  "opens": [
+    {
+      "name": "document-basic.prd",
+      "inputToTwoFramesMs": 66.80000001192093,
+      "domElements": 266,
+      "images": [
+        {
+          "complete": true,
+          "width": 240,
+          "height": 150
+        }
+      ],
+      "inputToImageDecodeMs": 67.30000001192093
+    },
+    {
+      "name": "document-basic.prd",
+      "inputToTwoFramesMs": 47.5,
+      "domElements": 266,
+      "images": [
+        {
+          "complete": true,
+          "width": 240,
+          "height": 150
+        }
+      ],
+      "inputToImageDecodeMs": 47.79999998211861
+    },
+    {
+      "name": "document-basic.prd",
+      "inputToTwoFramesMs": 42.599999994039536,
+      "domElements": 266,
+      "images": [
+        {
+          "complete": true,
+          "width": 240,
+          "height": 150
+        }
+      ],
+      "inputToImageDecodeMs": 42.80000001192093
+    },
+    {
+      "name": "long-1000-sections.prd",
+      "inputToTwoFramesMs": 737.1000000238419,
+      "domElements": 12167,
+      "images": [],
+      "inputToImageDecodeMs": 737.7000000178814
+    },
+    {
+      "name": "long-1000-sections.prd",
+      "inputToTwoFramesMs": 330.30000001192093,
+      "domElements": 12167,
+      "images": [],
+      "inputToImageDecodeMs": 331.2000000178814
+    },
+    {
+      "name": "long-1000-sections.prd",
+      "inputToTwoFramesMs": 294.59999999403954,
+      "domElements": 12167,
+      "images": [],
+      "inputToImageDecodeMs": 295.30000001192093
+    },
+    {
+      "name": "images-4x4096.prd",
+      "inputToTwoFramesMs": 377.69999998807907,
+      "domElements": 214,
+      "images": [
+        {
+          "complete": true,
+          "width": 4096,
+          "height": 4096
+        }
+      ],
+      "inputToImageDecodeMs": 441.80000001192093
+    },
+    {
+      "name": "images-4x4096.prd",
+      "inputToTwoFramesMs": 82.7999999821186,
+      "domElements": 214,
+      "images": [
+        {
+          "complete": true,
+          "width": 4096,
+          "height": 4096
+        }
+      ],
+      "inputToImageDecodeMs": 188.09999999403954
+    },
+    {
+      "name": "images-4x4096.prd",
+      "inputToTwoFramesMs": 70.59999999403954,
+      "domElements": 214,
+      "images": [
+        {
+          "complete": true,
+          "width": 4096,
+          "height": 4096
+        }
+      ],
+      "inputToImageDecodeMs": 112.5
+    },
+    {
+      "name": "assets-32-mib.prd",
+      "inputToTwoFramesMs": 125.40000000596046,
+      "domElements": 168,
+      "images": [],
+      "inputToImageDecodeMs": 126
+    },
+    {
+      "name": "comic-basic.prd",
+      "inputToTwoFramesMs": 59,
+      "domElements": 218,
+      "images": [
+        {
+          "complete": true,
+          "width": 600,
+          "height": 212
+        }
+      ],
+      "inputToImageDecodeMs": 61.400000005960464
+    },
+    {
+      "name": "storyboard-basic.prd",
+      "inputToTwoFramesMs": 40.5,
+      "domElements": 211,
+      "images": [
+        {
+          "complete": true,
+          "width": 267,
+          "height": 150
+        },
+        {
+          "complete": true,
+          "width": 267,
+          "height": 150
+        },
+        {
+          "complete": true,
+          "width": 267,
+          "height": 150
+        },
+        {
+          "complete": true,
+          "width": 267,
+          "height": 150
+        }
+      ],
+      "inputToImageDecodeMs": 250.59999999403954
+    },
+    {
+      "name": "document-segmented-basic.prd",
+      "inputToTwoFramesMs": 38.599999994039536,
+      "domElements": 207,
+      "images": [],
+      "inputToImageDecodeMs": 38.900000005960464
+    },
+    {
+      "name": "long-1000-sections.prd",
+      "inputToTwoFramesMs": 764.0999999940395,
+      "domElements": 12167,
+      "images": [],
+      "inputToImageDecodeMs": 764.9000000059605
+    }
+  ],
+  "navigation": [
+    {
+      "label": "sectionSection 999",
+      "clickToTwoFramesMs": 18.400000005960464
+    },
+    {
+      "label": "sectionSection 0",
+      "clickToTwoFramesMs": 78.5
+    },
+    {
+      "label": "sectionSection 500",
+      "clickToTwoFramesMs": 69.7000000178814
+    },
+    {
+      "label": "sectionSection 999",
+      "clickToTwoFramesMs": 20.30000001192093
+    },
+    {
+      "label": "sectionSection 0",
+      "clickToTwoFramesMs": 80.7999999821186
+    }
+  ]
+}

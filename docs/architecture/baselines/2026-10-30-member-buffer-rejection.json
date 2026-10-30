@@ -1,0 +1,60 @@
+{
+  "method": "Fresh GC-enabled Node; false local/central originalSize 32 MiB with three actual bytes. Snapshots outside decoding. This is allocation accounting, not a leak or RSS guarantee.",
+  "node": "v24.5.0",
+  "cases": [
+    {
+      "phase": "rejected-direct-buffer",
+      "moduleSha256": "d1eae4f0c315adbeaa246101273eb1f83f6cb0e6f9d29ce55d99e9f1603e4489",
+      "code": "archive-read-invalid",
+      "addedArrayBufferBytes": 33718272,
+      "before": {
+        "rss": 57376768,
+        "heapTotal": 9535488,
+        "heapUsed": 4787056,
+        "external": 2580439,
+        "arrayBuffers": 484451
+      },
+      "after": {
+        "rss": 57491456,
+        "heapTotal": 9797632,
+        "heapUsed": 4843784,
+        "external": 36123102,
+        "arrayBuffers": 34202723
+      },
+      "afterGc": {
+        "rss": 57507840,
+        "heapTotal": 9797632,
+        "heapUsed": 4819016,
+        "external": 36123102,
+        "arrayBuffers": 34071651
+      }
+    },
+    {
+      "phase": "retained-chunk-reader",
+      "moduleSha256": "b1603d76bfe8ea3ea2faaa5a98384399f64d99cccdd4e6958342149c61d8725f",
+      "code": "archive-read-invalid",
+      "addedArrayBufferBytes": 163840,
+      "before": {
+        "rss": 58359808,
+        "heapTotal": 9797632,
+        "heapUsed": 4952568,
+        "external": 2605403,
+        "arrayBuffers": 428903
+      },
+      "after": {
+        "rss": 58425344,
+        "heapTotal": 10059776,
+        "heapUsed": 5009488,
+        "external": 2513122,
+        "arrayBuffers": 592743
+      },
+      "afterGc": {
+        "rss": 58458112,
+        "heapTotal": 10059776,
+        "heapUsed": 4985064,
+        "external": 2513122,
+        "arrayBuffers": 461671
+      }
+    }
+  ]
+}

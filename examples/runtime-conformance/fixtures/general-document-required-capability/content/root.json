@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "required-capability",
+  "title": "Unsupported required capability",
+  "children": [
+    { "type": "paragraph", "text": "This structurally valid content requires behavior the reference viewer cannot honor." }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "2.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "general-document-future-content",
+  "title": "Unsupported content version",
+  "children": [
+    {
+      "type": "paragraph",
+      "text": "Version conformance content for general-document-future-content."
+    }
+  ]
+}

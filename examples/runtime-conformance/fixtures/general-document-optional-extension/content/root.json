@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "optional-extension",
+  "title": "Readable optional extension",
+  "children": [
+    { "type": "paragraph", "text": "Optional-extension content remains readable without its enhancement." }
+  ]
+}

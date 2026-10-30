@@ -1,0 +1,17 @@
+{
+  "comicPageIds": ["page-2", "page-3", "page-1"],
+  "comicPageDescriptions": [
+    {
+      "pageId": "page-1",
+      "text": "A worried reader in a blue hoodie faces a desktop Project Proposal; a tablet is marked Too small and a phone Static. His speech bubble says the document only works on one screen. The caption says old documents are static and hard to use everywhere."
+    },
+    {
+      "pageId": "page-2",
+      "text": "A smiling reader gives a thumbs-up beside laptop, tablet and phone layouts joined by green arrows. The illustration labels PRD Portable + Responsive + Interactive and shows icons for an interactive chart, comments and offline sync."
+    },
+    {
+      "pageId": "page-3",
+      "text": "Three scenes show a reader holding a phone, a small team around a shared screen, and a reader using a laptop in a cafe. Labels in the illustration read Live updates, Collaboration and Works offline."
+    }
+  ]
+}

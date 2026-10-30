@@ -1,55 +1,3 @@
-:root {
-  color-scheme: dark;
-  font-family: "Space Grotesk", "IBM Plex Sans", "Aptos", sans-serif;
-  --bg: #070913;
-  --bg-elevated: #0d1120;
-  --surface: rgba(17, 22, 39, 0.86);
-  --surface-strong: rgba(22, 29, 50, 0.94);
-  --surface-soft: rgba(136, 92, 255, 0.12);
-  --text: #f7f2ff;
-  --text-muted: #aeb7ce;
-  --text-soft: #75819d;
-  --line: rgba(189, 199, 255, 0.16);
-  --line-strong: rgba(189, 199, 255, 0.28);
-  --accent: #8b5cf6;
-  --accent-strong: #b06bff;
-  --accent-cyan: #28d7ff;
-  --accent-green: #5ee28d;
-  --accent-warm: #ffd166;
-  --danger: #ff718f;
-  --shadow: rgba(0, 0, 0, 0.38);
-  --shadow-soft: rgba(3, 7, 18, 0.2);
-  --code-bg: rgba(2, 6, 23, 0.82);
-  --code-text: #e9ddff;
-  --radius-lg: 1.5rem;
-  --radius-md: 1rem;
-  --radius-sm: 0.72rem;
-}
-
-:root[data-theme="light"] {
-  color-scheme: light;
-  --bg: #f6f0e6;
-  --bg-elevated: #fffaf1;
-  --surface: rgba(255, 252, 245, 0.88);
-  --surface-strong: rgba(255, 255, 255, 0.96);
-  --surface-soft: rgba(59, 130, 246, 0.1);
-  --text: #17212b;
-  --text-muted: #46596d;
-  --text-soft: #6c7c8d;
-  --line: rgba(23, 33, 43, 0.13);
-  --line-strong: rgba(23, 33, 43, 0.22);
-  --accent: #5b4bdb;
-  --accent-strong: #7433c7;
-  --accent-cyan: #0f7797;
-  --accent-green: #138a47;
-  --accent-warm: #c57f00;
-  --danger: #b42345;
-  --shadow: rgba(39, 45, 58, 0.14);
-  --shadow-soft: rgba(39, 45, 58, 0.08);
-  --code-bg: #142034;
-  --code-text: #fff4d9;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -1525,23 +1473,7 @@ code {
   }
 }
 
-/* Route split redesign: Home page and viewer workspace share tokens, not layout. */
-:root {
-  --nav-height: 4.6rem;
-  --glow-purple: rgba(138, 74, 255, 0.44);
-  --glow-blue: rgba(45, 135, 255, 0.28);
-  --panel: rgba(8, 14, 28, 0.82);
-  --panel-strong: rgba(10, 18, 34, 0.94);
-  --panel-soft: rgba(132, 94, 255, 0.12);
-}
-
-:root[data-theme="light"] {
-  --panel: rgba(255, 255, 255, 0.8);
-  --panel-strong: rgba(255, 255, 255, 0.96);
-  --panel-soft: rgba(62, 95, 220, 0.1);
-  --glow-purple: rgba(110, 80, 230, 0.18);
-  --glow-blue: rgba(14, 116, 144, 0.14);
-}
+/* Public routes share their theme tokens in prdBrand.css. */
 
 body {
   background:
@@ -1905,13 +1837,6 @@ body {
   line-height: 1.08;
   letter-spacing: -0.05em;
   overflow-wrap: anywhere;
-}
-
-:root[data-theme="dark"] .docs-hero h1 {
-  background: linear-gradient(110deg, #fff7ff 8%, #b86bff 42%, #57d9ff 82%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .docs-hosting-card {

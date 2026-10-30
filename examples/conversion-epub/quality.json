@@ -1,0 +1,55 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "epub",
+  "profile": "general-document",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 13,
+  "resourceCount": 1,
+  "resourceMap": [
+    {
+      "source": "EPUB/images/flow.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "epub-subset",
+      "stage": "extract",
+      "message": "Spine XHTML becomes responsive chapter sections. CSS, typography, metadata beyond title, navigation/NCX hierarchies, media overlays and page layout are not mapped. Original material is available only when source retention is enabled."
+    },
+    {
+      "code": "epub-heading-normalized",
+      "stage": "extract",
+      "message": "A matching opening heading becomes the chapter section title; its source anchor is retained.",
+      "reference": "EPUB/chapters/z-opening.xhtml"
+    },
+    {
+      "code": "html-resource-policy",
+      "stage": "extract",
+      "message": "Stylesheets, base URLs and other external document resources are ignored; no network fetch is performed.",
+      "reference": "EPUB/chapters/z-opening.xhtml"
+    },
+    {
+      "code": "epub-heading-normalized",
+      "stage": "extract",
+      "message": "A matching opening heading becomes the chapter section title; its source anchor is retained.",
+      "reference": "EPUB/chapters/a-next.xhtml"
+    },
+    {
+      "code": "html-element-omitted",
+      "stage": "extract",
+      "message": "Active, embedded or explicitly hidden content is omitted from the reading view.",
+      "reference": "EPUB/chapters/a-next.xhtml:script"
+    },
+    {
+      "code": "epub-members-omitted",
+      "stage": "extract",
+      "message": "2 archive members are not mapped into the reading view, including navigation, styles, metadata or unused resources. They remain available only with source retention."
+    }
+  ],
+  "validationWarnings": []
+}

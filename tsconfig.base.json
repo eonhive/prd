@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
@@ -10,13 +14,48 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@eonhive/prd-types": ["packages/prd-types/src/index.ts"],
-      "@eonhive/prd-validator": ["packages/prd-validator/src/index.ts"],
-      "@eonhive/prd-validator/node": ["packages/prd-validator/src/node.ts"],
-      "@eonhive/prd-packager": ["packages/prd-packager/src/index.ts"],
-      "@eonhive/prd-cli": ["packages/prd-cli/src/index.ts"],
-      "@eonhive/prd-viewer-core": ["packages/prd-viewer-core/src/index.ts"]
+      "@eonhive/prd-types": [
+        "packages/prd-types/src/index.ts"
+      ],
+      "@eonhive/prd-validator": [
+        "packages/prd-validator/src/index.ts"
+      ],
+      "@eonhive/prd-validator/node": [
+        "packages/prd-validator/src/node.ts"
+      ],
+      "@eonhive/prd-validator/container": [
+        "packages/prd-validator/src/container.ts"
+      ],
+      "@eonhive/prd-validator/signature": [
+        "packages/prd-validator/src/signature.ts"
+      ],
+      "@eonhive/prd-packager": [
+        "packages/prd-packager/src/index.ts"
+      ],
+      "@eonhive/prd-packager/signing": [
+        "packages/prd-packager/src/signing.ts"
+      ],
+      "@eonhive/prd-cli": [
+        "packages/prd-cli/src/index.ts"
+      ],
+      "@eonhive/prd-viewer-core": [
+        "packages/prd-viewer-core/src/index.ts"
+      ],
+      "@eonhive/prd-converter": [
+        "packages/prd-converter/src/index.ts"
+      ],
+      "@eonhive/prd-converter/markdown": [
+        "packages/prd-converter/src/adapters/markdownParser.ts"
+      ],
+      "@eonhive/prd-converter/image-sequence": [
+        "packages/prd-converter/src/adapters/imageSequence.ts"
+      ],
+      "@eonhive/prd-packager/browser": [
+        "packages/prd-packager/src/browser.ts"
+      ],
+      "@eonhive/prd-converter/browser": [
+        "packages/prd-converter/src/browser.ts"
+      ]
     }
   }
 }
-

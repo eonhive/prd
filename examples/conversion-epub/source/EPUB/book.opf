@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Company: EonHive Inc. | Title: EPUB Conversion Fixture
+ Purpose: Demonstrate spine order, semantic chapters and local resources.
+ Author: Stan Nesi | Created: 2026-10-27 | Updated: 2026-10-27
+ Notes: Vibe coded with Codex.
+-->
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="book-id">
+ <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <dc:identifier id="book-id">urn:prd:example:portable-chapters</dc:identifier>
+  <dc:title>Portable Chapters</dc:title><dc:language>en</dc:language>
+  <meta property="dcterms:modified">2026-10-27T00:00:00Z</meta>
+ </metadata>
+ <manifest>
+  <item id="next" href="chapters/a-next.xhtml" media-type="application/xhtml+xml"/>
+  <item id="opening" href="chapters/z-opening.xhtml" media-type="application/xhtml+xml"/>
+  <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
+  <item id="flow" href="images/flow.png" media-type="image/png"/>
+  <item id="style" href="style.css" media-type="text/css"/>
+ </manifest>
+ <spine><itemref idref="opening"/><itemref idref="next"/></spine>
+</package>

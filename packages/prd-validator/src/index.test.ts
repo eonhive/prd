@@ -1675,6 +1675,20 @@ describe("validatePackage", () => {
     );
   });
 
+  it.each([null, "ignored", {}, 0])("rejects a segmented section with malformed inline children %j", (children) => {
+    const result = validateSegmentedDocumentPackage({
+      root: {
+        ...validSegmentedContentRoot,
+        children: [{
+          type: "section", id: "manifest-discipline", title: "Manifest discipline",
+          src: "content/sections/manifest-discipline.json", children
+        }]
+      }
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.map((issue) => issue.code)).toContain("section-segmentation-mutually-exclusive");
+  });
+
   it("rejects nested segmented section references", () => {
     const result = validateSegmentedDocumentPackage({
       sections: {

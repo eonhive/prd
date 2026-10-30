@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { PrdOpenedDocument } from "@eonhive/prd-types";
 import { inferViewerRenderMode as inferViewerRenderModeCore } from "@eonhive/prd-viewer-core";
-import { getViewerRenderModeMessage, inferViewerRenderMode } from "./viewerRenderMode.js";
+import { getViewerRenderModeMessage, inferViewerRenderMode, selectViewerPresentation } from "./viewerRenderMode.js";
 
 function createOpenedDocument(
   supportState: PrdOpenedDocument["supportState"]
@@ -29,6 +29,19 @@ function createOpenedDocument(
 }
 
 describe("viewer render mode messaging", () => {
+  it("replaces the full presentation when switching between HTML and structured locales", () => {
+    const structured = { entryDocument: {
+      schemaVersion: "1.0", profile: "general-document" as const, type: "document" as const,
+      id: "locale", title: "Localized", children: []
+    } };
+    const html = { renderedHtml: "<p>Restricted locale</p>" };
+    expect(selectViewerPresentation(structured, html)).toBe(html);
+    expect(selectViewerPresentation(structured, html).entryDocument).toBeUndefined();
+    expect(selectViewerPresentation(html, structured)).toBe(structured);
+    expect(selectViewerPresentation(html, structured).renderedHtml).toBeUndefined();
+    expect(selectViewerPresentation(structured)).toBe(structured);
+  });
+
   it("maps structured JSON states to structured mode messaging", () => {
     const mode = inferViewerRenderMode(
       createOpenedDocument("fully-supported"),

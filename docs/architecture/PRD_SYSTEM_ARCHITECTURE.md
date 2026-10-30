@@ -17,6 +17,8 @@ This is an architecture document, not a market document.
 
 Current source-of-truth now includes a product-boundary baseline in `docs/product/PRD_PRODUCT_BOUNDARIES.md`. Fine-grained SDK, renderer, and future product implementation details should still be treated as follow-on work unless a dedicated doc closes them.
 
+The [October 26, 2026 implementation assessment](PRD_ARCHITECTURE_ASSESSMENT_2026-10-26.md) maps this architecture to verified source, conformance/security gaps and performance measurements. It proposes staged modernization within existing packages without superseding accepted decisions or changing format versions.
+
 ---
 
 ## 2. Architecture Shape
@@ -351,3 +353,11 @@ The current canon should still be extended with:
 - detailed Phase 5 authoring/tooling surface docs
 
 Until those follow-on docs exist, this architecture document plus `docs/product/PRD_PRODUCT_BOUNDARIES.md` should be treated as the current canonical baseline, not the final closed product implementation plan.
+
+
+## 14. PRD Convert foundation (October 27, 2026)
+
+PRD Convert adds a bounded ingestion boundary around existing PRD types, validation and packaging. `packages/prd-converter` owns adapter detection/registration, extraction orchestration, canonical-root normalization, compatible profile selection, resource collection, quality reports and staging. The CLI exposes direct `convert` output, while existing import commands remain compatible. Studio owns editing; Viewer reads normal generated packages without a new renderer. See [the inventory and architecture record](PRD_CONVERT_PHASE_1.md). No core schema or manifest contract changes are required.
+
+
+The subsequent PRD-042 continuation shares legacy importer serialization/filesystem output inside `prd-cli` and adds `prd import html` directory output through the converter's `prepareConversion` seam. It declares a separately versioned diagnostic attachment and exports no original source filesystem/URL provenance or raw HTML source through that command. [The HTML policy](PRD_CONVERT_HTML.md#directory-workflow-and-shared-output-prd-042) specifies the compatibility and report boundaries. No additional package, schema, manifest semantics or renderer is added.

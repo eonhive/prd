@@ -1,0 +1,41 @@
+{
+  "reportVersion": "1.0",
+  "sourceFormat": "docx",
+  "profile": "general-document",
+  "strategy": "adaptive",
+  "semanticFidelity": "partial",
+  "visualFidelity": "not-preserved",
+  "sourcePreserved": true,
+  "nodeCount": 12,
+  "resourceCount": 1,
+  "resourceMap": [
+    {
+      "source": "word/media/image1.png",
+      "asset": "import-image-1",
+      "href": "assets/images/import-image-1.png"
+    }
+  ],
+  "warnings": [
+    {
+      "code": "docx-subset",
+      "stage": "extract",
+      "message": "Word body semantics are reconstructed. Inline emphasis, style-based visibility, typography, page layout, sections, headers/footers, notes/comments, equations, charts and metadata beyond title are not fully mapped. Links and images may follow their containing block. Original material is available only with source retention."
+    },
+    {
+      "code": "docx-title-normalized",
+      "stage": "extract",
+      "message": "The matching opening Word title becomes the PRD document title; its bookmark target is retained."
+    },
+    {
+      "code": "docx-section-layout",
+      "stage": "extract",
+      "message": "Section page sizes, breaks, columns, headers and footers are not mapped to responsive document layout."
+    },
+    {
+      "code": "docx-members-omitted",
+      "stage": "extract",
+      "message": "12 archive members are not mapped into reading, including unused media, metadata or unsupported Word parts. They remain available only with source retention."
+    }
+  ],
+  "validationWarnings": []
+}

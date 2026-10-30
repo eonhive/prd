@@ -1,0 +1,18 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:conformance:required-extension",
+  "profile": "general-document",
+  "title": "Unsupported required extension",
+  "entry": "content/root.json",
+  "localization": {
+    "defaultLocale": "en-US",
+    "availableLocales": ["en-US", "fr-FR"]
+  },
+  "compatibility": {
+    "capabilities": { "required": ["general-document-structured-root"] }
+  },
+  "extensions": [
+    { "id": "custom.renderer", "version": "1.0", "required": true, "ref": "extensions/custom-renderer.json" }
+  ]
+}

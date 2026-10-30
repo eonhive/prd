@@ -8,7 +8,7 @@ This runbook is for maintainers publishing the PRD tooling packages.
 
 Before release work:
 
-- use Node 20+
+- use Node 22 for release validation/publication; the separate Node 20 consumer lane checks the baseline package floor
 - align your shell to the repo `.nvmrc` when using `nvm`
 - ensure `main` is green in CI
 - ensure `NPM_TOKEN` is configured in GitHub Actions
@@ -28,21 +28,22 @@ pnpm release:audit:registry
 - npm auth works for the token
 - the token owner is visible in the `eonhive` npm org
 - the repo is still targeting the expected `@eonhive/prd-*` package set
-- release mode is correct for the current unified package version:
-  - `0.1.0` may use first-preview bootstrap
-  - later unified versions such as `0.1.1` use normal Changesets release mode
+- all five public targets are present, including `@eonhive/prd-converter`
+- package versions may differ; each is released through Changesets
+- the historical initial-preview bootstrap is not used
 
-It emits `examples/dist/release-publish-preflight-summary.json`.
+It emits `examples/dist/release-publish-preflight-summary.json` with contract `prd-release-publish-preflight-v0.2`. `packageTargets.versionPolicy` is `independent`; retained `bootstrapMode` fields report `changesets-versioned`, `previewEligible: false` and `bootstrapRequired: false`. No token or publishing permissions were configured by the October 30 implementation task. Maintainers must verify the existing CI token also permits publishing the new converter package.
 
 `pnpm release:audit:registry` is the post-publish registry metadata gate. It verifies:
 
 - each public package resolves on npm
 - the expected version is published
 - npm `latest` resolves to that expected version
+- the expected version is not deprecated
 - published dependencies contain no `workspace:*` values
 - internal `@eonhive/prd-*` dependency edges resolve to concrete semver ranges
 
-It emits `examples/dist/release-registry-audit-summary.json`.
+It emits `examples/dist/release-registry-audit-summary.json` with contract `prd-release-registry-audit-v0.2`. Each target is compared against its own workspace version; equality across the toolchain is not required. Before first converter publication, its missing-package failure is expected and prevents claiming the release has shipped.
 
 `pnpm examples:smoke` is the canonical aggregate smoke gate command.
 When CI/release checks need machine-readable annotation artifacts, run:
@@ -76,23 +77,28 @@ pnpm changeset
 4. review and merge that version PR
 5. let the Release workflow publish the packages from `main`
 
+Public versions follow independent Changesets planning with empty `fixed`/`linked` groups. Review each planned version and concrete internal dependency range in the version PR; do not bump unchanged packages just to match another package's number. A real versioning preview applied only to a temporary workspace on October 30 left `prd-types` at `0.1.1`, planned `prd-validator`, `prd-packager`, `prd-converter` and `prd-cli` at `0.2.0`, and updated their internal ranges accordingly. This is evidence for the then-current queue, not a hardcoded next-release version. Checkout manifests were not changed by that preview.
+
+Release runs are serialized and restricted to `main`. After an actual Changesets publish, the Release job calls the reusable `Post-Publish Consumer Smoke` workflow at the release commit. Creating/updating a version PR does not trigger it. The consumer audits registry metadata and runs `node scripts/external-consumer-smoke.mjs --workspace-versions`, installing each commit-declared version rather than assuming one shared version or following changing dist-tags. It has read-only repository permissions and no inherited publisher secrets. Maintainers can also dispatch read-only verification manually.
+
+The consumer's `prd-external-consumer-smoke-v0.2` summary records five install specs and 18 steps: existing package operations, init and validation, Markdown/HTML/image imports and validation, SDK conversion with source/report parity, and CLI conversion with validation/inspection. The identical runner executes against five local tarballs during `pnpm release:check` before publication. `PRD_NPM_VERSION`/`PRD_NPM_DIST_TAG` and explicit programmatic `packageSpecs` remain available for manual checks; `--workspace-versions` is the normal exact-version CI path. A setup failure is a failed summary, not a passing run with no commands.
+
 Do not publish manually from a workstation unless the release workflow is unavailable and the repo owner explicitly approves that exception.
 
 ---
 
-## 3. First Public Preview
+## 3. First Public Preview — Historical
 
-The first public preview uses the current unpublished `0.1.0` package versions.
+The original first public preview used the then-unpublished `0.1.0` versions of the four original packages.
 
 That means:
 
-- the release workflow first runs `pnpm release:preflight`
-- the release workflow first runs `pnpm release:bootstrap --publish`
-- that bootstrap step checks npm for the current `0.1.0` package versions
-- any still-unpublished preview packages are published directly in dependency order
-- future releases should use normal Changesets version PR flow
+- the historical workflow ran preflight and the one-time bootstrap
+- it checked npm for the original `0.1.0` versions
+- it published missing original packages in dependency order
+- current releases use normal Changesets version PR flow
 
-For later unified unpublished versions such as `0.1.1`, `pnpm release:preflight` should pass in normal versioned-release mode and `pnpm release:bootstrap --publish` should no-op because the workspace versions are no longer `0.1.0`.
+That automatic bootstrap step is retired from CI. The script's original four-package allowlist is deliberately unchanged and does not include the converter. Its local publish mode is historical owner-approved recovery tooling, not the path for onboarding or releasing new packages.
 
 The publish set for the first preview is:
 
@@ -101,7 +107,7 @@ The publish set for the first preview is:
 - `@eonhive/prd-packager`
 - `@eonhive/prd-cli`
 
-After a successful publish on `main`, the `Post-Publish Consumer Smoke` workflow should also pass. That workflow installs the published packages from npm in a clean temp project and exercises `pack`, `validate`, and `inspect` without workspace linking.
+After an actual publish on `main`, the current reusable consumer workflow must pass. Its expanded scope is described above; the initial four-package flow exercised `pack`, `validate` and `inspect` without workspace linking.
 
 ## 4. Corrective 0.1.1 Release
 

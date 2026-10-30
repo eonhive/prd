@@ -1,0 +1,23 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:eonhive:security:html-fallback-isolation",
+  "profile": "comic",
+  "title": "Restricted HTML Reading Fixture",
+  "entry": "content/index.html",
+  "public": { "cover": "cover" },
+  "localization": {
+    "defaultLocale": "en-US",
+    "availableLocales": ["en-US", "fr-FR"]
+  },
+  "compatibility": {
+    "minViewer": "0.1",
+    "capabilities": { "required": ["base-entry-html"] }
+  },
+  "assets": [
+    { "id": "cover", "href": "assets/cover.png", "type": "image/png" },
+    { "id": "narration", "href": "assets/intro-tone.wav", "type": "audio/wav" },
+    { "id": "author-css", "href": "assets/styles.css", "type": "text/css" },
+    { "id": "unsafe-svg", "href": "assets/unsafe.svg", "type": "image/svg+xml" }
+  ]
+}

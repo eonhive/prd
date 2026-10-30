@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "profile": "general-document",
+  "type": "document",
+  "id": "required-capability-fr",
+  "title": "Unsupported localized entry",
+  "lang": "fr-FR",
+  "children": [
+    { "type": "paragraph", "text": "A localized entry must not bypass unsupported required capabilities." }
+  ]
+}

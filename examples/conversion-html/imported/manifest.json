@@ -1,0 +1,22 @@
+{
+  "prdVersion": "1.0",
+  "manifestVersion": "1.0",
+  "id": "urn:prd:import:2d48e9aa95b9ec85d20c277dcc38e47fbb5df12996c031bca5fb4d0120eff8bc",
+  "profile": "general-document",
+  "title": "PRD Convert — HTML Report",
+  "entry": "content/root.json",
+  "assets": [
+    {
+      "id": "import-image-1",
+      "href": "assets/images/import-image-1.png",
+      "type": "image/png"
+    }
+  ],
+  "attachments": [
+    {
+      "id": "import-report",
+      "href": "attachments/import-report.json",
+      "type": "application/json"
+    }
+  ]
+}

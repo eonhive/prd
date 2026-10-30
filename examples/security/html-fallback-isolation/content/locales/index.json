@@ -1,0 +1,6 @@
+{
+  "type": "localized-content-index",
+  "locales": {
+    "fr-FR": { "entry": "content/locales/fr-FR.json", "label": "Français" }
+  }
+}

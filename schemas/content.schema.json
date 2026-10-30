@@ -1,18 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://prd.eonhive.dev/schemas/content.schema.json",
-  "title": "PRD Base General-Document Content Root",
-  "description": "Structured content schema for the first executable `general-document` foundation. This is intentionally content-first and not HTML-first.",
+  "title": "PRD General-Document Content",
+  "description": "Canonical document-root shapes, supported content nodes and packaged section-root definition. Package-level relationships still require semantic validation.",
   "type": "object",
-  "required": ["schemaVersion", "profile", "type", "id", "title", "children"],
+  "required": [
+    "schemaVersion",
+    "profile",
+    "type",
+    "id",
+    "title",
+    "children"
+  ],
   "properties": {
     "$schema": {
       "type": "string",
       "format": "uri-reference"
     },
     "schemaVersion": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "profile": {
       "const": "general-document"
@@ -21,49 +27,47 @@
       "const": "document"
     },
     "id": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "title": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "subtitle": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "summary": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "lang": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "#/$defs/nonEmptyString"
     },
     "children": {
       "type": "array",
       "minItems": 1,
       "items": {
-        "$ref": "#/$defs/node"
+        "$ref": "#/$defs/topLevelNode"
       }
     }
   },
-  "additionalProperties": false,
+  "additionalProperties": true,
   "$defs": {
     "sectionNode": {
       "type": "object",
-      "required": ["type", "id", "title", "children"],
+      "required": [
+        "type",
+        "id",
+        "title",
+        "children"
+      ],
       "properties": {
         "type": {
           "const": "section"
         },
         "id": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
         },
         "title": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
         },
         "children": {
           "type": "array",
@@ -71,13 +75,18 @@
           "items": {
             "$ref": "#/$defs/node"
           }
-        }
+        },
+        "src": false
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "headingNode": {
       "type": "object",
-      "required": ["type", "level", "text"],
+      "required": [
+        "type",
+        "level",
+        "text"
+      ],
       "properties": {
         "type": {
           "const": "heading"
@@ -88,97 +97,438 @@
           "maximum": 6
         },
         "text": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "paragraphNode": {
       "type": "object",
-      "required": ["type", "text"],
+      "required": [
+        "type",
+        "text"
+      ],
       "properties": {
         "type": {
           "const": "paragraph"
         },
         "text": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "listNode": {
       "type": "object",
-      "required": ["type", "style", "items"],
+      "required": [
+        "type",
+        "style",
+        "items"
+      ],
       "properties": {
         "type": {
           "const": "list"
         },
         "style": {
           "type": "string",
-          "enum": ["unordered", "ordered"]
+          "enum": [
+            "unordered",
+            "ordered"
+          ]
         },
         "items": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "type": "string",
-            "minLength": 1
+            "$ref": "#/$defs/nonEmptyString"
           }
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "imageNode": {
       "type": "object",
-      "required": ["type", "asset", "alt"],
+      "required": [
+        "type",
+        "asset",
+        "alt"
+      ],
       "properties": {
         "type": {
           "const": "image"
         },
         "asset": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
         },
         "alt": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
         },
         "caption": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "quoteNode": {
       "type": "object",
-      "required": ["type", "text"],
+      "required": [
+        "type",
+        "text"
+      ],
       "properties": {
         "type": {
           "const": "quote"
         },
         "text": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
         },
         "attribution": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     },
     "node": {
       "oneOf": [
-        { "$ref": "#/$defs/sectionNode" },
-        { "$ref": "#/$defs/headingNode" },
-        { "$ref": "#/$defs/paragraphNode" },
-        { "$ref": "#/$defs/listNode" },
-        { "$ref": "#/$defs/imageNode" },
-        { "$ref": "#/$defs/quoteNode" }
+        {
+          "$ref": "#/$defs/sectionNode"
+        },
+        {
+          "$ref": "#/$defs/headingNode"
+        },
+        {
+          "$ref": "#/$defs/paragraphNode"
+        },
+        {
+          "$ref": "#/$defs/listNode"
+        },
+        {
+          "$ref": "#/$defs/linksNode"
+        },
+        {
+          "$ref": "#/$defs/tableNode"
+        },
+        {
+          "$ref": "#/$defs/chartNode"
+        },
+        {
+          "$ref": "#/$defs/mediaNode"
+        },
+        {
+          "$ref": "#/$defs/imageNode"
+        },
+        {
+          "$ref": "#/$defs/quoteNode"
+        }
       ]
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "segmentedSectionNode": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "title",
+        "src"
+      ],
+      "properties": {
+        "type": {
+          "const": "section"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "src": {
+          "type": "string",
+          "pattern": "^content/sections/.+\\.json$"
+        },
+        "children": false
+      },
+      "additionalProperties": true
+    },
+    "linksNode": {
+      "type": "object",
+      "required": [
+        "type",
+        "style",
+        "items"
+      ],
+      "properties": {
+        "type": {
+          "const": "links"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "style": {
+          "enum": [
+            "list",
+            "inline"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "href"
+            ],
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "href": {
+                "type": "string",
+                "pattern": "^(https?:\\/\\/\\S+|mailto:\\S+|tel:\\S+|#\\S+)$"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "tableNode": {
+      "type": "object",
+      "required": [
+        "type",
+        "columns",
+        "rows"
+      ],
+      "properties": {
+        "type": {
+          "const": "table"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "caption": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "label": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "align": {
+                "enum": [
+                  "left",
+                  "center",
+                  "right"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "chartNode": {
+      "type": "object",
+      "required": [
+        "type",
+        "chartType",
+        "categories",
+        "series"
+      ],
+      "properties": {
+        "type": {
+          "const": "chart"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "chartType": {
+          "const": "bar"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "caption": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "series": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "values"
+            ],
+            "properties": {
+              "name": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "mediaNode": {
+      "type": "object",
+      "required": [
+        "type",
+        "mediaType",
+        "asset"
+      ],
+      "properties": {
+        "type": {
+          "const": "media"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "mediaType": {
+          "enum": [
+            "audio",
+            "video"
+          ]
+        },
+        "asset": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "poster": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "caption": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mediaType": {
+                "const": "audio"
+              }
+            },
+            "required": [
+              "mediaType"
+            ]
+          },
+          "then": {
+            "properties": {
+              "poster": false
+            }
+          }
+        }
+      ]
+    },
+    "topLevelNode": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/node"
+        },
+        {
+          "$ref": "#/$defs/segmentedSectionNode"
+        }
+      ]
+    },
+    "documentSectionRoot": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "profile",
+        "type",
+        "id",
+        "title",
+        "children"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "profile": {
+          "const": "general-document"
+        },
+        "type": {
+          "const": "document-section"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "children": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      },
+      "additionalProperties": true
     }
-  }
+  },
+  "$comment": "Unknown properties are retained for compatibility but do not declare executable behavior. The default target is a document root; section files use #/$defs/documentSectionRoot."
 }

@@ -6,6 +6,8 @@ This document defines a concise, versioned JSON contract for `prd init --json`, 
 
 Canonical command docs remain in `packages/prd-cli/README.md`.
 
+The October 27 container slice adds `pack --container <zip|prd>` and [container/archive diagnostics](../core/PRD_CONTAINER_FORMAT.md#diagnostics), without changing validate/inspect JSON shapes or this contract identifier. Both transports report `sourceKind: "archive"`; `totalBytes` counts expanded logical files. New reader issue codes are additive strings, not new output fields.
+
 ## Contract versioning policy
 
 - Current contract version: `prd-cli-json-v0.1`
@@ -304,3 +306,44 @@ For automation, pin both:
 2. Contract identifier (`prd-cli-json-v0.1`)
 
 If either changes, re-run automation fixture checks before production rollout.
+
+## Signature commands (`prd-cli-signature-v1`)
+
+Repository-only `sign --json` and `verify --json` use a separate additive contract; the existing `prd-cli-json-v0.1` commands and shapes above are unchanged. See [signature-v1](../extensions/PRD_SIGNATURE_V1.md) for coverage and trust rules.
+
+Successful `sign` output contains exactly:
+
+```json
+{
+  "contractVersion": "prd-cli-signature-v1",
+  "signed": true,
+  "outputPath": "/absolute/path/signed.prd",
+  "keyId": "sha256:<64 lowercase hexadecimal characters>"
+}
+```
+
+`verify` output contains `contractVersion: "prd-cli-signature-v1"`, `status` and a human-readable `message`. Status is one of `unsigned`, `untrusted`, `verified`, `invalid`, `unsupported`. Successful cryptographic verification additionally supplies `keyId` and integer `checkedFiles`; those are absent when verification does not succeed. Messages may change and should not be parsed as stable identifiers.
+
+```json
+{
+  "contractVersion": "prd-cli-signature-v1",
+  "status": "verified",
+  "message": "Packaged contents verified with the selected public key.",
+  "keyId": "sha256:<64 lowercase hexadecimal characters>",
+  "checkedFiles": 11
+}
+```
+
+`sign` exits 0 when its new output is written after self-verification, otherwise 1. `verify` exits 0 **only for `verified`**, requiring a matching `--trusted-key` public key. All other statuses exit 1 and still emit their JSON result when verification is reached. Usage, I/O, archive, structural validation and key-import failures emit a diagnostic on stderr with exit 1 and no JSON result. No private key is included in either output shape. Pin this contract separately from the existing CLI JSON identifier.
+
+
+## Additive conversion report (repository Phase 1)
+
+`prd convert ... --json` returns `{ converted: true, sourcePath, outputPath, quality }` only after a completed archive is published. `quality.reportVersion` is `"1.0"`; it includes source format, profile, strategy, fidelity declarations, source retention, node/resource counts, source-to-asset mapping, staged conversion warnings and validator warnings. The same report is a declared `attachments/conversion-quality.json` payload. Failed conversion emits stderr and exit 1. This separate additive result does not alter the `prd-cli-json-v0.1` validation/inspection contract. See [PRD Convert](../architecture/PRD_CONVERT_PHASE_1.md).
+
+
+## HTML directory import contracts
+
+`prd import html <source.html> --out <targetDir> --json` uses `prd-cli-html-import-v1`, independently of `prd-cli-json-v0.1` and the direct converter report. Success stdout contains `contractVersion`, `imported: true`, operational `sourcePath`/`targetDir`, canonical `profile`/`title`/`id`/`entry`, generated `files`, `nodeCount`, `assetCount`, string `warnings` and `report`. Failure stderr contains `contractVersion`, `imported: false` and `error: { code: "html-import-failed", message }`, with exit 1 and no success stdout.
+
+The declared report attachment uses `prd-import-report-v1`: source format, target profile, generated node/type counts, resource counts/bytes/generated references, coded warnings, unsupported element names, errors, structural validation and explicit fidelity/reading-quality limitations. `validation.valid` is derived from actual package validation; `readingQuality` is `"not-assessed"`. No fabricated confidence scores or original filesystem/URL provenance are exported. The HTML directory command bundles no raw HTML source. Older Markdown/image import, direct conversion, validation and inspection contracts are preserved. Full details: [HTML directory output and diagnostics](../architecture/PRD_CONVERT_HTML.md#directory-workflow-and-shared-output-prd-042).

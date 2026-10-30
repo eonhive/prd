@@ -1,5 +1,5 @@
 # PRD_PROFILE_GENERAL_DOCUMENT.md
-_Last updated: April 11, 2026_  
+_Last updated: October 28, 2026_
 _Status: General-document profile draft v0.1_
 
 ## 1. Purpose
@@ -305,6 +305,8 @@ When a viewer fully supports the structured root path, it should report `fully-s
 
 When a viewer opens a legacy HTML fallback for a `general-document` package, it should report `safe-mode` rather than pretend that the canonical structured path is being used.
 
+The private reference web host's [HTML fallback policy](../runtime/PRD_HTML_FALLBACK_POLICY.md) restricts HTML to local reading content and selected declared media, removing navigation, authored CSS and active content inside an opaque frame. This presentation policy does not change canonical general-document validation or convert HTML into structured content. Live browser enforcement/accessibility acceptance remains separate from the implementation's unit/build evidence.
+
 If the package is structurally valid but the runtime cannot honor required behavior truthfully, the viewer should report `unsupported-required-capability`.
 
 The viewer should preserve the public readable path when safe fallback is possible.
@@ -333,6 +335,18 @@ Validators may also warn when:
 - legacy HTML capability declarations are used for `general-document`
 - legacy alias forms are used during migration
 - a package blurs variant naming into top-level profile identity
+
+### 11.1 Content schema and semantic validation
+
+The repository's `schemas/content.schema.json` is the JSON Schema 2020-12 structural contract for this profile. Its `$id` remains `https://prd.eonhive.dev/schemas/content.schema.json`. The default target validates a `document` root. Packaged section files use the same schema's `#/$defs/documentSectionRoot` fragment, which validates `type: "document-section"`.
+
+The schema covers the ten supported node types, optional IDs on non-section nodes, inline section recursion and top-level `section.src` references under `content/sections/*.json`. Sections require an ID/title and exactly one representation: non-empty inline children or a packaged source reference. A referenced section root cannot contain another segmented reference. Supplying `children` alongside `src` is invalid even if `children` is null or another non-array value; the executable validator now enforces the same presence rule using the existing `section-segmentation-mutually-exclusive` issue.
+
+Known text/ID fields require a non-whitespace character. Tables may have an empty rows array, sparse rows and empty cell strings; the schema does not invent mandatory cells. Bar-chart values are nonnegative numbers. Link forms remain `http`, `https`, `mailto`, `tel` and same-document fragments. Media posters are allowed only on video. Unknown properties are retained for compatibility with the semantic validator's existing behavior; an unknown node `type` is still invalid. Extra metadata does not execute code or declare a new extension contract.
+
+Schema validation does not establish package validity. Call `validatePackageFiles` (or the Node/CLI validator) to check declared assets and file existence, duplicate IDs, table column relationships, chart category/series lengths, section ID/title matching and localization relationships. The schema intentionally uses standard JSON Schema rather than custom keywords or a second resource resolver. Tests cover both agreement on canonical shapes and cases where a schema-valid shape must fail these semantic checks.
+
+The executable validator remains the structural package authority and does not load AJV or the repository schema during opening. The schema's general-document scope does not replace comic/storyboard validation. `schemaVersion` continues to be a non-empty declared string structurally. The reference viewer now separately accepts the `1.0` / `1.0.0` contract under PRD-046, checks minimum-viewer requirements and verifies versions in referenced sections/localized alternates before exposing a render payload. Unknown versions are unsupported opening; no migration is implied. See [versioning policy](../core/PRD_VERSIONING_POLICY.md).
 
 ---
 

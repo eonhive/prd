@@ -9,10 +9,22 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "references": [
-    { "path": "../../packages/prd-types" },
-    { "path": "../../packages/prd-validator" },
-    { "path": "../../packages/prd-viewer-core" }
+    {
+      "path": "../../packages/prd-types"
+    },
+    {
+      "path": "../../packages/prd-validator"
+    },
+    {
+      "path": "../../packages/prd-viewer-core"
+    },
+    {
+      "path": "../../packages/prd-converter"
+    }
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts"
+  ]
 }
-
