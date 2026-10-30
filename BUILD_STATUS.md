@@ -2,6 +2,13 @@
 
 ## 2026-10-30
 
+### Pull Request Installed-Tarball Gate
+
+- Added the existing `node ./scripts/release-smoke.mjs` runner to Codex CI on Node 22 after checks/build and example packaging. All five public packages are packed and installed in temporary consumers; the 48-step consumer and existing individual-package, optional-dependency and PDF checks now gate PR validation as well as configured branch/manual runs. Script failures fail the job; no second build or new smoke implementation is introduced.
+- Upload `tarball-consumer-smoke-summary.json` as `tarball-consumer-smoke-summary` after an attempted smoke run, including failures. Skip upload when the smoke step was skipped; missing expected artifacts fail upload. The JSON describes the consumer portion, and the step result covers the full smoke script. Set read-only repository permissions and disable persisted checkout credentials; no publisher credentials or publishing commands enter PR CI.
+- Added three workflow regressions covering ordering/runtime/failure policy, artifact retention and read-only publication boundaries; all three failed against the prior workflow. Validation passes: **52 focused tests**, full Node **22.22.2** `codex:check` with **1,414 tests / 69 files**, aggregate example smoke, `codex:pack`, actual five-package installed-tarball smoke and all **48 consumer checks**, YAML parsing, root-inclusive docs consistency and whitespace checks. pnpm 10.32.1; logs under `/tmp/prd-pr-tarball-ci-*.log`. Remote execution remains a follow-up PR check; consult its checks for the final GitHub result.
+- Started from merged PR #72 at main `b70fa49` in the existing checkout, using focused branch `thehive/prd-pr-tarball-ci`. Updated release policy/runbook and backlog/handoff. No package, format, public API, runtime support, version, dependency, rendering or UI behavior changes; no Changeset is required for this CI/docs-only slice. Live browser acceptance and CI-only publication remain separate work.
+
 ### Integrated Main And Converter Review Preparation
 
 - Integrated main through `5d76c63`, preserving the sample message bridge, namespaced Viewer targets, focus/status feedback, continuous/paginated reading and fractional page bounds, homepage lifecycle/fallback fixes, and source-derived profile previews. Reconciled stale-load ownership with bounded archive/signature/HTML preparation and object-URL cleanup; retained Convert routes, source-backed review state and diagnostics.
