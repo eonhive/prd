@@ -81,6 +81,8 @@ Local development may still use older Node versions for non-release work, but th
 
 CI release validation runs on Node 22, and post-publish consumer smoke runs on Node 20 for baseline packaging, authoring and Markdown/HTML/image conversion. Optional PDF extraction requires Node 22.13+ and is covered by the separate release/tarball gates; this consumer lane does not claim Node 20 PDF support.
 
+Codex CI also runs `node ./scripts/release-smoke.mjs` on Node 22 after its existing checks/build and example packaging, for pull requests, configured branch pushes and manual runs. It packs and installs all five public packages in temporary consumer projects and runs the same 48 consumer checks plus the existing package/optional-dependency/PDF smoke checks. A failure fails validation. The `tarball-consumer-smoke-summary` artifact retains `examples/dist/tarball-consumer-smoke-summary.json` after an attempted smoke run, including failures; it reports the consumer portion, while the step result covers the full smoke script. Missing expected artifacts fail the upload. PR validation has read-only repository permissions, leaves checkout credentials unpersisted and receives no publisher credentials. This gate checks candidate tarballs; npm registry and post-publish checks remain required.
+
 ---
 
 ## 4. Publish Gate

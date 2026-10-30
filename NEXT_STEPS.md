@@ -231,4 +231,9 @@
 ## Integrated review continuation (October 30, 2026)
 
 - [x] Reconcile current main’s sample bridge, namespaced targets, keyboard/status feedback, pagination, homepage lifecycle, generated profile artwork, release preflight reporting and publisher credential mapping with the converter implementation. Preserve all authoring round-trip verifiers in the expanded 48-step consumer. Codex CI now uses Node 22 like the full release gate.
-- [ ] Open the integrated implementation as a draft PR, inspect remote CI, and resolve concrete failures before requesting final implementation review. Keep version PR merge/publication under item 46 and live Convert/Viewer acceptance under items 44/48 and the Convert sections above.
+- [x] Open the integrated implementation as PR #72 and verify both Node 22 Codex CI runs plus the Workers preview build. All 21 preview HTTP/package/artwork checks and the Convert app-shell check passed; PR #72 merged at `b70fa49`. This does not close live browser/assistive acceptance or publication. Keep version PR/publication under item 46 and live acceptance under items 44/48 and the Convert sections above.
+
+## Pull request package validation (October 30, 2026)
+
+- [x] Run the existing five-package installed-tarball smoke in Node 22 Codex CI after build/check and example packaging. Retain all 48 consumer checks and package/optional-dependency/PDF checks, failure exit status and attempted-run JSON artifacts. Keep PR repository permissions read-only, disable persisted checkout credentials and exclude publisher credentials. Three regressions reproduce the prior gap; focused tests and the actual Node 22 sequence pass locally.
+- [ ] Review and merge the focused CI follow-up after its remote Node 22 tarball step and summary upload pass. Continue live Convert/Viewer acceptance when browser access is available; actual Changesets publication/registry/npm-consumer acceptance remains item 46.

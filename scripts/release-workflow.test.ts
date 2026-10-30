@@ -19,14 +19,51 @@ import { describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
+const ciWorkflow = readFileSync(new URL("../.github/workflows/codex-ci.yml", import.meta.url), "utf8");
 const publishSteps = ["Version or publish packages"];
 const secretReference = "${{ secrets.NPM_TOKEN }}";
 
-function readStep(name: string) {
-  const step = workflow.split(/^      - name: /m).find((block) => block.startsWith(`${name}\n`));
-  if (!step) throw new Error(`Missing release step: ${name}`);
+function readStep(name: string, source = workflow) {
+  const step = source.split(/^      - name: /m).find((block) => block.startsWith(`${name}\n`));
+  if (!step) throw new Error(`Missing workflow step: ${name}`);
   return step;
 }
+
+describe("pull request tarball validation", () => {
+  it("runs the existing installed-package gate after build/check steps on Node 22", () => {
+    const smoke = readStep("Run installed tarball smoke", ciWorkflow);
+    expect(ciWorkflow).toMatch(/^  pull_request:/m);
+    expect(ciWorkflow).toContain("node-version: 22");
+    expect(smoke).toContain("id: tarball_smoke");
+    expect(smoke).toContain("run: node ./scripts/release-smoke.mjs");
+    expect(smoke).not.toMatch(/^        (?:if|continue-on-error):/m);
+    for (const prerequisite of ["Run Codex checks", "Pack example archives"]) {
+      expect(ciWorkflow.indexOf(`- name: ${prerequisite}`)).toBeLessThan(
+        ciWorkflow.indexOf("- name: Run installed tarball smoke")
+      );
+    }
+  });
+
+  it("uploads the consumer report after an attempted smoke run, including failures", () => {
+    const upload = readStep("Upload tarball consumer smoke summary", ciWorkflow);
+    expect(upload).toContain("if: ${{ always() && steps.tarball_smoke.outcome != 'skipped' }}");
+    expect(upload).toContain("uses: actions/upload-artifact@v4");
+    expect(upload).toContain("name: tarball-consumer-smoke-summary");
+    expect(upload).toContain("path: examples/dist/tarball-consumer-smoke-summary.json");
+    expect(upload).toContain("if-no-files-found: error");
+    expect(ciWorkflow.indexOf("- name: Run installed tarball smoke")).toBeLessThan(
+      ciWorkflow.indexOf("- name: Upload tarball consumer smoke summary")
+    );
+  });
+
+  it("keeps PR validation read-only without publisher credentials or commands", () => {
+    expect(ciWorkflow).toMatch(/^permissions:\n  contents: read\n/m);
+    expect(readStep("Check out repository", ciWorkflow)).toContain("persist-credentials: false");
+    expect(ciWorkflow).not.toContain("pull_request_target:");
+    expect(ciWorkflow).not.toMatch(/secrets\.|NPM_TOKEN|NODE_AUTH_TOKEN|id-token: write/);
+    expect(ciWorkflow).not.toMatch(/release:(?:publish|preflight|bootstrap)|changesets\/action/);
+  });
+});
 
 describe("release workflow authentication", () => {
   it("keeps full CI on Node 22 and retires automatic bootstrap publication", () => {

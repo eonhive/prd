@@ -62,6 +62,10 @@ pnpm examples:smoke -- --json-summary
 
 `--json-summary` is supported specifically for CI annotation/reporting flows.
 
+Before merging a release candidate, require Codex CI's **Run installed tarball smoke** step to pass on Node 22. It reuses `node ./scripts/release-smoke.mjs` after the existing build/check and example-packaging steps, without rebuilding the workspace or invoking publication. The five tarballs are installed in clean temporary projects; all 48 consumer checks and the existing individual-package/optional-dependency/PDF checks must pass.
+
+Inspect the **tarball-consumer-smoke-summary** artifact for `tarball-consumer-smoke-summary.json`. An attempted smoke run uploads the report even if the script fails; a skipped run does not request a report. A failure before the consumer creates its summary is diagnosed in the smoke logs, and the missing expected artifact also fails upload. The report describes the consumer portion; the step may fail later during other installed-package checks even when that portion passed. PR CI is read-only and does not receive publishing credentials. Its success does not establish npm availability or replace the authenticated release and post-publish gates.
+
 Optional shell setup:
 
 ```bash
