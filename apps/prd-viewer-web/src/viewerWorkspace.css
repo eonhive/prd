@@ -6,10 +6,15 @@
  */
 
 .app-route-viewer {
+  /* Keep reading controls below the shared header; embedded viewers have no header. */
+  --viewer-toolbar-offset: calc(var(--nav-height) + 0.8rem);
   --radius-md: 0.65rem;
   --radius-lg: 0.9rem;
   background: var(--bg);
   padding: 0.8rem;
+}
+.app-route-viewer.is-embedded {
+  --viewer-toolbar-offset: 0rem;
 }
 
 .app-route-viewer::before {
@@ -140,7 +145,7 @@
 
 .viewer-workspace-toolbar {
   position: sticky;
-  top: 0;
+  top: var(--viewer-toolbar-offset);
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
@@ -217,14 +222,14 @@
 }
 .app-route-viewer .viewer-side-panel {
   position: sticky;
-  top: 3.75rem;
+  top: calc(var(--viewer-toolbar-offset) + 3.75rem);
   display: flex;
   flex-direction: column;
   align-self: start;
   gap: 0;
   width: 100%;
   min-width: 0;
-  max-height: calc(100svh - 4.5rem);
+  max-height: calc(100svh - var(--viewer-toolbar-offset) - 4.5rem);
   overflow: auto;
   margin: 0;
   padding: 0;
@@ -234,6 +239,10 @@
   border: 0;
   border-radius: 0;
   font-size: 0.78rem;
+}
+.app-route-viewer #document-stage,
+.app-route-viewer #document-stage [id^="prd-content-"] {
+  scroll-margin-top: calc(var(--viewer-toolbar-offset) + 5.5rem);
 }
 .app-route-viewer .viewer-left-rail {
   grid-area: navigation;

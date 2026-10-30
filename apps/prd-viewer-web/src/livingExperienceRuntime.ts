@@ -15,6 +15,7 @@ import {
   type MotionIntensity,
   type RenderingQuality,
   type DemoDevice,
+  type DemoProfile,
 } from "./livingExperienceModel.js";
 
 export interface LivingRuntimeOptions {
@@ -26,6 +27,7 @@ export interface LivingRuntimeOptions {
 export interface LivingExperienceRuntime {
   update(options: LivingRuntimeOptions): void;
   setDevice(device: DemoDevice): void;
+  setProfile(profile: DemoProfile): void;
   toggleAudio(): Promise<boolean>;
   dispose(): void;
 }
@@ -73,14 +75,25 @@ export async function createLivingExperienceRuntime(
   let audio: AudioAdapterApi | undefined;
   let audioUrl: string | undefined;
   let audioLoading = false;
+  let audioGeneration = 0;
+  let audioReady = false;
+  let audioInitialization: Promise<void> | undefined;
   const deviceSize = { width: 420 };
   let selectedDevice: DemoDevice = "desktop";
+  let selectedProfile: DemoProfile = "document";
+  const profileReveal = { progress: 1 };
   let renderedFrames = 0;
   let slowFrames = 0;
   let previousFrameTime = 0;
   let adaptiveLow = false;
   const reduced = () => preference.matches || options.motion === "off";
   const isStoryComplete = () => scroll.y > scroll.end - 160;
+  const canAnimate = () =>
+    !reduced() &&
+    visible &&
+    !document.hidden &&
+    !options.focused &&
+    !isStoryComplete();
   const effectiveQuality = () => {
     const browser = navigator as Navigator & {
       deviceMemory?: number;
@@ -101,7 +114,77 @@ export async function createLivingExperienceRuntime(
     ambientTimer = undefined;
   }
 
+  function cancelAudio() {
+    audioGeneration++;
+    audioLoading = false;
+    audio?.pause();
+    audio?.analysis.disable();
+    root.style.setProperty("--audio-level", "0");
+  }
+
+  function isAudioRequestCurrent(generation: number) {
+    return !disposed && !document.hidden && generation === audioGeneration;
+  }
+
+  function initializeAudio() {
+    if (!audioInitialization) {
+      audioInitialization = (async () => {
+        const [{ createAudioAdapter }, { createAmbientAudioUrl }] = await Promise.all([
+          import("@urk/adapters/audio"),
+          import("./livingExperienceAudio.js"),
+        ]);
+        if (disposed || !audioLoading) return;
+        if (!audio) audio = await kernel.registerAdapter(createAudioAdapter());
+        if (disposed) return;
+        // Complete one reusable setup if visibility changes during adapter registration.
+        if (!audioUrl) audioUrl = createAmbientAudioUrl();
+        audio.registerTrack({
+          id: "ambient",
+          label: "PRD ambient",
+          src: audioUrl,
+          loop: true,
+          volume: 0.22,
+        });
+        audioReady = true;
+      })().finally(() => { audioInitialization = undefined; });
+    }
+    return audioInitialization;
+  }
+
+  function releasePendingPaint() {
+    const release = releaseFrame;
+    releaseFrame = undefined;
+    release?.();
+  }
+
+  function finishProfileReveal() {
+    motion.cancel(profileReveal);
+    profileReveal.progress = 1;
+    sheet.style.setProperty("--profile-reveal", "1");
+  }
+
+  function settleMotion() {
+    motion.cancel();
+    deviceSize.width = { desktop: 420, tablet: 340, mobile: 236 }[selectedDevice];
+    sheet.style.setProperty("--document-width", `${deviceSize.width}px`);
+    finishProfileReveal();
+  }
+
+  function handleMotionPreference() {
+    cancelAmbient();
+    if (!canAnimate()) settleMotion();
+    requestUpdate();
+  }
+
+  function suspendPresentation() {
+    cancelAmbient();
+    // Resume at the selected layout without replaying motion that happened out of view.
+    settleMotion();
+    releasePendingPaint();
+  }
+
   function measure() {
+    if (disposed) return;
     scroll.starts = chapters.map(
       (chapter) => chapter.getBoundingClientRect().top + window.scrollY,
     );
@@ -131,11 +214,14 @@ export async function createLivingExperienceRuntime(
       5,
       Math.max(0, Math.floor(scroll.position + 0.08)),
     );
+    const storyComplete = isStoryComplete();
+    if (storyComplete) settleMotion();
     if (chapter !== lastChapter) {
       lastChapter = chapter;
       root.dataset.chapter = String(chapter);
       onChapter(chapter);
     }
+    if (chapter !== 3 && profileReveal.progress < 1) finishProfileReveal();
     const pose = sampleDocumentPose(scroll.position);
     const strength =
       (options.motion === "subtle" ? 0.24 : 1) *
@@ -163,7 +249,6 @@ export async function createLivingExperienceRuntime(
     root.dataset.reduced = String(reduced());
     root.dataset.frames = String(++renderedFrames);
     root.dataset.scheduler = "urk-auto";
-    const storyComplete = isStoryComplete();
     root.dataset.storyComplete = String(storyComplete);
 
     // Adapt only during active, closely spaced work; tab throttling is not device load.
@@ -177,14 +262,8 @@ export async function createLivingExperienceRuntime(
       slowFrames = Math.max(0, slowFrames - 1);
     }
     previousFrameTime = timeMs;
-    if (
-      !reduced() &&
-      visible &&
-      !storyComplete &&
-      !options.focused &&
-      !document.hidden
-    ) {
-      cancelAmbient();
+    cancelAmbient();
+    if (canAnimate()) {
       ambientTimer = setTimeout(
         requestUpdate,
         effectiveQuality() === "low" ? 140 : 80,
@@ -193,11 +272,9 @@ export async function createLivingExperienceRuntime(
   }
 
   function requestUpdate() {
-    if (disposed || document.hidden || releaseFrame) return;
+    if (disposed || !visible || document.hidden || releaseFrame) return;
     releaseFrame = context.registerFrameWork(({ timeMs }) => {
-      const release = releaseFrame;
-      releaseFrame = undefined;
-      release?.();
+      releasePendingPaint();
       paint(timeMs);
     });
   }
@@ -222,9 +299,9 @@ export async function createLivingExperienceRuntime(
   }
 
   function handleVisibility() {
-    cancelAmbient();
     if (document.hidden) {
-      audio?.pause();
+      suspendPresentation();
+      cancelAudio();
       onAudio(false);
       kernel.pause();
     } else {
@@ -237,9 +314,10 @@ export async function createLivingExperienceRuntime(
     typeof IntersectionObserver === "undefined"
       ? undefined
       : new IntersectionObserver(([entry]) => {
+          if (disposed) return;
           visible = entry?.isIntersecting ?? false;
           if (visible) requestUpdate();
-          else cancelAmbient();
+          else suspendPresentation();
         });
   observer?.observe(root);
   const resizeObserver =
@@ -253,24 +331,20 @@ export async function createLivingExperienceRuntime(
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("resize", measure);
   window.addEventListener("pointermove", handlePointer, { passive: true });
-  preference.addEventListener("change", requestUpdate);
+  preference.addEventListener("change", handleMotionPreference);
   document.addEventListener("visibilitychange", handleVisibility);
   measure();
 
   return {
     update(next) {
+      if (disposed) return;
       options = next;
       cancelAmbient();
-      if (reduced()) {
-        motion.cancel();
-        deviceSize.width = { desktop: 420, tablet: 340, mobile: 236 }[
-          selectedDevice
-        ];
-        sheet.style.setProperty("--document-width", `${deviceSize.width}px`);
-      }
+      if (!canAnimate()) settleMotion();
       requestUpdate();
     },
     setDevice(device) {
+      if (disposed) return;
       selectedDevice = device;
       const width = { desktop: 420, tablet: 340, mobile: 236 }[device];
       motion.cancel(deviceSize);
@@ -278,7 +352,7 @@ export async function createLivingExperienceRuntime(
         sheet.style.setProperty("--document-width", `${width}px`);
         return;
       }
-      if (reduced()) {
+      if (!canAnimate()) {
         deviceSize.width = width;
         sheet.style.setProperty("--document-width", `${width}px`);
         return;
@@ -297,59 +371,64 @@ export async function createLivingExperienceRuntime(
         },
       );
     },
+    setProfile(profile) {
+      if (disposed || selectedProfile === profile) return;
+      selectedProfile = profile;
+      finishProfileReveal();
+      if (!canAnimate() || lastChapter !== 3) return;
+      profileReveal.progress = 0;
+      sheet.style.setProperty("--profile-reveal", "0");
+      motion.tween(profileReveal, { progress: 1 }, {
+        durationMs: options.motion === "subtle" ? 160 : 420,
+        easing: "ease-out",
+        onUpdate: () => sheet.style.setProperty("--profile-reveal", String(profileReveal.progress)),
+      });
+    },
     async toggleAudio() {
-      if (disposed || audioLoading) return false;
-      if (audio?.getSnapshot().status === "playing") {
-        audio.pause();
+      if (disposed || document.hidden) return false;
+      if (audioLoading || audio?.getSnapshot().status === "playing") {
+        cancelAudio();
         onAudio(false);
         return false;
       }
       audioLoading = true;
+      const generation = ++audioGeneration;
       try {
-        if (!audio) {
-          const [{ createAudioAdapter }, { createAmbientAudioUrl }] =
-            await Promise.all([
-              import("@urk/adapters/audio"),
-              import("./livingExperienceAudio.js"),
-            ]);
-          if (disposed) return false;
-          audio = await kernel.registerAdapter(createAudioAdapter());
-          if (disposed) return false;
-          audioUrl = createAmbientAudioUrl();
-          audio.registerTrack({
-            id: "ambient",
-            label: "PRD ambient",
-            src: audioUrl,
-            loop: true,
-            volume: 0.22,
-          });
-        }
+        if (!audioReady) await initializeAudio();
+        if (!isAudioRequestCurrent(generation) || !audio) return false;
         await audio.play("ambient");
-        if (disposed) return false;
+        if (!isAudioRequestCurrent(generation)) return false;
         // Analysis is optional; transport stays usable if Web Audio is unavailable.
         try {
           await audio.analysis.enable({ fftSize: 128 });
         } catch {
           /* Keep plain playback. */
         }
-        if (disposed) return false;
+        if (!isAudioRequestCurrent(generation)) return false;
         onAudio(true);
         requestUpdate();
         return true;
+      } catch (error) {
+        // Hiding or disposing cancels opt-in; it must not become a playback-error message.
+        if (!isAudioRequestCurrent(generation)) return false;
+        throw error;
       } finally {
-        audioLoading = false;
+        if (generation === audioGeneration) audioLoading = false;
       }
     },
     dispose() {
+      if (disposed) return;
       disposed = true;
+      cancelAudio();
       cancelAmbient();
-      releaseFrame?.();
+      motion.cancel();
+      releasePendingPaint();
       observer?.disconnect();
       resizeObserver?.disconnect();
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", measure);
       window.removeEventListener("pointermove", handlePointer);
-      preference.removeEventListener("change", requestUpdate);
+      preference.removeEventListener("change", handleMotionPreference);
       document.removeEventListener("visibilitychange", handleVisibility);
       void kernel.shutdown().finally(() => {
         if (audioUrl) URL.revokeObjectURL(audioUrl);

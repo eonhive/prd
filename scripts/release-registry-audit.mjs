@@ -234,6 +234,9 @@ export async function runReleaseRegistryAudit(options = {}) {
       summary.packages.push(packageSummary);
     }
   } catch (error) {
+    if (summary.checks.packageTargets.status === "pending") {
+      summary.checks.packageTargets.status = "failed";
+    }
     markFailed(
       summary,
       "Fix the registry audit failure before continuing to post-publish consumer smoke."

@@ -1,5 +1,14 @@
 # SESSION_HANDOFF.md
 
+## Latest continuation — October 30, 2026: Integrated Implementation Review
+
+- Continued the owner’s requested next step after the complete implementation commit `97beb82`. Fetched main `5d76c63` and integrated its 19 commits into `thehive/prd-package-handoff`; the old branch PR #53 is already merged, so the complete converter work needs a new draft PR. Use Git history for the integration commit and the chat’s final response for its remote PR/check status. No merge into main, npm publication, secret/permission change or deployment is part of this continuation.
+- Resolved Viewer and release conflicts explicitly: retained Convert routes/review/security behavior plus main’s sample bridge, namespaced targets, keyboard/status feedback, pagination, profile artwork, homepage lifecycle fixes, preflight reporting and publisher `NODE_AUTH_TOKEN` mapping. Unified archive/sample load generations and retained stale async URL cleanup. Codex CI now uses Node 22; read-only post-publish baseline remains Node 20.
+- Consumer v0.2 now runs 48 steps with current CLI/tarballs: six baseline package checks, 36 authoring checks over all three starters and Markdown/comic/storyboard imports, then six HTML/SDK/CLI-conversion checks. The real tarball consumer passed every step. Retained JSON/profile/source-kind/image-byte/order assertions, source/report parity, stop-on-failure and exact release-commit install specs. Stable version validation permits a first converter version alongside independently versioned libraries, without accepting ambiguous npm specs.
+- Validation passed: 93 focused release cases, 425 web-app cases and full `release:check` with **1,411 tests / 69 files**, root typecheck/build/canonical examples and actual five-package installed consumers; root-inclusive docs, aggregate example smoke and root/`/prd/` builds. Logs `/tmp/prd-integration-{release-tests,viewer-tests,release-check,docs,examples,root-build,base-build}.log`. Local Node 24.5.0 / pnpm 10.32.1; use explicit bundled Git because system Git still requires the Xcode license. Do not prepend the whole fallback tool directory to PATH.
+- Fresh Changesets status (no version mutation) now targets CLI 0.3.0 after upstream’s 0.2.0 manifest, validator/packager/converter 0.2.0, types 0.1.1 unchanged. Read-only npm still has the original four at latest 0.1.1 and converter 404. No published-feature claim or local publisher-token access. Browser inventory remains disabled in Work settings; live Convert/Viewer/theme/mobile/OS and assistive acceptance remain open. Earlier continuation notes below are historical, including their then-current 18/42-step consumers and version plans.
+
+
 ## Latest continuation — October 30, 2026: Converter Release Readiness And Complete Commit
 
 - Continued the owner-authorized next implementation while live browser use remains disabled. The owner then explicitly requested a commit and answered the scope question with **Complete validated PRD implementation**. Include the validated earlier converter/Viewer/archive/performance work; preserve later unvalidated concurrent edits if any. No push, checkout package-version update, npm publication, token/settings change or deployment is authorized/performed by this task. Use Git history for the final local commit reference.
@@ -202,84 +211,160 @@
 - Next: normal code review and coordinated converter/CLI release onboarding. Current preflight, registry audit and published-consumer lists still describe the older public package set, and item 46 already tracks version-policy reconciliation. Do not claim `convert` is published or deployed. Extend one adapter at a time after specifying fidelity/safety behavior; web converter UI and faithful/hybrid modes remain deferred.
 - Earlier handoff sections below describe earlier Viewer launch work and remain historical context.
 
+## Latest Continuation - October 29, 2026: Publisher Credential Wiring
+
+- Resumed on request after the explicit pause. Other-session release-script/dependency/docs edits remain in `prd-viewer-dom-targets`; the separate CLI README edit and other worktrees also remain untouched. Isolated this fix from reviewed main `3682b7b` in `thehive/prd-publisher-auth` under `.worktrees/prd-publisher-auth`. The managed helper rejected the nested repository location; bundled Git created the clean worktree.
+- Version PR #68 is merged. Earlier retries of run `40941252926` confirmed the secret is now available and token/auth/org/target/version preflight succeeds. One publish attempt hit Sigstore tlog 409; the next generated provenance but received registry PUT `E404`. npm still reports CLI `0.1.1` and no `0.2.0`. No new retry, token access, secret change or publication was performed in this resumed fix pass.
+- Found a distinct workflow defect: setup-node's selected npmrc reads `NODE_AUTH_TOKEN`, but publishers only set `NPM_TOKEN`. Changesets' HOME npmrc is shadowed by the selected userconfig; preflight checks the token through a separate path. Both publisher steps now bind both variable names to the same existing secret. Provenance, step-scoped exposure, preflight order and CI-only publishing are unchanged. No version/dependency/source feature or public API edits.
+- Added `scripts/release-workflow.test.ts`: two publishing-path mappings, credential scope/order/provenance, and real npm whoami against a loopback server. Fake credentials reproduce the placeholder-token failure even with a valid HOME npmrc, then prove the corrected userconfig mapping. Three cases failed on the original workflow. After an exact-copy check, removed only this chat's unchanged earlier test file from the conflicting checkout; all other-session edits remain there.
+- Validation passed on Node 22.22.2/pnpm 10.32.1: 44 targeted tests; full `release:check` with 504 tests / 37 files, typecheck/build/canonical validation and all 42 real installed-tarball authoring checks; aggregate example smoke; root-inclusive docs consistency; whitespace checks. No production credentials or public npm writes are used by the loopback tests. No browser QA is needed for this workflow-only change.
+- Files in this slice: `.github/workflows/release.yml`, `scripts/release-workflow.test.ts`, `docs/governance/PRD_NPM_RELEASE_RUNBOOK.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/SESSION_HANDOFF.md`. No changeset. Preserve other-session edits; do not version or publish from this feature branch.
+- Ready review PR: [#71](https://github.com/eonhive/prd/pull/71), `[stannesi] wire verified npm credentials into publishing`. Published through the connected GitHub API after the remote tree exactly matched the verified local index, then attached the PR. No merge or workflow retry was performed in this resumed pass.
+- Next: review/merge PR #71 and run Release on the corrected main revision. Re-running an older commit retains the old workflow. Passing local auth tests does not prove registry package write permission; investigate npm package/team/token publishing permissions if corrected CI still fails. Item 46 and launch items 44/48 stay open; availability notes must wait for registry audit and all 42 npm authoring consumer checks.
+- Earlier sections below are historical.
+
+## Latest Continuation - October 29, 2026: CLI 0.2.0 Version PR
+
+- Main `4ac480d` includes merged PRs #64/#65/#66/#67. Reused the clean isolated checkout on `thehive/prd-cli-0-2-0-version-pr`; original-checkout work and other worktrees remain untouched.
+- Before versioning, read-only `release:status` confirmed exactly CLI `0.2.0` from `.changeset/prd-init-scaffold.md`, `.changeset/prd-markdown-import.md`, and `.changeset/prd-image-import.md`. Ran the existing `release:version` command once. Only the CLI package version changed and those three changesets were consumed; library versions/internal ranges stay `0.1.1`/`^0.1.1`, with no lockfile diff after its refresh.
+- Added an explicitly unreleased CLI changelog entry. Updated build status and consolidated only the duplicate active item 46 introduced by the merged release docs; other unrelated backlog numbering is outside this version PR.
+- Latest main Release run [40932175825](https://github.com/eonhive/prd/actions/runs/40932175825) passed release checks, then failed preflight with an empty `NPM_TOKEN`. Auth/org checks did not succeed and version/publish was skipped. npm still reports CLI `0.1.1`. No credential was accessed or changed, no workflow was rerun, and no package was published.
+- Release-candidate validation passed on Node 22: full `release:check` (476 tests / 35 files), typecheck/build/canonical validation and real installed-tarball smoke with all 42 authoring steps; aggregate example smoke, root-inclusive docs consistency, and whitespace checks also pass. Explicit assertions confirm only CLI `0.2.0`, unchanged library versions and internal ranges. Bootstrap correctly no-ops.
+- The optional post-version `release:status` invocation exited 1 because the intended changesets are now consumed while the CLI manifest differs from main. The pre-version plan was verified before applying it; do not add an empty or duplicate changeset to disguise the normal version-PR state.
+- Ready review PR: [#68](https://github.com/eonhive/prd/pull/68), `[stannesi] prepare CLI 0.2.0 authoring release`. Published the staged release-candidate tree through the connected GitHub API after verifying an exact local/remote tree match, then attached the PR. No merge was performed.
+- Review PR #68 and repair the intended Actions secret before CI publication. Keep availability notes unchanged until reviewed main/CI publication, expected-version registry audit and all 42 npm-installed authoring checks pass. Preserve launch acceptance under items 44/48 separately. Local tarball success is not published npm success; no live publisher-auth or future-version registry success is claimed.
+- Earlier sections below are historical; their task-specific no-versioning instructions describe prior gate-only work, not this explicitly separate version PR.
+
+## Latest continuation — October 28, 2026: Authoring Consumer Verification
+
+- Ready review PR: [#65](https://github.com/eonhive/prd/pull/65), `[stannesi] verify CLI authoring in installed consumer smoke`. Continued the existing branch with the owner's authorization; did not duplicate the implementation or mix in the original checkout's independent work.
+- Final continuation verification passed on Node 22: 29 targeted tests and the full `release:check` (451 tests / 34 files), including all 42 real installed-tarball consumer steps. Repeated live registry audit, six-step npm `0.1.1` baseline, root-inclusive docs consistency and whitespace checks passed. The npm baseline reports `authoringRequired: false`; only the tarball run reports `authoringRequired: true`. No new authoring publication is claimed. This continuation needed no source changes after reviewing the existing implementation.
+- Isolated branch `thehive/prd-authoring-consumer-smoke` starts at merged main `2cf4980`. The original checkout and unrelated work remain untouched. Read-only Changesets status still plans only CLI `0.2.0`; live registry audit and six-step npm consumer smoke pass for published `0.1.1`.
+- Added `scripts/consumer-authoring-smoke.mjs`, used by external consumer smoke and, through it, release tarball smoke. It checks `init` across all three profiles, Markdown/local-image import, and both visual image imports, including natural order/source bytes and directory/archive validation/inspection. JSON/profile/source failures and missing commands fail the exact step; preparation failures also fail the retained summary and CLI exit.
+- Installed tarballs always require all 42 steps. Normal post-publish smoke decides from the checked-out CLI version: stable `0.2.0+` requires authoring, while `0.1.x` keeps the six baseline checks. The summary's additive `authoringRequired` field makes that distinction explicit; the contract identifier and existing npm summary path are unchanged.
+- Validation passed: 29 targeted tests; full `release:check` with **451 tests / 34 files**, typecheck/build/canonical validation and real installed tarball authoring smoke; read-only registry audit and real npm baseline smoke. The tarball authoring summary is ignored at `examples/dist/release-authoring-consumer-smoke-summary.json`. Release policy/runbook, README and active item 46 are updated. No dependency, package version, changeset or workflow edit.
+- Publication is still pending. Separate PR #64 reports missing Actions `NPM_TOKEN`; a maintainer must repair that configuration before reviewed CI versioning/publication, expected-version registry audit and the 42-step npm authoring run can complete item 46. No secret/token access, local versioning, workflow rerun, publication or deployment was performed. Browser/physical launch acceptance remains under items 44/48.
+- Earlier sections below are historical.
+
+## Latest continuation — October 28, 2026: Merged Launch Verification
+
+- PR #61 and PR #62 are merged; reviewed main is `317c365`. Reused the isolated checkout on `thehive/prd-launch-verification` for this documentation follow-up. The original checkout's independent work remains untouched. The file-drop change retains nested feedback, ignores text drags, and preserves the archive/validation/rendering and privacy paths.
+- The combined foundation gate passes **429 tests / 34 files**, workspace build, canonical validation/aggregate smoke and root-inclusive docs consistency. Root typecheck passes. GitHub validation and Cloudflare build are successful on PR #62's final head `97b7adc`.
+- All 21 fresh production HTTP/package checks pass. Entry JS/CSS match the tested integrated build byte-for-byte; ignored evidence is in `examples/dist/production-acceptance/merged-file-drop-assets.json`. The earlier branch preview also passed all 21 HTTP/package checks. These are static/package checks, not fresh browser acceptance.
+- Removed duplicate backlog records and retained distinct items 66/67/68 for reader, file-drop and motion fixes. Launch items 44/48 stay open while browser use is disabled: fresh deployed interactions, real OS drag/drop, actual screen-reader speech, physical touch, constrained-device profiling and intended deployment-owner sign-off remain. No manual deployment or npm publication was performed.
+- Earlier sections below are historical.
+
+## Latest continuation — October 27, 2026: File-Drop Feedback
+
+- Reused the clean isolated checkout and branched `thehive/prd-file-drop-feedback` from main `2367123` (merged PR #60). The original checkout and its independent work remain untouched. All 21 production HTTP/package checks pass; served JS/CSS exactly match the reviewed reader build. Evidence is ignored at `examples/dist/production-acceptance/reviewed-assets.json`.
+- Browser use is disabled in Work settings. Source/DOM tests reproduced file-highlight loss when crossing nested controls and false archive errors for text drops. Fixed these in the existing named drop area with file-type filtering, nested enter/leave tracking and a copy cursor. Existing mixed-file selection, local opening, validation/rendering and private parent notifications are preserved.
+- Added five DOM cases, including missing related targets, text/French-resource retention, valid archive/private marker and unsupported/recovery opens. Final checks: root typecheck, foundation gate **417 tests / 34 files** (200 app tests), workspace build, examples/smoke, both hosting builds, Workers dry run and docs/whitespace checks pass. No dependency, public package or changeset edit.
+- Prepare a focused review PR. This is not fresh browser or real OS drag/drop acceptance. Items 44/48 retain actual screen-reader, physical touch, OS drag/drop, constrained-device and deployment-owner checks. No manual production deployment or npm release was performed.
+- Earlier sections below are historical.
+
+## Latest continuation — October 27, 2026: Reader Accessibility
+
+- Reused the clean isolated checkout and branched `thehive/prd-reader-accessibility` from merged main `8438760`. PR #59 is merged and its automatic rebrand rollout was observed on production with all 21 HTTP/package checks passing. The original checkout's unrelated work remains untouched.
+- Reproduced desktop panel-close focus loss on the public Viewer and fixed it with stable toolbar refs. Added polite/atomic outline result counts and active-title completion feedback. Locale, resource URLs, native mobile dialogs, namespaced outline targets and package/runtime boundaries are preserved. No dependency or changeset.
+- Four new DOM cases failed before implementation and pass afterward. Final checks pass: root typecheck, foundation gate **412 tests / 34 files** (195 app tests), workspace build, canonical validation/smoke, both hosting builds, Workers dry run, docs and whitespace checks. Real local built-browser review covers close/Tab continuation, search counts, French title/image continuity and 390px native dialog dismissal.
+- Generated evidence is ignored under `examples/dist/reader-accessibility/`. Physical-device, actual screen-reader, OS drag/drop, constrained-device and production correction acceptance remain launch items 44/48. Prepare a focused review PR for this correction; no manual production deployment or npm release was performed.
+- Earlier sections below are historical.
+
+## Latest continuation — October 27, 2026: Public Rebrand Review
+
+- Isolated branch `thehive/prd-brand-refresh` starts at current main `c8e5935` (PR #58). Ported the earlier Home/Viewer/Docs rebrand while preserving merged source-profile presentations, namespaced document targets and the sample-selection bridge. The primary checkout and its converter/container/signature work were left untouched.
+- Shared palette, folded mark/favicon, original WebP hero artwork, public navigation/footer, real example links, branded Docs and responsive Viewer panels are implemented. Theme changes preserve localized content/resource URLs. Mobile outline focus uses the namespaced target map. Corrected sticky toolbar/panel/fragment offsets after real browser testing.
+- Validation: root typecheck, foundation gate **408 tests / 34 files** (191 app tests), workspace builds, canonical examples/aggregate smoke, both hosting-base builds, Workers dry run, 21 local HTTP/package checks and docs/whitespace checks pass. Fresh browser checks used the built `127.0.0.1:4174` preview with desktop themes and 390px/320px layouts; generated screenshots are under ignored `examples/dist/rebrand-qa/`.
+- No dependency, lockfile, public package, CLI, core, release workflow or changeset changes. No npm release or production deployment. Review the focused PR before merge; launch items 44/48 still require physical touch, screen-reader, real OS drag/drop, constrained-device and deployed acceptance.
+- Earlier sections below are historical context.
 
 ## Current status
 
-- October 25, 2026: PR #50 is merged at `a9d77d9`; local `main` was fast-forwarded before creating `thehive/prd-viewer-outline-qa`.
-- Browser access is enabled. The public site shows PR #50's Home/Viewer/Docs usability pass; the earlier browser-disabled note is historical.
-- [PR #51](https://github.com/eonhive/prd/pull/51) is ready for review with the narrow corrective viewer changes found during live launch QA. It has not been merged or deployed.
-- Item 45's visual review is complete. Launch item 44 remains open for deployed correction checks, real drag/drop, and production pipeline confirmation. CLI release item 46 remains a separate slice.
+- October 27, 2026: PR #55 is merged at `a50de8e`; main also includes the embedded Viewer continuity follow-up in PR #56 (`4e7710d`).
+- Reused isolated checkout `prd-viewer-dom-targets` and created `thehive/prd-independent-release-gates` from `4e7710d`. The primary checkout's substantial unfinished format/security/UI/architecture edits remain untouched.
+- This branch fixes item 46's repo-side release-gate mismatch: stable post-preview public package versions may differ, in line with the existing Changesets configuration.
+- Ready review PR: [#57](https://github.com/eonhive/prd/pull/57), `[stannesi] allow independent public package release versions`. Published through the connected GitHub API after its tree matched the verified local index exactly.
+- Package versions, dependency ranges, lockfile, changesets, release workflow, and published availability were not changed. No versioning or npm publication was performed.
+- Browser/production launch acceptance remains separate under items 44/48. This is not another UI or format slice.
 
 ## Completed work
 
-- Reviewed production Home on desktop in dark/light mode and Home/Docs/Viewer on mobile. Hero/navigation and document-first narrow-screen presentation were readable without horizontal overflow.
-- Verified production Viewer/Docs direct navigation and refresh, Home/Docs back/forward, and saved light theme after Home reload.
-- Opened hosted document/comic/storyboard samples as fully supported; inspected package facts, attachments, and localization. French Document Basic changed both text and its inline image resource.
-- Selected a local canonical comic archive through the production header's native file chooser.
-- Fixed comic/storyboard outline selection by sharing active visual state with the outline. Outline buttons now activate the real panel/frame and focus its viewing stage for keyboard continuation.
-- Added rendered authored root/static visual IDs, stopped inventing heading anchors without IDs, and added scroll clearance below the sticky header.
-- Added an exact accessible name to the mobile theme toggle. Invalid archives now show validation failure rather than a misleading unsupported runtime entry-mode message.
-- Added regression helper/markup tests; no new dependency or changeset.
+- Added dependency-free `scripts/release-package-versions.mjs`, shared by preflight and registry audit.
+- Preserved all-`0.1.0` historical bootstrap; normal releases accept stable per-package versions above that preview, including CLI `0.2.0` with unchanged libraries at `0.1.1`.
+- Kept invalid versions, mixed bootstrap/post-preview targets, unconfigured prerelease/build-label versions, and public package-name drift gated.
+- Preserved npm token/auth/org checks and registry per-package publication/`latest`/consumer-safe dependency checks. The existing post-publish consumer defaults already install each package's own `latest`.
+- Added positive independent-version cases, failure/regression cases, artifact checks, and an actual bootstrap-script no-op test without publishing.
+- Clarified release/versioning policies, runbook, README, and PRD-033 in place. Did not allocate IDs used by the primary checkout's unfinished container/signature decisions.
+- Read-only `release:status` confirms current main's three queued authoring changesets plan only `@eonhive/prd-cli@0.2.0`, with no patch/library/major bumps.
+- Live registry audit passes for the existing unchanged `0.1.1` baseline. The planned `0.2.0` release is not claimed live.
 
 ## In-progress work
 
-- Review PR #51, then recheck the deployed revision on the public domain after merge/deployment.
-- Finish actual OS file drag/drop. Confirm Cloudflare account/Workers Builds settings with the owner before launch sign-off.
-- No hosting account, credentials, permissions, DNS, npm release, or production deployment changes were made.
+- Review/merge PR #57, then separately review the intended version PR and CI publication. Local verification does not imply GitHub CI has passed.
+- Item 46 remains open until actual authoring publication and external init/Markdown/image import verification. Existing post-publish smoke covers pack/validate/inspect, not all new authoring commands.
+- No real-token/auth/org preflight was run locally; those checks were exercised with mocks. CI remains the publisher/auth authority.
 
 ## Changed files
 
-- `apps/prd-viewer-web/src/App.tsx`, `styles.css`
-- `apps/prd-viewer-web/src/viewerChrome.tsx`, `viewerChrome.test.ts`
-- `apps/prd-viewer-web/src/viewerDocumentOutline.ts`, `viewerDocumentOutline.test.ts`
-- `README.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`
-- `docs/governance/PRD_HOSTING_RUNBOOK.md`, `codex/SESSION_HANDOFF.md`
+- New `scripts/release-package-versions.mjs`
+- `scripts/release-publish-preflight.mjs`, `release-publish-preflight.test.ts`
+- `scripts/release-registry-audit.mjs`, `release-registry-audit.test.ts`
+- `docs/governance/PRD_RELEASE_POLICY.md`, `PRD_NPM_RELEASE_RUNBOOK.md`
+- `docs/core/PRD_VERSIONING_POLICY.md`, `docs/decisions/PRD_DECISIONS.md`
+- `README.md`, `BUILD_STATUS.md`, `NEXT_STEPS.md`, `codex/SESSION_HANDOFF.md`
 
 ## Commands run
 
-- Bundled Git: status, fetch, fast-forward main, create corrective branch, diff review/check. System Git's Xcode license restriction was not bypassed or accepted.
-- Published the verified staged tree through the authorized GitHub connector because local HTTPS push credentials are unavailable; remote tree SHA matched the local index. Opened ready PR #51, with no merge or production deployment performed.
-- Targeted Vitest: outline, chrome, experience, and render-mode unit/integration tests.
-- `pnpm foundation:gate`
-- `pnpm typecheck`
-- `pnpm viewer:demo:build:github-pages`
-- `pnpm viewer:demo:check:cloudflare`
+- Bundled Git: status, fetch main, create isolated branch, diff review/check.
+- Read PR #55 merge/CI/preview discussion and current release scripts/policies before edits.
+- `pnpm exec vitest run scripts/release-publish-preflight.test.ts scripts/release-registry-audit.test.ts scripts/external-consumer-smoke.test.ts`
+- `pnpm release:status` (read-only; no changeset versioning)
+- `pnpm install --frozen-lockfile` under Node 22 to refresh the isolated install for main's existing jsdom dependency
+- `pnpm release:check`
+- `pnpm release:audit:registry` (public registry metadata only)
 - `pnpm docs:check -- --include-root-docs`
-- `pnpm exec wrangler dev --local` for real browser checks against the production build.
-- Browser QA used the supported browser tools; screenshots/builds and a temporary invalid archive remain generated test artifacts, not canonical source fixtures.
+- `git diff --check`
+- Published the verified tree to the isolated PR branch through the GitHub connector; attached PR #57 and recorded this handoff before stopping.
 
 ## Tests / verification
 
-- Node `22.22.2` and pnpm `10.32.1` used.
-- Targeted tests: 43 passed across 5 files. Foundation gate: 224 tests across 23 files, workspace build, docs consistency, canonical example validation, and aggregate example smoke passed.
-- Root typecheck, GitHub Pages fallback build, Cloudflare production build plus Wrangler dry run, docs consistency (including root docs), and diff check passed.
-- Local browser checks: panel/frame selection, keyboard Left continuation, repeated selection, root/heading anchors, mobile dark/light comic layout, invalid archive feedback/recovery, and same-file reopen/reset passed. Local browser console check reported no warnings/errors.
-- Production vs local verification is separated in the hosting runbook matrix. Do not treat local fixes as already deployed.
+- Node `22.22.2` and pnpm `10.32.1`.
+- 41 targeted tests across three files passed, including shared mode classification, unchanged bootstrap behavior, independently versioned publication states, auth failure, and retained metadata failure checks.
+- Full `release:check` passed: 351 tests across 32 files, typecheck, workspace build, canonical example validation, and packed-tarball consumer smoke.
+- The initial full run lacked PR #56's jsdom install; all existing dependencies were restored with the frozen lockfile and the full rerun passed. No dependency source or lockfile change.
+- Docs consistency including root docs and diff checks passed.
+- Registry audit passed against the still-published `0.1.1` package set. Independently versioned future publication was tested with mocks, not falsely reported published.
+- No live token/org verification, versioning, npm publish, production deployment, or fresh browser acceptance was performed.
 
 ## Known issues
 
-- Actual OS file drag/drop is still unverified. Native chooser and helper unit tests do not replace this check.
-- Deployment-owner/build settings confirmation remains open. Do not infer account/pipeline configuration from HTTP success.
-- npm latest CLI was last verified at `0.1.1` (pack/validate/inspect). Three CLI-only minor authoring changesets are queued, while preflight currently requires matching public package versions. Resolve that conflict deliberately in item 46 before versioning.
-- System Git needs an unaccepted Xcode license; use bundled Git. Local HTTPS push lacks credentials; use the authorized GitHub connector if needed.
-- SPA fallback can return HTML for missing archive URLs. Validate actual package bytes, not only HTTP status.
+- The version/publish workflow can still need external GitHub/npm operational attention; this code change is not proof that a future workflow or version PR has succeeded.
+- Current queued authoring status is based only on reviewed main. The primary checkout has other unfinished changesets/features that must be reviewed and sequenced separately.
+- Browser acceptance under items 44/48 remains open; prior browser-disabled/pointer uncertainty is not resolved by release-gate tests.
+- System Git requires an unaccepted Xcode license; use bundled Git. Put Node 22's bin before the fallback tool directory when supplying Git through PATH, to avoid selecting the fallback pnpm runtime.
+- HTTPS push has lacked credentials; use the authorized GitHub connector when needed.
+- Keep `PRD_NPM_VERSION` unset for independent-version post-publish consumer verification; its existing single-version override is only for intentional coordinated checks.
 
 ## Next recommended task
 
-- Review/merge this corrective PR, verify the deployed fixes, complete drag/drop, and confirm the production Workers Builds settings. Keep GitHub Pages fallback until item 44 is accepted.
-- Then take item 46 separately: reconcile preflight/version policy, ship queued authoring CLI changes through existing CI, and verify an external npm consumer's init/import/validate/inspect/pack flow.
-- Change repository-vs-published availability notes only after that release is verified live.
+- Review/merge PR #57, confirm `release:status` again on intended main, then review or recover a separate Changesets version PR for the authoring release.
+- Validate exact versions/dependency ranges and publish only through the existing main/CI path. Do not consume changesets in this gate-only PR.
+- Require successful per-package registry audit and clean npm-installed init/import/validate/inspect/pack verification before updating public availability or marking item 46 complete.
+- Coordinate unfinished primary-checkout work separately and preserve pending launch acceptance.
 
 ## Important decisions
 
-- This is a private-app launch correction, not a new feature lane or format change.
-- No manifest, schema, validator, capability, runtime support-state, archive parsing, public npm API, CLI implementation, or release automation changes.
-- Eager whole-package in-memory loading remains unchanged. No Studio, Cloud authoring, accounts, AI, PRDc, payment, crypto, or conversion expansion.
-- Keep Codex docs tracked, sanitized, and out of public navigation. Generated QA screenshots are ignored artifacts.
+- Changesets already has no fixed/linked release group. Per-package versions are the intended normal path; whole-toolchain equality is not a release invariant.
+- First-preview bootstrap stays coordinated and separate. The current latest lane permits stable post-preview versions only; prerelease/build-label channels need explicit future policy.
+- Existing summary contracts and release-mode names remain unchanged; `versionSet` can legitimately have multiple values, and per-package versions drive audit.
+- The shared helper has no third-party dependency so the standalone Node 20 post-publish workflow still runs without an install step.
+- Public package boundaries, auth/org gates, internal semver metadata requirements, CI-only publication, format/manifest versions, and runtime support states remain unchanged.
+- No changeset is needed for root release scripts/docs. Keep Codex docs tracked, sanitized, and out of public navigation.
 
 ## Do not redo
 
-- Do not redo merged PR #50, Workers migration, or resolved npm 0.1.0/0.1.1 recovery.
-- Do not claim this branch's corrections are deployed or mark item 44 complete without the remaining real checks.
-- Do not broaden browser permissions or modify production credentials/DNS to finish QA.
-- Do not mix CLI release/preflight changes into this UI PR.
+- Do not redo merged PRs #54/#55/#56, Workers migration, or old npm recovery/deprecation work.
+- Do not bump unchanged libraries solely to align version numbers.
+- Do not run release:version/publish or access publisher tokens as part of this gate-only patch.
+- Do not modify/stage the primary checkout's unfinished changes or reuse its unreviewed decision IDs.
+- Do not claim the authoring release shipped or launch QA completed from local gate results.

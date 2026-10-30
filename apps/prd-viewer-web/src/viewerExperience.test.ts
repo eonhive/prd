@@ -63,7 +63,21 @@ describe("public experience markup", () => {
     expect(html).toContain("Evolves with your ideas");
     expect(html).toContain('aria-label="Footer navigation"');
     expect(html).not.toContain('title="Embedded PRD reference viewer"');
-    expect(html).not.toContain("Paginated");
+    expect(html).toContain("Continuous and paginated reading");
+  });
+
+  it.each(["/", "/prd/"])("keeps the download and example handoff under hosting base %s", (basePath) => {
+    const html = renderToStaticMarkup(createElement(LivingHomepage, {
+      basePath, theme: "dark", onToggleTheme() {}, children: null,
+    }));
+    expect(html).toContain(`href="${basePath}examples/document-basic.prd" download=""`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=document-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=comic-basic"`);
+    expect(html).toContain(`href="${basePath}viewer/?sample=storyboard-basic"`);
+    expect(html).toContain(`src="${basePath}brand/prd-world.webp"`);
+    expect(html).toContain('aria-label="Example package inspector"');
+    expect(html).toContain("Package details load as you reach this chapter.");
+    expect(html).not.toContain("validated when the demo was built");
   });
 
   it("only offers conversion and a clear local-file policy before any result exists", () => {

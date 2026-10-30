@@ -231,6 +231,7 @@ export async function runReleaseSmoke() {
     const consumer = await runExternalConsumerSmoke({
       repoRoot,
       packageSpecs: publicReleasePackages.map(pkg => tarballs[pkg.name]),
+      authoring: true,
       summaryPath: "examples/dist/tarball-consumer-smoke-summary.json"
     });
     if (consumer.status !== "passed") throw new Error("The published-consumer workflow failed against local tarballs.");

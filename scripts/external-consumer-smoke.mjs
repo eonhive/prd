@@ -9,10 +9,11 @@
  */
 
 import { spawn } from "node:child_process";
-import { cp, mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createAuthoringSmokeSteps, requiresAuthoringSmoke } from "./consumer-authoring-smoke.mjs";
 import { buildWorkspacePackageSpecs, publicReleasePackages } from "./release-packages.mjs";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -32,23 +33,26 @@ function runCommand(command, args, options = {}) {
   const {
     cwd = process.cwd(),
     env,
-    stdio = "inherit"
+    stdio = "inherit",
+    capture = false
   } = options;
 
   return new Promise((resolvePromise, reject) => {
+    const stdout = [];
     const child = spawn(command, args, {
       cwd,
       env: {
         ...process.env,
         ...env
       },
-      stdio
+      stdio: capture ? ["ignore", "pipe", "inherit"] : stdio
     });
 
+    child.stdout?.on("data", (chunk) => stdout.push(String(chunk)));
     child.on("error", reject);
-    child.on("exit", (code, signal) => {
+    child.on("close", (code, signal) => {
       if (code === 0) {
-        resolvePromise(undefined);
+        resolvePromise(stdout.join(""));
         return;
       }
 
@@ -77,7 +81,6 @@ export function buildPublishedPackageSpecs(options = {}) {
 function buildConsumerSteps(fixturePath, archivePath, packageSpecs, npmCacheDir, consumerProjectDir) {
   const source = join(consumerProjectDir, "fixtures", "source.md");
   const html = join(consumerProjectDir, "fixtures", "source.html");
-  const images = join(consumerProjectDir, "fixtures", "images");
   const artifacts = join(consumerProjectDir, "artifacts");
   const cliArchive = join(artifacts, "converted-cli.prd");
   return [
@@ -114,22 +117,10 @@ function buildConsumerSteps(fixturePath, archivePath, packageSpecs, npmCacheDir,
       command: npxCommand,
       args: ["--no-install", "prd", "inspect", archivePath]
     },
-    { title: "Initialize a document", command: npxCommand,
-      args: ["--no-install", "prd", "init", join(artifacts, "scaffold"), "--profile", "general-document"] },
-    { title: "Validate initialized document", command: npxCommand,
-      args: ["--no-install", "prd", "validate", join(artifacts, "scaffold")] },
-    { title: "Import Markdown", command: npxCommand,
-      args: ["--no-install", "prd", "import", "markdown", source, "--out", join(artifacts, "markdown")] },
-    { title: "Validate imported Markdown", command: npxCommand,
-      args: ["--no-install", "prd", "validate", join(artifacts, "markdown")] },
     { title: "Import HTML", command: npxCommand,
       args: ["--no-install", "prd", "import", "html", html, "--out", join(artifacts, "html")] },
     { title: "Validate imported HTML", command: npxCommand,
       args: ["--no-install", "prd", "validate", join(artifacts, "html")] },
-    { title: "Import comic images", command: npxCommand,
-      args: ["--no-install", "prd", "import", "images", images, "--profile", "comic", "--out", join(artifacts, "comic")] },
-    { title: "Validate imported comic", command: npxCommand,
-      args: ["--no-install", "prd", "validate", join(artifacts, "comic")] },
     { title: "Convert with the public SDK", command: process.execPath,
       args: [join(consumerProjectDir, "check-converter.mjs"), source, join(artifacts, "converted-sdk.prd")] },
     { title: "Convert with the CLI", command: npxCommand,
@@ -192,12 +183,20 @@ export async function runExternalConsumerSmoke(options = {}) {
     consumerProjectDir,
     fixtureSourcePath,
     packageSpecs,
+    authoringRequired: false,
     steps: []
   };
 
   await mkdir(dirname(summaryPath), { recursive: true });
 
+  const preparationStartedAt = Date.now();
   try {
+    if (options.authoring != null) {
+      summary.authoringRequired = options.authoring;
+    } else {
+      const manifest = JSON.parse(await readFile(join(repoRoot, "packages/prd-cli/package.json"), "utf8"));
+      summary.authoringRequired = requiresAuthoringSmoke(manifest.version);
+    }
     if (options.workspaceVersions && !options.packageSpecs) {
       packageSpecs = await buildWorkspacePackageSpecs(repoRoot);
       summary.packageSpecs = packageSpecs;
@@ -222,20 +221,27 @@ export async function runExternalConsumerSmoke(options = {}) {
     await cp(fixtureSourcePath, fixturePath, { recursive: true });
     await prepareConversionFixtures(consumerProjectDir);
 
-    for (const step of buildConsumerSteps(
+    const steps = buildConsumerSteps(
       fixturePath,
       archivePath,
       packageSpecs,
       npmCacheDir,
       consumerProjectDir
-    )) {
+    );
+    if (summary.authoringRequired) {
+      // Retain all profile/import round trips before the new converter checks.
+      steps.splice(6, 0, ...await createAuthoringSmokeSteps(consumerProjectDir));
+    }
+    for (const step of steps) {
       const startedAt = Date.now();
 
       try {
-        await commandRunner(step.command, step.args, {
+        const output = await commandRunner(step.command, step.args, {
           cwd: consumerProjectDir,
-          env: step.env
+          env: step.env,
+          capture: step.capture
         });
+        await step.verify?.(output);
         summary.steps.push({
           title: step.title,
           command: formatCommand(step.command, step.args),
@@ -256,8 +262,13 @@ export async function runExternalConsumerSmoke(options = {}) {
     }
   } catch (error) {
     summary.status = "failed";
-    summary.steps.push({ title: "Prepare consumer smoke", status: "failed",
-      errorMessage: error instanceof Error ? error.message : String(error) });
+    summary.steps.push({
+      title: "Prepare consumer smoke inputs",
+      command: "prepare consumer smoke inputs",
+      durationMs: Date.now() - preparationStartedAt,
+      status: "failed",
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
   } finally {
     await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, "utf8");
 

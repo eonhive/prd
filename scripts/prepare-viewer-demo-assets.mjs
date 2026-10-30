@@ -12,6 +12,7 @@ import { copyFile, mkdir, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
 import { inspectPrdArchive } from "../packages/prd-validator/dist/node.js";
+import { writeLivingProfilePreview } from "../apps/prd-viewer-web/scripts/prepare-profile-previews.mjs";
 
 export const viewerDemoArchiveEntries = [
   {
@@ -80,6 +81,7 @@ export async function prepareViewerDemoAssets({
 
     await mkdir(dirname(item.targetPath), { recursive: true });
     await copyFile(item.sourcePath, item.targetPath);
+    await writeLivingProfilePreview(item, inspection.manifest, publicExamplesDir);
 
     const copiedStat = await stat(item.targetPath);
     // Inspect the archive, not its source directory, so facts describe the downloadable package.

@@ -9,7 +9,16 @@ import { createAssetBlob } from "./assetBlob.js";
 import { LivingHomepage } from "./LivingHomepage.js";
 import { ConvertWeb } from "./ConvertWeb.js";
 import type { WebConversion } from "./convertJob.js";
-import { livingViewerExitFocusMessage } from "./livingViewerMessages.js";
+import { ViewerReadingView } from "./ViewerReadingView.js";
+import {
+  livingViewerExitFocusMessage,
+  livingViewerLocalFileMessage,
+  livingViewerReadyMessage,
+  livingViewerSampleSelectedMessage,
+  livingViewerSelectSampleMessage,
+  readLivingViewerMessage,
+  type LivingViewerMessage,
+} from "./livingViewerMessages.js";
 import {
   type DragEvent as ReactDragEvent,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -69,9 +78,11 @@ import {
 } from "./viewerArchiveFiles.js";
 import {
   createViewerDocumentOutline,
+  getViewerOutlineTargetId,
   resolveViewerVisualOutlineSelection,
   type ViewerDocumentOutlineItem
 } from "./viewerDocumentOutline.js";
+import { getViewerContentLinkHref, getViewerContentTargetId } from "./viewerDocumentTargets.js";
 import {
   getViewerAppRouteFromPath,
   getViewerAppRoutePath,
@@ -975,7 +986,7 @@ function formatSeriesSequence(identity: PrdIdentity | undefined): string | undef
   return parts.length > 0 ? parts.join(" · ") : undefined;
 }
 
-function getStructuredLinkAnchorProps(href: string): {
+function getStructuredLinkAnchorProps(href: string, documentId: string): {
   href: string;
   target?: "_blank";
   rel?: "noreferrer";
@@ -988,7 +999,7 @@ function getStructuredLinkAnchorProps(href: string): {
     };
   }
 
-  return { href };
+  return { href: getViewerContentLinkHref(href, documentId) };
 }
 
 function getTableAlignClass(align?: "left" | "center" | "right"): string {
@@ -1048,17 +1059,19 @@ function renderHeading(
 function renderGeneralDocumentNode(
   node: PrdGeneralDocumentNode,
   assetUrls: AssetUrlMap,
-  key: string
+  key: string,
+  documentId: string
 ): ReactNode {
+  const targetId = node.id ? getViewerContentTargetId("node", node.id) : undefined;
   switch (node.type) {
     case "section":
       return (
-        <section key={key} id={node.id} className="structured-section">
+        <section key={key} id={targetId} className="structured-section">
           <h2 className="structured-section-title">{node.title}</h2>
           <div className="structured-section-body">
             {hasInlineSectionChildren(node)
               ? node.children.map((child, index) =>
-                  renderGeneralDocumentNode(child, assetUrls, `${key}-${index}`)
+                  renderGeneralDocumentNode(child, assetUrls, `${key}-${index}`, documentId)
                 )
               : null}
           </div>
@@ -1066,24 +1079,24 @@ function renderGeneralDocumentNode(
       );
 
     case "heading":
-      return renderHeading(node.level, node.text, key, node.id);
+      return renderHeading(node.level, node.text, key, targetId);
 
     case "paragraph":
       return (
-        <p key={key} id={node.id} className="structured-paragraph">
+        <p key={key} id={targetId} className="structured-paragraph">
           {node.text}
         </p>
       );
 
     case "list":
       return node.style === "ordered" ? (
-        <ol key={key} id={node.id} className="structured-list">
+        <ol key={key} id={targetId} className="structured-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>{item}</li>
           ))}
         </ol>
       ) : (
-        <ul key={key} id={node.id} className="structured-list">
+        <ul key={key} id={targetId} className="structured-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>{item}</li>
           ))}
@@ -1092,12 +1105,12 @@ function renderGeneralDocumentNode(
 
     case "links":
       return node.style === "list" ? (
-        <ul key={key} id={node.id} className="structured-links structured-links-list">
+        <ul key={key} id={targetId} className="structured-links structured-links-list">
           {node.items.map((item, index) => (
             <li key={`${key}-${index}`}>
               <a
                 className="structured-link"
-                {...getStructuredLinkAnchorProps(item.href)}
+                {...getStructuredLinkAnchorProps(item.href, documentId)}
               >
                 {item.label}
               </a>
@@ -1105,12 +1118,12 @@ function renderGeneralDocumentNode(
           ))}
         </ul>
       ) : (
-        <p key={key} id={node.id} className="structured-links structured-links-inline">
+        <p key={key} id={targetId} className="structured-links structured-links-inline">
           {node.items.map((item, index) => (
             <a
               key={`${key}-${index}`}
               className="structured-link"
-              {...getStructuredLinkAnchorProps(item.href)}
+              {...getStructuredLinkAnchorProps(item.href, documentId)}
             >
               {item.label}
             </a>
@@ -1120,7 +1133,7 @@ function renderGeneralDocumentNode(
 
     case "table":
       return (
-        <div key={key} id={node.id} className="structured-table-wrap">
+        <div key={key} id={targetId} className="structured-table-wrap">
           <table className="structured-table">
             {node.caption && <caption>{node.caption}</caption>}
             <thead>
@@ -1159,7 +1172,7 @@ function renderGeneralDocumentNode(
         Math.max(0, ...node.series.flatMap((series) => series.values)) || 1;
 
       return (
-        <figure key={key} id={node.id} className="structured-chart">
+        <figure key={key} id={targetId} className="structured-chart">
           {(node.title || node.caption) && (
             <figcaption className="structured-chart-header">
               {node.title && <strong>{node.title}</strong>}
@@ -1216,7 +1229,7 @@ function renderGeneralDocumentNode(
       const posterUrl = node.poster ? assetUrls[node.poster] : undefined;
 
       return (
-        <figure key={key} id={node.id} className="structured-media">
+        <figure key={key} id={targetId} className="structured-media">
           {src ? (
             node.mediaType === "audio" ? (
               <audio className="structured-media-player" controls preload="metadata" src={src} />
@@ -1242,7 +1255,7 @@ function renderGeneralDocumentNode(
     case "image": {
       const src = assetUrls[node.asset];
       return (
-        <figure key={key} id={node.id} className="structured-figure">
+        <figure key={key} id={targetId} className="structured-figure">
           {src ? (
             <img src={src} alt={node.alt} />
           ) : (
@@ -1257,7 +1270,7 @@ function renderGeneralDocumentNode(
 
     case "quote":
       return (
-        <blockquote key={key} id={node.id} className="structured-quote">
+        <blockquote key={key} id={targetId} className="structured-quote">
           <p>{node.text}</p>
           {node.attribution && <footer>{node.attribution}</footer>}
         </blockquote>
@@ -1265,7 +1278,7 @@ function renderGeneralDocumentNode(
   }
 }
 
-function StructuredDocumentView({
+export function StructuredDocumentView({
   document,
   assetUrls
 }: {
@@ -1273,7 +1286,7 @@ function StructuredDocumentView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <article id={document.id} className="structured-document" lang={document.lang}>
+    <article id={getViewerContentTargetId("document", document.id)} className="structured-document" lang={document.lang}>
       <header className="structured-document-header">
         <p className="structured-kicker">Structured {getProfileDisplayLabel(document.profile)}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1287,14 +1300,14 @@ function StructuredDocumentView({
 
       <div className="structured-document-body">
         {document.children.map((node, index) =>
-          renderGeneralDocumentNode(node, assetUrls, `root-${index}`)
+          renderGeneralDocumentNode(node, assetUrls, `root-${index}`, document.id)
         )}
       </div>
     </article>
   );
 }
 
-function ResumeDocumentView({
+export function ResumeDocumentView({
   document,
   assetUrls,
   resumeProfile
@@ -1340,7 +1353,7 @@ function ResumeDocumentView({
   const hasOverview = leadVisual || leadParagraph || resumeProfile.notes;
 
   return (
-    <article id={document.id} className="structured-document resume-document" lang={document.lang}>
+    <article id={getViewerContentTargetId("document", document.id)} className="structured-document resume-document" lang={document.lang}>
       <header className="structured-document-header resume-document-header">
         <p className="structured-kicker">{resumeProfile.label ?? "Resume variant"}</p>
         <h1 className="structured-document-title">{document.title}</h1>
@@ -1359,7 +1372,8 @@ function ResumeDocumentView({
               renderGeneralDocumentNode(
                 leadVisual,
                 assetUrls,
-                `${document.id}-resume-lead-visual`
+                `${document.id}-resume-lead-visual`,
+                document.id
               )}
             <div className="resume-overview-body">
               {resumeProfile.notes && (
@@ -1369,7 +1383,8 @@ function ResumeDocumentView({
                 renderGeneralDocumentNode(
                   leadParagraph,
                   assetUrls,
-                  `${document.id}-resume-lead-paragraph`
+                  `${document.id}-resume-lead-paragraph`,
+                  document.id
                 )}
             </div>
           </aside>
@@ -1378,14 +1393,15 @@ function ResumeDocumentView({
         {sectionEntries.length > 0 && (
           <div className="resume-section-grid">
             {sectionEntries.map(({ node, index }) => (
-              <section key={`${document.id}-resume-section-${index}`} id={node.id} className="resume-section-card">
+              <section key={`${document.id}-resume-section-${index}`} id={getViewerContentTargetId("node", node.id)} className="resume-section-card">
                 <h2 className="resume-section-title">{node.title}</h2>
                 <div className="structured-section-body">
                   {node.children.map((child, childIndex) =>
                     renderGeneralDocumentNode(
                       child,
                       assetUrls,
-                      `${document.id}-resume-section-${index}-${childIndex}`
+                      `${document.id}-resume-section-${index}-${childIndex}`,
+                      document.id
                     )
                   )}
                 </div>
@@ -1401,7 +1417,8 @@ function ResumeDocumentView({
             renderGeneralDocumentNode(
               node,
               assetUrls,
-              `${document.id}-resume-support-${index}`
+              `${document.id}-resume-support-${index}`,
+              document.id
             )
           )}
         </div>
@@ -1410,7 +1427,7 @@ function ResumeDocumentView({
   );
 }
 
-function ComicPanelStripView({
+export function ComicPanelStripView({
   comicDocument,
   assetUrls
 }: {
@@ -1418,7 +1435,7 @@ function ComicPanelStripView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section id={comicDocument.id} className="comic-panel-strip" aria-label="Comic panel strip">
+    <section id={getViewerContentTargetId("document", comicDocument.id)} className="comic-panel-strip" aria-label="Comic panel strip">
       <div className="comic-panel-strip-header">
         <p className="structured-kicker">Comic</p>
         <h3>Panel strip</h3>
@@ -1427,7 +1444,7 @@ function ComicPanelStripView({
 
       <ol className="comic-panel-strip-list">
         {comicDocument.panels.map((panel) => (
-          <li key={panel.id} id={panel.id} className="comic-panel-card">
+          <li key={panel.id} id={getViewerContentTargetId("panel", panel.id)} className="comic-panel-card">
             {assetUrls[panel.asset] ? (
               <img
                 src={assetUrls[panel.asset]}
@@ -1453,7 +1470,7 @@ function ComicPanelStripView({
 
 const COMIC_SWIPE_THRESHOLD_PX = 48;
 
-function ComicPanelNavigationView({
+export function ComicPanelNavigationView({
   comicDocument,
   assetUrls,
   activePanelIndex,
@@ -1542,7 +1559,7 @@ function ComicPanelNavigationView({
 
   return (
     <section
-      id={comicDocument.id}
+      id={getViewerContentTargetId("document", comicDocument.id)}
       className="comic-panel-strip comic-panel-navigation"
       aria-label="Comic panel navigation"
     >
@@ -1553,7 +1570,7 @@ function ComicPanelNavigationView({
       </div>
 
       <div
-        id={currentPanel.id}
+        id={getViewerContentTargetId("panel", currentPanel.id)}
         ref={stageRef}
         className="comic-panel-stage comic-panel-stage--swipeable"
         tabIndex={0}
@@ -1642,7 +1659,7 @@ function ComicPanelNavigationView({
   );
 }
 
-function StoryboardFrameGridView({
+export function StoryboardFrameGridView({
   storyboardDocument,
   assetUrls
 }: {
@@ -1650,7 +1667,7 @@ function StoryboardFrameGridView({
   assetUrls: AssetUrlMap;
 }) {
   return (
-    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard frame grid">
+    <section id={getViewerContentTargetId("document", storyboardDocument.id)} className="storyboard-frame-grid" aria-label="Storyboard frame grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Storyboard</p>
         <h3>Frame grid</h3>
@@ -1659,7 +1676,7 @@ function StoryboardFrameGridView({
 
       <ol className="storyboard-frame-grid-list">
         {storyboardDocument.frames.map((frame) => (
-          <li key={frame.id} id={frame.id} className="storyboard-frame-card">
+          <li key={frame.id} id={getViewerContentTargetId("frame", frame.id)} className="storyboard-frame-card">
             {assetUrls[frame.asset] ? (
               <img
                 src={assetUrls[frame.asset]}
@@ -1683,7 +1700,7 @@ function StoryboardFrameGridView({
   );
 }
 
-function StoryboardReviewGridView({
+export function StoryboardReviewGridView({
   storyboardDocument,
   assetUrls,
   activeFrameIndex,
@@ -1722,7 +1739,7 @@ function StoryboardReviewGridView({
   }
 
   return (
-    <section id={storyboardDocument.id} className="storyboard-frame-grid" aria-label="Storyboard review grid">
+    <section id={getViewerContentTargetId("document", storyboardDocument.id)} className="storyboard-frame-grid" aria-label="Storyboard review grid">
       <div className="storyboard-frame-grid-header">
         <p className="structured-kicker">Storyboard</p>
         <h3>Frame review</h3>
@@ -1730,7 +1747,7 @@ function StoryboardReviewGridView({
       </div>
 
       <div
-        id={currentFrame.id}
+        id={getViewerContentTargetId("frame", currentFrame.id)}
         ref={stageRef}
         className="storyboard-review-stage"
         tabIndex={0}
@@ -2303,6 +2320,7 @@ function UploadDropzoneView({
   dragActive,
   onArchiveFiles,
   onDrop,
+  onDragEnter,
   onDragOver,
   onDragLeave
 }: {
@@ -2310,6 +2328,7 @@ function UploadDropzoneView({
   dragActive: boolean;
   onArchiveFiles: (files: FileList | File[] | null) => void;
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragEnter: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
 }) {
@@ -2318,6 +2337,7 @@ function UploadDropzoneView({
       className={`upload-card upload-dropzone${dragActive ? " upload-dropzone-active" : ""}`}
       role="region"
       onDrop={onDrop}
+      onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       aria-label="Choose or drop a PRD archive"
@@ -2446,6 +2466,7 @@ function ViewerWorkspaceView({
   resumePresentationEnabled,
   onArchiveFiles,
   onDrop,
+  onDragEnter,
   onDragOver,
   onDragLeave,
   onLoadSample,
@@ -2473,6 +2494,7 @@ function ViewerWorkspaceView({
   resumePresentationEnabled: boolean;
   onArchiveFiles: (files: FileList | File[] | null) => void;
   onDrop: (event: ReactDragEvent<HTMLDivElement>) => void;
+  onDragEnter: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragOver: (event: ReactDragEvent<HTMLDivElement>) => void;
   onDragLeave: (event: ReactDragEvent<HTMLDivElement>) => void;
   onLoadSample: (example: ViewerDemoExampleArchive) => void;
@@ -2490,6 +2512,8 @@ function ViewerWorkspaceView({
   );
   const [detailsView, setDetailsView] = useState<"info" | "files">("info");
   const visualStageRef = useRef<HTMLDivElement | null>(null);
+  const navigationButtonRef = useRef<HTMLButtonElement | null>(null);
+  const detailsButtonRef = useRef<HTMLButtonElement | null>(null);
   const pendingOutlineTargetRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -2530,6 +2554,17 @@ function ViewerWorkspaceView({
     setFocusMode(false);
     setNavigationOpen(focusMode || !navigationOpen);
     if (mobile) setDetailsOpen(false);
+  }
+
+  function closeNavigation() {
+    setNavigationOpen(false);
+    // Focus must leave the desktop panel before it is hidden. Native dialogs restore their opener.
+    if (!mobile) navigationButtonRef.current?.focus({ preventScroll: true });
+  }
+
+  function closeDetails() {
+    setDetailsOpen(false);
+    if (!mobile) detailsButtonRef.current?.focus({ preventScroll: true });
   }
 
   function toggleDetails() {
@@ -2573,7 +2608,7 @@ function ViewerWorkspaceView({
 
     // Continue keyboard navigation on the active visual stage, not the sidebar.
     if (mobile) {
-      pendingOutlineTargetRef.current = item.id;
+      pendingOutlineTargetRef.current = getViewerOutlineTargetId(item);
       setNavigationOpen(false);
       return;
     }
@@ -2617,6 +2652,8 @@ function ViewerWorkspaceView({
         />
 
         <ViewerWorkspaceToolbar
+          navigationButtonRef={navigationButtonRef}
+          detailsButtonRef={detailsButtonRef}
           navigationOpen={navigationOpen && !focusMode}
           detailsOpen={detailsOpen && !focusMode}
           focusMode={focusMode}
@@ -2645,7 +2682,7 @@ function ViewerWorkspaceView({
             title="Document navigation"
             open={navigationOpen && !focusMode}
             mobile={mobile}
-            onClose={() => setNavigationOpen(false)}
+            onClose={closeNavigation}
           >
             <div
               className="viewer-panel-switcher"
@@ -2744,6 +2781,7 @@ function ViewerWorkspaceView({
               dragActive={dragActive}
               onArchiveFiles={onArchiveFiles}
               onDrop={onDrop}
+              onDragEnter={onDragEnter}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
             />
@@ -2919,19 +2957,25 @@ function ViewerWorkspaceView({
                     <HtmlFallbackFrame html={activeRenderedHtml} />
                   )}
 
-                {activeEntryDocument &&
-                  (resumePresentationEnabled ? (
-                    <ResumeDocumentView
-                      document={activeEntryDocument}
-                      assetUrls={viewerState.assetUrls ?? {}}
-                      resumeProfile={viewerState.resumeProfile!}
-                    />
-                  ) : (
-                    <StructuredDocumentView
-                      document={activeEntryDocument}
-                      assetUrls={viewerState.assetUrls ?? {}}
-                    />
-                  ))}
+                {activeEntryDocument && (
+                  <ViewerReadingView
+                    packageIdentity={viewerState}
+                    contentIdentity={activeEntryDocument}
+                  >
+                    {resumePresentationEnabled ? (
+                      <ResumeDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                        resumeProfile={viewerState.resumeProfile!}
+                      />
+                    ) : (
+                      <StructuredDocumentView
+                        document={activeEntryDocument}
+                        assetUrls={viewerState.assetUrls ?? {}}
+                      />
+                    )}
+                  </ViewerReadingView>
+                )}
               </section>
             )}
           </section>
@@ -2942,7 +2986,7 @@ function ViewerWorkspaceView({
             title="Package details"
             open={detailsOpen && !focusMode}
             mobile={mobile}
-            onClose={() => setDetailsOpen(false)}
+            onClose={closeDetails}
           >
             <div
               className="viewer-panel-switcher"
@@ -3119,7 +3163,7 @@ function ViewerWorkspaceView({
         </div>
         <footer
           className="viewer-workspace-footer"
-          data-error={Boolean(error) || viewerState?.validation.valid === false || viewerState?.signature?.status === "invalid"}
+          data-error={Boolean(error) || viewerState?.validation.valid === false}
         >
           <span>
             <span className="viewer-status-dot" /> {workspaceStatus}
@@ -3148,9 +3192,13 @@ export function App() {
   const embeddedViewer = query.get("embed") === "1";
   const requestedSample = query.get("sample");
   const initialSampleLoaded = useRef(false);
+  // File reads and hosted fetches can overlap; only the newest selection may commit.
+  const sampleFetchRef = useRef<AbortController | undefined>(undefined);
+  const loadGenerationRef = useRef(0);
+  const currentSampleRef = useRef<string | null>(null);
   const objectUrlsRef = useRef<string[]>([]);
-  const packageLoadRequest = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileDragDepthRef = useRef(0);
   const [route, setRoute] = useState<ViewerAppRoute>(() =>
     getViewerAppRouteFromPath(window.location.pathname, viewerAppBasePath)
   );
@@ -3162,6 +3210,11 @@ export function App() {
   const [dragActive, setDragActive] = useState(false);
   const [sampleLoadingId, setSampleLoadingId] = useState<string | null>(null);
   const [conversion, setConversion] = useState<WebConversion | null>(null);
+
+  function notifyHomepage(message: LivingViewerMessage) {
+    if (!embeddedViewer || window.parent === window) return;
+    window.parent.postMessage(message, window.location.origin);
+  }
 
   function toggleTheme() {
     const nextTheme = theme === "dark" ? "light" : "dark";
@@ -3193,16 +3246,32 @@ export function App() {
       if (event.key !== "Escape" || event.defaultPrevented || document.querySelector("dialog[open]")) return;
       window.parent.postMessage({ type: livingViewerExitFocusMessage }, window.location.origin);
     }
+    function handleHomepageMessage(event: MessageEvent<unknown>) {
+      const message = readLivingViewerMessage(event, window.parent, window.location.origin);
+      if (message?.type !== livingViewerSelectSampleMessage) return;
+      if (message.sampleId === currentSampleRef.current) return;
+      const example = viewerDemoExampleArchives.find((item) => item.id === message.sampleId);
+      if (example) void handleSampleArchive(example);
+    }
     window.addEventListener("keydown", handleEmbeddedEscape);
-    return () => window.removeEventListener("keydown", handleEmbeddedEscape);
+    window.addEventListener("message", handleHomepageMessage);
+    notifyHomepage({ type: livingViewerReadyMessage });
+    return () => {
+      window.removeEventListener("keydown", handleEmbeddedEscape);
+      window.removeEventListener("message", handleHomepageMessage);
+    };
   }, [embeddedViewer]);
 
   useEffect(() => {
     return () => {
-      packageLoadRequest.current += 1;
+      loadGenerationRef.current++;
+      sampleFetchRef.current?.abort();
+      currentSampleRef.current = null;
+      initialSampleLoaded.current = false;
       for (const url of objectUrlsRef.current) {
         URL.revokeObjectURL(url);
       }
+      objectUrlsRef.current = [];
     };
   }, []);
 
@@ -3382,8 +3451,7 @@ export function App() {
     }, 0);
   }
 
-  async function handleFile(file: File) {
-    const request = ++packageLoadRequest.current;
+  async function handleFile(file: File, generation = ++loadGenerationRef.current) {
     setLoading(true);
     setError(null);
     setSelectedLocale(undefined);
@@ -3396,19 +3464,21 @@ export function App() {
     try {
       assertPrdArchiveSize(file.size);
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (request !== packageLoadRequest.current) return;
+      if (generation !== loadGenerationRef.current) return;
       const files = readPrdArchive(bytes);
       const validation = validatePackageFiles(files);
 
       if (!validation.valid || !validation.manifest) {
+        currentSampleRef.current = null;
         setViewerState({ validation });
         setLoading(false);
         return;
       }
 
       const { signature, opened } = await openViewerPackage(files);
-      if (request !== packageLoadRequest.current) return;
+      if (generation !== loadGenerationRef.current) return;
       if (!opened) {
+        currentSampleRef.current = null;
         setViewerState({ validation, signature });
         return;
       }
@@ -3437,7 +3507,7 @@ export function App() {
               normalizedOpened.entryPath
             )
           : undefined;
-      if (request !== packageLoadRequest.current) return;
+      if (generation !== loadGenerationRef.current) return;
       const assetUrls = createAssetUrlMap(
         normalizedOpened.manifest.assets,
         files,
@@ -3463,7 +3533,7 @@ export function App() {
         normalizedOpened,
         renderHtmlFallback
       );
-      if (request !== packageLoadRequest.current) return;
+      if (generation !== loadGenerationRef.current) return;
       objectUrlsRef.current = objectUrls;
       setSelectedLocale(normalizedOpened.localization?.defaultLocale);
 
@@ -3479,7 +3549,8 @@ export function App() {
         packageFacts
       });
     } catch (caught) {
-      if (request !== packageLoadRequest.current) return;
+      if (generation !== loadGenerationRef.current) return;
+      currentSampleRef.current = null;
       setError(caught instanceof Error ? caught.message : "Failed to open PRD file.");
       setViewerState(null);
       setSelectedLocale(undefined);
@@ -3487,7 +3558,7 @@ export function App() {
       if (objectUrlsRef.current !== objectUrls) {
         for (const url of objectUrls) URL.revokeObjectURL(url);
       }
-      if (request === packageLoadRequest.current) setLoading(false);
+      if (generation === loadGenerationRef.current) setLoading(false);
     }
   }
 
@@ -3500,19 +3571,32 @@ export function App() {
 
     const archive = findFirstPrdArchive(files ?? []);
     if (archive) {
+      sampleFetchRef.current?.abort();
+      currentSampleRef.current = null;
+      setSampleLoadingId(null);
+      notifyHomepage({ type: livingViewerLocalFileMessage });
       void handleFile(archive);
     }
   }
 
-  async function handleSampleArchive(example: ViewerDemoExampleArchive) {
+  async function handleSampleArchive(example: ViewerDemoExampleArchive, userSelected = false) {
     if (!embeddedViewer) navigateToRoute("viewer");
+    const generation = ++loadGenerationRef.current;
+    sampleFetchRef.current?.abort();
+    const controller = new AbortController();
+    sampleFetchRef.current = controller;
+    currentSampleRef.current = example.id;
+    if (userSelected) {
+      notifyHomepage({ type: livingViewerSampleSelectedMessage, sampleId: example.id });
+    }
+    setLoading(false);
     setSampleLoadingId(example.id);
     setError(null);
 
     try {
       const demoBaseUrl = new URL(viewerAppBasePath, window.location.origin).toString();
       const url = getViewerDemoSampleArchiveUrl(example.hostedPath, demoBaseUrl);
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) {
         throw new Error(
           `Could not load hosted sample ${example.hostedPath}. Run \`pnpm viewer:demo:assets\` locally or check the deployed demo assets.`
@@ -3523,15 +3607,21 @@ export function App() {
       const archive = new File([await response.arrayBuffer()], archiveName, {
         type: "application/zip"
       });
-      await handleFile(archive);
+      if (generation !== loadGenerationRef.current) return;
+      await handleFile(archive, generation);
     } catch (caught) {
+      if (generation !== loadGenerationRef.current) return;
+      currentSampleRef.current = null;
       setError(
         caught instanceof Error
           ? caught.message
           : "Failed to load the hosted sample PRD archive."
       );
     } finally {
-      setSampleLoadingId(null);
+      if (generation === loadGenerationRef.current) {
+        sampleFetchRef.current = undefined;
+        setSampleLoadingId(null);
+      }
     }
   }
 
@@ -3546,19 +3636,33 @@ export function App() {
   }, [route, requestedSample]);
 
   function handleDrop(event: ReactDragEvent<HTMLDivElement>) {
+    const { files, types } = event.dataTransfer;
+    if (files.length === 0 && !Array.from(types).includes("Files")) return;
     event.preventDefault();
+    fileDragDepthRef.current = 0;
     setDragActive(false);
-    handleArchiveFiles(event.dataTransfer.files);
+    handleArchiveFiles(files);
+  }
+
+  function handleDragEnter(event: ReactDragEvent<HTMLDivElement>) {
+    if (!Array.from(event.dataTransfer.types).includes("Files")) return;
+    event.preventDefault();
+    fileDragDepthRef.current += 1;
+    setDragActive(true);
   }
 
   function handleDragOver(event: ReactDragEvent<HTMLDivElement>) {
+    // File lists are protected during dragover; use the Files type until drop.
+    if (!Array.from(event.dataTransfer.types).includes("Files")) return;
     event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
     setDragActive(true);
   }
 
   function handleDragLeave(event: ReactDragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setDragActive(false);
+    // The next descendant enters before the previous one leaves, even without relatedTarget.
+    fileDragDepthRef.current = Math.max(0, fileDragDepthRef.current - 1);
+    if (fileDragDepthRef.current === 0) setDragActive(false);
   }
 
   return (
@@ -3616,9 +3720,10 @@ export function App() {
           resumePresentationEnabled={resumePresentationEnabled}
           onArchiveFiles={handleArchiveFiles}
           onDrop={handleDrop}
+          onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onLoadSample={(example) => void handleSampleArchive(example)}
+          onLoadSample={(example) => void handleSampleArchive(example, true)}
           onLocaleChange={setSelectedLocale}
         />
       )}

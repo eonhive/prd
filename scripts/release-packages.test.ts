@@ -116,6 +116,16 @@ describe("public release catalog", () => {
     }
   );
 
+  it.each(["latest", "^0.2.0", "0.2.0-beta.1", "0.2.0+build", "01.2.0", "0.2.0\n", "9007199254740992.1.1"])(
+    "rejects ambiguous release version %j before building an npm spec",
+    async (version) => {
+      const root = await workspace();
+      await writeFile(join(root, "packages/prd-converter/package.json"),
+        JSON.stringify({ name: "@eonhive/prd-converter", version }));
+      await expect(buildWorkspacePackageSpecs(root)).rejects.toThrow("stable package version");
+    }
+  );
+
   it("refuses to build install specs for a renamed public target", async () => {
     const root = await workspace();
     await writeFile(

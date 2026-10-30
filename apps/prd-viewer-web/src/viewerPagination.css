@@ -1,0 +1,96 @@
+/*
+ * Company: EonHive Inc. | Title: Viewer Pagination Styles
+ * Purpose: Reflow one semantic document into native columns without duplicating its content.
+ * Author: Stan Nesi | Created: October 29, 2026 | Updated: October 29, 2026
+ * Notes: Vibe coded with Codex.
+ */
+
+.viewer-reading { min-width: 0; }
+.viewer-reading-controls,
+.viewer-reading-controls > div,
+.viewer-reading-controls nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.viewer-reading-controls {
+  position: sticky;
+  top: calc(var(--viewer-toolbar-offset, 0rem) + 4.25rem);
+  z-index: 4;
+  justify-content: space-between;
+  margin: 0.8rem 0;
+  padding: 0.35rem 0;
+  background: var(--workspace-stage);
+}
+.viewer-reading-controls button {
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  color: var(--text);
+  background: var(--panel);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.viewer-reading-controls button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.viewer-reading-controls button[aria-disabled="true"] { opacity: 0.45; cursor: default; }
+.viewer-reading-controls [role="status"],
+.viewer-reading-hint { color: var(--text-muted); font-size: 0.72rem; line-height: 1.6; }
+.viewer-reading-viewport { min-width: 0; }
+.viewer-reading[data-reading-mode="paginated"] .viewer-reading-page {
+  padding: clamp(1rem, 2.5vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--document-surface);
+  box-shadow: var(--document-shadow);
+}
+.viewer-reading[data-reading-mode="paginated"] .viewer-reading-viewport {
+  overflow: auto;
+  direction: ltr;
+  overscroll-behavior-x: contain;
+  scroll-behavior: auto;
+}
+.viewer-reading[data-reading-mode="paginated"] .viewer-reading-flow {
+  --reading-page-height: clamp(18rem, 60svh, 44rem);
+  height: var(--reading-page-height);
+  column-count: 1;
+  column-gap: 2rem;
+  column-fill: auto;
+  overflow-wrap: anywhere;
+}
+.app-route-viewer .viewer-reading[data-reading-mode="paginated"] .structured-document {
+  display: block;
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+/* Grid wrappers otherwise become oversized unbroken items inside a column. */
+.viewer-reading[data-reading-mode="paginated"] :is(
+  .structured-document-header, .structured-document-body, .structured-section,
+  .structured-section-body, .structured-figure, .structured-quote,
+  .resume-document-layout, .resume-section-grid, .resume-section-card,
+  .resume-overview-card, .resume-overview-body, .resume-supporting-flow
+) { display: block; }
+.viewer-reading[data-reading-mode="paginated"] :is(
+  .structured-document-header, .structured-document-body, .structured-section-body,
+  .resume-section-card, .resume-overview-body, .resume-supporting-flow
+) > * { margin-block: 0 1rem; }
+.viewer-reading[data-reading-mode="paginated"] :is(h1,h2,h3,h4,h5,h6) { break-after: avoid; }
+.viewer-reading[data-reading-mode="paginated"] :is(p,li) { orphans: 2; widows: 2; }
+.viewer-reading[data-reading-mode="paginated"] :is(figure,tr,.structured-chart,.structured-media) { break-inside: avoid; }
+.viewer-reading[data-reading-mode="paginated"] :is(img,video) {
+  max-height: calc(var(--reading-page-height) - 5rem);
+  max-width: 100%;
+  object-fit: contain;
+}
+@media print {
+  .viewer-reading-controls, .viewer-reading-hint { display: none; }
+  .viewer-reading[data-reading-mode="paginated"] .viewer-reading-viewport { overflow: visible; }
+  .viewer-reading[data-reading-mode="paginated"] .viewer-reading-flow { height: auto; columns: auto; }
+}

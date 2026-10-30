@@ -4,7 +4,7 @@
  * Purpose: Lock real route links, accessible navigation, and empty/loading/valid/invalid package labels.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 25, 2026
+ * Updated: October 27, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -21,6 +21,7 @@ import {
   PrdSiteFooter,
 } from "./viewerChrome.js";
 import type { ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
+import { getViewerContentTargetId } from "./viewerDocumentTargets.js";
 
 describe("viewer chrome", () => {
   it("keeps package validity failures separate from runtime support messages", () => {
@@ -103,38 +104,28 @@ describe("viewer chrome", () => {
     },
   );
 
-  it.each(["panel", "frame"] as const)(
-    "uses buttons for interactive %s outline entries",
-    (kind) => {
-      const items: ViewerDocumentOutlineItem[] = [
-        { id: "document", kind: "document", label: "Document", depth: 0 },
-        { id: "one", kind, label: "One", depth: 1 },
-        { id: "two", kind, label: "Two", depth: 1 },
-      ];
-      const html = renderToStaticMarkup(
-        createElement(ViewerDocumentOutline, {
-          items,
-          visualSelectionKind: kind,
-          activeItemId: "two",
-          onSelectVisualItem() {},
-        }),
-      );
-      expect(html).toContain('href="#document"');
-      expect(html).not.toContain('href="#one"');
-      expect(html).toContain('aria-controls="document-stage"');
-      expect(html.match(/<button /g)).toHaveLength(2);
-      expect(html.match(/aria-current="true"/g)).toHaveLength(1);
-    },
-  );
+  it.each(["panel", "frame"] as const)("uses buttons for interactive %s outline entries", (kind) => {
+    const items: ViewerDocumentOutlineItem[] = [
+      { id: "document", kind: "document", label: "Document", depth: 0 },
+      { id: "one", kind, label: "One", depth: 1 },
+      { id: "two", kind, label: "Two", depth: 1 }
+    ];
+    const html = renderToStaticMarkup(createElement(ViewerDocumentOutline, {
+      items, visualSelectionKind: kind, activeItemId: "two", onSelectVisualItem() {}
+    }));
+    expect(html).toContain(`href="#${getViewerContentTargetId("document", "document")}"`);
+    expect(html).not.toContain(`href="#${getViewerContentTargetId(kind, "one")}"`);
+    expect(html).toContain('aria-controls="document-stage"');
+    expect(html.match(/<button /g)).toHaveLength(2);
+    expect(html.match(/aria-current="true"/g)).toHaveLength(1);
+  });
 
-  it("keeps static outline entries as encoded native links", () => {
-    const html = renderToStaticMarkup(
-      createElement(ViewerDocumentOutline, {
-        items: [{ id: "panel:one", kind: "panel", label: "One", depth: 1 }],
-        onSelectVisualItem() {},
-      }),
-    );
-    expect(html).toContain('href="#panel%3Aone"');
+  it("maps static outline entries to namespaced native links", () => {
+    const html = renderToStaticMarkup(createElement(ViewerDocumentOutline, {
+      items: [{ id: "panel:one", kind: "panel", label: "One", depth: 1 }],
+      onSelectVisualItem() {}
+    }));
+    expect(html).toContain(`href="#${getViewerContentTargetId("panel", "panel:one")}"`);
     expect(html).not.toContain("<button");
   });
 
@@ -156,6 +147,7 @@ describe("viewer chrome", () => {
       );
       expect(html).toContain(`>${label}</span>`);
       expect(html).toContain('role="status" aria-live="polite"');
+      expect(html).toContain('aria-atomic="true"');
       expect(html).toContain("eager whole-package in-memory");
       if (validation?.valid === false && !loading) {
         expect(html).not.toContain("No package loaded");

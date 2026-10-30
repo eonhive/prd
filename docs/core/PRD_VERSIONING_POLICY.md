@@ -131,6 +131,8 @@ The public release catalog includes types, validator, packager, converter and CL
 
 Public publishable packages must not publish `workspace:*` dependency values. Internal `@eonhive/prd-*` dependency edges in published metadata must resolve to concrete semver ranges.
 
+The current `latest` release lane accepts stable `major.minor.patch` package versions above the historical `0.1.0` bootstrap. All four packages must be `0.1.0` to enter that one-time bootstrap path; mixed bootstrap/post-preview sets fail closed. Prerelease/build-label channels need an explicit follow-up policy and are not introduced by this clarification. The existing `versionSet` diagnostic can contain multiple versions; each package's own manifest version is authoritative for registry audit and its `latest` tag.
+
 The release policy and maintainer runbook define the CI-operated npm publication flow.
 
 ---

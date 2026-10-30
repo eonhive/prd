@@ -26,6 +26,10 @@ export async function loadReleasePackageMetadata(repoRoot) {
         `Missing package version in ${target.directory}/package.json.`
       );
     }
+    const parts = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(manifest.version);
+    if (manifest.version.trim() !== manifest.version || !parts || !parts.slice(1).every(part => Number.isSafeInteger(Number(part)))) {
+      throw new Error(`Expected a stable package version in ${target.directory}/package.json.`);
+    }
     packages.push({
       directory: target.directory,
       name: manifest.name,

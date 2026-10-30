@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: October 27, 2026_
+_Last updated: October 29, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -56,6 +56,11 @@ The hosted PRD Web Viewer demo is a public reference-stack demo surface. It live
 
 The Living Homepage uses uRK only as an app-level presentation dependency. Its chapter transforms, audio, quality controls, and illustrative layout studies do not redefine package validity or promote document kinds to profile families. The embedded Viewer keeps the same validation and rendering pipeline; see [PRD_LIVING_HOMEPAGE.md](PRD_LIVING_HOMEPAGE.md) for supported behavior and the capability audit.
 
+Home, Viewer, and Docs share the purple folded-document identity described in
+[PRD_VISUAL_IDENTITY.md](PRD_VISUAL_IDENTITY.md). Public navigation and profile
+example links use the existing routes. Reference-board Studio, AI, sharing, and
+other future concepts remain separate from the implemented public surface.
+
 Codex operational files under `codex/` may remain tracked for implementation continuity, but they are not part of the public product docs, public site navigation, or canonical format documentation.
 
 Home, Viewer, and Docs share the purple PRD visual identity and public
@@ -81,23 +86,22 @@ The reference viewer demonstrates one truthful opening path for valid packages.
 
 It may expose package facts, support states, and render-mode behavior, but it does not define PRD validity. Current reference viewer loading is eager whole-package in-memory loading.
 
-The October 27, 2026 workspace refresh follows the supplied purple document-icon
-and Viewer/Studio visual references. The implemented product surface remains the
-Web Viewer: cool white/lavender light surfaces, navy dark surfaces, a compact
-reading toolbar, searchable outline, collapsible navigation/details panels,
-comfortable or wide reading width, and focus reading. At widths of 1000 CSS
-pixels or less, the panels become native modal drawers with Escape dismissal
-and focus restoration. Selecting an outline item closes the drawer and moves
-focus to the authored section or active panel/frame. Panel and focus controls
-preserve the mounted document, locale, and visual selection.
+The branded workspace provides a searchable outline, collapsible navigation and
+details, reading width and focus controls, and Info/Files views over the existing
+package facts and declared resources. At 1000 CSS pixels or less, the side panels
+use native modal drawers. Outline selection closes the mobile drawer and focuses
+the authored section or selected panel/frame through the existing namespaced
+target map. Reading state and prepared resources remain mounted. This is an
+application presentation change with no new package requirements or core APIs.
 
-Info shows validation, compatibility, metadata, and locale controls. Files shows
-declared packaged assets and attachments, with technical package facts inside a
-disclosure. Empty-state example cards and the Examples navigation view open the
-existing generated archives through the normal validator/renderer. These are
-presentation changes; the references do not introduce Studio, Cloud, sharing,
-AI, new reading modes, or new package requirements. Production deployment and
-physical device/screen-reader acceptance remain separate launch work.
+Structured `general-document` content also offers continuous and paginated
+reading around the same renderer, including resolved segmented sections and the
+existing resume presentation. Native CSS layout supplies temporary page breaks;
+app controls preserve semantic anchors across mode, locale and viewport changes.
+Page numbers are private presentation state, not manifest semantics, capability
+declarations, canonical locators or print/export guarantees. Visual-profile and
+HTML fallback presentations retain their existing controls. See the Living
+Homepage implementation notes for behavior and browser acceptance limits.
 
 ### 5.3 Studio
 

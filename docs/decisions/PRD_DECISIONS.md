@@ -600,6 +600,8 @@ The publishable tooling surface is coherent enough for early public use, but the
 **Implication:**
 Release gating requires Node 20+ CI checks, example validation, tarball smoke tests, and release docs that match the shipped package names and commands. Changesets is the release-management source of truth for ongoing versioning and publish orchestration.
 
+**October 27, 2026 clarification:** After the coordinated first-preview/corrective baseline, the four public packages version independently through Changesets. Matching version numbers are not a gate invariant. Keep stable post-preview versions and concrete dependency ranges, verify each package's expected registry version and `latest` tag, and retain CI-only publication plus external consumer verification. The all-`0.1.0` bootstrap remains separate; this does not introduce prerelease channels or alter any PRD format version.
+
 **Follow-up:**
 Keep the release policy and maintainer runbook aligned with the actual workflow and publish set.
 

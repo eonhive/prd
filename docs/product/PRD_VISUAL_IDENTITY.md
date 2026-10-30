@@ -59,7 +59,9 @@ are focusable anchor targets.
 
 Home retains six chapters, one document object, the existing uRK lifecycle,
 optional sound, reduced-motion settings, package inspection, and one persistent
-real Viewer. Its hero follows the new reference through a purple headline,
+real Viewer. It retains the six source-profile presentations and the bidirectional
+sample-selection bridge on current main. Its hero follows the reference through a
+purple headline,
 clear actions, document artwork, and floating format labels. The three profile
 cards open the existing document, comic, and storyboard packages. A fourth
 link opens the segmented general-document example. Illustrative artwork does
@@ -123,3 +125,61 @@ public-key/trust interaction acceptance remains separate under item 62.
 The supplied light/dark converter mockup guides the tool layout rather than introducing another identity or landing page. `convertWeb.css` uses shared violet/light/navy tokens, folded-document marks, modest borders and readable 12px-or-larger labels. Upload and selected files sit beside a compact options rail; factual quality/assets/plain-source review follows beneath. Native browse/drop, removal and actual conversion actions remain distinguishable and keyboard-accessible; narrow layouts stack the panels and button targets are at least 44px.
 
 Only supported Markdown/HTML options appear. The reference's PSD/PSB, AI analysis, layer switches, 2GB limit, percentages, history and templates do not create capability claims. Source is never rendered as live HTML. See [Convert HTML/workspace policy](../architecture/PRD_CONVERT_WEB_HTML.md). Browser automation is disabled for this continuation, so new light/dark/mobile screenshots and interaction acceptance remain pending.
+The isolated review branch starts at main `c8e5935`. Its production preview was
+also reviewed at `http://127.0.0.1:4174/`: both Home themes, decoded real comic
+preview artwork, localized Viewer content retained across cross-page theme
+changes, mobile authored/visual outline focus, keyboard continuation, example
+switching, and Docs section focus. This follow-up corrected toolbar/panel offsets
+below the sticky header and uses the existing namespaced document-target map.
+DOM tests cover theme continuity and mobile panel/frame focus for both profiles.
+
+Fresh screenshots are local generated evidence under ignored
+`examples/dist/rebrand-qa/`. The foundation gate passes 408 tests across 34 files,
+including 191 web-app tests; root typecheck, both hosting-base builds, a Workers
+dry run and 21 local HTTP/package checks pass. These results apply to the
+isolated rebrand review branch. PR #59 subsequently merged at `8438760`; the
+automatic rollout was observed on `prd.eonhive.com`, and its 21 production
+HTTP/package checks passed. Physical touch, real OS drag/drop, actual
+screen-reader acceptance, constrained-device profiling and the remaining launch
+matrix remain in items 44/48. The separate converter, container and signature
+work in the primary checkout is excluded.
+
+## Reader keyboard and status feedback
+
+The next local follow-up fixes a deployed desktop keyboard issue: closing a
+side panel now focuses its matching Navigate or Details toolbar button before
+the panel becomes hidden. This leaves the document, locale and resource URLs
+mounted. Mobile drawers keep the browser's native opener restoration and
+content selection keeps its existing namespaced target focus.
+
+Outline search describes its current result count through a polite, atomic
+status: total items when clear, matching/total items when filtered, and zero
+matches when empty. A successful package status includes the active document
+title for assistive technologies without expanding the visible status badge.
+The existing busy-state and package-validity distinctions are retained.
+
+DOM regression tests and a real built-browser keyboard pass cover this
+follow-up. Accessibility-tree inspection and live-region attributes are evidence
+of semantic behavior; they do not establish actual screen-reader speech or
+physical-device acceptance. Recheck this correction on its deployed revision
+before closing launch items 44/48.
+
+## File-drop feedback
+
+The existing named archive drop area responds to file drags only. It uses the
+transfer's `Files` type during the protected drag phase and keeps a nested entry
+count so moving between its icon, copy and button does not clear the highlight,
+including when `relatedTarget` is absent. A real exit or file drop clears the
+feedback; file drags use a copy cursor. This follows the
+[HTML drag-and-drop processing model](https://html.spec.whatwg.org/multipage/dnd.html#drag-and-drop-processing-model).
+
+Text drags keep their normal browser behavior and do not create an archive
+error. Actual file drops continue through the existing selection, local-open,
+validation and rendering path, including unsupported-file feedback and recovery.
+The existing first-PRD selection rule and embedded local-file privacy marker are
+preserved. No document upload service or page-wide drop interception is added.
+
+Five DOM regression cases cover nested transitions with/without a related
+target, ignored text, successful archive opening and invalid-file recovery.
+Fresh browser/OS drag testing remains pending while local browser use is disabled
+in Work settings. These tests do not establish physical drag/drop acceptance.
