@@ -1,5 +1,12 @@
 # BUILD STATUS
 
+## 2026-10-31
+
+### Shared Header Duplicate Links
+
+- Removed the repeated Profiles/Examples link block from `ViewerSiteNavigation`. Home, Viewer, Convert and Docs now share exactly six primary navigation links, preserving route targets, section anchors, active-page state and theme/open controls. This private-app correction changes no package or format contract and needs no Changeset.
+- Validation passed: 23 existing chrome/route tests, typecheck, and a one-off rendered-header check across all four routes, both themes and `/` plus `/prd/` base paths. The actual Cloudflare build and Wrangler deployment dry run pass. A fresh browser review of the built local Convert route confirms each link appears once. No production deployment was performed; verify the deployed header after the next Cloudflare build.
+
 ## 2026-10-30
 
 ### Pull Request Installed-Tarball Gate
