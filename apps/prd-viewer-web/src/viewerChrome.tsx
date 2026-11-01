@@ -4,7 +4,7 @@
  * Purpose: Provide accessible public navigation and truthful package status without renderer coupling.
  * Author: Stan Nesi
  * Created: October 25, 2026
- * Updated: October 27, 2026
+ * Updated: October 31, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -388,15 +388,6 @@ export function ViewerSiteNavigation({
             onClick={(event) => navigate(event, item)}
           >
             {item === "home" ? "Home" : item === "viewer" ? "Viewer" : item === "convert" ? "Convert" : "Docs"}
-          </a>
-        ))}
-        {(["profiles", "examples"] as const).map((section) => (
-          <a
-            key={section}
-            href={`${getViewerAppRoutePath("home", basePath)}#${section}`}
-            onClick={(event) => navigate(event, "home", section)}
-          >
-            {section === "profiles" ? "Profiles" : "Examples"}
           </a>
         ))}
         {(["profiles", "examples"] as const).map((section) => (

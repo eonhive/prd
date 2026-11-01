@@ -237,3 +237,8 @@
 
 - [x] Run the existing five-package installed-tarball smoke in Node 22 Codex CI after build/check and example packaging. Retain all 48 consumer checks and package/optional-dependency/PDF checks, failure exit status and attempted-run JSON artifacts. Keep PR repository permissions read-only, disable persisted checkout credentials and exclude publisher credentials. Three regressions reproduce the prior gap; focused tests and the actual Node 22 sequence pass locally.
 - [ ] Review and merge the focused CI follow-up after its remote Node 22 tarball step and summary upload pass. Continue live Convert/Viewer acceptance when browser access is available; actual Changesets publication/registry/npm-consumer acceptance remains item 46.
+
+## Header correction (October 31, 2026)
+
+- [x] Remove the duplicated Profiles/Examples links from the shared public header. Existing navigation tests, all 16 rendered route/theme/base-path variants, typecheck, the Cloudflare build and Wrangler dry run pass. Fresh local browser review confirms the built Convert header has one of each link.
+- [ ] Verify the corrected header on the deployed Cloudflare revision after this fix ships. Broader launch and accessibility acceptance remain under items 44/48.
