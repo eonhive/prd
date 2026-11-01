@@ -242,7 +242,7 @@
 }
 .app-route-viewer #document-stage,
 .app-route-viewer #document-stage [id^="prd-content-"] {
-  scroll-margin-top: calc(var(--viewer-toolbar-offset) + 5.5rem);
+  scroll-margin-top: var(--viewer-reading-anchor-offset, calc(var(--viewer-toolbar-offset) + 5.5rem));
 }
 .app-route-viewer .viewer-left-rail {
   grid-area: navigation;

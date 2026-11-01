@@ -183,3 +183,9 @@ Five DOM regression cases cover nested transitions with/without a related
 target, ignored text, successful archive opening and invalid-file recovery.
 Fresh browser/OS drag testing remains pending while local browser use is disabled
 in Work settings. These tests do not establish physical drag/drop acceptance.
+
+## Reading target clearance — October 31, 2026
+
+A live converted-HTML check found native fragment targets behind the sticky reading-mode controls. Structured reading now inherits a measured fragment offset from its private pagination controller: sticky top plus current controls height and 8px clearance. ResizeObserver includes the controls so wrapped mobile rows are accounted for; teardown restores the prior inline property. Other stage/visual-profile targets keep their existing fallback offset.
+
+Fresh production-browser checks show the heading below the controls on desktop dark and 390/320px light viewports, including mobile outline focus and pagination/continuous transitions. The HTML image decodes, conversion/report downloads are byte-verified and the Convert result survives Viewer return. Evidence is saved in ignored `examples/dist/convert-live-qa/`, including `html-anchor-before.jpg`, `html-anchor-after.jpg` and mobile captures. Prefix build/HTTP checks pass, but browser use was disabled before prefix interaction review. Keep physical touch, screen-reader speech, OS drag/drop, CBZ review and the remaining production matrix open.

@@ -1,7 +1,7 @@
 /*
  * Company: EonHive Inc. | Title: Viewer Pagination Controller
  * Purpose: Navigate native CSS columns while retaining semantic reading anchors and one document tree.
- * Author: Stan Nesi | Created: October 29, 2026 | Updated: October 29, 2026
+ * Author: Stan Nesi | Created: October 29, 2026 | Updated: October 31, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -32,6 +32,7 @@ interface ReadingAnchor {
   viewportOffset?: number;
 }
 const readingNodes = "h1,h2,h3,h4,h5,h6,p,li,figure,table,video,audio";
+const anchorOffsetProperty = "--viewer-reading-anchor-offset";
 
 function anchorFor(node: HTMLElement, index: number, progress = 0): ReadingAnchor {
   return {
@@ -68,6 +69,18 @@ export function createViewerPagination(
   let anchor: ReadingAnchor | undefined;
   const controls = root.querySelector<HTMLElement>(".viewer-reading-controls");
   const controlsBottom = () => controls?.getBoundingClientRect().bottom ?? 0;
+  const previousOffset = root.style.getPropertyValue(anchorOffsetProperty);
+  const previousOffsetPriority = root.style.getPropertyPriority(anchorOffsetProperty);
+
+  function updateFragmentOffset() {
+    if (!controls) return;
+    // Native fragment scrolling must clear every row of the sticky reading controls.
+    const top = Math.max(0, parseFloat(getComputedStyle(controls).top) || 0);
+    const offset = `${top + controls.getBoundingClientRect().height + 8}px`;
+    if (root.style.getPropertyValue(anchorOffsetProperty) !== offset) {
+      root.style.setProperty(anchorOffsetProperty, offset);
+    }
+  }
 
   function publish(next: Partial<ViewerReadingState>) {
     state = { ...state, ...next };
@@ -102,6 +115,7 @@ export function createViewerPagination(
 
   function measure(restore = true) {
     if (disposed || viewport.clientWidth <= 0) return;
+    updateFragmentOffset();
     nodes = [...flow.querySelectorAll<HTMLElement>(readingNodes)];
     if (state.mode === "continuous") {
       viewport.scrollLeft = 0;
@@ -210,6 +224,7 @@ export function createViewerPagination(
   const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(reflow);
   observer?.observe(viewport);
   observer?.observe(flow);
+  if (controls) observer?.observe(controls);
   viewport.addEventListener("scroll", handleScroll, { passive: true });
   viewport.addEventListener("keydown", handleKey);
   flow.addEventListener("focusin", handleFocus);
@@ -241,6 +256,10 @@ export function createViewerPagination(
       if (disposed) return;
       disposed = true;
       observer?.disconnect();
+      if (controls) {
+        if (previousOffset) root.style.setProperty(anchorOffsetProperty, previousOffset, previousOffsetPriority);
+        else root.style.removeProperty(anchorOffsetProperty);
+      }
       viewport.removeEventListener("scroll", handleScroll);
       viewport.removeEventListener("keydown", handleKey);
       flow.removeEventListener("focusin", handleFocus);

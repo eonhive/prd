@@ -2,7 +2,7 @@
 /*
  * Company: EonHive Inc. | Title: Viewer Pagination Tests
  * Purpose: Verify measured page navigation, semantic anchors, keyboard boundaries and lifecycle cleanup.
- * Author: Stan Nesi | Created: October 29, 2026 | Updated: October 29, 2026
+ * Author: Stan Nesi | Created: October 29, 2026 | Updated: October 31, 2026
  * Notes: Vibe coded with Codex.
  */
 
@@ -19,7 +19,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function fixture(withObserver = true) {
+function fixture(withObserver = true, setup?: (root: HTMLElement) => void) {
   document.body.innerHTML = `<a id="outline" href="#paragraph-4">Later section</a>
     <section data-reading-mode="continuous"><div class="viewport"><div class="flow" style="column-gap:32px">
       <article id="document">${Array.from({ length: 6 }, (_, index) => `<p id="paragraph-${index}">Paragraph ${index} <a href="#paragraph-4">Jump</a></p>`).join("")}</article>
@@ -32,6 +32,7 @@ function fixture(withObserver = true) {
   let pages = [0, 0, 1, 1, 2, 2];
   let hidden = false;
   let resize: (() => void) | undefined;
+  const observe = vi.fn();
   const disconnect = vi.fn();
   const fonts = Object.assign(new EventTarget(), { ready: Promise.resolve() });
   Object.defineProperty(document, "fonts", { configurable: true, value: fonts });
@@ -39,7 +40,7 @@ function fixture(withObserver = true) {
   vi.stubGlobal("innerHeight", 800);
   vi.stubGlobal("ResizeObserver", withObserver ? class {
     constructor(callback: () => void) { resize = callback; }
-    observe() {}
+    observe = observe;
     disconnect = disconnect;
   } : undefined);
   vi.spyOn(window, "scrollTo").mockImplementation((options) => {
@@ -67,11 +68,12 @@ function fixture(withObserver = true) {
     vi.spyOn(node.querySelector("a")!, "getClientRects").mockImplementation(() => [position()] as unknown as DOMRectList);
   });
   const changes = vi.fn<(state: ViewerReadingState) => void>();
+  setup?.(root);
   active = createViewerPagination(root, viewport, flow, changes);
   active.contentChanged(true);
   const controller = active;
   return {
-    root, viewport, flow, nodes, controller, disconnect, fonts, changes,
+    root, viewport, flow, nodes, controller, disconnect, observe, fonts, changes,
     state: () => changes.mock.calls.at(-1)![0],
     resize: () => resize?.(),
     layout(nextWidth: number, nextPages: number[], nextCount: number) { width = nextWidth; pages = nextPages; count = nextCount; },
@@ -94,6 +96,39 @@ describe("pagination measurements", () => {
 });
 
 describe("native document pagination", () => {
+  it.each([
+    { name: "desktop", top: 144, height: 56 },
+    { name: "wrapped mobile", top: 68, height: 112 },
+  ])("keeps fragment targets below the $name reading controls", ({ top, height }) => {
+    const controls = document.createElement("div");
+    controls.className = "viewer-reading-controls";
+    controls.style.top = `${top}px`;
+    vi.spyOn(controls, "getBoundingClientRect").mockReturnValue({ height } as DOMRect);
+    const f = fixture(true, (root) => root.prepend(controls));
+    expect(f.root.style.getPropertyValue("--viewer-reading-anchor-offset")).toBe(`${top + height + 8}px`);
+    expect(f.observe).toHaveBeenCalledWith(controls);
+  });
+
+  it("remeasures wrapped controls and restores the previous offset on disposal", () => {
+    const controls = document.createElement("div");
+    controls.className = "viewer-reading-controls";
+    controls.style.top = "144px";
+    let height = 56;
+    vi.spyOn(controls, "getBoundingClientRect").mockImplementation(() => ({ height }) as DOMRect);
+    const f = fixture(true, (root) => {
+      root.prepend(controls);
+      root.style.setProperty("--viewer-reading-anchor-offset", "77px");
+    });
+    height = 112;
+    f.resize();
+    expect(f.root.style.getPropertyValue("--viewer-reading-anchor-offset")).toBe("264px");
+    f.controller.dispose();
+    expect(f.root.style.getPropertyValue("--viewer-reading-anchor-offset")).toBe("77px");
+    height = 200;
+    f.resize();
+    expect(f.root.style.getPropertyValue("--viewer-reading-anchor-offset")).toBe("77px");
+  });
+
   it.each([606.296875, 297.421875, 228.546875])(
     "uses the rendered fractional column width %s rather than rounded clientWidth", (width) => {
       const f = fixture();
