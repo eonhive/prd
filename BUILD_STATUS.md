@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+### Convert Live HTML QA And Visible Fragment Targets
+
+- Continued from current main `7107c00`, preserving PR #74's header correction and merged PR #73's installed-tarball gate. Browser access returned; prioritized actual acceptance instead of introducing deployment metadata. Real native HTML/image selection, module-worker conversion, filter/clear, resource/plain-source views, Blob downloads, canonical validation and byte-exact source/image/full-report checks passed. The existing Viewer opens the exact archive, decodes the 480×144 image and retains the conversion on return.
+- Reproduced and fixed a Viewer defect: a native internal link left its heading beneath sticky reading-mode controls. Measure current sticky top/height, inherit that native fragment clearance through the existing target rule, observe controls resize and restore prior inline state on disposal. Added three desktop/wrapped-height/reflow/cleanup regressions; all fail against the original controller. No renderer, format, package, public API, dependency or publication changes.
+- Fixed production-browser checks pass on desktop dark and 390/320px light viewports with about 8px target clearance, mobile drawer-close/focus and page 1/3 → 2/3 → continuous navigation. Browser console warning/error capture is empty. Screenshots and actual downloaded artifacts are saved under ignored `examples/dist/convert-live-qa/`; `summary.json` separates browser evidence from build/HTTP checks.
+- Validation: **47 targeted tests**, full Node 22.22.2/pnpm 10.32.1 `codex:check` with **1,417 tests / 69 files**, typecheck/build/canonical examples, root and `/prd/` production builds, all 21 prefix HTTP/package/artwork checks and the prefix Convert shell. Root-inclusive docs, aggregate examples and diff checks are recorded with the final verification. Browser access became disabled before prefix tab creation, so prefix interactions, CBZ repair/descriptions/cancel/recovery, OS drag/drop, screen-reader speech and production acceptance stay pending. This private Viewer fix needs no public-package Changeset.
+
 ### Shared Header Duplicate Links
 
 - Removed the repeated Profiles/Examples link block from `ViewerSiteNavigation`. Home, Viewer, Convert and Docs now share exactly six primary navigation links, preserving route targets, section anchors, active-page state and theme/open controls. This private-app correction changes no package or format contract and needs no Changeset.

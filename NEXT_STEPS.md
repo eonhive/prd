@@ -236,9 +236,15 @@
 ## Pull request package validation (October 30, 2026)
 
 - [x] Run the existing five-package installed-tarball smoke in Node 22 Codex CI after build/check and example packaging. Retain all 48 consumer checks and package/optional-dependency/PDF checks, failure exit status and attempted-run JSON artifacts. Keep PR repository permissions read-only, disable persisted checkout credentials and exclude publisher credentials. Three regressions reproduce the prior gap; focused tests and the actual Node 22 sequence pass locally.
-- [ ] Review and merge the focused CI follow-up after its remote Node 22 tarball step and summary upload pass. Continue live Convert/Viewer acceptance when browser access is available; actual Changesets publication/registry/npm-consumer acceptance remains item 46.
+- [x] Verify the focused CI follow-up’s remote Node 22 tarball step and summary upload, then merge PR #73 at `0601901`. Both Codex CI runs and the Workers preview pass; the exact-commit consumer summary artifact is present. Actual Changesets publication/registry/npm-consumer acceptance remains item 46.
 
 ## Header correction (October 31, 2026)
 
 - [x] Remove the duplicated Profiles/Examples links from the shared public header. Existing navigation tests, all 16 rendered route/theme/base-path variants, typecheck, the Cloudflare build and Wrangler dry run pass. Fresh local browser review confirms the built Convert header has one of each link.
 - [ ] Verify the corrected header on the deployed Cloudflare revision after this fix ships. Broader launch and accessibility acceptance remain under items 44/48.
+
+## Live HTML acceptance and target visibility (October 31, 2026)
+
+- [x] Exercise actual root-build HTML/image selection, worker conversion, diagnostic filter/search/clear, resource/plain-source views, native PRD/report downloads, canonical validation and exact source/image/full-report preservation. Open the actual archive in the Viewer, decode its image and retain the result on Convert return.
+- [x] Fix the observed heading occlusion behind sticky reading controls. Verify measured clearance on desktop dark and 390/320px light viewports, mobile outline focus and pagination/continuous transitions; add three regressions and run the 1,417-test Node 22 gate. Save genuine browser screenshots/downloads separately from simulated tests.
+- [ ] Complete `/prd/` worker/conversion/download interactions when browser access returns; production build plus 21 HTTP checks and Convert shell pass, but browser use stopped before the prefix tab opened. Next live slice: CBZ order/description draft, reset/apply, failure/cancel/retry, current downloads and Viewer return; then remaining physical/assistive/production checks. Do not add adapters or broad editing to substitute for this acceptance.
