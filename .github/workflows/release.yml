@@ -49,7 +49,7 @@ jobs:
       - name: Run release publish preflight
         run: pnpm release:preflight
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_GITHUB }}
 
       - name: Upload release preflight summary
         if: always()
@@ -69,8 +69,8 @@ jobs:
           commit: "chore: release packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_GITHUB }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_GITHUB }}
           NPM_CONFIG_PROVENANCE: "true"
 
   verify-published:

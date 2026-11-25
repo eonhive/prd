@@ -2,6 +2,12 @@
 
 ## 2026-11-25
 
+### Replacement npm Publisher Secret Binding
+
+- The owner supplied replacement credential name `NPM_TOKEN_GITHUB` and authorized another release attempt. Updated the Release workflow's preflight `NPM_TOKEN` and Changesets `NPM_TOKEN`/`NODE_AUTH_TOKEN` bindings to read that one GitHub Actions secret. Preserved step-scoped credentials, full release/preflight gates, provenance and publish-gated consumer verification; the rejected old secret is not a fallback.
+- The owner confirmed the replacement is stored as the GitHub Actions secret `NPM_TOKEN_GITHUB`. Focused authentication/preflight validation passes **30 tests / two files**; root-inclusive docs consistency and whitespace checks pass. Moved exactly these five release-only edits into the isolated `prd-publisher-secret` worktree after separate hosted-converter work began in the shared checkout.
+- Updated existing authentication regressions and the npm runbook to distinguish the GitHub secret name from the stable environment variable names and the npm token's display name. No token value was read or stored in the repository. Actual availability, publishing authorization, npm publication and post-publish success require the new CI attempt; no success is claimed by this binding change alone.
+
 ### Version PR #78 Merged; Registry Publication Blocked By npm Authentication
 
 - PR #78 was independently merged at `4e4dab8` while its documentation review was being completed. Its runtime/version metadata matches the locally verified candidate. Applied the eight-file release-note/README/status corrections to main as `184d53d`; both inline review findings are resolved. The source checkout is versioned at CLI `0.3.0`, converter/packager/validator `0.2.0`, types `0.1.1`; the 19 source changesets are consumed.
