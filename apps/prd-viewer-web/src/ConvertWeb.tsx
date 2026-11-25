@@ -14,7 +14,7 @@ import {
 } from "./convertJob.js";
 import { ConvertUpload } from "./ConvertUpload.js";
 import { ConvertReview } from "./ConvertReview.js";
-import { ViewerIcon } from "./viewerChrome.js";
+import { PrdBrandMark, ViewerIcon } from "./viewerChrome.js";
 import "./convertWeb.css";
 
 export function ConvertWeb({
@@ -115,10 +115,15 @@ export function ConvertWeb({
   return (
     <main id="main-content" tabIndex={-1} className="convert-page">
       <header className="convert-intro">
-        <div>
-          <p className="convert-kicker">PRD CONVERT</p>
-          <h1>Convert documents to PRD.</h1>
-          <p>Bring HTML, Markdown and CBZ comics into portable reading.</p>
+        <div className="convert-product-heading">
+          <span className="convert-product-icon">
+            <PrdBrandMark variant="convert" />
+          </span>
+          <div>
+            <p className="convert-kicker">PRD CONVERT</p>
+            <h1>Convert documents to PRD.</h1>
+            <p>Bring HTML, Markdown and CBZ comics into portable reading.</p>
+          </div>
         </div>
         <span className="convert-local">
           <ViewerIcon name="check" /> Files stay in this browser{" "}

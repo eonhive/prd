@@ -95,7 +95,28 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 3px 4px #49248124);
+  aspect-ratio: 1;
+}
+.prd-brand-symbol > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.prd-brand-symbol > .prd-artwork-light {
+  display: none;
+}
+:root[data-theme="light"] .prd-brand-symbol > .prd-artwork-light {
+  display: block;
+}
+:root[data-theme="light"] .prd-brand-symbol > .prd-artwork-dark {
+  display: none;
+}
+.prd-download-icon {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
 }
 .brand-mark:has(.prd-brand-symbol) {
   background: transparent;
@@ -129,7 +150,7 @@ body {
 .site-nav .brand-mark,
 .prd-site-footer .brand-mark {
   width: 2.2rem;
-  height: 2.5rem;
+  height: 2.2rem;
   flex-shrink: 0;
 }
 .site-nav .brand-lockup strong,

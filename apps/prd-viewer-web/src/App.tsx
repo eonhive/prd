@@ -2810,9 +2810,7 @@ function ViewerWorkspaceView({
                 aria-label="No package loaded"
               >
                 <div className="viewer-welcome-illustration" aria-hidden="true">
-                  <span className="viewer-welcome-sheet" />
-                  <PrdBrandMark />
-                  <span className="viewer-welcome-spark">✦</span>
+                  <PrdBrandMark variant="viewer" />
                 </div>
                 <p className="eyebrow">Portable. Responsive. Yours.</p>
                 <h2>Documents, brought to life.</h2>

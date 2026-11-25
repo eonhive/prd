@@ -482,8 +482,7 @@ export function LivingHomepage({
             className="living-hero-decoration living-hero-logo"
             aria-hidden="true"
           >
-            <PrdBrandMark />
-            <strong>PRD</strong>
+            <PrdBrandMark variant="logo" basePath={basePath} />
           </div>
           <div
             className="living-hero-decoration living-hero-preview"
@@ -863,6 +862,9 @@ export function LivingHomepage({
           </p>
           <div className="living-actions">
             <a className="living-primary" href={selectedDownloadHref} download>
+              <span className="prd-download-icon">
+                <PrdBrandMark variant="file" basePath={basePath} />
+              </span>
               Download this PRD <Arrow down />
             </a>
             <a className="living-text-link" href={selectedViewerHref}>

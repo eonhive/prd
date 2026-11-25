@@ -1,12 +1,13 @@
 # PRD Visual Identity
 
-_Updated: October 27, 2026_
+_Updated: November 25, 2026_
 
 ## Scope
 
-The owner's light/dark PRD reference boards guide the existing public Home,
-Web Viewer, Docs, Convert, and their navigation. The folded document mark, purple
-accents, cool light surfaces, and navy dark surfaces form one product identity.
+The owner's supplied PRD logos are the official artwork for public Home, Web
+Viewer, Docs, Convert, and their navigation. The earlier reference boards still
+guide layout and palette. The folded document mark, purple accents, cool light
+surfaces, and navy dark surfaces form one product identity.
 This is a presentation baseline, not a change to PRD Core or package validity.
 
 ## Shared foundations
@@ -78,17 +79,68 @@ behavior and runtime support reporting remain separate from package validity.
 
 ## Assets and generation
 
-- `apps/prd-viewer-web/public/brand/prd-mark.svg`: code-authored favicon matching
-  the existing inline folded-document mark.
+The editable originals remain in the sibling `_branding/illustration/` directory
+(`prd.vectorcraft` and `prd-app-icons-1024.vectorcraft`); the supplied 1024px PNGs
+are in `_branding/illustration/export/icons/`. These are authoring sources only.
+All runtime derivatives are tracked inside `apps/prd-viewer-web/public/brand/`;
+builds do not read the sibling branding folder.
+
+| Supplied PNG | Assignment | Shipped derivative |
+| --- | --- | --- |
+| `prd logo light no-text - color.png` | Shared header/footer on light surfaces, beside live PRD name | `prd-symbol-light.webp` (256px) |
+| `prd logo dark no-text - color.png` | Shared header/footer on dark surfaces, beside live PRD name | `prd-symbol-dark.webp` (256px) |
+| `prd logo light - color.png` | Standalone PRD brand, including the light Home hero | `prd-logo-light.webp` (512px) |
+| `prd logo dark - color.png` | Standalone PRD brand, including the dark Home hero | `prd-logo-dark.webp` (512px) |
+| `prd viewer - Color.png` | Viewer workspace heading/welcome and Convert's Viewer handoff | `prd-viewer.webp` (256px) |
+| `prd app convert - color.png` | Convert workspace heading | `prd-convert.webp` (256px) |
+| `prd file - color.png` | PRD results and download links on light surfaces | `prd-file-light.webp` (128px) |
+| `prd file - dark - color.png` | PRD results and download links on dark surfaces | `prd-file-dark.webp` (128px) |
+| `prd app - color.png` | Default general PRD application identity; website touch icon | `prd-apple-touch-icon.png` (180px) |
+| `prd app - no-text - color.png` | Compact application identity; website favicon | `prd-favicon.ico` (16/32/48px), `prd-favicon-32.png` |
+| `prd app - no-box - color.png` | Alternate large promotional application artwork | Retained in source exports; no current website placement |
+
+The app variants do not assign an authoring/Studio identity or imply a separately
+installed application. The shared site header identifies PRD on every route;
+Viewer and Convert carry their own icons inside their workspaces. Docs uses the
+shared brand. File marks identify generic `.prd` downloads/results, not the
+contents of an authored cover or a certification/validation badge. General
+resource and toolbar controls retain simple interface icons.
+
+`PrdBrandMark` renders the official assets with empty image alternatives and an
+`aria-hidden` wrapper; adjacent live labels supply the accessible name. The
+site's explicit `data-theme` selects light/dark artwork without remounting a
+Viewer or resetting conversion state. Asset URLs respect the build's hosting
+base, including `/prd/`. CSS preserves proportions with `object-fit: contain`
+and adds no recoloring, image filters, extra boxes or shadows to the artwork.
+The Home hero retains its existing document choreography but no longer draws a
+second card or repeats PRD beneath an already lettered logo.
+
+Exports preserve transparency and use Lanczos resizing with Pillow. WebP files
+use lossless encoding (`lossless=True`, `method=6`); PNGs use optimized encoding.
+To refresh an asset, open its listed source PNG as RGBA, resize to the listed
+square dimensions, and write the derivative under the same name. The ICO embeds
+16px, 32px and 48px sizes from the no-text app source. No generated replacement
+or redrawing is involved. `index.html` links ICO, 32px PNG and the boxed-app touch
+icon; the previous hand-drawn `prd-mark.svg` is removed. Native desktop icon
+packaging, app installation manifests and OS file associations remain separate.
+
+Keep original colors, stitching, stars and proportions. Use unlettered marks
+beside live product names and lettered marks for standalone branding. Review
+16/32/48/64px output before adopting a small icon in a new context; any simplified
+artwork needs owner approval rather than an automatic redraw.
+
+Existing decorative illustration:
+
 - `apps/prd-viewer-web/public/brand/prd-world.webp`: original decorative fantasy
   landscape generated with the built-in imagegen tool. The WebP is the deployed
   derivative; the PNG master is retained under ignored `examples/dist/brand/`
   and the image tool's generated-image directory. No runtime dependency on
   those local master locations is introduced.
 
-The reference image supplies the visual direction. The generated artwork is
-new illustration rather than an edited copy of the reference board. Interface
-text, links, controls, and document layouts are implemented in React/CSS.
+The earlier reference image supplies the landscape direction. The generated
+landscape is decorative illustration, separate from the official owner-authored
+logos. Interface text, links, controls, and document layouts are implemented in
+React/CSS.
 
 Exact image-generation prompt:
 
@@ -189,3 +241,27 @@ in Work settings. These tests do not establish physical drag/drop acceptance.
 A live converted-HTML check found native fragment targets behind the sticky reading-mode controls. Structured reading now inherits a measured fragment offset from its private pagination controller: sticky top plus current controls height and 8px clearance. ResizeObserver includes the controls so wrapped mobile rows are accounted for; teardown restores the prior inline property. Other stage/visual-profile targets keep their existing fallback offset.
 
 Fresh production-browser checks show the heading below the controls on desktop dark and 390/320px light viewports, including mobile outline focus and pagination/continuous transitions. The HTML image decodes, conversion/report downloads are byte-verified and the Convert result survives Viewer return. Evidence is saved in ignored `examples/dist/convert-live-qa/`, including `html-anchor-before.jpg`, `html-anchor-after.jpg` and mobile captures. Prefix build/HTTP checks pass, but browser use was disabled before prefix interaction review. Keep physical touch, screen-reader speech, OS drag/drop, CBZ review and the remaining production matrix open.
+
+## Official logo acceptance — November 25, 2026
+
+The owner-authored assets replace the earlier code-drawn approximation. Local
+verification passes 428 web-app tests, app typecheck, root and `/prd/` builds,
+five canonical example validations and 30 route/asset HTTP checks. Image checks
+confirm exact served bytes, image content types, successful decoding, all ICO
+sizes and base-correct icon links. QA outputs are ignored under
+`examples/dist/official-brand-qa/`.
+
+Fresh built-browser review covers Home in both themes, shared Docs branding,
+Viewer/Convert product icons, 320px Viewer/Convert and 390px prefix Home/Convert
+without horizontal overflow. The prefix Convert correctly switches symbol/file
+variants with the site theme. The real document-basic sample opens successfully.
+The 16px favicon preserves the document silhouette, with fine stitching/stars
+less distinct than at larger sizes; no substitute artwork was invented.
+
+The browser extension blocked fresh native conversion selection without its
+local-file access setting. Existing completed-result/download DOM tests pass;
+a new live conversion/download is not claimed. Browser automation overlays tab
+favicons, so final visual favicon/home-screen acceptance needs a normal browser
+and physical device after deployment. The source-derived icon files and links
+are verified independently. No deployment, permission change, OS association or
+installation capability was introduced.

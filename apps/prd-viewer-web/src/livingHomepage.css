@@ -340,27 +340,11 @@
 }
 .living-hero-logo {
   z-index: 7;
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  width: 95px;
+  width: 128px;
+  height: 128px;
   left: -65px;
   top: 35%;
-  padding: 12px;
-  border: 1px solid #b48bff80;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #c896ff, #7135dd 55%, #36218b);
-  color: #fff;
-  box-shadow: 0 15px 35px #713df137;
   transform: translateZ(55px) rotateZ(-5deg);
-}
-.living-hero-logo .prd-brand-symbol {
-  width: 55px;
-  height: 61px;
-}
-.living-hero-logo strong {
-  font-size: 20px;
-  letter-spacing: -0.04em;
 }
 .living-hero-preview {
   z-index: 6;
@@ -1379,12 +1363,8 @@
   }
   .living-hero-logo {
     left: -30px;
-    width: 75px;
-    padding: 8px;
-  }
-  .living-hero-logo .prd-brand-symbol {
-    width: 42px;
-    height: 48px;
+    width: 96px;
+    height: 96px;
   }
   .living-hero-preview {
     right: -20px;
