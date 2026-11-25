@@ -5,17 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - Unreleased
+## 0.3.0
 
 ### Added
 
-- `prd init` creates validator-valid starter directories for `general-document`, `comic`, and `storyboard`.
-- `prd import markdown` creates structured `general-document` directories from a deterministic Markdown subset and local images.
-- `prd import images` creates `comic` and `storyboard` directories from naturally ordered image folders.
+- `prd init` creates structured starter packages for the three core profiles; `prd import markdown` and `prd import images` provide semantic text and ordered visual imports.
+- `prd import html` writes a structured general-document directory with a versioned diagnostic report, without bundling raw source HTML.
+- `prd convert` produces validated PRD archives from bounded Markdown, static HTML, CBZ, EPUB, DOCX and PDF sources, with explicit source retention and quality reports.
+- `prd pack --container prd` writes the optional PRD v1 envelope; ordinary ZIP output remains the default.
+- `prd sign` and `prd verify` support optional signature-v1 archives, Ed25519 signing and verification with an explicitly trusted public key.
+
+### Dependencies
+
+- Validator, packager and converter dependencies move to `^0.2.0`; types remain at `^0.1.1`.
 
 ### Notes
 
-This is a CLI-only tooling release candidate. Internal library dependencies remain at `^0.1.1`; PRD format and manifest versions are unchanged. Publication and npm-installed authoring verification are still pending.
+This pre-1.0 tooling release includes the previously unpublished authoring candidate. PRD format and manifest versions are unchanged. PDF conversion requires Node.js 22.13+ and its optional PDF dependencies; the other conversion paths retain their documented requirements.
 
 ## [0.1.0] - 2026-04-23
 

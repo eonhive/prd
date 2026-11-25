@@ -2,6 +2,13 @@
 
 ## 2026-11-25
 
+### Version PR #78 Reviewed For Publication
+
+- Reviewed the generated `changeset-release/main` plan: CLI `0.3.0`, converter/packager/validator `0.2.0`, types unchanged at `0.1.1`. Public internal ranges and private Web Viewer ranges follow those assigned versions; the lockfile updates matching importer specifiers without adding dependencies. The version branch consumes the 19 queued changesets. Earlier statements that manifests/changesets were unchanged describe the prerequisite-fix task, not this versioned checkout.
+- Addressed the two PR review findings before publication: added exact-version changelog entries for all four changed public packages, removed superseded CLI candidate wording and stale dependency claims, and advanced the active backlog from version-PR review to CI publication plus registry/consumer verification. Changelog generation remains disabled; the assigned versions and generated dependency/lockfile changes are preserved.
+- Updated packaged CLI/converter READMEs to describe their assigned versions and supported features without stale unpublished-candidate claims. Validation on the versioned checkout passes frozen-lockfile installation, exact version/dependency/changelog checks, root-inclusive docs and the full Node 22 `pnpm release:check`: **1,422 tests / 69 files**, build/typecheck, five canonical validations and installed-tarball/48-step consumer checks. The lockfile review confirms only eight expected importer specifier changes and no new registry dependency graph.
+- Publication is not yet claimed by this review record. Merge only after the reviewed head's checks pass; then follow main's Release job, its publish-gated registry audit and 48-step npm consumer workflow. The source correction does not change PRD format/manifest contracts or introduce a local publication path.
+
 ### Converter Changelog Release Prerequisite
 
 - Remote outcome: PR #77 merged at `8075dd3` after both Codex CI runs and reviews completed. Main Release run `45695728381` passed on **attempt 2**, including the release gate, publisher preflight and Changesets version-PR step. The first attempt had successfully versioned/pushed but exposed GitHub's separate policy against Actions creating/approving PRs. Opened PR #78 from that existing CI-generated branch through the connected maintainer account, then reran the failed job; the action updated the existing PR successfully. Repository/token/workflow permissions stayed unchanged. No packages were published, and the publish-gated consumer job was correctly skipped. PR #78's review/merge and subsequent publication remain release item 46; the runbook now documents the same-policy recovery for future release cycles.

@@ -4,9 +4,9 @@ CLI for initializing, importing, packaging, validating, inspecting, and optional
 
 ## Command Availability
 
-The commands below describe the current repository build. As verified on October 25, 2026, npm `latest` is still `0.1.1`, whose command surface is `pack`, `validate`, and `inspect`. The `init`, `import markdown`, `import images`, `import html`, and converter implementations have queued minor changesets and are not in that published version yet. Build from the repository to try them; publication remains a separate CI-driven release task.
+The commands below describe CLI `0.3.0` and the current repository build. This version includes `init`, `import markdown`, `import images`, `import html`, `convert`, `sign`, and `verify`, alongside `pack`, `validate`, and `inspect`. The earlier npm `0.1.1` release exposes only `pack`, `validate`, and `inspect`; check the installed package version before following the authoring or conversion examples.
 
-The PRD envelope option and shared bounded archive reader added October 27 are also repository features pending release. Do not assume npm `0.1.1` can open that new transport.
+CLI `0.3.0` includes the optional PRD envelope transport and shared bounded archive reader. ZIP output remains the default for older readers; npm `0.1.1` does not support the new envelope transport.
 
 The optional `sign` / `verify` commands and `prd-cli-signature-v1` JSON contract are also pending release. They do not change `validate` / `inspect` output.
 

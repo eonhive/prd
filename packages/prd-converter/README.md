@@ -1,6 +1,6 @@
 # @eonhive/prd-converter
 
-PRD Convert's Node.js foundation and explicit browser entry for Markdown, HTML and bounded CBZ comics. Reuses `prd-types`, `prd-validator` and `prd-packager`. Implemented in the repository; not yet published.
+PRD Convert's Node.js foundation and explicit browser entry for Markdown, HTML and bounded CBZ comics. Reuses `prd-types`, `prd-validator` and `prd-packager`. This guide describes the `0.2.0` package and its supported conversion paths.
 
 ```ts
 import { convertFileToPrd } from "@eonhive/prd-converter";
@@ -54,7 +54,7 @@ Word's shared style definitions use a cumulative XML-work allowance of twice `ma
 
 The same API accepts `.pdf` sources and selects `general-document`. `pdfAdapter` maps extraction-order text to page sections and line paragraphs, with PNG fallback for textless pages. It requires Node.js 22.13+ and pinned optional `pdfjs-dist@6.4.299` / working `@napi-rs/canvas@1.0.10`; dependencies load only in a separate PDF child process. Other adapters do not require them. Encrypted sources, including empty-password encryption, are refused.
 
-The PDF process has a 20-second deadline, a 128 MiB JavaScript heap setting and fixed page/pixel/text caps in addition to existing source/resource/node limits. This is not a total native-memory cap or OS sandbox. No source script/action, XFA, annotation widget or remote retrieval is activated. Reading order and semantics require review; text-page illustrations remain only in retained source, and image-only pages receive no OCR. Existing API/report/CLI contracts and PRD rendering stay unchanged. See [PDF policy](../../docs/architecture/PRD_CONVERT_PDF.md) and [the real mixed-page example](../../examples/conversion-pdf/README.md). The local Markdown Convert Web increment is documented below; publication remains pending.
+The PDF process has a 20-second deadline, a 128 MiB JavaScript heap setting and fixed page/pixel/text caps in addition to existing source/resource/node limits. This is not a total native-memory cap or OS sandbox. No source script/action, XFA, annotation widget or remote retrieval is activated. Reading order and semantics require review; text-page illustrations remain only in retained source, and image-only pages receive no OCR. Existing API/report/CLI contracts and PRD rendering stay unchanged. See [PDF policy](../../docs/architecture/PRD_CONVERT_PDF.md) and [the real mixed-page example](../../examples/conversion-pdf/README.md). The browser conversion entry points and the reference Convert Web workspace are documented below.
 
 ## Browser Markdown entry
 

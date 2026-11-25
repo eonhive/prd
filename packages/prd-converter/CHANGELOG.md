@@ -1,13 +1,16 @@
 # @eonhive/prd-converter Changelog
 
-## Unreleased
+## 0.2.0
 
 ### Added
 
-- Bounded Markdown, static HTML, CBZ, EPUB, DOCX and PDF ingestion through PRD's canonical structured content, validation and packaging pipeline.
-- Node library conversion with explicit source preservation, resource handling and quality reports, shared with the CLI's `prd convert` command.
-- Browser conversion entry points for Markdown, static HTML and bounded CBZ comics.
+- Initial bounded Markdown, static HTML, CBZ, EPUB, DOCX and PDF ingestion through canonical PRD structured content, validation and packaging.
+- Node conversion and preparation APIs with declared resources, optional original-source attachments and factual quality reports, shared with the CLI conversion/import workflows.
+- Browser entry points for Markdown, static HTML and bounded CBZ conversion, with selected-resource snapshots and lazy optional parsing.
+- Complete comic page-sequence review and supplied plain-text page descriptions, preserving source page identities and assets through the existing pipeline.
 
-### Release status
+### Dependencies and limits
 
-These notes describe the repository implementation. Changesets determines package versions, and GitHub Actions manages the version PR and npm publication. This file does not assign a release version or publication date.
+- Packager and validator dependencies move to `^0.2.0`; types remain at `^0.1.1`.
+- PDF conversion requires Node.js 22.13+ and optional PDF.js/native canvas support in a deadline-limited child process. Other optional parsers load only for their supported source formats.
+- Conversion remains a bounded semantic reconstruction with explicit loss diagnostics; full visual fidelity, OCR and active document execution are outside this release.
