@@ -91,6 +91,21 @@ pnpm changeset
 
 Public versions follow independent Changesets planning with empty `fixed`/`linked` groups. Review each planned version and concrete internal dependency range in the version PR; do not bump unchanged packages just to match another package's number. A real versioning preview applied only to a temporary workspace on October 30 left `prd-types` at `0.1.1`, planned `prd-validator`, `prd-packager`, `prd-converter` and `prd-cli` at `0.2.0`, and updated their internal ranges accordingly. This is evidence for the then-current queue, not a hardcoded next-release version. Checkout manifests were not changed by that preview.
 
+### Current publisher secret
+
+The Release workflow reads the GitHub Actions secret `NPM_TOKEN_GITHUB`, the
+replacement credential named by the owner on November 25, 2026. It maps that
+same secret to `NPM_TOKEN` for publisher preflight and Changesets, and to
+`NODE_AUTH_TOKEN` for setup-node's selected npm userconfig. These environment
+variable names remain unchanged. Keep all three bindings step-scoped; dependency
+installation and validation must not receive publisher credentials.
+
+The npm token's display name does not create a GitHub secret. The owner must
+store its value under `NPM_TOKEN_GITHUB` in this repository's Actions secrets
+(or an organization secret made available here). The workflow does not fall
+back to the older `NPM_TOKEN` secret, which was rejected by npm during publishing.
+The earlier diagnostics below record that historical binding.
+
 ### Changelog prerequisite
 
 Every package in `scripts/release-packages.mjs` must have a readable, nonempty
@@ -311,7 +326,7 @@ not prove publishing authorization. The account owner must review the existing
 publisher token's package/scope write access, publish-versus-stage-only access
 and [npm's CI publishing/2FA requirements](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/).
 If a replacement credential is needed, create it through npm's credential UI
-and store it directly in GitHub Actions `NPM_TOKEN`; never put it in chat, source
+and store it directly in GitHub Actions `NPM_TOKEN_GITHUB`; never put it in chat, source
 or diagnostic artifacts. Do not weaken account/package 2FA or bypass preflight.
 [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) is a separate
 explicit authentication migration, not an assumed repair to this token lane.

@@ -21,7 +21,7 @@ const execFileAsync = promisify(execFile);
 const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
 const ciWorkflow = readFileSync(new URL("../.github/workflows/codex-ci.yml", import.meta.url), "utf8");
 const publishSteps = ["Version or publish packages"];
-const secretReference = "${{ secrets.NPM_TOKEN }}";
+const secretReference = "${{ secrets.NPM_TOKEN_GITHUB }}";
 
 function readStep(name: string, source = workflow) {
   const step = source.split(/^      - name: /m).find((block) => block.startsWith(`${name}\n`));
