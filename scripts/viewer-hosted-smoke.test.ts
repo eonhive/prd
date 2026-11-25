@@ -4,11 +4,11 @@
  * Purpose: Verify deployed-asset checks and failure artifacts without external network access.
  * Author: Stan Nesi
  * Created: October 27, 2026
- * Updated: October 27, 2026
+ * Updated: November 25, 2026
  * Notes: Vibe coded with Codex.
  */
 
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -60,7 +60,7 @@ function deployment(base: string) {
   const assetBase = new URL(base).pathname;
   const html = `<html><div id="root"></div><script type="module" src="${assetBase}assets/app.js"></script><link rel="stylesheet" href="${assetBase}assets/app.css"></html>`;
   const replies = new Map<string, Reply>();
-  for (const path of ["", "viewer/", "docs/"]) replies.set(url(path), { body: html, type: "text/html" });
+  for (const path of ["", "viewer/", "convert/", "docs/"]) replies.set(url(path), { body: html, type: "text/html" });
   replies.set(url("assets/app.js"), { body: "export {};", type: "application/javascript" });
   replies.set(url("assets/app.css"), { body: "body {}", type: "text/css" });
   for (const [id, sample] of samples) {
@@ -81,6 +81,27 @@ function deployment(base: string) {
   return { replies, fetcher, url };
 }
 
+async function localBuild(site: ReturnType<typeof deployment>, baseUrl: string) {
+  const buildDir = await tempRoot();
+  await mkdir(join(buildDir, "assets", "nested"), { recursive: true });
+  await writeFile(join(buildDir, "index.html"), site.replies.get(baseUrl)!.body as string);
+  const files = new Map([
+    ["assets/app.js", "export {};"],
+    ["assets/app.css", "body {}"],
+    // Worker and lazy assets need verification even though the HTML never names them.
+    ["assets/convert.worker-123.js", "import('./cbz-123.js');"],
+    ["assets/cbz-123.js", "export const format = 'cbz';"],
+    ["assets/html-123.js", "export const format = 'html';"],
+    ["assets/nested/parser-123.js", "export const parser = true;"],
+  ]);
+  for (const [path, body] of files) {
+    await writeFile(join(buildDir, path), body);
+    site.replies.set(site.url(path), { body, type: path.endsWith(".css") ? "text/css" : "text/javascript" });
+  }
+  await writeFile(join(buildDir, "assets", "app.js.map"), "not a deployed JS asset");
+  return { buildDir, files };
+}
+
 describe("hosted demo smoke", () => {
   it("normalizes a deployment base that is missing its trailing slash", async () => {
     const { fetcher } = deployment("https://demo.test/prd/");
@@ -93,9 +114,11 @@ describe("hosted demo smoke", () => {
     const result = await runHostedDemoSmoke({ baseUrl, repoRoot: await tempRoot(), fetcher });
     expect(result.status).toBe("passed");
     expect(result.browserAcceptance).toBe("not-assessed");
-    expect(result.checks).toHaveLength(21);
+    expect(result.checks).toHaveLength(22);
     expect(result.checks.every((check: { status: string }) => check.status === "passed")).toBe(true);
-    expect(fetcher).toHaveBeenCalledTimes(21);
+    expect(fetcher).toHaveBeenCalledTimes(22);
+    expect(result.checks.find((check: { id: string }) => check.id === "route:convert"))
+      .toMatchObject({ url: `${baseUrl}convert/`, status: "passed" });
     const artifact = JSON.parse(await readFile(result.summaryPath, "utf8"));
     expect(artifact).toMatchObject({
       contractVersion: "prd-hosted-demo-smoke-v0.1", baseUrl,
@@ -103,6 +126,109 @@ describe("hosted demo smoke", () => {
     });
     expect(artifact.checks.find((check: { id: string }) => check.id === "archive:comic-basic"))
       .toMatchObject({ sha256: expect.stringMatching(/^[a-f0-9]{64}$/), manifest: { profile: "comic" } });
+  });
+
+  it("fails when Convert is missing even if the other routes work", async () => {
+    const baseUrl = "https://demo.test/";
+    const site = deployment(baseUrl);
+    site.replies.delete(site.url("convert/"));
+    const result = await runHostedDemoSmoke({ baseUrl, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { id: string }) => check.id === "route:convert"))
+      .toMatchObject({ status: "failed", statusCode: 404 });
+  });
+
+  it.each(["https://demo.test/", "https://demo.test/prd/"])("compares every emitted JS/CSS asset with the local build under %s", async (baseUrl) => {
+    const site = deployment(baseUrl);
+    const { buildDir, files } = await localBuild(site, baseUrl);
+    const result = await runHostedDemoSmoke({ baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("passed");
+    expect(result.browserAcceptance).toBe("not-assessed");
+    expect(result.checks.find((check: { id: string }) => check.id === "build:assets"))
+      .toMatchObject({ status: "passed", assetCount: files.size });
+    for (const path of files.keys()) {
+      expect(result.checks.find((check: { url: string }) => check.url === site.url(path)))
+        .toMatchObject({ status: "passed", sha256: expect.stringMatching(/^[a-f0-9]{64}$/), expectedSha256: expect.any(String) });
+      expect(site.fetcher.mock.calls.filter(([href]) => href === site.url(path))).toHaveLength(1);
+    }
+    expect(site.fetcher.mock.calls.some(([href]) => href.endsWith(".map"))).toBe(false);
+  });
+
+  it.each([
+    ["assets/convert.worker-123.js", "text/html", "<html>SPA fallback</html>", 200],
+    ["assets/cbz-123.js", "text/javascript", "export const format = 'stale';", 200],
+    ["assets/html-123.js", "text/plain", "not found", 404],
+  ])("detects missing, stale or fallback lazy assets at %s", async (path, type, body, status) => {
+    const baseUrl = "https://demo.test/";
+    const site = deployment(baseUrl);
+    const { buildDir } = await localBuild(site, baseUrl);
+    site.replies.set(site.url(path as string), { type: type as string, body: body as string, status: status as number });
+    const result = await runHostedDemoSmoke({ baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { url: string }) => check.url === site.url(path as string)))
+      .toMatchObject({ status: "failed", statusCode: status, message: expect.any(String) });
+    expect(JSON.parse(await readFile(result.summaryPath, "utf8")).status).toBe("failed");
+  });
+
+  it("rejects shell assets from another build without fetching their URLs", async () => {
+    const baseUrl = "https://demo.test/prd/";
+    const site = deployment(baseUrl);
+    const { buildDir } = await localBuild(site, baseUrl);
+    site.replies.set(site.url("convert/"), {
+      body: '<div id="root"></div><script type="module" src="/prd/assets/stale.js"></script><link rel="stylesheet" href="/prd/assets/app.css">',
+      type: "text/html",
+    });
+    const result = await runHostedDemoSmoke({ baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { id: string }) => check.id === "route:convert"))
+      .toMatchObject({ status: "failed", message: expect.stringContaining("local build") });
+    expect(site.fetcher.mock.calls.some(([href]) => href.endsWith("stale.js"))).toBe(false);
+  });
+
+  it("rejects a build for the wrong base and still records other HTTP checks", async () => {
+    const baseUrl = "https://demo.test/prd/";
+    const site = deployment(baseUrl);
+    const { buildDir } = await localBuild(site, baseUrl);
+    await writeFile(join(buildDir, "index.html"), '<div id="root"></div><script type="module" src="/assets/app.js"></script><link rel="stylesheet" href="/assets/app.css">');
+    const result = await runHostedDemoSmoke({ baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { id: string }) => check.id === "build:assets"))
+      .toMatchObject({ status: "failed", message: expect.stringContaining("outside") });
+    expect(site.fetcher.mock.calls.every(([href]) => href.startsWith(baseUrl))).toBe(true);
+    expect(result.checks.find((check: { id: string }) => check.id === "archive:comic-basic").status).toBe("passed");
+  });
+
+  it("refuses symlinks in the local build rather than reading their targets", async () => {
+    const baseUrl = "https://demo.test/";
+    const site = deployment(baseUrl);
+    const { buildDir } = await localBuild(site, baseUrl);
+    await symlink(join(buildDir, "assets", "app.js"), join(buildDir, "assets", "linked.js"));
+    const result = await runHostedDemoSmoke({ baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { id: string }) => check.id === "build:assets"))
+      .toMatchObject({ status: "failed", message: expect.stringContaining("regular") });
+    expect(site.fetcher.mock.calls.some(([href]) => href.endsWith("linked.js"))).toBe(false);
+  });
+
+  it.each(["missing", "bytes", "entries"])("records a failed inventory for a local build exceeding its %s boundary", async (boundary) => {
+    const baseUrl = "https://demo.test/";
+    const site = deployment(baseUrl);
+    const { buildDir } = await localBuild(site, baseUrl);
+    if (boundary === "missing") await rm(join(buildDir, "index.html"));
+    if (boundary === "bytes") await writeFile(join(buildDir, "assets", "large.js"), "x".repeat(2048));
+    if (boundary === "entries") {
+      for (let index = 0; index < 129; index++) {
+        await writeFile(join(buildDir, "assets", `${index}.map`), "");
+      }
+    }
+    const result = await runHostedDemoSmoke({
+      baseUrl, buildDir, repoRoot: await tempRoot(), fetcher: site.fetcher,
+      ...(boundary === "bytes" ? { maxResponseBytes: 1024 } : {}),
+    });
+    expect(result.status).toBe("failed");
+    expect(result.checks.find((check: { id: string }) => check.id === "build:assets"))
+      .toMatchObject({ status: "failed", message: expect.any(String) });
+    expect(JSON.parse(await readFile(result.summaryPath, "utf8")).status).toBe("failed");
   });
 
   it.each([
@@ -189,7 +315,13 @@ describe("hosted demo smoke", () => {
   it("accepts only explicit CLI syntax and credential-free HTTP(S) base URLs", async () => {
     expect(parseHostedSmokeArgs([])).toEqual({ baseUrl: "https://prd.eonhive.com/" });
     expect(parseHostedSmokeArgs(["--", "--url", "https://demo.test/prd/"])).toEqual({ baseUrl: "https://demo.test/prd/" });
+    expect(parseHostedSmokeArgs(["--build-dir", "apps/prd-viewer-web/dist", "--url", "https://demo.test/"]))
+      .toEqual({ baseUrl: "https://demo.test/", buildDir: "apps/prd-viewer-web/dist" });
+    expect(parseHostedSmokeArgs(["--build-dir", "dist"]))
+      .toEqual({ baseUrl: "https://prd.eonhive.com/", buildDir: "dist" });
     expect(() => parseHostedSmokeArgs(["--url"])).toThrow("Usage");
+    expect(() => parseHostedSmokeArgs(["--build-dir"])).toThrow("Usage");
+    expect(() => parseHostedSmokeArgs(["--url", "https://demo.test/", "--url", "https://other.test/"])).toThrow("Usage");
     expect(() => parseHostedSmokeArgs(["--unknown"])).toThrow("Usage");
     for (const baseUrl of ["file:///tmp/site", "https://name:secret@demo.test/", "https://demo.test/?token=secret"]) {
       await expect(runHostedDemoSmoke({ baseUrl })).rejects.toThrow("HTTP(S) base URL");

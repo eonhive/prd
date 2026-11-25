@@ -89,3 +89,15 @@ The exact generated archive opened as fully supported structured content in the 
 Fresh fixed-build checks cover the default desktop dark view and 390/320px light views: target headings clear the controls by about 8 CSS pixels. The mobile outline drawer closes and focuses its selected heading; 320px pagination advances from page 1/3 to 2/3 and returns to continuous reading. No warning/error console entries were captured. These are browser viewport checks, not physical-device or actual assistive-technology acceptance.
 
 The `/prd/` production build, its 21 HTTP/package/artwork checks and Convert app-shell check pass. Browser access became disabled again before its tab opened, so prefix worker/conversion/download interaction acceptance is still pending. CBZ repair/descriptions, cancel/recovery, OS drag/drop, broader keyboard/assistive and production acceptance remain open. Saved screenshots, the real downloads, validation and `summary.json` are ignored under `examples/dist/convert-live-qa/`. There is no new format, public API, dependency or build-metadata contract.
+
+## Hosted asset verification — November 25, 2026
+
+The owner has deferred the remaining CBZ browser checks. The existing hosted
+HTTP smoke now includes `/convert/` and optionally compares a reviewed build's
+complete emitted `assets/` JS/CSS set using `--build-dir`. This catches missing
+workers/lazy parser chunks and stale/fallback bytes under both hosting bases,
+without adding build metadata, modifying Vite configuration or executing code.
+See the [hosting runbook](../governance/PRD_HOSTING_RUNBOOK.md#hosted-http-and-package-smoke).
+Passing delivery checks do not establish worker startup, native selection,
+conversion, repair, cancellation, downloads or Viewer return. Those live CBZ
+checks remain pending alongside physical-device and assistive acceptance.

@@ -325,7 +325,7 @@ pnpm viewer:demo:dev
 
 `viewer:demo:assets` packs canonical examples and copies selected `.prd` archives into the web viewer's ignored `public/examples/` directory for the hosted demo. Those hosted samples are demo assets only; they do not change PRD's packaged-first loading contract.
 
-The hosted app has three public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Workers Static Assets at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in [the hosting runbook](docs/governance/PRD_HOSTING_RUNBOOK.md).
+The hosted app has four public routes in one deployable Vite build: `/` is Home, `/viewer/` is the reference Web Viewer workspace, `/convert/` is the local conversion workspace, and `/docs/` is the public docs index. The intended production host is Cloudflare Workers Static Assets at `prd.eonhive.com`; GitHub Pages remains the temporary staging/fallback path served beneath the configured `/prd/` base path. Hosting operations are tracked in [the hosting runbook](docs/governance/PRD_HOSTING_RUNBOOK.md).
 
 The viewer translates authored IDs and same-document fragment links into namespaced, viewer-local DOM targets. Document, content-node, panel, and frame targets stay separate from viewer controls, even when a package uses IDs such as `document-stage` or `package-details`. These generated targets are an app detail, not a package-ID requirement. In panel-navigation or storyboard review-grid mode, selecting an outline item activates that panel/frame and moves keyboard focus to its viewing stage. Invalid packages show validation errors rather than being described as an unsupported runtime entry mode.
 
@@ -496,7 +496,7 @@ For Codex-driven work, use the repo-local run actions instead of manually piecin
 * `pnpm viewer:demo:check:cloudflare`
   Rebuilds production assets and validates the Workers deployment with an unauthenticated dry run.
 * `pnpm viewer:demo:check:hosted`
-  Checks the public demo's HTTP routes, entry assets, sample archive validity, and matching inspection JSON. Writes `examples/dist/viewer-hosted-smoke-summary.json`; use `-- --url https://your-host/base/` for a preview or staging deployment. This is not browser or launch acceptance.
+  Checks Home/Viewer/Convert/Docs HTTP routes, entry assets, sample archive validity, and matching inspection JSON. Writes `examples/dist/viewer-hosted-smoke-summary.json`; use `-- --url https://your-host/base/` for a preview or staging deployment. Add `--build-dir apps/prd-viewer-web/dist` to compare every emitted JS/CSS file, including conversion workers and lazy chunks, against a reviewed build for that hosting base. This verifies delivery; browser execution and launch acceptance remain separate.
 * `pnpm viewer:demo:preview:cloudflare`
   Rebuilds production assets and serves them through the local Workers runtime.
 * `pnpm viewer:demo:deploy:cloudflare`
@@ -522,7 +522,7 @@ The repo also now includes [`.github/workflows/codex-ci.yml`](.github/workflows/
 
 For release automation, the repo also includes [`.github/workflows/release.yml`](.github/workflows/release.yml), which gates npm publication through Changesets and CI on `main`.
 
-The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/workflows/viewer-demo-pages.yml). The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, and `/prd/docs/` as the public docs index. The public app is reachable at `prd.eonhive.com`; production pipeline confirmation and remaining launch QA are tracked in the hosting runbook. Workers uses native SPA fallback; the GitHub Pages workflow separately copies `index.html` to `404.html` for route refresh support.
+The hosted PRD Web Viewer demo has a [GitHub Pages fallback workflow](.github/workflows/viewer-demo-pages.yml). The workflow builds with `PRD_VIEWER_BASE_PATH=/prd/` and deploys `apps/prd-viewer-web/dist`, with `/prd/` as Home, `/prd/viewer/` as the viewer workspace route, `/prd/convert/` as Convert, and `/prd/docs/` as the public docs index. The public app is reachable at `prd.eonhive.com`; production pipeline confirmation and remaining launch QA are tracked in the hosting runbook. Workers uses native SPA fallback; the GitHub Pages workflow separately copies `index.html` to `404.html` for route refresh support.
 
 ---
 

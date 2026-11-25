@@ -249,6 +249,12 @@
 - [x] Fix the observed heading occlusion behind sticky reading controls. Verify measured clearance on desktop dark and 390/320px light viewports, mobile outline focus and pagination/continuous transitions; add three regressions and run the 1,417-test Node 22 gate. Save genuine browser screenshots/downloads separately from simulated tests.
 - [ ] Complete `/prd/` worker/conversion/download interactions when browser access returns; production build plus 21 HTTP checks and Convert shell pass, but browser use stopped before the prefix tab opened. Next live slice: CBZ order/description draft, reset/apply, failure/cancel/retry, current downloads and Viewer return; then remaining physical/assistive/production checks. Do not add adapters or broad editing to substitute for this acceptance.
 
+## Convert deployment checks — November 25, 2026
+
+- [x] Add Convert to the existing hosted HTTP smoke and optional `--build-dir` comparison of every emitted JS/CSS file, including workers and lazy parser chunks absent from the HTML shell. Preserve v0.1 diagnostics and `browserAcceptance: not-assessed`; reject mismatched build/base references, missing/stale/fallback bytes, local symlinks and inventory-budget excess. No app/build-config/public-package changes.
+- [x] Pass 34 focused hosting tests, the full 1,434-test Node 22 check/build/typecheck/canonical gate, aggregate examples and root-inclusive docs. Actual root/prefix production builds pass 31 checks and 10 compared assets each. Prove the real CLI fails on a missing served conversion worker returning HTTP 200 HTML while preserving its expected snapshot, then restore the worker. Keep ignored evidence in `examples/dist/convert-hosted-qa/`.
+- [ ] Keep the CBZ native browser checks above pending at the owner's explicit request. HTTP delivery does not prove conversion, page-order/description repair, cancellation/recovery, current downloads or Viewer return. Resume those checks when chat browser control is available. Keep physical/assistive/launch checks and owner-managed npm authentication/publication separate.
+
 ## Official logo assignments — November 25, 2026
 
 - [x] Replace placeholder site branding and favicon with the owner's official PRD artwork. Use theme-specific unlettered marks in shared navigation/footer, full logo in Home, dedicated Viewer/Convert workspace icons and PRD file marks for results/downloads. Track optimized derivatives in the app, retain sibling authoring originals, document all eleven source assignments and regeneration in `docs/product/PRD_VISUAL_IDENTITY.md`.
