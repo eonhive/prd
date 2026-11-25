@@ -109,6 +109,22 @@ and release gates. If versioning reports `ENOENT` for a changelog, restore the
 missing file and let the normal main-branch workflow prepare the version PR;
 do not bump package versions or publish locally to bypass the failure.
 
+### Repository policy blocks creating the version PR
+
+If the action has pushed `changeset-release/main` but reports `GitHub Actions
+is not permitted to create or approve pull requests`, keep the existing
+repository policy and workflow permissions. A maintainer can open a PR from
+that CI-generated branch to `main`, titled `chore: release packages`, then rerun
+the failed Release job. The action finds and updates the existing PR rather
+than creating another one. Do not generate replacement package versions or
+merge the version PR merely to clear this error.
+
+This recovery passed in [Release run 45695728381, attempt 2](https://github.com/eonhive/prd/actions/runs/45695728381/attempts/2)
+with version PR #78 on November 25, 2026. While the creation restriction remains,
+a maintainer must seed the PR again for a future release cycle after the prior
+version PR has merged. Automatic PR creation would require a separately
+approved repository-policy change; no such change was made in this recovery.
+
 Release runs are serialized and restricted to `main`. After an actual Changesets publish, the Release job calls the reusable `Post-Publish Consumer Smoke` workflow at the release commit. Creating/updating a version PR does not trigger it. The consumer audits registry metadata and runs `node scripts/external-consumer-smoke.mjs --workspace-versions`, installing each commit-declared version rather than assuming one shared version or following changing dist-tags. It has read-only repository permissions and no inherited publisher secrets. Maintainers can also dispatch read-only verification manually.
 
 The consumer's `prd-external-consumer-smoke-v0.2` summary records five install specs and 48 steps: six baseline package checks, 36 authoring round-trip checks (three profile starters, Markdown, and comic/storyboard image imports), then six HTML/SDK/CLI conversion checks. The original JSON/profile/source-byte/order verifiers remain active; `authoringRequired` still identifies the complete authoring matrix. The identical runner executes against five local tarballs during `pnpm release:check` before publication. `PRD_NPM_VERSION`/`PRD_NPM_DIST_TAG` and explicit programmatic `packageSpecs` remain available for manual checks; `--workspace-versions` is the normal exact-version CI path. A setup failure is a failed summary, not a passing run with no commands.
