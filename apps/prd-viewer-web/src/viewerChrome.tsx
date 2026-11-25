@@ -19,48 +19,46 @@ import {
   type RefObject,
 } from "react";
 import { getViewerOutlineTargetId, type ViewerDocumentOutlineItem } from "./viewerDocumentOutline.js";
-import { getViewerAppRoutePath, type ViewerAppRoute } from "./viewerRoutes.js";
+import { getViewerAppRoutePath, normalizeViewerBasePath, type ViewerAppRoute } from "./viewerRoutes.js";
 
 export type ViewerTheme = "dark" | "light";
 
-export function PrdBrandMark() {
-  const gradientId = useId();
+type PrdArtworkVariant = "symbol" | "logo" | "viewer" | "convert" | "file";
+
+const brandBasePath =
+  (import.meta as ImportMeta & { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
+
+export function PrdBrandMark({
+  variant = "symbol",
+  basePath = brandBasePath,
+}: {
+  variant?: PrdArtworkVariant;
+  basePath?: string;
+}) {
+  const assetPath = `${normalizeViewerBasePath(basePath)}brand/`;
+  const themed = variant === "symbol" || variant === "logo" || variant === "file";
+  const name = `prd-${variant}`;
+
+  // CSS follows the site's explicit theme, including changes in other open tabs.
   return (
-    <svg
-      className="prd-brand-symbol"
-      viewBox="0 0 48 52"
-      fill="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient
-          id={gradientId}
-          x1="8"
-          y1="3"
-          x2="39"
-          y2="48"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#DCBAFF" />
-          <stop offset="0.45" stopColor="#9548FF" />
-          <stop offset="1" stopColor="#3D16B5" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M8 3h24l11 12v32H8z"
-        fill={`url(#${gradientId})`}
-        stroke="#B99BFF"
-        strokeWidth="0.6"
+    <span className="prd-brand-symbol" aria-hidden="true" data-artwork={variant}>
+      <img
+        className={themed ? "prd-artwork-light" : undefined}
+        src={`${assetPath}${name}${themed ? "-light" : ""}.webp`}
+        alt=""
+        width="256"
+        height="256"
       />
-      <path d="M4 31C13 21 30 24 43 15v14C30 39 13 35 4 46z" fill="#6024DC" />
-      <path
-        d="M4 31C13 21 30 24 43 15M4 46c9-11 26-7 39-17"
-        stroke="#ECDFFF"
-        strokeWidth="1"
-      />
-      <path d="M32 3v12h11" fill="#F9F4FF" />
-      <path d="M8 47h35" stroke="#A46BFF" />
-    </svg>
+      {themed && (
+        <img
+          className="prd-artwork-dark"
+          src={`${assetPath}${name}-dark.webp`}
+          alt=""
+          width="256"
+          height="256"
+        />
+      )}
+    </span>
   );
 }
 
@@ -372,10 +370,10 @@ export function ViewerSiteNavigation({
         aria-label="PRD Home"
       >
         <span className="brand-mark" aria-hidden="true">
-          <PrdBrandMark />
+          <PrdBrandMark basePath={basePath} />
         </span>
         <span>
-          <strong>{route === "viewer" ? "PRD Viewer" : route === "convert" ? "PRD Convert" : "PRD"}</strong>
+          <strong>PRD</strong>
           <small>Portable Responsive Document</small>
         </span>
       </a>
@@ -441,7 +439,7 @@ export function PrdSiteFooter({ basePath }: { basePath: string }) {
       <div className="prd-footer-brand">
         <a className="brand-lockup" href={home} aria-label="PRD Home">
           <span className="brand-mark" aria-hidden="true">
-            <PrdBrandMark />
+            <PrdBrandMark basePath={basePath} />
           </span>
           <span>
             <strong>PRD</strong>
@@ -582,7 +580,7 @@ export function ViewerWorkspaceHeader({
     <div className="viewer-dashboard-topbar">
       <div className="viewer-document-heading">
         <span className="viewer-document-icon">
-          <ViewerIcon name="file" />
+          <PrdBrandMark variant="viewer" />
         </span>
         <div>
           <p className="eyebrow">PRD Web Viewer</p>

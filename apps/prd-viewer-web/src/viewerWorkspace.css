@@ -88,15 +88,10 @@
   letter-spacing: -0.025em;
 }
 .viewer-document-icon {
-  display: grid;
-  place-items: center;
+  display: block;
   flex-shrink: 0;
-  width: 2.2rem;
-  height: 2.2rem;
-  border: 1px solid var(--line);
-  border-radius: 0.55rem;
-  color: var(--accent);
-  background: var(--panel-soft);
+  width: 2.6rem;
+  height: 2.6rem;
 }
 .viewer-profile-badge {
   flex-shrink: 0;
@@ -798,32 +793,9 @@
   box-shadow: none;
 }
 .viewer-welcome-illustration {
-  position: relative;
-  width: 4.6rem;
+  width: 5rem;
   height: 5rem;
   margin-bottom: 1.25rem;
-}
-.viewer-welcome-illustration > .prd-brand-symbol {
-  position: relative;
-  width: 4.5rem;
-  height: 5rem;
-  transform: rotate(-7deg);
-  filter: drop-shadow(0 12px 18px #803ee54a);
-}
-.viewer-welcome-sheet {
-  position: absolute;
-  inset: 0.6rem -0.3rem -0.1rem 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--accent) 9%, var(--panel));
-  transform: rotate(10deg);
-}
-.viewer-welcome-spark {
-  position: absolute;
-  top: -0.35rem;
-  right: -0.8rem;
-  color: var(--accent);
-  font-size: 1.4rem;
 }
 .empty-viewer-state > .eyebrow {
   margin: 0 0 0.85rem;
@@ -1201,13 +1173,9 @@
     max-width: 30ch;
   }
   .viewer-welcome-illustration {
-    width: 4.8rem;
-    height: 5.25rem;
-    margin-bottom: 1.5rem;
-  }
-  .viewer-welcome-illustration > .prd-brand-symbol {
-    width: 4.5rem;
+    width: 5rem;
     height: 5rem;
+    margin-bottom: 1.5rem;
   }
   .viewer-welcome-examples {
     margin-top: 2rem;

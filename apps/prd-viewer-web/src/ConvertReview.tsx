@@ -88,7 +88,7 @@ export function ConvertReview({
       {!completed || !report ? (
         <div className="convert-empty">
           <span className="convert-empty-mark">
-            <PrdBrandMark />
+            <PrdBrandMark variant="file" />
           </span>
           <div>
             <h3>
@@ -105,7 +105,7 @@ export function ConvertReview({
         <>
           <div className="convert-result-summary">
             <span className="convert-result-mark">
-              <PrdBrandMark />
+              <PrdBrandMark variant="file" />
             </span>
             <div>
               <span className="convert-kicker">
@@ -259,7 +259,9 @@ export function ConvertReview({
               </div>
             </div>
             <aside className="convert-download-panel" aria-label="Use your PRD">
-              <ViewerIcon name="book" />
+              <span className="convert-preview-icon">
+                <PrdBrandMark variant="viewer" />
+              </span>
               <h3>Ready for a closer look.</h3>
               <p>
                 Open this exact archive in the PRD Viewer, then download it to
@@ -274,6 +276,9 @@ export function ConvertReview({
                   href={archiveUrl}
                   download="converted.prd"
                 >
+                  <span className="prd-download-icon">
+                    <PrdBrandMark variant="file" />
+                  </span>
                   Download PRD <span aria-hidden="true">↓</span>
                 </a>
               )}
