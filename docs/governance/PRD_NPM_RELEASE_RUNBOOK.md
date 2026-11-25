@@ -91,6 +91,24 @@ pnpm changeset
 
 Public versions follow independent Changesets planning with empty `fixed`/`linked` groups. Review each planned version and concrete internal dependency range in the version PR; do not bump unchanged packages just to match another package's number. A real versioning preview applied only to a temporary workspace on October 30 left `prd-types` at `0.1.1`, planned `prd-validator`, `prd-packager`, `prd-converter` and `prd-cli` at `0.2.0`, and updated their internal ranges accordingly. This is evidence for the then-current queue, not a hardcoded next-release version. Checkout manifests were not changed by that preview.
 
+### Changelog prerequisite
+
+Every package in `scripts/release-packages.mjs` must have a readable, nonempty
+`CHANGELOG.md`, including a new package awaiting its first release. The workspace
+currently sets `changelog: false` in `.changeset/config.json`, so the version
+command does not create these files. The [Changesets action's version-PR
+implementation](https://github.com/changesets/action/blob/maintenance/v1/src/run.ts)
+still reads each changed package's changelog after versioning to construct the
+PR body. A successful `pnpm release:version` alone does not verify that step.
+
+For a newly onboarded public package, add implementation notes under
+`Unreleased` without inventing published versions or release dates. Keep the
+notes aligned with supported behavior. `scripts/release-packages.test.ts` checks
+this prerequisite across the shared public catalog during the existing test
+and release gates. If versioning reports `ENOENT` for a changelog, restore the
+missing file and let the normal main-branch workflow prepare the version PR;
+do not bump package versions or publish locally to bypass the failure.
+
 Release runs are serialized and restricted to `main`. After an actual Changesets publish, the Release job calls the reusable `Post-Publish Consumer Smoke` workflow at the release commit. Creating/updating a version PR does not trigger it. The consumer audits registry metadata and runs `node scripts/external-consumer-smoke.mjs --workspace-versions`, installing each commit-declared version rather than assuming one shared version or following changing dist-tags. It has read-only repository permissions and no inherited publisher secrets. Maintainers can also dispatch read-only verification manually.
 
 The consumer's `prd-external-consumer-smoke-v0.2` summary records five install specs and 48 steps: six baseline package checks, 36 authoring round-trip checks (three profile starters, Markdown, and comic/storyboard image imports), then six HTML/SDK/CLI conversion checks. The original JSON/profile/source-byte/order verifiers remain active; `authoringRequired` still identifies the complete authoring matrix. The identical runner executes against five local tarballs during `pnpm release:check` before publication. `PRD_NPM_VERSION`/`PRD_NPM_DIST_TAG` and explicit programmatic `packageSpecs` remain available for manual checks; `--workspace-versions` is the normal exact-version CI path. A setup failure is a failed summary, not a passing run with no commands.

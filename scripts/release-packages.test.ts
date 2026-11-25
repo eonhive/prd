@@ -51,6 +51,15 @@ async function workspace() {
 }
 
 describe("public release catalog", () => {
+  it.each(publicReleasePackages)(
+    "provides a readable changelog for $name before Changesets builds the version PR",
+    async ({ directory }) => {
+      // The action reads these files even when changelog generation is disabled.
+      const changelog = await readFile(join(directory, "CHANGELOG.md"), "utf8");
+      expect(changelog.trim()).not.toBe("");
+    }
+  );
+
   it("matches the actual public Changesets workspace rather than silently omitting a package", async () => {
     const config = JSON.parse(await readFile(".changeset/config.json", "utf8"));
     const actual: string[] = [];

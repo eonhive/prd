@@ -2,6 +2,13 @@
 
 ## 2026-11-25
 
+### Converter Changelog Release Prerequisite
+
+- Reproduced the Release workflow's post-versioning `ENOENT` for `packages/prd-converter/CHANGELOG.md`. Changesets versioning itself succeeds; the GitHub action then reads each changed package's changelog to construct its version PR. The workspace's existing `changelog: false` setting does not create the converter's missing file.
+- Added the converter's changelog with truthful Unreleased implementation notes, without inventing a published version/date. Added five catalog-driven changelog-readability regressions to `scripts/release-packages.test.ts`; the converter case fails with the original missing-file error before the fix. The existing release gate now catches the prerequisite for every public package before the action runs. Documented this onboarding/recovery requirement in the npm release runbook.
+- Validation passes on Node **22.22.2** / pnpm **10.32.1**: **25 focused release tests**, full **`pnpm release:check` with 1,422 tests / 69 files**, typecheck/workspace build, all five canonical example validations and installed-tarball/48-step consumer checks. An isolated snapshot ran the exact `pnpm release:version` command and read all four changed packages' changelogs successfully; it planned converter/validator/packager `0.2.0`, CLI `0.3.0`, and left types unchanged. The temporary snapshot was removed; checkout manifests, lockfile, Changesets policy and queued changesets are unchanged. Evidence is ignored under `examples/dist/converter-changelog-qa/`.
+- No runtime, API, format, dependency, release-workflow credential or manual version change. This prerequisite fix needs no new package Changeset; the existing queue remains the version-planning authority. Publication stays on the normal main-branch Changesets workflow, with review/merge of its resulting version PR as a separate release step. Root-inclusive docs consistency and whitespace checks pass.
+
 ### Official Logos Committed, Pushed And Deployed
 
 - Committed the 25-file logo change as `599e662`, pushed `thehive/prd-official-logos` and merged PR #76 into `main` at `1c899b2`. Both branch/PR validation runs passed the full Codex checks, example smoke, archive packaging and installed-tarball smoke; automated code review reported no findings and security review completed. The actual Cloudflare production build `759a3b19-0068-4fd9-a662-1c2a122c7937` passed through the configured Git-connected Workers path. No local credential/scope change or manual Wrangler publication was needed.
