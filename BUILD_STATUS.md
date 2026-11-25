@@ -2,6 +2,13 @@
 
 ## 2026-11-25
 
+### Official Logos Committed, Pushed And Deployed
+
+- Committed the 25-file logo change as `599e662`, pushed `thehive/prd-official-logos` and merged PR #76 into `main` at `1c899b2`. Both branch/PR validation runs passed the full Codex checks, example smoke, archive packaging and installed-tarball smoke; automated code review reported no findings and security review completed. The actual Cloudflare production build `759a3b19-0068-4fd9-a662-1c2a122c7937` passed through the configured Git-connected Workers path. No local credential/scope change or manual Wrangler publication was needed.
+- Verified `https://prd.eonhive.com/` serves the new root-build JavaScript/CSS bytes, all eleven exact owner-derived brand files, favicon/touch references and Home/Viewer/Convert/Docs shells: **17 production route/bundle/image checks** pass. The existing hosted smoke passes all **21 package/inspection/preview checks**. Ignored evidence: `examples/dist/official-brand-qa/production-http-summary.json` and `examples/dist/viewer-hosted-smoke-summary.json`.
+- Fresh production browser review confirms Home light/dark logos, dedicated Viewer/Convert icons, decoded assets, shared Docs marks, a valid Document Basic opening and 320px Convert/Docs without horizontal overflow. Restored the normal browser viewport and left the production Home available. Physical home-screen icons, an unbadged favicon check and the existing native conversion/assistive/device acceptance remain open; no new live conversion claim is made.
+- Main-branch Codex CI and website deployment passed. The separate npm Release workflow passed its release gate/preflight but failed during Changesets versioning with `ENOENT` for `packages/prd-converter/CHANGELOG.md`; no npm package publication occurred. Recorded this concrete release follow-up in NEXT_STEPS rather than changing the release system during the logo deployment. The initial implementation notes below predate this authorized deployment.
+
 ### Official Owner-Authored PRD Logos
 
 - Replaced the inline folded-document approximation with the owner's official artwork. Shared Home/Viewer/Convert/Docs navigation and Home/Docs footers use theme-specific unlettered PRD marks beside live text. Home uses the lettered logo without the former generated card/duplicate PRD label. Viewer uses the eye application icon in its heading/welcome; Convert uses the conversion application icon in its heading, file marks for results/downloads, and the Viewer icon for preview handoff. Home's PRD download also uses the file mark. Existing generic toolbar/resource icons remain simple.

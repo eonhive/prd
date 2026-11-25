@@ -265,3 +265,20 @@ favicons, so final visual favicon/home-screen acceptance needs a normal browser
 and physical device after deployment. The source-derived icon files and links
 are verified independently. No deployment, permission change, OS association or
 installation capability was introduced.
+
+### Production rollout
+
+The owner authorized publication after the initial local implementation. PR #76
+merged at `1c899b2` on November 25, 2026; the configured main-branch Cloudflare
+Workers build `759a3b19-0068-4fd9-a662-1c2a122c7937` deployed successfully to
+`https://prd.eonhive.com/`. Production verification passes all 21 existing hosted
+package checks plus 17 route, exact-bundle, logo and favicon/touch checks. The
+served image bytes match the tracked derivatives and the entry bundles match
+the validated root build.
+
+Fresh production browser review verifies Home's light/dark identity,
+Viewer/Convert product icons, shared Docs marks, a valid Document Basic opening
+and 320px Convert/Docs without horizontal overflow. Physical home-screen icons,
+unbadged tab-favicon appearance, native conversion selection and the existing
+assistive/device acceptance remain separate. No logo redraw, package-format
+change, permission change or manual npm publication accompanied the rollout.
