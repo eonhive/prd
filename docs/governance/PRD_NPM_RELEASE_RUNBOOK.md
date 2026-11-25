@@ -295,3 +295,29 @@ Release/check flows should keep smoke gating consistent:
 The review branch preserves PR #71’s step-scoped `NODE_AUTH_TOKEN` mapping and preflight reporting. Only the Changesets publishing step remains: completed first-preview bootstrap is retired from automatic CI under PRD-057. Codex CI and release validation use Node 22; the separate read-only post-publish baseline consumer remains Node 20.
 
 Read-only npm checks on October 30 still show the original four packages at `0.1.1`, no CLI `0.2.0`, and no converter publication. The newly calculated Changesets plan is CLI `0.3.0`, validator/packager/converter `0.2.0`, with types unchanged at `0.1.1`. This is a candidate plan, not a publication or a manual version update. Review the version PR’s actual versions and concrete dependency ranges after this implementation merges.
+
+## Version PR #78 publication authentication — November 25, 2026
+
+Version PR #78 merged at `4e4dab8`. Release-note/README/status corrections landed
+at `184d53d`. Both main Release attempts (`45698148499` and `45698365350`) passed
+the full release gate and authenticated preflight, then npm rejected actual PUT
+requests with E403 and a 2FA/granular-token publishing requirement. The failed
+versions are CLI `0.3.0` and validator/packager/converter `0.2.0`; a fresh registry
+audit confirms none is published. Types remains at the already published
+`0.1.1`. Post-publish consumer verification was correctly skipped.
+
+Successful `npm whoami`, organization membership and generated provenance do
+not prove publishing authorization. The account owner must review the existing
+publisher token's package/scope write access, publish-versus-stage-only access
+and [npm's CI publishing/2FA requirements](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/).
+If a replacement credential is needed, create it through npm's credential UI
+and store it directly in GitHub Actions `NPM_TOKEN`; never put it in chat, source
+or diagnostic artifacts. Do not weaken account/package 2FA or bypass preflight.
+[Trusted publishing](https://docs.npmjs.com/trusted-publishers/) is a separate
+explicit authentication migration, not an assumed repair to this token lane.
+
+After the credential is corrected, rerun the reviewed main Release workflow
+and inspect the actual npm publish results. Require the exact registry audit
+and publish-gated installed-consumer workflow to pass before marking item 46
+complete or updating current public availability claims. Do not manually bump
+versions or publish locally to work around this failure.

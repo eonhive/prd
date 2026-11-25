@@ -2,6 +2,13 @@
 
 ## 2026-11-25
 
+### Version PR #78 Merged; Registry Publication Blocked By npm Authentication
+
+- PR #78 was independently merged at `4e4dab8` while its documentation review was being completed. Its runtime/version metadata matches the locally verified candidate. Applied the eight-file release-note/README/status corrections to main as `184d53d`; both inline review findings are resolved. The source checkout is versioned at CLI `0.3.0`, converter/packager/validator `0.2.0`, types `0.1.1`; the 19 source changesets are consumed.
+- Main Release runs `45698148499` (merge) and `45698365350` (documentation follow-up) pass their full release gates and authenticated publisher preflight but fail actual npm publication. The registry PUT returns **E403**, requiring 2FA or an appropriate granular publishing token with the required CI 2FA authorization. Provenance generation succeeds but does not establish registry publication. The publish-gated consumer job is skipped; no post-publish success is claimed.
+- A fresh five-package registry audit confirms all four new versions are absent, the converter is still unpublished, and the original types/validator/packager/CLI `latest` tags remain `0.1.1`. No partial new release was observed. Evidence: `examples/dist/release-registry-audit-summary.json`; local candidate checks remain recorded under ignored `examples/dist/version-78-qa/`.
+- Required next action is owner-managed npm publishing authentication and the GitHub Actions `NPM_TOKEN` secret. Preserve CI-only publication, provenance, package versions and 2FA; do not use a workstation publish or report preflight as write authorization. After the credential is corrected, rerun Release, require exact per-package registry/latest/dependency/provenance checks and complete the publish-gated npm consumer job. Public feature-availability claims remain on the verified old registry baseline until that succeeds.
+
 ### Version PR #78 Reviewed For Publication
 
 - Reviewed the generated `changeset-release/main` plan: CLI `0.3.0`, converter/packager/validator `0.2.0`, types unchanged at `0.1.1`. Public internal ranges and private Web Viewer ranges follow those assigned versions; the lockfile updates matching importer specifiers without adding dependencies. The version branch consumes the 19 queued changesets. Earlier statements that manifests/changesets were unchanged describe the prerequisite-fix task, not this versioned checkout.
