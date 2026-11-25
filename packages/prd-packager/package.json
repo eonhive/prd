@@ -1,6 +1,6 @@
 {
   "name": "@eonhive/prd-packager",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Build .prd ZIP archives from PRD package directories.",
   "keywords": [
     "prd",
@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@eonhive/prd-types": "^0.1.1",
-    "@eonhive/prd-validator": "^0.1.1",
+    "@eonhive/prd-validator": "^0.2.0",
     "fflate": "^0.8.2"
   }
 }

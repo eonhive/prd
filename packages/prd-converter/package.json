@@ -1,6 +1,6 @@
 {
   "name": "@eonhive/prd-converter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Deterministic source ingestion using canonical PRD types, validation and packaging.",
   "license": "MIT",
   "repository": {
@@ -43,9 +43,9 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@eonhive/prd-packager": "^0.1.1",
+    "@eonhive/prd-packager": "^0.2.0",
     "@eonhive/prd-types": "^0.1.1",
-    "@eonhive/prd-validator": "^0.1.1"
+    "@eonhive/prd-validator": "^0.2.0"
   },
   "optionalDependencies": {
     "@napi-rs/canvas": "1.0.10",
