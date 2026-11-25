@@ -4,12 +4,12 @@
  * Purpose: Verify deployed HTTP assets and sample packages without claiming browser acceptance.
  * Author: Stan Nesi
  * Created: October 27, 2026
- * Updated: October 27, 2026
+ * Updated: November 25, 2026
  * Notes: Vibe coded with Codex.
  */
 
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
@@ -28,11 +28,19 @@ const profiles = {
 
 export function parseHostedSmokeArgs(args) {
   const values = args.filter((arg) => arg !== "--");
-  if (values.length === 0) return { baseUrl: "https://prd.eonhive.com/" };
-  if (values.length === 2 && values[0] === "--url" && values[1]) {
-    return { baseUrl: values[1] };
+  const options = { baseUrl: "https://prd.eonhive.com/" };
+  const seen = new Set();
+  for (let index = 0; index < values.length; index += 2) {
+    const flag = values[index];
+    const value = values[index + 1];
+    if (!["--url", "--build-dir"].includes(flag) || !value || value.startsWith("--") || seen.has(flag)) {
+      throw new Error("Usage: pnpm viewer:demo:check:hosted [-- --url https://host/base/] [--build-dir path/to/dist]");
+    }
+    seen.add(flag);
+    if (flag === "--url") options.baseUrl = value;
+    else options.buildDir = value;
   }
-  throw new Error("Usage: pnpm viewer:demo:check:hosted [-- --url https://host/base/]");
+  return options;
 }
 
 function normalizeBaseUrl(value) {
@@ -72,8 +80,55 @@ function appAssets(html, pageUrl, base) {
   return assets;
 }
 
+async function localBuildAssets(buildDir, base, maxBytes) {
+  const root = resolve(buildDir);
+  const assets = new Map();
+  let entries = 0;
+  let totalBytes = 0;
+
+  async function readBuildFile(path) {
+    const metadata = await lstat(path);
+    if (!metadata.isFile()) throw new Error("Local build files must be regular files, without symlinks.");
+    if (metadata.size > maxBytes - totalBytes) throw new Error("Local build exceeds the smoke byte budget.");
+    const bytes = await readFile(path);
+    totalBytes += bytes.length;
+    if (totalBytes > maxBytes) throw new Error("Local build exceeds the smoke byte budget.");
+    return bytes;
+  }
+
+  const html = await readBuildFile(join(root, "index.html"));
+  const entryAssets = appAssets(html.toString("utf8"), base, base);
+
+  async function visit(path) {
+    const directory = join(root, path);
+    if (!(await lstat(directory)).isDirectory()) throw new Error("Local build assets must use regular directories, without symlinks.");
+    const children = await readdir(directory, { withFileTypes: true });
+    children.sort((left, right) => left.name < right.name ? -1 : left.name > right.name ? 1 : 0);
+    for (const child of children) {
+      if (++entries > 128) throw new Error("Local build exceeds the 128-entry smoke budget.");
+      const relative = `${path}/${child.name}`;
+      if (child.isDirectory()) await visit(relative);
+      else {
+        if (!child.isFile()) throw new Error("Local build assets must be regular files, without symlinks.");
+        if (!/\.(?:js|css)$/.test(child.name)) continue;
+        const bytes = await readBuildFile(join(root, relative));
+        const url = new URL(relative.split("/").map(encodeURIComponent).join("/"), base);
+        assets.set(url.href, { kind: child.name.endsWith(".css") ? "css" : "javascript", bytes });
+      }
+    }
+  }
+
+  // Check every emitted chunk, including workers and lazy imports absent from index.html.
+  await visit("assets");
+  for (const [href, kind] of entryAssets) {
+    if (assets.get(href)?.kind !== kind) throw new Error("Local build is missing a referenced JS/CSS entry asset.");
+  }
+  return { assets, entryAssets };
+}
+
 export async function runHostedDemoSmoke({
   baseUrl = "https://prd.eonhive.com/",
+  buildDir,
   repoRoot = process.cwd(),
   fetcher = fetch,
   timeoutMs = 15000,
@@ -135,11 +190,29 @@ export async function runHostedDemoSmoke({
 
   try {
     const assets = new Map();
-    for (const [id, path] of [["home", ""], ["viewer", "viewer/"], ["docs", "docs/"]]) {
+    let localBuild;
+    if (buildDir !== undefined) {
+      const inventory = { id: "build:assets", status: "failed" };
+      checks.push(inventory);
+      try {
+        localBuild = await localBuildAssets(resolve(repoRoot, buildDir), base, maxResponseBytes);
+        inventory.assetCount = localBuild.assets.size;
+        inventory.status = "passed";
+        for (const [href, asset] of localBuild.assets) assets.set(href, asset.kind);
+      } catch (error) {
+        summary.status = "failed";
+        inventory.message = error instanceof Error ? error.message : String(error);
+      }
+    }
+    for (const [id, path] of [["home", ""], ["viewer", "viewer/"], ["convert", "convert/"], ["docs", "docs/"]]) {
       const url = new URL(path, base);
       await check(`route:${id}`, url, (bytes, type) => {
         if (!/text\/html/i.test(type)) throw new Error("Expected an HTML app shell.");
-        for (const [asset, kind] of appAssets(bytes.toString("utf8"), url, base)) assets.set(asset, kind);
+        const entries = appAssets(bytes.toString("utf8"), url, base);
+        if (localBuild && !isDeepStrictEqual(entries, localBuild.entryAssets)) {
+          throw new Error("App shell entry assets differ from the selected local build.");
+        }
+        for (const [asset, kind] of entries) assets.set(asset, kind);
         return {};
       });
     }
@@ -148,6 +221,12 @@ export async function runHostedDemoSmoke({
         const expected = kind === "css" ? /text\/css/i : /(?:javascript|ecmascript)/i;
         if (!expected.test(type) || !bytes.length || /^\s*<(?:!doctype|html)/i.test(bytes.toString("utf8"))) {
           throw new Error(`Expected ${kind} bytes, not an HTML fallback or empty asset.`);
+        }
+        const local = localBuild?.assets.get(href);
+        if (local) {
+          if (!bytes.equals(local.bytes)) throw new Error("Deployed JS/CSS bytes differ from the selected local build.");
+          const sha256 = createHash("sha256").update(bytes).digest("hex");
+          return { sha256, expectedSha256: sha256 };
         }
         return {};
       });

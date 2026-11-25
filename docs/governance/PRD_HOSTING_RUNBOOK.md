@@ -12,16 +12,17 @@ Production target:
 
 - `https://prd.eonhive.com/` = Home
 - `https://prd.eonhive.com/viewer/` = PRD Web Viewer workspace
+- `https://prd.eonhive.com/convert/` = local PRD Convert workspace
 - `https://prd.eonhive.com/docs/` = public docs index
 
 Temporary staging/fallback target:
 
 - GitHub Pages continues to serve the same Vite app under the repository base path `/prd/`.
-- GitHub Pages routes are `/prd/`, `/prd/viewer/`, and `/prd/docs/`.
+- GitHub Pages routes are `/prd/`, `/prd/viewer/`, `/prd/convert/`, and `/prd/docs/`.
 
 ## Hosting Policy
 
-Cloudflare Workers Static Assets is the intended production host for `prd.eonhive.com` (PRD-039). The same Vite app serves Home, Docs, the Web Viewer, and generated sample archives. It needs no Worker script, API, database, or document-upload service.
+Cloudflare Workers Static Assets is the intended production host for `prd.eonhive.com` (PRD-039). The same Vite app serves Home, Docs, Convert, the Web Viewer, and generated sample archives. It needs no Worker script, API, database, or document-upload service.
 
 This replaces the earlier Cloudflare Pages configuration. Do not deploy this repository with `wrangler pages deploy` or configure it as a new Pages project.
 
@@ -77,7 +78,7 @@ the embedded reference Viewer continues to open the original valid archive.
 
 Hosted sample archives are demo assets only. They do not define a PRD network-loading guarantee and do not change the reference viewer truth: eager whole-package in-memory loading.
 
-The root `wrangler.toml` declares `assets.directory = "./apps/prd-viewer-web/dist"` and `assets.not_found_handling = "single-page-application"`. Workers serves existing static files directly and handles SPA navigation to `/viewer/` and `/docs/`. The former Pages `_redirects` catch-all is removed so it does not override native asset routing. The GitHub Pages workflow still copies `index.html` to `404.html` for fallback route refreshes.
+The root `wrangler.toml` declares `assets.directory = "./apps/prd-viewer-web/dist"` and `assets.not_found_handling = "single-page-application"`. Workers serves existing static files directly and handles SPA navigation to `/viewer/`, `/convert/`, and `/docs/`. The former Pages `_redirects` catch-all is removed so it does not override native asset routing. The GitHub Pages workflow still copies `index.html` to `404.html` for fallback route refreshes.
 
 ## Hosted HTTP And Package Smoke
 
@@ -91,13 +92,42 @@ pnpm viewer:demo:check:hosted -- --url https://eonhive.github.io/prd/
 
 The command builds the existing validator and defaults to `https://prd.eonhive.com/`. Run it against a demo deployment you own, without credentials, query strings, or fragments in its base URL. It never publishes, uploads a user document, changes hosting settings, or executes the downloaded JavaScript.
 
-The check verifies Home/Viewer/Docs HTML shells, their same-origin/base-path module and CSS entry assets, all four canonical hosted sample archives, and their adjacent inspection JSON. Archives pass the existing validator with their expected profiles. Inspection metadata must match the downloaded archive's manifest, archive bytes, logical file count, and logical byte total. This catches stale/missing JSON and HTTP 200 SPA fallbacks rather than trusting a successful HTTP status.
+The check verifies Home/Viewer/Convert/Docs HTML shells, their same-origin/base-path module and CSS entry assets, all four canonical hosted sample archives, and their adjacent inspection JSON. Archives pass the existing validator with their expected profiles. Inspection metadata must match the downloaded archive's manifest, archive bytes, logical file count, and logical byte total. This catches stale/missing JSON and HTTP 200 SPA fallbacks rather than trusting a successful HTTP status.
 
 The profile follow-up adds preview metadata and exact image-byte/MIME checks
-against each validated visual archive. A healthy deployment now reports 21
-checks (the earlier 13 plus two preview JSON files and six source images).
+against each validated visual archive. The default check now reports 22
+checks: the earlier 21 plus the Convert route.
 Older deployments without these assets are expected to fail the new checks.
 This verifies source correspondence, not browser decoding or visual acceptance.
+
+To verify the deployed code against a reviewed production build, add its output
+directory. Build it for the same hosting base as the selected URL:
+
+```bash
+pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:check:hosted -- --url https://your-preview.workers.dev/ --build-dir apps/prd-viewer-web/dist
+```
+
+For `/prd/`, first run `pnpm viewer:demo:build:github-pages`, then select that
+deployment's `/prd/` base URL with the same `--build-dir` option. The output is
+read as local trusted build data; no downloaded JavaScript is evaluated. The
+checker inventories every `.js` and `.css` file under `assets/`, including nested
+files, module workers and lazy HTML/CBZ/parser chunks absent from `index.html`.
+Each is fetched once from the selected origin/base and compared byte-for-byte.
+Shell entry references must match the local index. Missing chunks, HTML fallback
+responses, stale bytes and a local build for the wrong base fail the check.
+Source maps and unrelated public files are outside this comparison.
+
+The optional `build:assets` result records inventory success/failure and asset
+count. Matching asset results include actual/expected diagnostic SHA-256 values;
+the existing v0.1 summary contract and browser-acceptance fields are retained.
+Local inventory errors also retain a failed summary while ordinary HTTP/package
+checks continue. Inventory is capped at 128 visited asset entries and the shared
+16 MiB byte budget across the index and selected local files; symlinks and special
+files are refused. These are smoke-tool guardrails for trusted build output,
+not a filesystem sandbox or PRD format limits. The total check count depends on
+the build's emitted chunks. This verifies asset delivery, not worker execution
+or successful conversion; keep native CBZ/browser acceptance pending.
 
 Diagnostics are written to ignored `examples/dist/viewer-hosted-smoke-summary.json` using contract `prd-hosted-demo-smoke-v0.1`: generation time, normalized base URL, overall status, and individual URL/check results. Successful archive results include a SHA-256 diagnostic digest; it is not a signature or authenticity claim. Ordinary check failures retain the artifact and exit nonzero. Each response has a 15-second timeout and a 16 MiB smoke-download safety budget; these are operator guardrails for the fixed demo assets, not PRD validity limits. Temporary downloads are removed after inspection. Redirects and out-of-base/origin entry assets are rejected.
 
@@ -133,7 +163,7 @@ For an authorized manual deployment, run `pnpm exec wrangler whoami` to confirm 
 1. Verify the Worker on its assigned `workers.dev` URL first.
 2. Confirm `eonhive.com` is an active zone in the intended Cloudflare account.
 3. In the Worker's Settings, Domains & Routes, add Custom Domain `prd.eonhive.com`. If an old Pages assignment or CNAME conflicts, resolve that assignment deliberately before cutover; do not delete unrelated DNS records.
-4. Verify HTTPS on `https://prd.eonhive.com/`, then direct navigation and hard refresh at `/viewer/` and `/docs/`.
+4. Verify HTTPS on `https://prd.eonhive.com/`, then direct navigation and hard refresh at `/viewer/`, `/convert/`, and `/docs/`.
 5. Open `document-basic.prd`, `comic-basic.prd`, and `storyboard-basic.prd` through the hosted sample buttons. Confirm archive responses contain the actual package bytes, not the HTML shell.
 6. Verify manual `.prd` upload/drop, package status/facts, attachments/localization where declared, and structured rendering.
 7. Verify dark/light theme persistence after reload, browser back/forward, and single-column mobile layouts.
