@@ -28,7 +28,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Run published registry metadata audit
-        run: node ./scripts/release-registry-audit.mjs
+        run: node ./scripts/release-registry-audit.mjs --wait-for-publication
 
       - name: Upload registry audit summary
         if: always()
@@ -39,10 +39,11 @@ jobs:
           if-no-files-found: error
 
       - name: Run published npm consumer smoke
+        id: consumer_smoke
         run: node ./scripts/external-consumer-smoke.mjs --workspace-versions
 
       - name: Upload consumer smoke summary
-        if: always()
+        if: ${{ always() && steps.consumer_smoke.outcome != 'skipped' }}
         uses: actions/upload-artifact@v4
         with:
           name: external-consumer-smoke-summary

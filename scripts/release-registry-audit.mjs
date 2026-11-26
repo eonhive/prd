@@ -252,11 +252,41 @@ export async function runReleaseRegistryAudit(options = {}) {
   };
 }
 
+export async function waitForReleaseRegistryAudit(options = {}) {
+  const maxAttempts = options.maxAttempts ?? 21;
+  const delay = options.delay ?? (() => new Promise((resolve) => setTimeout(resolve, 15000)));
+
+  for (let attempt = 1; ; attempt += 1) {
+    const result = await runReleaseRegistryAudit(options);
+    const failures = result.packages.filter((pkg) => pkg.status === "failed");
+    const awaitingPropagation =
+      result.checks.packageTargets.status === "passed" &&
+      !result.unhandledError &&
+      failures.length > 0 &&
+      failures.every((pkg) =>
+        (!pkg.published &&
+          (pkg.errorMessage === "Package not found in npm registry." ||
+            pkg.errorMessage === `Expected version ${pkg.expectedVersion} is not published in npm registry metadata.`)) ||
+        (pkg.published && !pkg.deprecated && pkg.dependencyIssues.length === 0 &&
+          pkg.latestVersion !== pkg.expectedVersion)
+      );
+
+    if (!awaitingPropagation || attempt >= maxAttempts) {
+      return result;
+    }
+
+    console.log(`Registry metadata not yet current; retrying audit (${attempt}/${maxAttempts}).`);
+    await delay();
+  }
+}
+
 const currentPath = fileURLToPath(import.meta.url);
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : null;
 
 if (invokedPath === currentPath) {
-  const result = await runReleaseRegistryAudit();
+  const result = process.argv.includes("--wait-for-publication")
+    ? await waitForReleaseRegistryAudit()
+    : await runReleaseRegistryAudit();
   console.log(`RELEASE_REGISTRY_AUDIT_SUMMARY_FILE: ${result.summaryPath}`);
   if (result.status !== "passed") {
     process.exitCode = 1;

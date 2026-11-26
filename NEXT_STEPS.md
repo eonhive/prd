@@ -279,6 +279,7 @@
 - [x] Bind the owner-named GitHub Actions secret `NPM_TOKEN_GITHUB` consistently to preflight/Changesets `NPM_TOKEN` and setup-node `NODE_AUTH_TOKEN`; retain step-scoped publisher credentials, provenance and existing gates. Update authentication regressions and runbook guidance without accessing the secret value.
 - [x] Verify main Release run `45701384261`: publisher preflight and actual publication succeed; attempt 2 passes the exact five-package registry audit and all 48 npm consumer steps after cache refresh. The four new provenance source/digest fields match `474d5e0` and registry integrities. Preserve successful artifacts and hashes in the ignored release evidence directory.
 - [ ] For the next queued release, review the independent version/dependency/changelog plan, then repeat main CI publication and exact registry/consumer verification. While Actions PR creation remains disabled, use the documented maintainer-created version PR recovery without changing repository permissions. Continue the existing browser/device acceptance tasks separately.
+- [ ] Observe the bounded registry-propagation retry during the next post-publish verification; inspect its final audit artifact if the cache remains stale after the wait.
 
 ## Deployed release and install checks — November 25, 2026
 

@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 const execFileAsync = promisify(execFile);
 const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
 const ciWorkflow = readFileSync(new URL("../.github/workflows/codex-ci.yml", import.meta.url), "utf8");
+const consumerWorkflow = readFileSync(new URL("../.github/workflows/post-publish-consumer-smoke.yml", import.meta.url), "utf8");
 const publishSteps = ["Version or publish packages"];
 const secretReference = "${{ secrets.NPM_TOKEN_GITHUB }}";
 
@@ -66,6 +67,13 @@ describe("pull request tarball validation", () => {
 });
 
 describe("release workflow authentication", () => {
+  it("waits for published registry metadata and uploads smoke output only after an attempt", () => {
+    expect(readStep("Run published registry metadata audit", consumerWorkflow))
+      .toContain("node ./scripts/release-registry-audit.mjs --wait-for-publication");
+    expect(readStep("Run published npm consumer smoke", consumerWorkflow)).toContain("id: consumer_smoke");
+    expect(readStep("Upload consumer smoke summary", consumerWorkflow))
+      .toContain("if: ${{ always() && steps.consumer_smoke.outcome != 'skipped' }}");
+  });
   it("keeps full CI on Node 22 and retires automatic bootstrap publication", () => {
     const ci = readFileSync(new URL("../.github/workflows/codex-ci.yml", import.meta.url), "utf8");
     expect(ci).toContain("node-version: 22");

@@ -1,5 +1,12 @@
 # BUILD STATUS
 
+## 2026-11-26
+
+### Post-Publish Registry Propagation
+
+- The first consumer verification in release run `45701384261` audited cached npm metadata shortly after the publisher reported success; its unchanged retry passed. The reusable workflow now waits up to five minutes for missing versions or stale `latest` tags, while preserving strict failure on unsafe metadata and registry errors. A skipped consumer no longer causes a secondary missing-artifact error.
+- Focused audit/workflow/consumer tests and a live registry audit verify the change; the next actual publication will exercise the retry in GitHub Actions.
+
 ## 2026-11-25
 
 ### Deployed Release Information And npm Install Verification
