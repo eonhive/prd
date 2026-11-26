@@ -287,3 +287,11 @@
 - [x] Freshly audit all five expected npm versions/`latest` tags and internal dependencies; compare every tarball's registry SHA-512 integrity. Verify six registry signatures and four new attestations with npm, then assert expected tarball/name/version/source/workflow/ref/builder/run bindings. Document types' lack of advertised provenance and the optional-dependency omission from this signature audit.
 - [x] Download and digest-check CI artifact `15062849441`; confirm its five exact published specs and all 48 passed consumer steps. Update install/release/version/workflow/matrix documentation and PRD-057 completion. Keep raw public evidence ignored under `examples/dist/release-verification-2026-11-25/`.
 - [ ] CBZ browser selection, worker execution, review/descriptions, cancellation/recovery, current downloads and Viewer return remain pending at the owner's request. Keep physical/assistive and broader production launch checks open under items 44/48; release verification does not close them.
+- [ ] Observe the bounded registry-propagation retry during the next post-publish verification; inspect its final audit artifact if the cache remains stale after the wait.
+
+## Deployed release and install checks — November 25, 2026
+
+- [x] Verify production Home shows published CLI `0.3.0`; follow public Docs to the current quickstart/CLI guide and all five npm package pages. Confirm the expected independent versions and a fresh five-package registry audit.
+- [x] Exercise the documented global installation in an isolated prefix, plus a separate fresh-cache npx workflow with no global CLI. Create/import/validate/pack checks pass. Production routes/assets/canonical hosted samples pass all 22 HTTP/package checks. Preserve ignored evidence under `examples/dist/deployed-release-qa/`.
+- [x] Remove remaining pending-release claims from the root quickstart/authoring guide, add canonical npm links to all five package names and fix the types README's reproduced broken docs URL.
+- [ ] Carry the corrected CLI availability wording and types documentation link into the next normal reviewed package release. The existing npm README snapshots still contain the old text/link; source documentation changes do not rewrite published artifacts. Keep this documentation follow-up separate from the completed publication and from physical/browser launch acceptance.

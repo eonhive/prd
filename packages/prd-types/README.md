@@ -39,7 +39,7 @@ const manifest: PRDManifest = {
 
 ## Documentation
 
-See [PRD Documentation](https://github.com/eonhive/PRD/docs) for format specifications and detailed type information.
+See [PRD Documentation](https://github.com/eonhive/prd/tree/main/docs) for format specifications and detailed type information.
 
 ## License
 

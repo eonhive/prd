@@ -1,5 +1,12 @@
 # BUILD STATUS
 
+## 2026-11-26
+
+### Post-Publish Registry Propagation
+
+- The first consumer verification in release run `45701384261` audited cached npm metadata shortly after the publisher reported success; its unchanged retry passed. The reusable workflow now waits up to five minutes for missing versions or stale `latest` tags, while preserving strict failure on unsafe metadata and registry errors. A skipped consumer no longer causes a secondary missing-artifact error.
+- Focused audit/workflow/consumer tests and a live registry audit verify the change; the next actual publication will exercise the retry in GitHub Actions.
+
 ## 2026-11-25
 
 ### Published Release And Production Convert Verified
@@ -9,6 +16,13 @@
 - An isolated Node **22.22.2** / npm **10.9.7** core install with scripts/optional dependencies omitted passes `npm audit signatures`: **six verified registry signatures**, **four verified attestations**, no invalid/missing results. Each new PRD SLSA subject matches its actual tarball SHA-512/name/version and the expected repository, main ref, release workflow, GitHub-hosted builder, commit `474d5e0` and run `45701384261` attempt 1. Historical types has a verified registry signature but no advertised provenance; optional-dependency provenance was not audited.
 - Retrieved the same Release run's successful npm consumer artifact `15062849441`, verified its GitHub SHA-256 digest, exact five install specs and **48/48 passed** authoring/package/HTML/SDK/CLI checks with `authoringRequired: true`. This is actual published-consumer CI evidence, not substituted local tarballs. Release item 46 is complete for this version set; physical/assistive/launch acceptance remains separate.
 - Updated current release/version/install/format-availability docs, PRD-057's completion note and status/handoff. Preserved accepted decisions, historical failure records, public APIs, package versions and publication controls. Raw public registry/attestation/tarball/CI/HTTP evidence is ignored under `examples/dist/release-verification-2026-11-25/`. No new code/dependency/Changeset, release retry, publication, credential or permission change is part of this documentation/verification task.
+### Deployed Release Information And npm Install Verification
+
+- Verified the production Home page in a browser: it displays CLI `0.3.0` and the published authoring/conversion/signing command availability. Docs navigation reaches the current quickstart and CLI guide. All five public npm pages resolve and display types `0.1.1`, validator/packager/converter `0.2.0`, and CLI `0.3.0`; the CLI dependency tab links to its four public dependencies.
+- A fresh unpinned `npm install -g @eonhive/prd-cli` in an isolated prefix resolves `0.3.0`. Create, Markdown import, comic image import, validate and pack checks pass. A second fresh-cache project with no global CLI passes all six npx create/Markdown/storyboard/validate/pack/archive checks. Sample input files and real generated package paths replace the quickstart's authored-source/path placeholders. The user's global installation is unchanged.
+- Fresh registry audit passes all five expected versions/latest/dependency checks. Production Home/Viewer/Convert/Docs, entry assets and canonical hosted samples pass **22 HTTP/package checks**. This confirms delivery and package truth; broader conversion/browser/device acceptance remains separately tracked. Evidence is ignored under `examples/dist/deployed-release-qa/`.
+- Corrected overlooked pending-publication statements in the root quickstart and authoring guide; made all five package-table names link to their canonical npm pages. Fixed the types README's reproduced HTTP-404 docs URL to the HTTP-200 canonical docs directory. These are documentation corrections only. The already-published CLI README retains older wording, and the types npm README retains the old docs URL; those published snapshots require a normal reviewed release to carry source corrections. No package was republished or version changed for this verification.
+- Validation: actual browser navigation, isolated global/npx command checks, registry audit, hosted smoke, root-inclusive docs consistency and whitespace checks pass. No runtime code or format contracts changed.
 
 ### npm Publication And Post-Publish Verification Complete
 

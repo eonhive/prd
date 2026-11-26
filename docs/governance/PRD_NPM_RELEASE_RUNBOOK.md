@@ -427,3 +427,10 @@ summary remain ignored under `examples/dist/release-verification-2026-11-25/`.
 Release item 46 is complete for this version set. CBZ native browser checks
 remain pending at the owner's request; physical-device, assistive and broader
 launch acceptance are also separate.
+The post-publish workflow retries the strict registry audit every 15 seconds
+for up to 21 attempts (five minutes of waiting) when the only failures are
+missing packages/versions or stale `latest` tags. Unsafe metadata, registry
+errors and invalid targets fail without waiting. If the final report still shows
+stale metadata, verify the expected facts and rerun only the failed verification
+job after the registry refreshes. Do not republish an immutable version merely
+to refresh a registry cache. Feature/browser/device acceptance remains separate.

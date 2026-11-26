@@ -14,7 +14,8 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   releaseRegistryAuditContractVersion,
-  runReleaseRegistryAudit
+  runReleaseRegistryAudit,
+  waitForReleaseRegistryAudit
 } from "./release-registry-audit.mjs";
 import { publicReleasePackages } from "./release-packages.mjs";
 
@@ -77,6 +78,80 @@ function createRegistryDocument(name, version, dependencies = {}) {
 }
 
 describe("runReleaseRegistryAudit", () => {
+  it.each(["not-found", "missing-version", "stale-tag"])("waits for %s metadata to propagate", async (mode) => {
+    const repoRoot = await createTempDir("prd-registry-propagation-");
+    await createWorkspace(repoRoot);
+    let attempts = 0;
+    let delays = 0;
+    const result = await waitForReleaseRegistryAudit({
+      repoRoot,
+      maxAttempts: 3,
+      delay: async () => { delays += 1; },
+      fetchImpl: async (url) => {
+        const name = decodeURIComponent(String(url).split("/").pop() ?? "");
+        if (name === "@eonhive/prd-converter" && ++attempts === 1) {
+          if (mode === "not-found") return createJsonResponse(404, {});
+          if (mode === "missing-version") return createJsonResponse(200, createRegistryDocument(name, "0.1.0"));
+          const document = createRegistryDocument(name, "0.1.1");
+          document["dist-tags"].latest = "0.1.0";
+          return createJsonResponse(200, document);
+        }
+        return createJsonResponse(200, createRegistryDocument(name, "0.1.1"));
+      }
+    });
+    expect(result.status).toBe("passed");
+    expect(attempts).toBe(2);
+    expect(delays).toBe(1);
+    expect(JSON.parse(await readFile(result.summaryPath, "utf8")).status).toBe("passed");
+  });
+
+  it("fails with the final summary when propagation never completes", async () => {
+    const repoRoot = await createTempDir("prd-registry-propagation-timeout-");
+    await createWorkspace(repoRoot);
+    let attempts = 0;
+    const result = await waitForReleaseRegistryAudit({
+      repoRoot,
+      maxAttempts: 3,
+      delay: async () => {},
+      fetchImpl: async (url) => {
+        const name = decodeURIComponent(String(url).split("/").pop() ?? "");
+        if (name === "@eonhive/prd-converter") {
+          attempts += 1;
+          return createJsonResponse(404, {});
+        }
+        return createJsonResponse(200, createRegistryDocument(name, "0.1.1"));
+      }
+    });
+    expect(attempts).toBe(3);
+    expect(result.status).toBe("failed");
+    expect(JSON.parse(await readFile(result.summaryPath, "utf8")).packages.find(
+      (pkg) => pkg.name === "@eonhive/prd-converter"
+    ).errorMessage).toBe("Package not found in npm registry.");
+  });
+
+  it.each(["unsafe", "unavailable"])("does not retry %s registry failures", async (mode) => {
+    const repoRoot = await createTempDir("prd-registry-no-retry-");
+    await createWorkspace(repoRoot);
+    let attempts = 0;
+    const result = await waitForReleaseRegistryAudit({
+      repoRoot,
+      delay: async () => { throw new Error("unexpected retry"); },
+      fetchImpl: async (url) => {
+        const name = decodeURIComponent(String(url).split("/").pop() ?? "");
+        if (name === "@eonhive/prd-converter") {
+          attempts += 1;
+          if (mode === "unavailable") return createJsonResponse(503, {});
+          const document = createRegistryDocument(name, "0.1.1", { "@eonhive/prd-types": "workspace:*" });
+          document["dist-tags"].latest = "0.1.0";
+          return createJsonResponse(200, document);
+        }
+        return createJsonResponse(200, createRegistryDocument(name, "0.1.1"));
+      }
+    });
+    expect(attempts).toBe(1);
+    expect(result.status).toBe("failed");
+  });
+
   it("audits independently versioned public packages at their own expected latest versions", async () => {
     const repoRoot = await createTempDir("prd-release-registry-independent-");
     await createWorkspace(repoRoot, "0.1.1", { "@eonhive/prd-cli": { version: "0.2.0" } });
