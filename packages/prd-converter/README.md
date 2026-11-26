@@ -1,6 +1,6 @@
 # @eonhive/prd-converter
 
-PRD Convert's Node.js foundation and explicit browser entry for Markdown, HTML and bounded CBZ comics. Reuses `prd-types`, `prd-validator` and `prd-packager`. This guide describes the `0.2.0` package and its supported conversion paths.
+PRD Convert's Node.js foundation and explicit browser entry for Markdown, HTML and bounded CBZ comics. Reuses `prd-types`, `prd-validator` and `prd-packager`. Version `0.2.0` is published on npm `latest`, verified November 25, 2026. Install it with `npm install @eonhive/prd-converter@0.2.0`. See the [release/provenance verification](../../docs/governance/PRD_RELEASE_POLICY.md#1-current-release-baseline). Publishing the library does not close the web workspace's pending CBZ browser acceptance.
 
 ```ts
 import { convertFileToPrd } from "@eonhive/prd-converter";
@@ -71,7 +71,7 @@ const result = await convertMarkdownInBrowser({
 
 Use this export for browser code; the root export retains Node filesystem/subprocess adapters. The browser entry registers only the existing Markdown adapter and shares canonical `assembly.ts`, limits, raster screening, validation and the packager memory path. It requires secure-context Web Crypto; run expensive work in a worker as the web app does. Selected byte arrays are snapshotted. Relative explicit resources only, no automatic filesystem/network retrieval; missing/unused resources warn. Reference byte/count/node limits can be tightened, not raised. Result/report and logical files match Node conversion for the same Markdown/resources/options; no ZIP timestamp equality is promised.
 
-The web app now has a real `/convert/` workflow with source/images, optional title, profile/source-retention settings, worker cancellation/deadline, actual quality report, PRD download and existing Viewer handoff. See [browser boundary and safety policy](../../docs/architecture/PRD_CONVERT_WEB.md) and [the actual browser-downloaded example](../../examples/conversion-web/README.md). Other browser formats and public deployment remain separate work.
+The web app now has a real `/convert/` workflow with source/images, optional title, profile/source-retention settings, worker cancellation/deadline, actual quality report, PRD download and existing Viewer handoff. See [browser boundary and safety policy](../../docs/architecture/PRD_CONVERT_WEB.md) and [the actual browser-downloaded example](../../examples/conversion-web/README.md). Generic browser HTML/CBZ dispatch is described below. Production asset delivery is verified; pending native CBZ/browser acceptance remains separate.
 
 ## Browser HTML and generic dispatch
 

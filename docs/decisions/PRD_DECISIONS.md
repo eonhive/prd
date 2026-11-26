@@ -990,6 +990,17 @@ Retire the completed original four-package bootstrap from automatic CI; preserve
 **Evidence / follow-up:**
 See [release policy](../governance/PRD_RELEASE_POLICY.md), [maintainer runbook](../governance/PRD_NPM_RELEASE_RUNBOOK.md) and the exact-version release/registry/consumer checks. Main Release run `45701384261` published CLI `0.3.0`, converter/packager/validator `0.2.0`, retaining types `0.1.1`, from commit `474d5e0`. Registry metadata/latest/dependency audit and all 48 installed npm consumer checks pass on attempt 2 after registry metadata refreshed. The four new provenance statements identify main's `release.yml`, that release commit/run and the registry artifact digests. This is external publication evidence; physical/browser Convert and archive/Viewer acceptance remain separately scoped and are not established by npm checks.
 
+**November 25 verification:**
+The [Release run](https://github.com/eonhive/prd/actions/runs/45701384261)
+published CLI `0.3.0` and converter/packager/validator `0.2.0`, retaining types
+`0.1.1`. Registry audit and the exact-version 48-step npm consumer pass. npm
+signature verification confirms the four new provenance attestations, whose
+subjects/source/build match the published tarballs and release commit `474d5e0`.
+Types has a verified registry signature but no advertised provenance. This
+adds cryptographic verification to the publication evidence above, without
+changing the accepted decision or closing live CBZ, physical-device or assistive acceptance.
+See the [verification record](../governance/PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026).
+
 ---
 
 ## Open Decisions Still Pending

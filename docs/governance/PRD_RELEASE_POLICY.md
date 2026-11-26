@@ -17,16 +17,38 @@ commit `474d5e0`, retaining the existing types version. Exact registry/latest an
 48-step npm consumer verification pass on its second attempt; the initial
 post-publish audit encountered stale registry metadata.
 
-| Package | Verified npm `latest` |
-| --- | --- |
-| `@eonhive/prd-types` | `0.1.1` |
-| `@eonhive/prd-validator` | `0.2.0` |
-| `@eonhive/prd-packager` | `0.2.0` |
-| `@eonhive/prd-converter` | `0.2.0` |
-| `@eonhive/prd-cli` | `0.3.0` |
+| Public package | npm `latest` | Provenance verification |
+| --- | --- | --- |
+| `@eonhive/prd-types` | `0.1.1` | Unchanged historical release; registry signature verified, no provenance attestation advertised. |
+| `@eonhive/prd-validator` | `0.2.0` | Registry signature and provenance verified. |
+| `@eonhive/prd-packager` | `0.2.0` | Registry signature and provenance verified. |
+| `@eonhive/prd-converter` | `0.2.0` | First public converter release; registry signature and provenance verified. |
+| `@eonhive/prd-cli` | `0.3.0` | Registry signature and provenance verified. |
 
-The release channel is npm `latest`. The converter is now part of the public
-publish set; this does not finalize PRD format contracts or publish Viewer apps.
+The registry audit passes for all five expected versions and `latest` tags,
+with no deprecated expected release or unsafe internal dependency metadata.
+The [main Release run](https://github.com/eonhive/prd/actions/runs/45701384261)
+completed publication and its publish-gated consumer passed all 48 checks using
+those exact versions. The four new provenance statements bind the downloaded
+tarball SHA-512 digests to commit `474d5e02979dac3f162d01080648f9f892dfa427`,
+`.github/workflows/release.yml`, `refs/heads/main`, and that run's first attempt.
+An isolated Node 22.22.2/npm 10.9.7 core install passed `npm audit signatures`:
+six registry signatures (the five PRD packages plus fflate) and four attestations.
+Optional dependencies were omitted from this signature audit; the unchanged
+types release is not claimed to have provenance. See the
+[verification record and repeatable commands](PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026).
+
+The release channel is:
+
+- npm `latest`
+
+The release-check catalog includes all five public packages:
+
+- `@eonhive/prd-types`
+- `@eonhive/prd-validator`
+- `@eonhive/prd-packager`
+- `@eonhive/prd-converter`
+- `@eonhive/prd-cli`
 
 The following workspace packages stay private:
 

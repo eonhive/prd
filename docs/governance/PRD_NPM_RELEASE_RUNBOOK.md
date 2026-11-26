@@ -317,9 +317,10 @@ Version PR #78 merged at `4e4dab8`. Release-note/README/status corrections lande
 at `184d53d`. Both main Release attempts (`45698148499` and `45698365350`) passed
 the full release gate and authenticated preflight, then npm rejected actual PUT
 requests with E403 and a 2FA/granular-token publishing requirement. The failed
-versions are CLI `0.3.0` and validator/packager/converter `0.2.0`; a fresh registry
-audit confirms none is published. Types remains at the already published
-`0.1.1`. Post-publish consumer verification was correctly skipped.
+versions were CLI `0.3.0` and validator/packager/converter `0.2.0`; the registry
+audit at that time confirmed none was published. Types remained at the already
+published `0.1.1`. Post-publish consumer verification was correctly skipped.
+The successful recovery and current registry facts are recorded below.
 
 Successful `npm whoami`, organization membership and generated provenance do
 not prove publishing authorization. The account owner must review the existing
@@ -358,10 +359,74 @@ Verified successful artifacts:
 
 The four new packages expose SLSA provenance statements whose source workflow,
 main ref, commit/run and subject SHA-512 values match this release and registry
-integrities. These checks establish decoded source/digest correspondence, not an
-independent signature-chain verification. Copies of the checked artifacts and
+integrities. Those initial checks established decoded source/digest correspondence;
+the subsequent verification below adds npm signature-chain verification. Copies of the checked artifacts and
 metadata are ignored under `examples/dist/publisher-secret-release-qa/`.
 
+For a future publish, keep the registry audit strict. If its report contains
+stale versions or `latest` metadata immediately after a successful publication,
+allow the registry to refresh, verify the exact expected facts, and rerun only
+the failed verification job. Do not republish an immutable version merely to
+refresh a registry cache. Feature/browser/device acceptance remains separate.
+
+## Published release verification — November 25, 2026
+
+The replacement binding at `474d5e02979dac3f162d01080648f9f892dfa427`
+successfully published the four new versions through
+[Release run 45701384261](https://github.com/eonhive/prd/actions/runs/45701384261).
+The earlier E403 records above are historical. This verification task performed
+read-only registry/production checks and local verification; it did not publish,
+retry Release or access/change publisher credentials.
+
+| Package | Expected version and npm `latest` | Verified provenance |
+| --- | --- | --- |
+| `@eonhive/prd-types` | `0.1.1` | Unchanged release; registry signature verified, no attestation advertised. |
+| `@eonhive/prd-validator` | `0.2.0` | Signature, attestation and expected subject/build binding pass. |
+| `@eonhive/prd-packager` | `0.2.0` | Signature, attestation and expected subject/build binding pass. |
+| `@eonhive/prd-converter` | `0.2.0` | Signature, attestation and expected subject/build binding pass. |
+| `@eonhive/prd-cli` | `0.3.0` | Signature, attestation and expected subject/build binding pass. |
+
+Fresh `node scripts/release-registry-audit.mjs` passes all five targets:
+each expected version exists, matches `latest`, is not deprecated, and has
+consumer-safe dependency metadata. All five downloaded tarballs match their
+registry SHA-512 integrity values. For the four new releases, provenance
+subjects match those tarballs and package/version identities. Their SLSA v1
+workflow is `.github/workflows/release.yml` in `https://github.com/eonhive/prd`
+on `refs/heads/main`; source is commit `474d5e0`, builder is GitHub-hosted,
+and invocation is [run 45701384261, attempt 1](https://github.com/eonhive/prd/actions/runs/45701384261/attempts/1).
+
+Following [npm's verification guidance](https://docs.npmjs.com/generating-provenance-statements/#verifying-provenance-attestations),
+a disposable Node **22.22.2** / npm **10.9.7** consumer ran:
+
+```bash
+npm init -y
+npm install --save-exact --ignore-scripts --omit=optional --no-audit --no-fund --registry=https://registry.npmjs.org @eonhive/prd-types@0.1.1 @eonhive/prd-validator@0.2.0 @eonhive/prd-packager@0.2.0 @eonhive/prd-converter@0.2.0 @eonhive/prd-cli@0.3.0
+npm audit signatures --omit=optional --registry=https://registry.npmjs.org
+```
+
+The command exits 0 with **six verified registry signatures** (the five PRD
+packages and fflate) and **four verified attestations**. Its JSON report has
+empty `invalid` and `missing` arrays. Optional dependencies were omitted from
+this signature check, so it makes no provenance claim about their dependency
+tree. The unchanged types release is registry-signed without an advertised
+provenance attestation; do not describe all five releases as provenance-backed.
+
+The same Release run's successful publish-gated consumer artifact
+`external-consumer-smoke-summary` (artifact `15062849441`) was downloaded and
+checked against its GitHub SHA-256 digest. Its v0.2 report has the five exact
+install specs above, `authoringRequired: true`, and **48 of 48 passed steps**.
+This is an npm-installed CI result, distinct from local tarball smoke.
+
+Production delivery was independently checked against a fresh root build from
+main `85a9276`, then rechecked after integrating `f765db7`: **31 checks pass**, including Home/Viewer/Convert/Docs, the
+validated samples and byte-exact responses for all **10 emitted JS/CSS files**.
+The [hosting runbook](PRD_HOSTING_RUNBOOK.md#production-convert-delivery--november-25-2026)
+records the command and remaining acceptance scope. Raw registry metadata,
+attestations, tarballs, signature output, the consumer artifact and production
+summary remain ignored under `examples/dist/release-verification-2026-11-25/`.
+Release item 46 is complete for this version set. CBZ native browser checks
+remain pending at the owner's request; physical-device, assistive and broader
+launch acceptance are also separate.
 The post-publish workflow retries the strict registry audit every 15 seconds
 for up to 21 attempts (five minutes of waiting) when the only failures are
 missing packages/versions or stale `latest` tags. Unsafe metadata, registry

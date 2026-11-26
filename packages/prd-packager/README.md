@@ -1,6 +1,6 @@
 # @eonhive/prd-packager
 
-Build `.prd` packages from validated source directories. These examples describe the repository build; the container/signing APIs and directory limit options are queued for the normal Changesets release.
+Build `.prd` packages from validated source directories. Version `0.2.0` is published on npm `latest`, verified November 25, 2026; it includes the container/signing APIs, directory limits and browser memory export below. See the [release verification](../../docs/governance/PRD_RELEASE_POLICY.md#1-current-release-baseline).
 
 ```ts
 import { packDirectoryToBuffer, packDirectoryToFile } from "@eonhive/prd-packager";
@@ -42,4 +42,4 @@ MIT licensed.
 
 ## Browser and in-memory packaging
 
-`import { packPackageFiles } from "@eonhive/prd-packager/browser"` accepts a `PrdFileMap` and optional `{ container: "zip" | "prd" }`, returning archive bytes synchronously. This entry imports no Node filesystem module. It shares canonical validation, ZIP/envelope writing and final bounded archive checks with `packDirectoryToBuffer`; existing directory/file APIs remain unchanged. Execute larger browser jobs in a worker. See [Convert Web architecture](../../docs/architecture/PRD_CONVERT_WEB.md). This additive export is repository functionality pending release.
+`import { packPackageFiles } from "@eonhive/prd-packager/browser"` accepts a `PrdFileMap` and optional `{ container: "zip" | "prd" }`, returning archive bytes synchronously. This entry imports no Node filesystem module. It shares canonical validation, ZIP/envelope writing and final bounded archive checks with `packDirectoryToBuffer`; existing directory/file APIs remain unchanged. Execute larger browser jobs in a worker. See [Convert Web architecture](../../docs/architecture/PRD_CONVERT_WEB.md). This additive export ships in `0.2.0`.

@@ -47,6 +47,8 @@ The public npm tooling preview is separate from those fields. Verified on Novemb
 | `@eonhive/prd-cli` | `0.3.0` |
 
 These npm versions identify pre-1.0 tooling releases. They do not finalize the PRD format as a permanent `1.0` standard or change example format/manifest declarations.
+See the [release baseline and provenance verification](../governance/PRD_RELEASE_POLICY.md#1-current-release-baseline).
+
 
 ---
 

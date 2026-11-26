@@ -219,6 +219,7 @@ packages/
   prd-types/
   prd-validator/
   prd-packager/
+  prd-converter/
   prd-cli/
   prd-viewer-core/
 
@@ -333,7 +334,7 @@ The public `/docs/` route is a user-friendly navigation layer over canonical rep
 
 The public demo is reachable at [prd.eonhive.com](https://prd.eonhive.com/). Home uses bounded, wrapping hero copy; navigation and the open action remain available on narrow screens. The Viewer identifies the opened package, distinguishes invalid packages from an empty workspace, and puts loaded content ahead of its rails on narrow screens. Docs provides section jump links and keeps hosting notes in a disclosure. These changes do not alter package parsing or eager in-memory loading.
 
-Authoring command availability: published npm CLI `0.3.0` includes `prd init`, Markdown/image/HTML imports, `prd convert`, `prd sign` and `prd verify`, alongside pack/validate/inspect. The November 25, 2026 release passed exact-version registry and all 48 installed-consumer checks. See the [CLI guide](packages/prd-cli/README.md#command-availability) for supported formats and requirements.
+Authoring command availability: npm CLI `0.3.0`, verified November 25, 2026, includes `prd init`, `prd import markdown`, `prd import images`, `prd import html`, `prd convert`, `prd sign`, and `prd verify`, alongside `pack`, `validate`, and `inspect`. Install it with `npm install -g @eonhive/prd-cli@0.3.0`. See the [CLI guide](packages/prd-cli/README.md#command-availability) for supported subsets and Node requirements.
 
 Live HTTP/package checks are not a substitute for browser launch QA. Mobile rendering, keyboard/file-picker behavior, drag/drop, route refresh, and theme persistence must be verified on the deployed revision before the launch checklist is closed.
 
@@ -436,7 +437,7 @@ The baseline tooling requires **Node.js 20+**; HTML conversion needs Node 20.19+
 The repo root also includes [`.nvmrc`](.nvmrc) pinned to Node 22 so local release and Codex sessions can match the release workflow directly.
 
 ```bash
-npm install -g @eonhive/prd-cli
+npm install -g @eonhive/prd-cli@0.3.0
 prd init ./my-first-prd --profile general-document
 prd import markdown ./source.md --out ./my-first-prd-from-markdown
 prd import images ./pages --profile comic --out ./my-first-comic
@@ -446,18 +447,18 @@ prd validate path/to/package.prd
 Without a global install:
 
 ```bash
-npx @eonhive/prd-cli init ./my-first-prd --profile general-document
-npx @eonhive/prd-cli import markdown ./source.md --out ./my-first-prd-from-markdown
-npx @eonhive/prd-cli import images ./frames --profile storyboard --out ./my-first-board
-npx @eonhive/prd-cli validate path/to/examples/document-basic
-npx @eonhive/prd-cli pack path/to/examples/document-basic --out ./out.prd
+npx @eonhive/prd-cli@0.3.0 init ./my-first-prd --profile general-document
+npx @eonhive/prd-cli@0.3.0 import markdown ./source.md --out ./my-first-prd-from-markdown
+npx @eonhive/prd-cli@0.3.0 import images ./frames --profile storyboard --out ./my-first-board
+npx @eonhive/prd-cli@0.3.0 validate path/to/examples/document-basic
+npx @eonhive/prd-cli@0.3.0 pack path/to/examples/document-basic --out ./out.prd
 ```
 
 `prd validate` accepts a `.prd` archive or an unpacked package directory. For programmatic use, depend on `@eonhive/prd-validator` and import `@eonhive/prd-validator/node` for filesystem validation (`validatePackage`).
 
-The repository build also supports the [PRD 1.0 binary envelope](docs/core/PRD_CONTAINER_FORMAT.md) through `prd pack ./document --out ./document.prd --container prd`. Its first bytes are `50 52 44 00`. Default output remains ordinary ZIP for older consumers; current readers accept both and apply bounded archive checks. This option is included in CLI `0.3.0` and provides identification only.
+CLI `0.3.0` also supports the [PRD 1.0 binary envelope](docs/core/PRD_CONTAINER_FORMAT.md) through `prd pack ./document --out ./document.prd --container prd`. Its first bytes are `50 52 44 00`. Default output remains ordinary ZIP for older consumers; current readers accept both and apply bounded archive checks. The envelope provides identification only.
 
-The separate optional [signature-v1 extension](docs/extensions/PRD_SIGNATURE_V1.md) adds local Ed25519 signing and exact logical-file SHA-256 coverage through `prd sign` / `prd verify`. Verification requires an independently trusted matching public key; embedded keys are not automatically trusted. The Viewer shows verification status and blocks known-invalid signatures while preserving unsigned readability. These additive APIs/commands are included in validator/packager `0.2.0` and CLI `0.3.0`. Encryption, certificates and key-management infrastructure remain outside this slice.
+The separate optional [signature-v1 extension](docs/extensions/PRD_SIGNATURE_V1.md) adds local Ed25519 signing and exact logical-file SHA-256 coverage through `prd sign` / `prd verify`, published in CLI `0.3.0`. Verification requires an independently trusted matching public key; embedded keys are not automatically trusted. The Viewer shows verification status and blocks known-invalid signatures while preserving unsigned readability. Encryption, certificates and key-management infrastructure remain outside this slice.
 
 Source and issues: [github.com/eonhive/PRD](https://github.com/eonhive/PRD).
 
@@ -470,7 +471,7 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 * `pnpm release:audit:registry` to verify published npm metadata contains no `workspace:*` dependencies and that `latest` points to the expected version
 * `pnpm release:status` to inspect pending release state
 
-The release workflow publishes through Changesets on `main` after the Node 22 gate and authenticated preflight pass. Its shared catalog includes all five public packages; package versions are independent. Runs are serialized, and the completed original bootstrap is retired from CI. Consumer verification runs only after an actual publish, checks out that release commit, audits each package's expected version/`latest`/dependency metadata, then exercises package operations, authoring/import and SDK/CLI conversion with exact per-package versions. The same 48-step consumer runner checks five local tarballs before publication, retaining all three profile starters and both visual-profile import round trips. Internal release/registry/consumer summaries are v0.2; public document CLI JSON contracts stay unchanged. Release run `45701384261` published the versions listed above from commit `474d5e0`; its registry audit and 48-step npm consumer passed after registry metadata refreshed. See [release policy](docs/governance/PRD_RELEASE_POLICY.md), [maintainer runbook](docs/governance/PRD_NPM_RELEASE_RUNBOOK.md) and [version-surface policy](docs/core/PRD_VERSIONING_POLICY.md).
+The release workflow publishes through Changesets on `main` after the Node 22 gate and authenticated preflight pass. Its five-package catalog includes `@eonhive/prd-converter`; versions are independent. Runs are serialized, and the completed original bootstrap is retired from CI. Consumer verification runs only after an actual publish, checks out that release commit, audits each package's expected version/`latest`/dependency metadata, then exercises package operations, authoring/import and SDK/CLI conversion with exact per-package versions. The same 48-step consumer runner checks local tarballs before publication. Internal release/registry/consumer summaries are v0.2; public document CLI JSON contracts stay unchanged. Verified on November 25: npm `latest` is CLI `0.3.0`, converter/packager/validator `0.2.0`, and unchanged types `0.1.1`. The registry audit and all 48 published-consumer checks pass. The four new releases have verified provenance bound to the main Release workflow; historical types `0.1.1` has a verified registry signature but no advertised provenance. See [release policy](docs/governance/PRD_RELEASE_POLICY.md), [verification record](docs/governance/PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026) and [version-surface policy](docs/core/PRD_VERSIONING_POLICY.md).
 
 `pnpm foundation:gate` is now the canonical repo-level conformance gate. It runs build, tests, docs consistency, example validation, and aggregate example smoke checks, then emits `examples/dist/foundation-gate-summary.json`.
 
@@ -480,7 +481,7 @@ The release workflow publishes through Changesets on `main` after the Node 22 ga
 
 `pnpm consumer:smoke:npm` installs the five published packages in a clean temporary project. For the current CLI release, it requires 48 checks: package operations, all three profile starters, Markdown and comic/storyboard image imports with directory/archive validation and inspection, HTML import, SDK source/report preservation and CLI conversion. The independently versioned `prd-external-consumer-smoke-v0.2` summary records `authoringRequired`; CI uses `--workspace-versions` to install each release-commit version exactly. The same runner checks local tarballs before publication. A local pass does not establish npm availability.
 
-The npm preview line started at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch established the corrected preview baseline, and broken `0.1.0` versions were deprecated with upgrade guidance. The current independently versioned releases are listed above and pass registry audit plus npm consumer smoke.
+The npm preview line started at `0.1.0`, which leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch established the earlier clean preview; broken `0.1.0` versions remain deprecated with upgrade guidance. The independently versioned release above supersedes that baseline for CLI, converter, packager and validator. The tooling remains a pre-1.0 public preview.
 
 ### Codex Run Environment
 
@@ -722,23 +723,31 @@ PRD wins by being:
 It does **not** win by becoming a prettier PDF clone or a random packaged app mess.
 
 
-### PRD Convert — repository Phase 1
+### PRD Convert — published conversion subset
 
 Convert a real Markdown source directly into a validated `.prd` archive with declared source and conversion-quality attachments:
 
 ```sh
-pnpm --filter @eonhive/prd-cli build
-node packages/prd-cli/dist/cli.js convert ./source.md --out ./converted.prd --json
+npm install -g @eonhive/prd-cli@0.3.0
+prd convert ./source.md --out ./converted.prd --json
 ```
 
+The destination parent must exist. The converter refuses existing outputs and reports partial semantic fidelity. CLI `0.3.0` and converter `0.2.0` publish the bounded Markdown, HTML, CBZ, EPUB, DOCX and PDF paths described below. Only adaptive conversion is supported; PDF requires Node 22.13+ and its optional dependencies. Existing `prd import markdown` and image import workflows remain available. See the [architecture inventory and decision record](docs/architecture/PRD_CONVERT_PHASE_1.md), [developer API](packages/prd-converter/README.md), and [generated example](examples/conversion-markdown/README.md).
+
+
+The next PRD Convert increment also accepts `node packages/prd-cli/dist/cli.js convert ./source.html --out ./converted-html.prd --json`. It reconstructs static UTF-8 HTML into canonical structured content through an optional HTML parser, retains original source as an inert attachment and reports omitted scripts, CSS, embedded content and other losses. See [HTML mapping and safety policy](docs/architecture/PRD_CONVERT_HTML.md) and [the real HTML example](examples/conversion-html/README.md). This ships in CLI `0.3.0` and converter `0.2.0`; the other supported Node and browser subsets are described below.
 The destination parent must exist. The converter refuses existing outputs and reports partial semantic fidelity. Markdown conversion ships in CLI `0.3.0` and converter `0.2.0`, alongside the bounded HTML, CBZ, EPUB, DOCX and PDF adapters described below. The hosted local conversion workspace is available at `/convert/`. Existing `prd import markdown` and image import workflows remain available. See the [architecture inventory and decision record](docs/architecture/PRD_CONVERT_PHASE_1.md), [developer API](packages/prd-converter/README.md), and [generated example](examples/conversion-markdown/README.md).
-
-
-The next PRD Convert increment also accepts `node packages/prd-cli/dist/cli.js convert ./source.html --out ./converted-html.prd --json`. It reconstructs static UTF-8 HTML into canonical structured content through an optional HTML parser, retains original source as an inert attachment and reports omitted scripts, CSS, embedded content and other losses. See [HTML mapping and safety policy](docs/architecture/PRD_CONVERT_HTML.md) and [the real HTML example](examples/conversion-html/README.md). HTML conversion ships in CLI `0.3.0` and converter `0.2.0`; DOCX, PDF and browser conversion are described below.
 
 
 HTML also supports the directory authoring workflow: `prd import html ./source.html --out ./my-document --json`, followed by existing validate/pack commands. This output includes structured content, local raster assets and a versioned import report, without copying raw HTML source. Markdown/image import output remains compatible. See [the directory example](examples/conversion-html/README.md#directory-import-demonstration) and [HTML report contract](docs/architecture/PRD_CONVERT_HTML.md#directory-workflow-and-shared-output-prd-042). CBZ, EPUB, DOCX and PDF conversion are available as described below; Convert Web now supports local Markdown as described below.
 
+CBZ now uses the same converter: `prd convert ./sample-comic.cbz --out ./comic.prd --json`. Bounded raster ZIP pages become canonical comic panels with explicit order/metadata/accessibility warnings and default source retention. It reuses the existing archive reader, validator, packager and Viewer. See [CBZ policy and limits](docs/architecture/PRD_CONVERT_CBZ.md) and [the generated comic example](examples/conversion-cbz/README.md). Available in CLI `0.3.0` and converter `0.2.0`.
+
+EPUB conversion also works through `prd convert ./book.epub --out ./book.prd --json`: bounded reflowable XML becomes spine-ordered chapter sections, mapped chapter links and declared raster assets. The optional XML parser loads only for EPUB. Source/report attachments remain available by default, and unsupported navigation/styles/metadata are reported. See [EPUB policy](docs/architecture/PRD_CONVERT_EPUB.md) and [the generated book example](examples/conversion-epub/README.md). Available in CLI `0.3.0` and converter `0.2.0`; DOCX support follows below.
+
+DOCX conversion now works through `prd convert ./source.docx --out ./document.prd --json`. A bounded transitional Word body becomes canonical paragraphs/headings, simple lists/tables, bookmark links and declared raster assets, with original source and quality attachments. Unsupported Word layout/fields/notes/equations are reported. See [DOCX policy](docs/architecture/PRD_CONVERT_DOCX.md) and [the real Word example](examples/conversion-docx/README.md). Available in CLI `0.3.0` and converter `0.2.0`; PDF support follows below.
+
+PDF conversion now works through `prd convert ./source.pdf --out ./pages.prd --json` with Node.js 22.13+ and optional PDF.js/native canvas support. Extracted lines become responsive paragraphs in page sections; textless pages become bounded PNGs without OCR. Reading order, omitted text-page illustrations and unsupported PDF behavior are reported. Exact source/report attachments remain available by default. See [PDF policy](docs/architecture/PRD_CONVERT_PDF.md) and [the real mixed-page example](examples/conversion-pdf/README.md). Available in CLI `0.3.0` and converter `0.2.0`; browser conversion has a separate supported subset.
 CBZ now uses the same converter: `prd convert ./sample-comic.cbz --out ./comic.prd --json`. Bounded raster ZIP pages become canonical comic panels with explicit order/metadata/accessibility warnings and default source retention. It reuses the existing archive reader, validator, packager and Viewer. See [CBZ policy and limits](docs/architecture/PRD_CONVERT_CBZ.md) and [the generated comic example](examples/conversion-cbz/README.md). CBZ conversion ships in CLI `0.3.0` and converter `0.2.0`.
 
 EPUB conversion also works through `prd convert ./book.epub --out ./book.prd --json`: bounded reflowable XML becomes spine-ordered chapter sections, mapped chapter links and declared raster assets. The optional XML parser loads only for EPUB. Source/report attachments remain available by default, and unsupported navigation/styles/metadata are reported. See [EPUB policy](docs/architecture/PRD_CONVERT_EPUB.md) and [the generated book example](examples/conversion-epub/README.md). EPUB conversion ships in CLI `0.3.0` and converter `0.2.0`; DOCX support follows below.
@@ -747,11 +756,11 @@ DOCX conversion now works through `prd convert ./source.docx --out ./document.pr
 
 PDF conversion now works through `prd convert ./source.pdf --out ./pages.prd --json` with Node.js 22.13+ and optional PDF.js/native canvas support. Extracted lines become responsive paragraphs in page sections; textless pages become bounded PNGs without OCR. Reading order, omitted text-page illustrations and unsupported PDF behavior are reported. Exact source/report attachments remain available by default. See [PDF policy](docs/architecture/PRD_CONVERT_PDF.md) and [the real mixed-page example](examples/conversion-pdf/README.md). PDF conversion ships in CLI `0.3.0` and converter `0.2.0` with those optional dependencies and Node requirements. Browser conversion is described below.
 
-PRD Convert Web now runs at `/convert/` in the existing app (or `<hosting-base>/convert/`). Select Markdown and its supporting images, convert entirely in a cancellable local worker, inspect actual quality warnings, download a valid PRD and preview that exact archive in the existing Viewer. Shared converter assembly and in-memory packager exports preserve Node/CLI/report behavior. See [browser execution/limits](docs/architecture/PRD_CONVERT_WEB.md) and [the real browser-generated example](examples/conversion-web/README.md). Browser HTML is now implemented under the continuation below; other browser adapters, simultaneous previews and production deployment remain separate.
+PRD Convert Web now runs at `/convert/` in the existing app (or `<hosting-base>/convert/`). Select Markdown and its supporting images, convert entirely in a cancellable local worker, inspect actual quality warnings, download a valid PRD and preview that exact archive in the existing Viewer. Shared converter assembly and in-memory packager exports preserve Node/CLI/report behavior. See [browser execution/limits](docs/architecture/PRD_CONVERT_WEB.md) and [the real browser-generated example](examples/conversion-web/README.md). Browser HTML is now implemented under the continuation below; browser DOCX/EPUB/PDF and simultaneous previews remain separate. Production asset delivery is verified; live browser acceptance remains independently tracked.
 
-Convert Web now also accepts static HTML through the existing HTML adapter and lazy optional parsing. Its workspace follows the owner's reference: source/drop area and selected files, a real options rail, then quality/assets/plain-source review and download/Viewer actions. This HTML increment shares the existing controls; browser CBZ is described below. See [browser HTML and UI policy](docs/architecture/PRD_CONVERT_WEB_HTML.md) and [the real HTML output](examples/conversion-web/html/README.md). Live visual/interaction acceptance remains pending while browser automation is disabled; nothing was deployed.
+Convert Web now also accepts static HTML through the existing HTML adapter and lazy optional parsing. Its workspace follows the owner's reference: source/drop area and selected files, a real options rail, then quality/assets/plain-source review and download/Viewer actions. This HTML increment shares the existing controls; browser CBZ is described below. See [browser HTML and UI policy](docs/architecture/PRD_CONVERT_WEB_HTML.md) and [the real HTML output](examples/conversion-web/html/README.md). The production assets are deployed and verified. Earlier root HTML interactions were checked locally; the remaining browser acceptance matrix stays open.
 
-Convert Web also accepts bounded CBZ image archives through the existing adapter and archive reader. Automatic/Comic output, natural/reversed filename sequence, actual page counts and binary-source review share the same pipeline and Viewer handoff. No separate supporting files are needed for CBZ. See [browser CBZ policy](docs/architecture/PRD_CONVERT_WEB_CBZ.md) and [actual browser-entry example](examples/conversion-web/cbz/README.md). Browser limits remain 4 MiB compressed / 8 MiB member / 24 MiB expanded / 128 entries. Page sequence does not encode manga direction; fresh live acceptance, release and deployment remain open.
+Convert Web also accepts bounded CBZ image archives through the existing adapter and archive reader. Automatic/Comic output, natural/reversed filename sequence, actual page counts and binary-source review share the same pipeline and Viewer handoff. No separate supporting files are needed for CBZ. See [browser CBZ policy](docs/architecture/PRD_CONVERT_WEB_CBZ.md) and [actual browser-entry example](examples/conversion-web/cbz/README.md). Browser limits remain 4 MiB compressed / 8 MiB member / 24 MiB expanded / 128 entries. Page sequence does not encode manga direction. The library is published and production asset delivery is verified; fresh CBZ browser acceptance remains pending at the owner's request.
 
 CBZ conversion results now include a focused page-order review: move filenames earlier/later, reset the draft, then apply through the existing conversion/validation pipeline. Every imported page keeps its ID/assets; failed/cancelled repair keeps the previous package. The selected File/settings stay in the local session for reruns, including when the package omits source. Reload ends that session. See [repair boundary](docs/architecture/PRD_CONVERT_PAGE_REVIEW.md) and [actual reviewed output](examples/conversion-web/cbz-review/README.md). Live move/reset/apply/focus/download acceptance remains pending while browser automation is disabled.
 

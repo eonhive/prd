@@ -1,5 +1,5 @@
 # PRD_IMPORT_EXPORT_MATRIX.md
-_Last updated: October 27, 2026_
+_Last updated: November 25, 2026_
 _Status: Phase 5 import/export matrix baseline v0.3_
 
 ## 1. Purpose
@@ -25,14 +25,19 @@ Import and export work should follow these rules:
 
 ## 3. Import Matrix
 
+The implemented subsets below ship in npm CLI `0.3.0` and converter `0.2.0`,
+verified November 25, 2026. See [release versions and provenance](../governance/PRD_RELEASE_POLICY.md#1-current-release-baseline).
+Library publication and production asset delivery do not close live browser
+acceptance; CBZ browser checks remain pending at the owner's request.
+
 | Source | Target PRD profile | Priority | Current status | Notes |
 | --- | --- | --- | --- | --- |
 | Markdown | `general-document` | First implementation lane | Supported v0.1 | Maps ATX headings, paragraphs, lists, blockquotes, and standalone local relative images to structured content. |
-| HTML | `general-document` | Phase 2 increment | Supported in repository; pending release | Static UTF-8 HTML semantics through `prd import html` (directory) or `prd convert` (archive); unsafe/unsupported content is omitted and reported. See the HTML conversion policy. |
-| CBZ | `comic` | Archive conversion increment | Supported in repository; pending release | Bounded ZIP raster pages through `prd convert`; natural path order, omitted metadata and generated alt text are reported. See the CBZ conversion policy. |
-| DOCX | `general-document` | Word body increment | Supported in repository; pending release | Bounded transitional Word body via `prd convert`: structural styles, simple lists/tables, bookmarks/links and declared raster images. Unsupported Word behavior is reported. |
-| EPUB | `general-document` | Archive chapter increment | Supported in repository; pending release | Bounded reflowable UTF-8 XML subset through `prd convert`; spine sections, chapter links and declared raster assets. Navigation/layout/metadata losses are reported. See the EPUB policy. |
-| PDF | `general-document` | Text/page fallback increment | Supported in repository; pending release | Bounded text extraction into page sections and PNG fallback for textless pages via `prd convert`. Node 22.13+ and optional PDF.js/native canvas required; reading order is uncertain and no OCR is performed. |
+| HTML | `general-document` | Phase 2 increment | Published subset | Static UTF-8 HTML semantics through `prd import html` (directory) or `prd convert` (archive); unsafe/unsupported content is omitted and reported. See the HTML conversion policy. |
+| CBZ | `comic` | Archive conversion increment | Published subset | Bounded ZIP raster pages through `prd convert`; natural path order, omitted metadata and generated alt text are reported. See the CBZ conversion policy. |
+| DOCX | `general-document` | Word body increment | Published subset | Bounded transitional Word body via `prd convert`: structural styles, simple lists/tables, bookmarks/links and declared raster images. Unsupported Word behavior is reported. |
+| EPUB | `general-document` | Archive chapter increment | Published subset | Bounded reflowable UTF-8 XML subset through `prd convert`; spine sections, chapter links and declared raster assets. Navigation/layout/metadata losses are reported. See the EPUB policy. |
+| PDF | `general-document` | Text/page fallback increment | Published subset | Bounded text extraction into page sections and PNG fallback for textless pages via `prd convert`. Node 22.13+ and optional PDF.js/native canvas required; reading order is uncertain and no OCR is performed. |
 | Image folder | `comic` | Early visual-profile lane | Supported v0.1 | Maps ordered top-level image files to panels with generated manifest asset declarations. |
 | Comic pages | `comic` | Early visual-profile lane | Supported v0.1 | Same core path as image folder, with comic-specific naming and series metadata prompts later. |
 | Storyboard frames | `storyboard` | Early visual-profile lane | Supported v0.1 | Maps ordered top-level image files to frames with notes placeholders. |
@@ -112,9 +117,9 @@ The current public-product implementation is the hosted PRD Home page, public do
 init/import -> validate -> inspect -> pack -> open in the reference viewer
 ```
 
-That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` Home, `/viewer/` workspace, and `/docs/` public docs navigation. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
+That keeps the product story focused on usable PRD creation before adding broad conversion. The web demo separates `/` Home, `/viewer/` workspace, `/convert/` local conversion, and `/docs/` public docs navigation. It can load generated hosted sample archives, but those samples are demo assets only and do not change PRD's packaged-first, eager whole-package reference loading baseline.
 
-The next public-product lane should deploy and launch-QA the hosted demo through Cloudflare Workers Static Assets at `prd.eonhive.com`, keep GitHub Pages as staging/fallback until that passes, and then choose the next viewer/product polish step. Hosting does not add a server-side conversion or upload lane.
+The hosted app is deployed through Cloudflare Workers Static Assets at `prd.eonhive.com`; production HTTP/build-asset checks pass. Keep GitHub Pages as staging/fallback while live launch, physical-device and assistive checks remain open. Hosting does not add a server-side conversion or upload lane.
 
 ---
 
@@ -154,11 +159,11 @@ The revised sequence selects EPUB/CBZ before DOCX. CBZ and EPUB are now implemen
 
 ## 12. CBZ archive increment
 
-`prd convert ./sample-comic.cbz --out ./comic.prd` now reconstructs whole-page canonical comic panels from bounded raster ZIP members, without filesystem extraction or another ZIP implementation. Source and quality attachments use the existing conversion report contract. Reading order, generated alternative text and omitted metadata are explicit warnings. See [CBZ mapping and limits](../architecture/PRD_CONVERT_CBZ.md) and [the real example](../../examples/conversion-cbz/README.md). Existing Markdown/image/HTML workflows remain compatible. This is repository functionality pending release.
+`prd convert ./sample-comic.cbz --out ./comic.prd` now reconstructs whole-page canonical comic panels from bounded raster ZIP members, without filesystem extraction or another ZIP implementation. Source and quality attachments use the existing conversion report contract. Reading order, generated alternative text and omitted metadata are explicit warnings. See [CBZ mapping and limits](../architecture/PRD_CONVERT_CBZ.md) and [the real example](../../examples/conversion-cbz/README.md). Existing Markdown/image/HTML workflows remain compatible. Available in CLI `0.3.0` and converter `0.2.0`.
 
 ## 13. EPUB chapter increment
 
-`prd convert ./book.epub --out ./book.prd` now reconstructs canonical chapter sections in spine order through bounded XML and the existing HTML extractor. It maps same-book anchors, collects declared raster members and retains original source/report attachments by default. DTDs, encryption, recognized fixed layouts and unsafe/unsupported spine relationships fail explicitly. No original navigation hierarchy or layout-equivalence claim is made. See [EPUB policy](../architecture/PRD_CONVERT_EPUB.md) and [the actual source/archive/report](../../examples/conversion-epub/README.md). DOCX is now implemented in the next recorded increment; release onboarding remains open.
+`prd convert ./book.epub --out ./book.prd` now reconstructs canonical chapter sections in spine order through bounded XML and the existing HTML extractor. It maps same-book anchors, collects declared raster members and retains original source/report attachments by default. DTDs, encryption, recognized fixed layouts and unsafe/unsupported spine relationships fail explicitly. No original navigation hierarchy or layout-equivalence claim is made. See [EPUB policy](../architecture/PRD_CONVERT_EPUB.md) and [the actual source/archive/report](../../examples/conversion-epub/README.md). DOCX ships in the same release and is described below.
 
 ## 14. DOCX body increment
 
@@ -166,21 +171,21 @@ The revised sequence selects EPUB/CBZ before DOCX. CBZ and EPUB are now implemen
 
 ## 15. PDF extraction and fallback increment
 
-`prd convert ./source.pdf --out ./pages.prd` produces page sections, extraction-order line paragraphs and bounded PNG fallback for textless pages. It shares canonical content, resources, validator and packager. Original source/report attachments are declared by default. Optional PDF.js/native canvas loads only in a separate Node process; Node.js 22.13+ is required for this format. Encrypted PDFs are refused. Reading order, text-page graphics, layout/semantic omissions and no-OCR fallbacks are explicit diagnostics. See [PDF policy](../architecture/PRD_CONVERT_PDF.md) and [the actual example](../../examples/conversion-pdf/README.md). Existing Viewer opening and local browser acceptance pass. Convert Web now supports local Markdown as recorded below; public release onboarding remains open.
+`prd convert ./source.pdf --out ./pages.prd` produces page sections, extraction-order line paragraphs and bounded PNG fallback for textless pages. It shares canonical content, resources, validator and packager. Original source/report attachments are declared by default. Optional PDF.js/native canvas loads only in a separate Node process; Node.js 22.13+ is required for this format. Encrypted PDFs are refused. Reading order, text-page graphics, layout/semantic omissions and no-OCR fallbacks are explicit diagnostics. See [PDF policy](../architecture/PRD_CONVERT_PDF.md) and [the actual example](../../examples/conversion-pdf/README.md). Existing Viewer opening and local browser acceptance pass. The browser subset is described below; the Node subset ships in CLI `0.3.0` and converter `0.2.0`.
 
 ## 16. Browser Markdown conversion increment
 
-The `/convert/` web route now completes real local Markdown → shared canonical assembly → validator → memory packager → download → existing Viewer. The initial browser increment enables Markdown and explicitly selected raster resources; the later HTML increment is recorded below. The Node adapter matrix above does not imply browser support for the other formats. Existing quality/source-retention contracts remain, including omitted/missing resource warnings. See [Convert Web policy](../architecture/PRD_CONVERT_WEB.md) and [the browser-downloaded example](../../examples/conversion-web/README.md). HTML is now supported under the browser parser/worker policy below. Publication and production deployment remain open.
+The `/convert/` web route now completes real local Markdown → shared canonical assembly → validator → memory packager → download → existing Viewer. The initial browser increment enables Markdown and explicitly selected raster resources; the later HTML increment is recorded below. The Node adapter matrix above does not imply browser support for the other formats. Existing quality/source-retention contracts remain, including omitted/missing resource warnings. See [Convert Web policy](../architecture/PRD_CONVERT_WEB.md) and [the browser-downloaded example](../../examples/conversion-web/README.md). HTML is now supported under the browser parser/worker policy below. The browser entry is published in converter `0.2.0` and production asset delivery is verified. Remaining native/browser acceptance stays open.
 
 ## 17. Browser HTML and workspace increment — October 29, 2026
 
 `convertInBrowser` adds static UTF-8 `.html`/`.htm` alongside Markdown with the same HTML extraction, bounded optional parsing, explicit raster resources, manifest/report and packager authority as Node. The Markdown-only browser export stays compatible. The web worker is emitted as ES modules with lazy HTML/parser chunks. See [exact browser policy](../architecture/PRD_CONVERT_WEB_HTML.md) and [actual HTML output](../../examples/conversion-web/html/README.md).
 
-The reference-inspired workspace exposes browse/single-source drop, actual options and quality/assets/plain-source review. PSD/AI/layer/batch/history capabilities are not inferred from the mockup. Live browser acceptance and deployment remain pending; Node/browser-entry parity and both-transport Viewer opening are automated.
+The reference-inspired workspace exposes browse/single-source drop, actual options and quality/assets/plain-source review. PSD/AI/layer/batch/history capabilities are not inferred from the mockup. Production asset delivery is verified; remaining browser acceptance stays open. Node/browser-entry parity and both-transport Viewer opening are automated.
 
 ## 18. Browser CBZ increment — October 29, 2026
 
-`convertInBrowser` and `/convert/` now accept bounded `.cbz` ZIP image archives and select `comic`. They share the existing adapter, archive checks/limits, canonical assembly and packager. The browser takes pages from the archive, shows factual page/resource counts and offers natural or reversed filename sequence. Binary source is never decoded into text preview. Shared additive `comicPageOrder` preserves page IDs/assets and default output; it does not encode manga direction or add CLI flags. See [browser CBZ policy](../architecture/PRD_CONVERT_WEB_CBZ.md) and [actual browser-entry output](../../examples/conversion-web/cbz/README.md). Fresh live interaction acceptance, release and deployment remain pending.
+`convertInBrowser` and `/convert/` now accept bounded `.cbz` ZIP image archives and select `comic`. They share the existing adapter, archive checks/limits, canonical assembly and packager. The browser takes pages from the archive, shows factual page/resource counts and offers natural or reversed filename sequence. Binary source is never decoded into text preview. Shared additive `comicPageOrder` preserves page IDs/assets and default output; it does not encode manga direction or add CLI flags. See [browser CBZ policy](../architecture/PRD_CONVERT_WEB_CBZ.md) and [actual browser-entry output](../../examples/conversion-web/cbz/README.md). The library is published and production assets are verified; fresh CBZ browser interaction acceptance remains pending at the owner's request.
 
 ## 19. Comic page-order review — October 29, 2026
 
