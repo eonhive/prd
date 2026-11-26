@@ -979,7 +979,7 @@ See [quality-review policy](../architecture/PRD_CONVERT_QUALITY_REVIEW.md), cate
 ---
 
 ## PRD-057 — Converter release onboarding uses independent package versions and publish-gated verification
-**Status:** Accepted for repository implementation, October 30, 2026; CI execution and first converter publication verified November 25, 2026; live UI acceptance pending
+**Status:** Accepted October 30, 2026; CI publication, registry audit and npm consumer verification completed November 25, 2026. Live UI acceptance remains separate.
 
 **Decision:**
 Use one five-package public release catalog for types, validator, packager, converter and CLI across preflight, registry audit, tarball checks and published consumers. Keep Changesets' independent version planning with empty fixed/linked groups. Remove preflight/audit's toolchain-wide version equality requirement; verify each package against its own version and dependency metadata. Preserve source/format/schema/public CLI contracts and leave checkout package versions unchanged in this implementation task.
@@ -988,7 +988,7 @@ Use one five-package public release catalog for types, validator, packager, conv
 Retire the completed original four-package bootstrap from automatic CI; preserve its historical script without adding the converter. Publish only through Changesets on `main`, serialize runs without canceling a running publish, and invoke the read-only reusable consumer only when the action actually reports a publish. Pin verification to the release commit and exact per-package workspace versions. Consumer checks include authoring/import commands and SDK/CLI conversion. Its runner is also exercised against clean local tarball installs before publication. Release, registry and consumer report contracts become separately versioned v0.2; retained bootstrap fields are explicitly inactive. These are not changes to CLI document JSON or PRD wire versions.
 
 **Evidence / follow-up:**
-See [release policy](../governance/PRD_RELEASE_POLICY.md) and [maintainer runbook](../governance/PRD_NPM_RELEASE_RUNBOOK.md), independent-version/target/registry/failure tests, real local consumer round trips and workflow syntax/guard checks. A Changesets preview applied only in a temporary workspace retains types at `0.1.1`, plans the other four public packages at `0.2.0`, and updates internal ranges for the current queue. Read-only npm checks still find the four original `latest` versions at `0.1.1` and no published converter. Publisher credentials/rights, real GitHub execution, publication and deployment are not established by local gates. Browser-disabled status and earlier live Convert/archive/Viewer acceptance remain open.
+See [release policy](../governance/PRD_RELEASE_POLICY.md), [maintainer runbook](../governance/PRD_NPM_RELEASE_RUNBOOK.md) and the exact-version release/registry/consumer checks. Main Release run `45701384261` published CLI `0.3.0`, converter/packager/validator `0.2.0`, retaining types `0.1.1`, from commit `474d5e0`. Registry metadata/latest/dependency audit and all 48 installed npm consumer checks pass on attempt 2 after registry metadata refreshed. The four new provenance statements identify main's `release.yml`, that release commit/run and the registry artifact digests. This is external publication evidence; physical/browser Convert and archive/Viewer acceptance remain separately scoped and are not established by npm checks.
 
 **November 25 verification:**
 The [Release run](https://github.com/eonhive/prd/actions/runs/45701384261)
@@ -997,8 +997,8 @@ published CLI `0.3.0` and converter/packager/validator `0.2.0`, retaining types
 signature verification confirms the four new provenance attestations, whose
 subjects/source/build match the published tarballs and release commit `474d5e0`.
 Types has a verified registry signature but no advertised provenance. This
-supersedes the October 30 unpublished snapshot above, without changing the
-accepted decision or closing live CBZ, physical-device or assistive acceptance.
+adds cryptographic verification to the publication evidence above, without
+changing the accepted decision or closing live CBZ, physical-device or assistive acceptance.
 See the [verification record](../governance/PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026).
 
 ---

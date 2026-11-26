@@ -11,7 +11,7 @@ Before release work:
 - use Node 22 for release validation/publication; the separate Node 20 consumer lane checks the baseline package floor
 - align your shell to the repo `.nvmrc` when using `nvm`
 - ensure `main` is green in CI
-- ensure `NPM_TOKEN` is configured in GitHub Actions
+- ensure `NPM_TOKEN_GITHUB` is configured in GitHub Actions; Release maps it to step-local `NPM_TOKEN` and `NODE_AUTH_TOKEN`
 - ensure publish access exists for the `eonhive` npm organization
 
 Local verification commands:
@@ -172,7 +172,7 @@ After an actual publish on `main`, the current reusable consumer workflow must p
 
 ## 4. Corrective 0.1.1 Release
 
-`0.1.0` was published on npm, but it leaked `workspace:*` internal dependency metadata for consumer-installed packages. The corrective `0.1.1` patch is now the clean public preview baseline.
+`0.1.0` was published on npm, but it leaked `workspace:*` internal dependency metadata for consumer-installed packages. The corrective `0.1.1` patch established the clean public preview baseline. Current independently versioned releases are recorded in the November 25 closeout below.
 
 The completed `0.1.1` closeout state is:
 
@@ -254,7 +254,7 @@ the publisher still uses setup-node's placeholder. See the
 [setup-node publishing example](https://github.com/actions/setup-node/blob/v4/docs/advanced-usage.md#publish-to-npmjs-and-gpr-with-npm)
 and the [Changesets action implementation](https://github.com/changesets/action/blob/a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d/src/index.ts).
 
-PR #71 mapped the same existing secret to both variable names for the then-existing publishers. The integrated converter workflow retains this mapping on Changesets publication and retires automatic bootstrap:
+PR #71 mapped the same existing secret to both variable names for the then-existing publishers. The integrated converter workflow retains the environment-variable mapping and retires automatic bootstrap. The historical snippet below uses the old secret name; the November 25 replacement now reads `NPM_TOKEN_GITHUB` as documented in section 2:
 
 ```yaml
 env:
@@ -338,6 +338,37 @@ and publish-gated installed-consumer workflow to pass before marking item 46
 complete or updating current public availability claims. Do not manually bump
 versions or publish locally to work around this failure.
 
+## Successful independent-version publication — November 25, 2026
+
+[Release run 45701384261](https://github.com/eonhive/prd/actions/runs/45701384261)
+published CLI `0.3.0` and converter/packager/validator `0.2.0` from commit
+`474d5e0`, with types retained at `0.1.1`. The replacement `NPM_TOKEN_GITHUB`
+secret passed publisher preflight and actual npm publication. No secret value
+was read or added to the repository.
+
+The first post-publish audit saw stale full-package metadata even though exact
+version endpoints and provenance were available. Registry responses advertised
+a 300-second cache window. Once the unchanged audit passed against all five
+packages and their `latest` tags, rerunning only the failed verification job
+produced a green overall run on attempt 2. Publication was not repeated.
+
+Verified successful artifacts:
+
+- Registry audit `15063054327`, SHA-256 `552495e626b67afca3d00f1885116d1d8db0299b37745645e070f8a7a4f3a0dd`: all five packages pass.
+- Consumer report `15062849441`, SHA-256 `12785c908196943d8caef3a9673d2bcc07855fa09e799fc68c2c98058eebb451`: all 48 steps pass with `authoringRequired: true` and exact release-version install specs.
+
+The four new packages expose SLSA provenance statements whose source workflow,
+main ref, commit/run and subject SHA-512 values match this release and registry
+integrities. Those initial checks established decoded source/digest correspondence;
+the subsequent verification below adds npm signature-chain verification. Copies of the checked artifacts and
+metadata are ignored under `examples/dist/publisher-secret-release-qa/`.
+
+For a future publish, keep the registry audit strict. If its report contains
+stale versions or `latest` metadata immediately after a successful publication,
+allow the registry to refresh, verify the exact expected facts, and rerun only
+the failed verification job. Do not republish an immutable version merely to
+refresh a registry cache. Feature/browser/device acceptance remains separate.
+
 ## Published release verification — November 25, 2026
 
 The replacement binding at `474d5e02979dac3f162d01080648f9f892dfa427`
@@ -387,7 +418,7 @@ install specs above, `authoringRequired: true`, and **48 of 48 passed steps**.
 This is an npm-installed CI result, distinct from local tarball smoke.
 
 Production delivery was independently checked against a fresh root build from
-main `85a9276`: **31 checks pass**, including Home/Viewer/Convert/Docs, the
+main `85a9276`, then rechecked after integrating `f765db7`: **31 checks pass**, including Home/Viewer/Convert/Docs, the
 validated samples and byte-exact responses for all **10 emitted JS/CSS files**.
 The [hosting runbook](PRD_HOSTING_RUNBOOK.md#production-convert-delivery--november-25-2026)
 records the command and remaining acceptance scope. Raw registry metadata,

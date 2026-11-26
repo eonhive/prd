@@ -422,15 +422,17 @@ This repo does **not** currently claim streaming, range requests, worker unzip, 
 
 ### Install from npm
 
-The public npm surface is a pre-1.0 preview under the **eonhive** org. Verified npm `latest` versions on November 25, 2026:
+The public npm surface is an **independently versioned, pre-1.0 preview** under the **eonhive** org. Verified on November 25, 2026:
 
-* `@eonhive/prd-types@0.1.1`
-* `@eonhive/prd-validator@0.2.0`
-* `@eonhive/prd-packager@0.2.0`
-* `@eonhive/prd-converter@0.2.0`
-* `@eonhive/prd-cli@0.3.0`
+| Package | Verified npm `latest` |
+| --- | --- |
+| `@eonhive/prd-types` | `0.1.1` |
+| `@eonhive/prd-validator` | `0.2.0` |
+| `@eonhive/prd-packager` | `0.2.0` |
+| `@eonhive/prd-converter` | `0.2.0` |
+| `@eonhive/prd-cli` | `0.3.0` |
 
-Baseline tooling requires **Node.js 20+**; HTML requires Node 20.19+, and optional PDF extraction requires Node 22.13+. Node 22 is the release/validation baseline. The viewer packages stay private and are not part of the npm publish set.
+The baseline tooling requires **Node.js 20+**; HTML conversion needs Node 20.19+ and optional parsing, while PDF conversion needs Node 22.13+ and its optional PDF dependencies. The viewer packages stay private and are not part of the npm publish set.
 
 The repo root also includes [`.nvmrc`](.nvmrc) pinned to Node 22 so local release and Codex sessions can match the release workflow directly.
 

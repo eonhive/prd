@@ -67,7 +67,7 @@ export const viewerLandingHero = {
 };
 
 export const viewerAuthoringAvailabilityNote =
-  "Authoring commands are available in the repository build. Published npm CLI 0.1.1 provides pack, validate, and inspect; init and import await the next CLI release.";
+  "Published npm CLI 0.3.0 supports init, import, convert, validate, inspect, pack, sign and verify. See the CLI guide for supported formats and requirements.";
 
 export const viewerPublicDocsIntro = {
   eyebrow: "PRD documentation",

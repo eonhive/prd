@@ -6,11 +6,16 @@ This document defines the current npm release posture for the PRD reference tool
 
 ## 1. Current Release Baseline
 
-The public npm preview line starts at **`0.1.0`**.
+The npm preview line began at `0.1.0`; that release leaked `workspace:*`
+internal dependency metadata in some packages. The corrective `0.1.1` release
+established the consumer-safe preview baseline and deprecated the broken initial
+versions with upgrade guidance.
 
-It is a real public release, but it should be read as **pre-1.0 tooling** rather than a claim that the format or tooling surface is permanently stable.
-
-The initial `0.1.0` publish leaked `workspace:*` internal dependencies in some published package manifests. The corrective **`0.1.1`** patch established the first consumer-safe preview. The current independently versioned release was verified on **November 25, 2026**:
+The current release remains pre-1.0 and independently versioned. On November
+25, 2026, main Release run `45701384261` published the four new versions from
+commit `474d5e0`, retaining the existing types version. Exact registry/latest and
+48-step npm consumer verification pass on its second attempt; the initial
+post-publish audit encountered stale registry metadata.
 
 | Public package | npm `latest` | Provenance verification |
 | --- | --- | --- |

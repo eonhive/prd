@@ -452,8 +452,9 @@ Reference docs:
 
 ## Production Convert delivery — November 25, 2026
 
-PR #79 is merged at main `85a9276`. A fresh root production build from that
-revision passed the deployed comparison:
+PR #79 is merged at main `85a9276`. Fresh root builds from that revision and
+the subsequent `f765db7` release-closeout/app-copy update both pass the deployed
+comparison. The latest evidence uses `f765db7`:
 
 ```bash
 pnpm viewer:demo:build:cloudflare

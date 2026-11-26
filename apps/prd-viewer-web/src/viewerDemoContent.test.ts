@@ -24,10 +24,10 @@ import {
 } from "./viewerDemoContent.js";
 
 describe("viewer demo content", () => {
-  it("distinguishes repository authoring commands from the published CLI", () => {
-    expect(viewerAuthoringAvailabilityNote).toContain("repository build");
-    expect(viewerAuthoringAvailabilityNote).toContain("npm CLI 0.1.1");
-    expect(viewerAuthoringAvailabilityNote).toContain("init and import await");
+  it("describes authoring commands in the published CLI", () => {
+    expect(viewerAuthoringAvailabilityNote).toContain("supports init, import, convert");
+    expect(viewerAuthoringAvailabilityNote).toContain("npm CLI 0.3.0");
+    expect(viewerAuthoringAvailabilityNote).not.toContain("await");
   });
 
   it("describes the Home page without inventing unavailable product behavior", () => {
