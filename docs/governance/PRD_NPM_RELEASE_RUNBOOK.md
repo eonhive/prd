@@ -362,8 +362,10 @@ integrities. These checks establish decoded source/digest correspondence, not an
 independent signature-chain verification. Copies of the checked artifacts and
 metadata are ignored under `examples/dist/publisher-secret-release-qa/`.
 
-For a future publish, keep the registry audit strict. If its report contains
-stale versions or `latest` metadata immediately after a successful publication,
-allow the registry to refresh, verify the exact expected facts, and rerun only
-the failed verification job. Do not republish an immutable version merely to
-refresh a registry cache. Feature/browser/device acceptance remains separate.
+The post-publish workflow retries the strict registry audit every 15 seconds
+for up to 21 attempts (five minutes of waiting) when the only failures are
+missing packages/versions or stale `latest` tags. Unsafe metadata, registry
+errors and invalid targets fail without waiting. If the final report still shows
+stale metadata, verify the expected facts and rerun only the failed verification
+job after the registry refreshes. Do not republish an immutable version merely
+to refresh a registry cache. Feature/browser/device acceptance remains separate.
