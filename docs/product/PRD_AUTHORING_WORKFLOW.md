@@ -1,5 +1,5 @@
 # PRD_AUTHORING_WORKFLOW.md
-_Last updated: October 27, 2026_
+_Last updated: November 25, 2026_
 _Status: Phase 5 authoring workflow baseline v0.3_
 
 ## 1. Purpose
@@ -8,7 +8,7 @@ This document defines the current public authoring workflow for PRD after the fi
 
 The goal is to make PRD authoring repeatable without pretending a full Studio, broad conversion platform, or hosted authoring workflow exists yet. The current hosted surface is a static reference viewer demo, not Cloud authoring.
 
-Command availability: this workflow describes the repository build. On October 25, 2026, npm `@eonhive/prd-cli` latest is still `0.1.1` with `pack`, `validate`, and `inspect`; the `init` and import lanes have queued minor changesets. Until that release ships, use the repository build for authoring. See the [CLI availability note](../../packages/prd-cli/README.md#command-availability).
+Command availability: this workflow is available in npm `@eonhive/prd-cli@0.3.0`, verified November 25, 2026. Install it with `npm install -g @eonhive/prd-cli@0.3.0`; repository builds remain an alternative. The release includes `init`, the Markdown/image/HTML import lanes, direct conversion and optional sign/verify commands. See the [CLI availability note](../../packages/prd-cli/README.md#command-availability) and [release verification](../governance/PRD_RELEASE_POLICY.md#1-current-release-baseline).
 
 ---
 
@@ -192,14 +192,14 @@ Full Studio, hosted conversion, DOCX/EPUB/PDF fidelity, and broad HTML import re
 
 ## Direct conversion with PRD Convert
 
-For a completed archive with source retention and a quality report, use the repository-built CLI:
+For a completed archive with source retention and a quality report, use CLI `0.3.0`:
 
 ```sh
-node packages/prd-cli/dist/cli.js convert ./source.md --out ./converted.prd --json
-node packages/prd-cli/dist/cli.js validate ./converted.prd --json
+prd convert ./source.md --out ./converted.prd --json
+prd validate ./converted.prd --json
 ```
 
-The output parent must exist; existing destinations are refused. Open the resulting archive in the existing Viewer. Files exposes the declared source and quality-report attachments. `--profile auto` is the default; only compatible overrides are accepted. `--strategy adaptive` is the only Phase 1 strategy. `--no-source` disables source retention and records a warning. The legacy unpacked `prd import markdown` workflow stays available. See [PRD Convert architecture](../architecture/PRD_CONVERT_PHASE_1.md) and the [conversion example](../../examples/conversion-markdown/README.md). This lane is implemented locally and pending public release.
+The output parent must exist; existing destinations are refused. Open the resulting archive in the existing Viewer. Files exposes the declared source and quality-report attachments. `--profile auto` is the default; only compatible overrides are accepted. `--strategy adaptive` is the only implemented strategy. `--no-source` disables source retention and records a warning. The legacy unpacked `prd import markdown` workflow stays available. See [PRD Convert architecture](../architecture/PRD_CONVERT_PHASE_1.md) and the [conversion example](../../examples/conversion-markdown/README.md). This lane ships with converter `0.2.0`.
 
 
 ### HTML source conversion
@@ -208,7 +208,7 @@ The same direct-archive workflow now accepts `prd convert ./source.html --out ./
 
 ### CBZ source conversion
 
-Use `prd convert ./sample-comic.cbz --out ./comic.prd --profile comic --json` to import a bounded ZIP comic sequence. `auto` also selects `comic`. Raster pages become canonical panels in natural full-path order, with explicit warnings for inferred order, filename alternative text and omitted metadata. The original archive is retained by default; `--no-source` opts out. Existing Viewer comic navigation opens the result without a new renderer. See [CBZ policy and limits](../architecture/PRD_CONVERT_CBZ.md) and [example](../../examples/conversion-cbz/README.md). EPUB, DOCX and PDF are supported by subsequent increments below; converter UI remains later work.
+Use `prd convert ./sample-comic.cbz --out ./comic.prd --profile comic --json` to import a bounded ZIP comic sequence. `auto` also selects `comic`. Raster pages become canonical panels in natural full-path order, with explicit warnings for inferred order, filename alternative text and omitted metadata. The original archive is retained by default; `--no-source` opts out. Existing Viewer comic navigation opens the result without a new renderer. See [CBZ policy and limits](../architecture/PRD_CONVERT_CBZ.md) and [example](../../examples/conversion-cbz/README.md). EPUB, DOCX and PDF ship in the same release; the browser subset is described below with live CBZ acceptance still pending.
 
 ### EPUB source conversion
 
@@ -224,7 +224,7 @@ Use `prd convert ./source.pdf --out ./pages.prd --json` with Node.js 22.13+ and 
 
 ### Browser Markdown conversion
 
-Open **Convert** at `/convert/` in the repository-built web app. Select Markdown and optional supporting raster files, choose a title/profile/source-retention setting and convert locally. Review real conversion/validator warnings, download the PRD/report and use **Preview in Viewer** to open the exact archive. Resources are explicit local selections; missing or uncollected files warn. Source retention defaults on and is not redaction. A 20-second job deadline and cancel action stop workers; no service receives source data. See [browser execution and limits](../architecture/PRD_CONVERT_WEB.md) and [actual browser output](../../examples/conversion-web/README.md). Other formats remain Node-only until their browser policies are implemented.
+Open **Convert** at [prd.eonhive.com/convert/](https://prd.eonhive.com/convert/) or `/convert/` in a local build. Select Markdown and optional supporting raster files, choose a title/profile/source-retention setting and convert locally. Review real conversion/validator warnings, download the PRD/report and use **Preview in Viewer** to open the exact archive. Resources are explicit local selections; missing or uncollected files warn. Source retention defaults on and is not redaction. A 20-second job deadline and cancel action stop workers; no service receives source data. See [browser execution and limits](../architecture/PRD_CONVERT_WEB.md) and [actual browser output](../../examples/conversion-web/README.md). Browser HTML/CBZ follow below; EPUB/DOCX/PDF remain Node-only. Production asset verification does not close pending live browser acceptance.
 
 ### Browser HTML and workspace review
 

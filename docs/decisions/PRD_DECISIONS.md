@@ -979,7 +979,7 @@ See [quality-review policy](../architecture/PRD_CONVERT_QUALITY_REVIEW.md), cate
 ---
 
 ## PRD-057 — Converter release onboarding uses independent package versions and publish-gated verification
-**Status:** Accepted for repository implementation, October 30, 2026; CI execution, first converter publication and live UI acceptance pending
+**Status:** Accepted for repository implementation, October 30, 2026; CI execution and first converter publication verified November 25, 2026; live UI acceptance pending
 
 **Decision:**
 Use one five-package public release catalog for types, validator, packager, converter and CLI across preflight, registry audit, tarball checks and published consumers. Keep Changesets' independent version planning with empty fixed/linked groups. Remove preflight/audit's toolchain-wide version equality requirement; verify each package against its own version and dependency metadata. Preserve source/format/schema/public CLI contracts and leave checkout package versions unchanged in this implementation task.
@@ -989,6 +989,17 @@ Retire the completed original four-package bootstrap from automatic CI; preserve
 
 **Evidence / follow-up:**
 See [release policy](../governance/PRD_RELEASE_POLICY.md) and [maintainer runbook](../governance/PRD_NPM_RELEASE_RUNBOOK.md), independent-version/target/registry/failure tests, real local consumer round trips and workflow syntax/guard checks. A Changesets preview applied only in a temporary workspace retains types at `0.1.1`, plans the other four public packages at `0.2.0`, and updates internal ranges for the current queue. Read-only npm checks still find the four original `latest` versions at `0.1.1` and no published converter. Publisher credentials/rights, real GitHub execution, publication and deployment are not established by local gates. Browser-disabled status and earlier live Convert/archive/Viewer acceptance remain open.
+
+**November 25 verification:**
+The [Release run](https://github.com/eonhive/prd/actions/runs/45701384261)
+published CLI `0.3.0` and converter/packager/validator `0.2.0`, retaining types
+`0.1.1`. Registry audit and the exact-version 48-step npm consumer pass. npm
+signature verification confirms the four new provenance attestations, whose
+subjects/source/build match the published tarballs and release commit `474d5e0`.
+Types has a verified registry signature but no advertised provenance. This
+supersedes the October 30 unpublished snapshot above, without changing the
+accepted decision or closing live CBZ, physical-device or assistive acceptance.
+See the [verification record](../governance/PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026).
 
 ---
 

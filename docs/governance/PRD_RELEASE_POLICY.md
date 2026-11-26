@@ -10,23 +10,39 @@ The public npm preview line starts at **`0.1.0`**.
 
 It is a real public release, but it should be read as **pre-1.0 tooling** rather than a claim that the format or tooling surface is permanently stable.
 
-The initial `0.1.0` publish leaked `workspace:*` internal dependencies in some published package manifests. The corrective **`0.1.1`** patch is now the clean public preview baseline:
+The initial `0.1.0` publish leaked `workspace:*` internal dependencies in some published package manifests. The corrective **`0.1.1`** patch established the first consumer-safe preview. The current independently versioned release was verified on **November 25, 2026**:
 
-- `0.1.1` is live on npm `latest`
-- broken `0.1.0` versions are deprecated with upgrade guidance
-- post-publish registry audit passes
-- post-publish npm consumer smoke passes
+| Public package | npm `latest` | Provenance verification |
+| --- | --- | --- |
+| `@eonhive/prd-types` | `0.1.1` | Unchanged historical release; registry signature verified, no provenance attestation advertised. |
+| `@eonhive/prd-validator` | `0.2.0` | Registry signature and provenance verified. |
+| `@eonhive/prd-packager` | `0.2.0` | Registry signature and provenance verified. |
+| `@eonhive/prd-converter` | `0.2.0` | First public converter release; registry signature and provenance verified. |
+| `@eonhive/prd-cli` | `0.3.0` | Registry signature and provenance verified. |
+
+The registry audit passes for all five expected versions and `latest` tags,
+with no deprecated expected release or unsafe internal dependency metadata.
+The [main Release run](https://github.com/eonhive/prd/actions/runs/45701384261)
+completed publication and its publish-gated consumer passed all 48 checks using
+those exact versions. The four new provenance statements bind the downloaded
+tarball SHA-512 digests to commit `474d5e02979dac3f162d01080648f9f892dfa427`,
+`.github/workflows/release.yml`, `refs/heads/main`, and that run's first attempt.
+An isolated Node 22.22.2/npm 10.9.7 core install passed `npm audit signatures`:
+six registry signatures (the five PRD packages plus fflate) and four attestations.
+Optional dependencies were omitted from this signature audit; the unchanged
+types release is not claimed to have provenance. See the
+[verification record and repeatable commands](PRD_NPM_RELEASE_RUNBOOK.md#published-release-verification--november-25-2026).
 
 The release channel is:
 
 - npm `latest`
 
-As rechecked on October 30, 2026, those four packages remain on npm `latest` at `0.1.1`; `@eonhive/prd-converter` is not yet published. The current release-check catalog now includes it for its first Changesets release:
+The release-check catalog includes all five public packages:
 
 - `@eonhive/prd-types`
 - `@eonhive/prd-validator`
 - `@eonhive/prd-packager`
-- `@eonhive/prd-converter` (repository implementation; publication pending)
+- `@eonhive/prd-converter`
 - `@eonhive/prd-cli`
 
 The following workspace packages stay private:

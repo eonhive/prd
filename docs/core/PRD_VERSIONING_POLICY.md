@@ -1,5 +1,5 @@
 # PRD_VERSIONING_POLICY.md
-_Last updated: October 28, 2026_
+_Last updated: November 25, 2026_
 _Status: Canonical versioning policy baseline v0.2; reference opening policy under PRD-046_
 
 ## 1. Purpose
@@ -36,14 +36,15 @@ Container identification is specified in [PRD_CONTAINER_FORMAT.md](PRD_CONTAINER
 
 Current executable examples use `prdVersion: "1.0"` and `manifestVersion: "1.0"` as package-declared format and manifest contract values.
 
-The public npm tooling preview is separate from those fields. The current clean public npm baseline is `0.1.1` for:
+The public npm tooling preview is separate from those fields. As verified on November 25, 2026, the published `latest` versions are:
 
-- `@eonhive/prd-types`
-- `@eonhive/prd-validator`
-- `@eonhive/prd-packager`
-- `@eonhive/prd-cli`
+- `@eonhive/prd-types@0.1.1` (unchanged)
+- `@eonhive/prd-validator@0.2.0`
+- `@eonhive/prd-packager@0.2.0`
+- `@eonhive/prd-converter@0.2.0`
+- `@eonhive/prd-cli@0.3.0`
 
-The `0.1.1` npm version does not mean the PRD format is externally finalized as a permanent `1.0` standard. It means the published tooling is in a clean pre-1.0 public preview state.
+These independent package versions do not mean the PRD format is externally finalized as a permanent `1.0` standard. The published tooling remains a pre-1.0 public preview; format, manifest, content and container versions are unchanged. See the [release baseline and verification](../governance/PRD_RELEASE_POLICY.md#1-current-release-baseline).
 
 ---
 
@@ -149,7 +150,7 @@ The only normal public npm release path is:
 - registry audit
 - post-publish consumer smoke
 
-The broken `0.1.0` npm preview is deprecated. `0.1.1` is the clean public preview baseline.
+The broken `0.1.0` npm preview is deprecated. `0.1.1` established the earlier clean preview; the current independently versioned baseline is listed in section 3.
 
 No package is considered cleanly shipped until:
 

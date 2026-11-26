@@ -2,6 +2,14 @@
 
 ## 2026-11-25
 
+### Published Release And Production Convert Verified
+
+- Verified main `85a9276` after PR #79 merged. A fresh root build and production `--build-dir` smoke pass **31 checks**, including all four routes, exact bytes for **10 emitted JS/CSS files**, canonical samples and their inspection/preview assets. This is HTTP delivery evidence with `browserAcceptance: not-assessed`; CBZ browser checks remain pending at the owner's explicit request. No browser control or deployment was attempted.
+- Fresh registry audit passes npm `latest`: CLI **0.3.0**, converter/packager/validator **0.2.0**, unchanged types **0.1.1**. All expected versions are present/non-deprecated with consumer-safe internal ranges. Downloaded tarballs match all five registry SHA-512 integrity values. The earlier E403 and unpublished snapshots below are historical.
+- An isolated Node **22.22.2** / npm **10.9.7** core install with scripts/optional dependencies omitted passes `npm audit signatures`: **six verified registry signatures**, **four verified attestations**, no invalid/missing results. Each new PRD SLSA subject matches its actual tarball SHA-512/name/version and the expected repository, main ref, release workflow, GitHub-hosted builder, commit `474d5e0` and run `45701384261` attempt 1. Historical types has a verified registry signature but no advertised provenance; optional-dependency provenance was not audited.
+- Retrieved the same Release run's successful npm consumer artifact `15062849441`, verified its GitHub SHA-256 digest, exact five install specs and **48/48 passed** authoring/package/HTML/SDK/CLI checks with `authoringRequired: true`. This is actual published-consumer CI evidence, not substituted local tarballs. Release item 46 is complete for this version set; physical/assistive/launch acceptance remains separate.
+- Updated current release/version/install/format-availability docs, PRD-057's completion note and status/handoff. Preserved accepted decisions, historical failure records, public APIs, package versions and publication controls. Raw public registry/attestation/tarball/CI/HTTP evidence is ignored under `examples/dist/release-verification-2026-11-25/`. No new code/dependency/Changeset, release retry, publication, credential or permission change is part of this documentation/verification task.
+
 ### Convert Hosted Route And Complete Build Asset Checks
 
 - Kept CBZ browser acceptance pending at the owner's request and implemented a separate HTTP-delivery check. The hosted smoke now includes Convert beside Home/Viewer/Docs. Optional `--build-dir` inventories all emitted `assets/` JS/CSS, including module-worker and lazy parser chunks, compares every response byte-for-byte, and requires shell entry references to match the selected build/base. No Vite configuration, build metadata, runtime, format, public package, dependency or release behavior changes.

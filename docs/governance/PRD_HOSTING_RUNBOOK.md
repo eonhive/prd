@@ -450,6 +450,26 @@ Reference docs:
 
 - GitHub Pages custom domains: `https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site`
 
+## Production Convert delivery — November 25, 2026
+
+PR #79 is merged at main `85a9276`. A fresh root production build from that
+revision passed the deployed comparison:
+
+```bash
+pnpm viewer:demo:build:cloudflare
+pnpm viewer:demo:check:hosted -- --url https://prd.eonhive.com/ --build-dir apps/prd-viewer-web/dist
+```
+
+All **31 checks** pass: the four route shells, ten byte-exact emitted JS/CSS
+files including conversion worker/lazy chunks, canonical sample validation,
+inspection facts and visual preview assets. The summary reports
+`browserAcceptance: not-assessed`. Evidence is ignored under
+`examples/dist/release-verification-2026-11-25/production-convert-summary.json`.
+No production deployment or hosting setting changed during verification.
+CBZ native selection/conversion/review/cancel/retry/download/Viewer return stays
+pending at the owner's request. Keep launch items 44/48 open for their remaining
+browser, physical-device, assistive and deployment-owner acceptance.
+
 ## Do Not Add In This Lane
 
 - Accounts, sign-in, pricing, checkout, or free-trial behavior
