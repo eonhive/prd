@@ -1,5 +1,5 @@
 # PRD_PRODUCT_BOUNDARIES.md
-_Last updated: October 29, 2026_
+_Last updated: November 25, 2026_
 _Status: Canonical product-boundary baseline v0.1_
 
 ## 1. Purpose
@@ -46,9 +46,10 @@ The current public PRD preview consists of:
   - `@eonhive/prd-types`
   - `@eonhive/prd-validator`
   - `@eonhive/prd-packager`
+  - `@eonhive/prd-converter`
   - `@eonhive/prd-cli`
 
-The current clean public npm baseline is `0.1.1`.
+The verified November 25 npm releases are types `0.1.1`, validator/packager/converter `0.2.0`, and CLI `0.3.0`. Registry audit and all 48 installed-consumer checks pass; package versions remain independent under PRD-057.
 
 The web viewer and viewer-core packages are present in the repository as reference implementation surfaces, but they are not part of the public npm publish set.
 
@@ -210,7 +211,7 @@ The current public preview does not ship:
 - full protection, encryption, or signature stack
 - certification or formal compatibility badge program
 
-The repository now implements the narrow optional [signature-v1 extension](../extensions/PRD_SIGNATURE_V1.md): local archive signing, public-key verification and Viewer status. It is pending the normal release path. This does not provide encryption, identity accounts, certificate trust, key management or revocation, and unsigned reading stays available.
+The repository now implements the narrow optional [signature-v1 extension](../extensions/PRD_SIGNATURE_V1.md): local archive signing, public-key verification and Viewer status. Its library/CLI support is included in validator/packager `0.2.0` and CLI `0.3.0`. This does not provide encryption, identity accounts, certificate trust, key management or revocation, and unsigned reading stays available.
 
 Those remain later optional lanes and must be introduced through explicit docs, extensions, or product plans when they are ready.
 
@@ -225,7 +226,7 @@ The current Phase 5 authoring docs are:
 
 The current Phase 5 executable authoring lanes are `prd init`, `prd import markdown`, `prd import images`, `prd import html`, and the direct-archive `prd convert` pipeline. Together they cover starter package scaffolding, structured `general-document` import from a small Markdown subset, and ordered image-folder import for `comic` and `storyboard`.
 
-The current public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow; separates `/` Home, `/viewer/` workspace, and `/docs/` public docs; includes light and premium dark modes; and targets Cloudflare Workers Static Assets at `prd.eonhive.com` with GitHub Pages as staging/fallback. Deployment and live launch QA remain separate acceptance steps from local build verification. Limited HTML, EPUB, DOCX and PDF conversion now exists as repository CLI/library tooling pending release. The local Markdown/HTML/CBZ Convert Web route is implemented but not yet deployed; server conversion, full Studio, Cloud publishing, PRDc workflows and broad visual editing remain deferred product lanes.
+The current public-product lane is the hosted PRD Home page, public docs index, and reference Web Viewer demo. It shows the real create/import, validate, inspect, pack, and open flow; separates `/` Home, `/viewer/` workspace, and `/docs/` public docs; includes light and premium dark modes; and targets Cloudflare Workers Static Assets at `prd.eonhive.com` with GitHub Pages as staging/fallback. Deployment and live launch QA remain separate acceptance steps from local build verification. Bounded HTML, EPUB, DOCX and PDF conversion ships in converter `0.2.0` and CLI `0.3.0`; adapter-specific requirements and fidelity limits remain documented separately. The local Markdown/HTML/CBZ Convert Web route is implemented but not yet deployed; server conversion, full Studio, Cloud publishing, PRDc workflows and broad visual editing remain deferred product lanes.
 
 
 The HTML directory workflow now shares output helpers with Markdown/image imports and emits a separately versioned diagnostic report. [PRD-042](../decisions/PRD_DECISIONS.md#prd-042--import-output-is-shared-while-conversion-remains-optional-tooling) records this optional tooling boundary. Structural validity remains Core-owned; reading quality and conversion fidelity are separate. No additional package/service/renderer is introduced by this consolidation.

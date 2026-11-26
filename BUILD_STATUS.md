@@ -2,6 +2,13 @@
 
 ## 2026-11-25
 
+### npm Publication And Post-Publish Verification Complete
+
+- Release run [45701384261](https://github.com/eonhive/prd/actions/runs/45701384261), from `474d5e0`, passed publisher preflight and published CLI `0.3.0` plus converter/packager/validator `0.2.0` through main CI using the replacement `NPM_TOKEN_GITHUB` binding. Types remains `0.1.1`. The earlier npm authentication blocker is resolved; no token value was accessed.
+- Overall run **attempt 2 succeeds**. The first post-publish audit encountered cached registry metadata; after refresh, rerunning only failed verification passed the unchanged five-package registry/latest/dependency audit and **48 of 48** exact-version npm consumer checks. Publication was not repeated. Downloaded successful CI artifacts match their recorded SHA-256 values.
+- The four new SLSA statements identify the expected main workflow, source commit/run and registry artifact SHA-512 digests. This verifies decoded source/digest correspondence, not an independent signature-chain check. Evidence is ignored under `examples/dist/publisher-secret-release-qa/`; artifact IDs/digests and cache recovery are recorded in the npm runbook.
+- Updated current README, release/versioning/product/authoring guidance, PRD-057 and Home availability text to reflect verified published commands. Closed release item 46 and its recovery tasks. Package/format contracts and independent browser/device acceptance are unchanged. Follow-up validation passes **30 content/markup tests**, app TypeScript project build, Vite production build, root-inclusive docs consistency and whitespace checks. The actual publishing run also passed the full release gate before publication.
+
 ### Convert Hosted Route And Complete Build Asset Checks
 
 - Kept CBZ browser acceptance pending at the owner's request and implemented a separate HTTP-delivery check. The hosted smoke now includes Convert beside Home/Viewer/Docs. Optional `--build-dir` inventories all emitted `assets/` JS/CSS, including module-worker and lazy parser chunks, compares every response byte-for-byte, and requires shell entry references to match the selected build/base. No Vite configuration, build metadata, runtime, format, public package, dependency or release behavior changes.

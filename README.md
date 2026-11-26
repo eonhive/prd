@@ -333,7 +333,7 @@ The public `/docs/` route is a user-friendly navigation layer over canonical rep
 
 The public demo is reachable at [prd.eonhive.com](https://prd.eonhive.com/). Home uses bounded, wrapping hero copy; navigation and the open action remain available on narrow screens. The Viewer identifies the opened package, distinguishes invalid packages from an empty workspace, and puts loaded content ahead of its rails on narrow screens. Docs provides section jump links and keeps hosting notes in a disclosure. These changes do not alter package parsing or eager in-memory loading.
 
-Authoring command availability: the repository build includes `prd init`, `prd import markdown`, `prd import images`, `prd import html`, and `prd convert`. As verified on October 25, 2026, npm CLI `0.1.1` still exposes only `pack`, `validate`, and `inspect`; the authoring changesets await a separate CI release. See the [CLI guide](packages/prd-cli/README.md#command-availability) before choosing an install path.
+Authoring command availability: published npm CLI `0.3.0` includes `prd init`, Markdown/image/HTML imports, `prd convert`, `prd sign` and `prd verify`, alongside pack/validate/inspect. The November 25, 2026 release passed exact-version registry and all 48 installed-consumer checks. See the [CLI guide](packages/prd-cli/README.md#command-availability) for supported formats and requirements.
 
 Live HTTP/package checks are not a substitute for browser launch QA. Mobile rendering, keyboard/file-picker behavior, drag/drop, route refresh, and theme persistence must be verified on the deployed revision before the launch checklist is closed.
 
@@ -421,14 +421,17 @@ This repo does **not** currently claim streaming, range requests, worker unzip, 
 
 ### Install from npm
 
-The public npm surface is a **`0.1.1` public preview** of the PRD tooling packages under the **eonhive** org:
+The public npm surface is an **independently versioned, pre-1.0 preview** under the **eonhive** org. Verified on November 25, 2026:
 
-* `@eonhive/prd-types`
-* `@eonhive/prd-validator`
-* `@eonhive/prd-packager`
-* `@eonhive/prd-cli`
+| Package | Verified npm `latest` |
+| --- | --- |
+| `@eonhive/prd-types` | `0.1.1` |
+| `@eonhive/prd-validator` | `0.2.0` |
+| `@eonhive/prd-packager` | `0.2.0` |
+| `@eonhive/prd-converter` | `0.2.0` |
+| `@eonhive/prd-cli` | `0.3.0` |
 
-They require **Node.js 20+**. The viewer packages stay private and are not part of the npm publish set.
+The baseline tooling requires **Node.js 20+**; HTML conversion needs Node 20.19+ and optional parsing, while PDF conversion needs Node 22.13+ and its optional PDF dependencies. The viewer packages stay private and are not part of the npm publish set.
 
 The repo root also includes [`.nvmrc`](.nvmrc) pinned to Node 22 so local release and Codex sessions can match the release workflow directly.
 
@@ -452,9 +455,9 @@ npx @eonhive/prd-cli pack path/to/examples/document-basic --out ./out.prd
 
 `prd validate` accepts a `.prd` archive or an unpacked package directory. For programmatic use, depend on `@eonhive/prd-validator` and import `@eonhive/prd-validator/node` for filesystem validation (`validatePackage`).
 
-The repository build also supports the [PRD 1.0 binary envelope](docs/core/PRD_CONTAINER_FORMAT.md) through `prd pack ./document --out ./document.prd --container prd`. Its first bytes are `50 52 44 00`. Default output remains ordinary ZIP for older consumers; current readers accept both and apply bounded archive checks. This option is pending a Changesets release and provides identification only.
+The repository build also supports the [PRD 1.0 binary envelope](docs/core/PRD_CONTAINER_FORMAT.md) through `prd pack ./document --out ./document.prd --container prd`. Its first bytes are `50 52 44 00`. Default output remains ordinary ZIP for older consumers; current readers accept both and apply bounded archive checks. This option is included in CLI `0.3.0` and provides identification only.
 
-The separate optional [signature-v1 extension](docs/extensions/PRD_SIGNATURE_V1.md) adds local Ed25519 signing and exact logical-file SHA-256 coverage through `prd sign` / `prd verify`. Verification requires an independently trusted matching public key; embedded keys are not automatically trusted. The Viewer shows verification status and blocks known-invalid signatures while preserving unsigned readability. These additive APIs/commands are repository features pending release. Encryption, certificates and key-management infrastructure remain outside this slice.
+The separate optional [signature-v1 extension](docs/extensions/PRD_SIGNATURE_V1.md) adds local Ed25519 signing and exact logical-file SHA-256 coverage through `prd sign` / `prd verify`. Verification requires an independently trusted matching public key; embedded keys are not automatically trusted. The Viewer shows verification status and blocks known-invalid signatures while preserving unsigned readability. These additive APIs/commands are included in validator/packager `0.2.0` and CLI `0.3.0`. Encryption, certificates and key-management infrastructure remain outside this slice.
 
 Source and issues: [github.com/eonhive/PRD](https://github.com/eonhive/PRD).
 
@@ -467,7 +470,7 @@ Release management uses **Changesets** plus the GitHub Actions Release workflow 
 * `pnpm release:audit:registry` to verify published npm metadata contains no `workspace:*` dependencies and that `latest` points to the expected version
 * `pnpm release:status` to inspect pending release state
 
-The release workflow publishes through Changesets on `main` after the Node 22 gate and authenticated preflight pass. Its shared catalog now includes `@eonhive/prd-converter`; package versions are independent, and the integrated branch retains the upstream CLI `0.2.0` version commit. Runs are serialized, and the completed original bootstrap is retired from CI. Consumer verification runs only after an actual publish, checks out that release commit, audits each package's expected version/`latest`/dependency metadata, then exercises package operations, authoring/import and SDK/CLI conversion with exact per-package versions. The same 48-step consumer runner checks five local tarballs before publication, retaining all three profile starters and both visual-profile import round trips. Internal release/registry/consumer summaries are v0.2; public document CLI JSON contracts stay unchanged. As rechecked October 30, npm still has the four original packages at `0.1.1` and no converter publication. See [release policy](docs/governance/PRD_RELEASE_POLICY.md), [maintainer runbook](docs/governance/PRD_NPM_RELEASE_RUNBOOK.md) and [version-surface policy](docs/core/PRD_VERSIONING_POLICY.md).
+The release workflow publishes through Changesets on `main` after the Node 22 gate and authenticated preflight pass. Its shared catalog includes all five public packages; package versions are independent. Runs are serialized, and the completed original bootstrap is retired from CI. Consumer verification runs only after an actual publish, checks out that release commit, audits each package's expected version/`latest`/dependency metadata, then exercises package operations, authoring/import and SDK/CLI conversion with exact per-package versions. The same 48-step consumer runner checks five local tarballs before publication, retaining all three profile starters and both visual-profile import round trips. Internal release/registry/consumer summaries are v0.2; public document CLI JSON contracts stay unchanged. Release run `45701384261` published the versions listed above from commit `474d5e0`; its registry audit and 48-step npm consumer passed after registry metadata refreshed. See [release policy](docs/governance/PRD_RELEASE_POLICY.md), [maintainer runbook](docs/governance/PRD_NPM_RELEASE_RUNBOOK.md) and [version-surface policy](docs/core/PRD_VERSIONING_POLICY.md).
 
 `pnpm foundation:gate` is now the canonical repo-level conformance gate. It runs build, tests, docs consistency, example validation, and aggregate example smoke checks, then emits `examples/dist/foundation-gate-summary.json`.
 
@@ -477,7 +480,7 @@ The release workflow publishes through Changesets on `main` after the Node 22 ga
 
 `pnpm consumer:smoke:npm` installs the five published packages in a clean temporary project. For the current CLI release, it requires 48 checks: package operations, all three profile starters, Markdown and comic/storyboard image imports with directory/archive validation and inspection, HTML import, SDK source/report preservation and CLI conversion. The independently versioned `prd-external-consumer-smoke-v0.2` summary records `authoringRequired`; CI uses `--workspace-versions` to install each release-commit version exactly. The same runner checks local tarballs before publication. A local pass does not establish npm availability.
 
-The npm preview line started at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch is now the clean published preview; the broken `0.1.0` versions are deprecated with upgrade guidance, and post-publish registry audit plus npm consumer smoke pass for `0.1.1`.
+The npm preview line started at `0.1.0`, but `0.1.0` leaked `workspace:*` dependency metadata for some published packages. The consumer-safe `0.1.1` patch established the corrected preview baseline, and broken `0.1.0` versions were deprecated with upgrade guidance. The current independently versioned releases are listed above and pass registry audit plus npm consumer smoke.
 
 ### Codex Run Environment
 

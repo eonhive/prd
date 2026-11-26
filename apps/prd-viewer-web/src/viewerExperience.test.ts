@@ -51,7 +51,8 @@ describe("public experience markup", () => {
     expect(html).toContain("prd import markdown");
     expect(html).toContain("prd import images");
     expect(html).toContain("Open Viewer");
-    expect(html).toContain("init and import await the next CLI release");
+    expect(html).toContain("Published npm CLI 0.3.0 supports init, import, convert");
+    expect(html).not.toContain("await the next CLI release");
     expect(html).not.toContain("0.1.1 public preview");
     expect(html.match(/data-living-chapter=/g)).toHaveLength(6);
     expect(html).toContain('aria-label="Story chapters"');

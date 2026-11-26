@@ -6,28 +6,27 @@ This document defines the current npm release posture for the PRD reference tool
 
 ## 1. Current Release Baseline
 
-The public npm preview line starts at **`0.1.0`**.
+The npm preview line began at `0.1.0`; that release leaked `workspace:*`
+internal dependency metadata in some packages. The corrective `0.1.1` release
+established the consumer-safe preview baseline and deprecated the broken initial
+versions with upgrade guidance.
 
-It is a real public release, but it should be read as **pre-1.0 tooling** rather than a claim that the format or tooling surface is permanently stable.
+The current release remains pre-1.0 and independently versioned. On November
+25, 2026, main Release run `45701384261` published the four new versions from
+commit `474d5e0`, retaining the existing types version. Exact registry/latest and
+48-step npm consumer verification pass on its second attempt; the initial
+post-publish audit encountered stale registry metadata.
 
-The initial `0.1.0` publish leaked `workspace:*` internal dependencies in some published package manifests. The corrective **`0.1.1`** patch is now the clean public preview baseline:
+| Package | Verified npm `latest` |
+| --- | --- |
+| `@eonhive/prd-types` | `0.1.1` |
+| `@eonhive/prd-validator` | `0.2.0` |
+| `@eonhive/prd-packager` | `0.2.0` |
+| `@eonhive/prd-converter` | `0.2.0` |
+| `@eonhive/prd-cli` | `0.3.0` |
 
-- `0.1.1` is live on npm `latest`
-- broken `0.1.0` versions are deprecated with upgrade guidance
-- post-publish registry audit passes
-- post-publish npm consumer smoke passes
-
-The release channel is:
-
-- npm `latest`
-
-As rechecked on October 30, 2026, those four packages remain on npm `latest` at `0.1.1`; `@eonhive/prd-converter` is not yet published. The current release-check catalog now includes it for its first Changesets release:
-
-- `@eonhive/prd-types`
-- `@eonhive/prd-validator`
-- `@eonhive/prd-packager`
-- `@eonhive/prd-converter` (repository implementation; publication pending)
-- `@eonhive/prd-cli`
+The release channel is npm `latest`. The converter is now part of the public
+publish set; this does not finalize PRD format contracts or publish Viewer apps.
 
 The following workspace packages stay private:
 
