@@ -199,7 +199,7 @@ node packages/prd-cli/dist/cli.js convert ./source.md --out ./converted.prd --js
 node packages/prd-cli/dist/cli.js validate ./converted.prd --json
 ```
 
-The output parent must exist; existing destinations are refused. Open the resulting archive in the existing Viewer. Files exposes the declared source and quality-report attachments. `--profile auto` is the default; only compatible overrides are accepted. `--strategy adaptive` is the only Phase 1 strategy. `--no-source` disables source retention and records a warning. The legacy unpacked `prd import markdown` workflow stays available. See [PRD Convert architecture](../architecture/PRD_CONVERT_PHASE_1.md) and the [conversion example](../../examples/conversion-markdown/README.md). This lane is implemented locally and pending public release.
+The output parent must exist; existing destinations are refused. Open the resulting archive in the existing Viewer. Files exposes the declared source and quality-report attachments. `--profile auto` is the default; only compatible overrides are accepted. `--strategy adaptive` is the only Phase 1 strategy. `--no-source` disables source retention and records a warning. The legacy unpacked `prd import markdown` workflow stays available. See [PRD Convert architecture](../architecture/PRD_CONVERT_PHASE_1.md) and the [conversion example](../../examples/conversion-markdown/README.md). This lane ships in CLI `0.3.0` and converter `0.2.0`.
 
 
 ### HTML source conversion

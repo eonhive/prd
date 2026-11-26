@@ -2,6 +2,14 @@
 
 ## 2026-11-25
 
+### Deployed Release Information And npm Install Verification
+
+- Verified the production Home page in a browser: it displays CLI `0.3.0` and the published authoring/conversion/signing command availability. Docs navigation reaches the current quickstart and CLI guide. All five public npm pages resolve and display types `0.1.1`, validator/packager/converter `0.2.0`, and CLI `0.3.0`; the CLI dependency tab links to its four public dependencies.
+- A fresh unpinned `npm install -g @eonhive/prd-cli` in an isolated prefix resolves `0.3.0`. Create, Markdown import, comic image import, validate and pack checks pass. A second fresh-cache project with no global CLI passes all six npx create/Markdown/storyboard/validate/pack/archive checks. Sample input files and real generated package paths replace the quickstart's authored-source/path placeholders. The user's global installation is unchanged.
+- Fresh registry audit passes all five expected versions/latest/dependency checks. Production Home/Viewer/Convert/Docs, entry assets and canonical hosted samples pass **22 HTTP/package checks**. This confirms delivery and package truth; broader conversion/browser/device acceptance remains separately tracked. Evidence is ignored under `examples/dist/deployed-release-qa/`.
+- Corrected overlooked pending-publication statements in the root quickstart and authoring guide; made all five package-table names link to their canonical npm pages. Fixed the types README's reproduced HTTP-404 docs URL to the HTTP-200 canonical docs directory. These are documentation corrections only. The already-published CLI README retains older wording, and the types npm README retains the old docs URL; those published snapshots require a normal reviewed release to carry source corrections. No package was republished or version changed for this verification.
+- Validation: actual browser navigation, isolated global/npx command checks, registry audit, hosted smoke, root-inclusive docs consistency and whitespace checks pass. No runtime code or format contracts changed.
+
 ### npm Publication And Post-Publish Verification Complete
 
 - Release run [45701384261](https://github.com/eonhive/prd/actions/runs/45701384261), from `474d5e0`, passed publisher preflight and published CLI `0.3.0` plus converter/packager/validator `0.2.0` through main CI using the replacement `NPM_TOKEN_GITHUB` binding. Types remains `0.1.1`. The earlier npm authentication blocker is resolved; no token value was accessed.
